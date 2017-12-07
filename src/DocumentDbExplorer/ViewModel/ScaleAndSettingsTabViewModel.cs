@@ -1,0 +1,170 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DocumentDbExplorer.Infrastructure;
+using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Services;
+using GalaSoft.MvvmLight.Messaging;
+using ICSharpCode.AvalonEdit.Document;
+using Its.Validation.Configuration;
+using Microsoft.Azure.Documents;
+using Newtonsoft.Json;
+
+namespace DocumentDbExplorer.ViewModel
+{
+    public class ScaleAndSettingsTabViewModel : PaneViewModel
+    {
+        private ScaleSettingsNodeViewModel _node;
+        private readonly IDocumentDbService _dbService;
+        private RelayCommand _discardCommand;
+        private RelayCommand _saveCommand;
+        private bool _onTimeToLive;
+
+        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDocumentDbService dbService) : base(messenger)
+        {
+            Content = new TextDocument();
+            _dbService = dbService;
+
+            PropertyChanged += OnPropetyChanged;
+        }
+
+        private void OnPropetyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var names = new[] { "Throughput", "TimeToLiveInSecond", "OffTimeToLive", "NoDefaultTimeToLive", "OnTimeToLive" };
+
+            if (!IsLoading && names.Contains(e.PropertyName))
+            {
+                IsDirty = true;
+            }
+        }
+
+        public bool IsLoading { get; set; }
+
+        public ScaleSettingsNodeViewModel Node
+        {
+            get { return _node; }
+            set
+            {
+                IsLoading = true;
+
+                if (_node != value)
+                {
+                    _node = value;
+                    Title = value.Name;
+                    Connection = value.Parent.Parent.Parent.Connection;
+                    Collection = value.Parent.Collection;
+
+                    var split = Collection.AltLink.Split(new char[] { '/' });
+                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+
+                    SetInformation();
+                }
+
+                IsLoading = false;
+            }
+        }
+
+        private void SetInformation()
+        {
+            TimeToLiveInSecond = Collection.DefaultTimeToLive;
+            OffTimeToLive = Collection.DefaultTimeToLive == null;
+            NoDefaultTimeToLive = Collection.DefaultTimeToLive == -1;
+            OnTimeToLive = Collection.DefaultTimeToLive >= 0;
+
+            Content = new TextDocument(JsonConvert.SerializeObject(Collection.IndexingPolicy, Formatting.Indented));
+        }
+
+        public Connection Connection { get; protected set; }
+
+        public DocumentCollection Collection { get; protected set; }
+
+        public int Throughput { get; set; }
+
+        public int? TimeToLiveInSecond { get; set; }
+
+        public TextDocument Content { get; set; }
+
+        public bool IsDirty { get; set; }
+
+        public bool OffTimeToLive { get; set; }
+
+        public bool NoDefaultTimeToLive { get; set; }
+
+        public bool OnTimeToLive
+        {
+            get { return _onTimeToLive; }
+            set
+            {
+                _onTimeToLive = value;
+                if (_onTimeToLive && TimeToLiveInSecond.GetValueOrDefault(-1) == -1)
+                {
+                    TimeToLiveInSecond = 1;
+                    RaisePropertyChanged(() => OnTimeToLive);
+                }
+            }
+        }
+
+        public async Task LoadDataAsync()
+        {
+            IsLoading = true;
+            Throughput = await _dbService.GetThroughput(Connection, Collection);
+            IsLoading = false;
+        }
+
+        public RelayCommand DiscardCommand
+        {
+            get
+            {
+                return _discardCommand
+                    ?? (_discardCommand = new RelayCommand(
+                        async x =>
+                        {
+                            SetInformation();
+                            await LoadDataAsync();
+                            IsDirty = false;
+                        },
+                        x => IsDirty));
+            }
+        }
+
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return _saveCommand
+                    ?? (_saveCommand = new RelayCommand(
+                        async x =>
+                        {
+                            Collection.DefaultTimeToLive = GetTimeToLive();
+
+                            await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
+                            IsDirty = false;
+                        },
+                        x =>
+                        {
+                            var rule = Validate.That<ScaleAndSettingsTabViewModel>(vm => vm.Throughput % 100 == 0);
+                            return IsDirty && rule.Check(this);
+                        }
+                        ));
+            }
+        }
+
+        private int? GetTimeToLive()
+        {
+            if (OffTimeToLive)
+            {
+                return null;
+            }
+            else if (OnTimeToLive)
+            {
+                return TimeToLiveInSecond;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+}

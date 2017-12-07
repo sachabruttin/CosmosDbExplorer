@@ -1,0 +1,158 @@
+﻿<?xml version="1.0"?>
+<!-- Shades of Red-Brown: #a31515, #cf4315, #ffb96e, #ffdc95 -->
+<!-- Shades of Bright-Blue: #0077dc #008fe4 #8dbbdc #8de8ff -->
+<SyntaxDefinition name="DocumentDb" extensions=".docdb"
+                 xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <!-- T-SQL Reference: http://msdn.microsoft.com/de-de/library/ms189826%28v=sql.90%29.aspx -->
+  <Color name="Digits"     foreground="DarkBlue" exampleText="3.1415f"/>
+  <Color name="Comment" foreground="Green" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Punctuation" foreground="Red" exampleText="string text = &quot;Hello, World!&quot;"/>
+
+  <Color name="String" foreground="Olive" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="String2" foreground="#993" exampleText="string text = &quot;Hello, World!&quot;"/>
+
+  <Color name="Keyword" fontWeight="bold" foreground="Blue" exampleText="SELECT"/>
+
+  <Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" />
+
+  <Color name="Variable" foreground="Red"  exampleText="@Variable" />
+  <Color name="Variable1" foreground="Red" exampleText="@@Variable" />
+
+  <Color name="ObjectReference" foreground="Teal" exampleText="Customer.Name" />
+  <Color name="ObjectReference1" foreground="Teal" exampleText="dbo.Customer.Name" />
+
+  <Color name="ObjectReferenceInBrackets" foreground="Teal" exampleText="[Customer].[Name]" />
+  <Color name="ObjectReferenceInBrackets1" foreground="Teal" exampleText="[dbo].[Customer].[Name]" />
+
+  <Color name="CommentMarkerSetTodo"       foreground="Red"     fontWeight="bold" />
+  <Color name="CommentMarkerSetHackUndone" foreground="#E0E000" fontWeight="bold" />
+
+  <RuleSet name="CommentMarkerSet">
+    <Keywords color="CommentMarkerSetTodo">
+      <Word>TODO</Word>
+      <Word>FIXME</Word>
+    </Keywords>
+    <Keywords color="CommentMarkerSetHackUndone">
+      <Word>HACK</Word>
+      <Word>UNDONE</Word>
+    </Keywords>
+  </RuleSet>
+
+  <RuleSet  ignoreCase="true">
+    <Span color="String" multiline="true" >
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+
+    <Span color="String2" multiline="true"  >
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+
+    <!-- span for escape sequences -->
+    <Span  color="Comment" begin="--" end="\n" ruleSet="CommentMarkerSet"/>
+    <Span color="Comment"  multiline="true" ruleSet="CommentMarkerSet">
+      <Begin>/\*</Begin>
+      <End>\*/</End>
+    </Span>
+
+    <Keywords color="Keyword" >
+      <Word>ABS</Word>
+      <Word>ACOS</Word>
+      <Word>AND</Word>
+      <Word>ARRAY_CONCAT</Word>
+      <Word>ARRAY_CONTAINS</Word>
+      <Word>ARRAY_LENGTH</Word>
+      <Word>ARRAY_SLICE</Word>
+      <Word>ASIN</Word>
+      <Word>ATAN</Word>
+      <Word>ATN2</Word>
+      <Word>BETWEEN</Word>
+      <Word>BY</Word>
+      <Word>CEILING</Word>
+      <Word>CONCAT</Word>
+      <Word>CONTAINS</Word>
+      <Word>COS</Word>
+      <Word>COT</Word>
+      <Word>DEGREES</Word>
+      <Word>ENDSWITH</Word>
+      <Word>EXP</Word>
+      <Word>FLOOR</Word>
+      <Word>FROM</Word>
+      <Word>IN</Word>
+      <Word>INDEX_OF</Word>
+      <Word>IS_ARRAY</Word>
+      <Word>IS_BOOL</Word>
+      <Word>IS_DEFINED</Word>
+      <Word>IS_NULL</Word>
+      <Word>IS_NUMBER</Word>
+      <Word>IS_OBJECT</Word>
+      <Word>IS_PRIMITIVE</Word>
+      <Word>IS_STRING</Word>
+      <Word>JOIN</Word>
+      <Word>LEFT</Word>
+      <Word>LENGTH</Word>
+      <Word>LOG10</Word>
+      <Word>LOG</Word>
+      <Word>LOWER</Word>
+      <Word>LTRIM</Word>
+      <Word>NOT</Word>
+      <Word>OR</Word>
+      <Word>ORDER</Word>
+      <Word>PI</Word>
+      <Word>POWER</Word>
+      <Word>RADIANS</Word>
+      <Word>REPLACE</Word>
+      <Word>REPLICATE</Word>
+      <Word>REVERSE</Word>
+      <Word>RIGHT</Word>
+      <Word>ROUND</Word>
+      <Word>RTRIM</Word>
+      <Word>SELECT</Word>
+      <Word>SIGN</Word>
+      <Word>SIN</Word>
+      <Word>SQRT</Word>
+      <Word>SQUARE</Word>
+      <Word>ST_DISTANCE</Word>
+      <Word>ST_ISVALID</Word>
+      <Word>ST_ISVALIDDETAILED</Word>
+      <Word>ST_WITHIN</Word>
+      <Word>STARTSWITH</Word>
+      <Word>SUBSTRING</Word>
+      <Word>TAN</Word>
+      <Word>TOP</Word>
+      <Word>TRUNC</Word>
+      <Word>UPPER</Word>
+      <Word>VALUE</Word>
+      <Word>WHERE</Word>
+    </Keywords>
+
+    <Rule color="ObjectReference1">([\d\w]+)\.([\d\w]+)\.([\d\w]+)</Rule>
+    <Rule color="ObjectReference">([\d\w]+)\.([\d\w]+)</Rule>
+
+    <Rule color="ObjectReferenceInBrackets1">([\d\w]+)\.([\d\w]+)\.([\d\w]+)</Rule>
+    <Rule color="ObjectReferenceInBrackets">\[([\d\w]+)\]\.\[([\d\w]+)\]\.\[([\d\w]+)\]</Rule>
+    <Rule color="ObjectReferenceInBrackets">\[([\d\w]+)\]\.\[([\d\w]+)\]</Rule>
+
+    <Rule color="Punctuation">
+      [?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+    </Rule>
+
+    <Rule color="MethodCall">[\d\w_]+(?=(\s*\())</Rule>
+    <Rule color="Variable1">@@([\w]+)</Rule>
+    <Rule color="Variable">@([\w]+)</Rule>
+
+    <!-- Digits -->
+    <Rule color="Digits">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |
+      (    \b\d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+           #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+
+  </RuleSet>
+
+</SyntaxDefinition>

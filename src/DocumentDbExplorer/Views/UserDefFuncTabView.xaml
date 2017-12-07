@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="DocumentDbExplorer.Views.UserDefFuncTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:UserDefFuncTabViewModel}">
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top">
+            <ToolBar.Resources>
+                <Style TargetType="{x:Type Image}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                            <Setter Property="Opacity" Value="0.30" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToolBar.Resources>
+
+            <Button Command="{Binding SaveCommand}" Content="Save">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <Viewbox Width="32" Height="32" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                    <Rectangle Width="32" Height="32">
+                                        <Rectangle.Fill>
+                                            <DrawingBrush>
+                                                <DrawingBrush.Drawing>
+                                                    <DrawingGroup>
+                                                        <DrawingGroup.Children>
+                                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M30,30L2,30 2,2 26,2 30,6z" />
+                                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M20,4L16,4 16,10 20,10z M28,8L28,28 4,28 4,4 10,4 10,14 22,14 22,4 24,4z" />
+                                                            <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M20,4L20,10 16,10 16,4 10,4 10,14 22,14 22,4z" />
+                                                        </DrawingGroup.Children>
+                                                    </DrawingGroup>
+                                                </DrawingBrush.Drawing>
+                                            </DrawingBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Viewbox>
+                                <Label Content="{TemplateBinding Content}"  VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.25" TargetName="theBorder" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Command="{Binding DiscardCommand}" Content="Discard">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <Viewbox Width="32" Height="32" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                    <Rectangle Width="32" Height="32">
+                                        <Rectangle.Fill>
+                                            <DrawingBrush>
+                                                <DrawingBrush.Drawing>
+                                                    <DrawingGroup>
+                                                        <DrawingGroup.Children>
+                                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M18.0088,0C15.1648,0,12.4068,1.014,10.2528,2.85L9.9948,3.068 9.9948,0 7.1648,0 1.9988,5.172 1.9988,16 12.8198,16 20.1728,8.64C21.2748,9.353 22.0028,10.593 22.0028,12 22.0028,13.169 21.4838,14.284 20.5558,15.083L7.8678,26.332 12.8818,32 13.5298,32 25.8078,21.113C28.4718,18.832 29.9988,15.509 29.9988,12 29.9988,5.383 24.6198,0 18.0088,0" />
+                                                            <GeometryDrawing Brush="#FF414141" Geometry="F1M18.0088,2C15.6398,2,13.3428,2.845,11.5458,4.376L7.9948,7.384 7.9948,2 3.9988,6 3.9988,10 3.9988,12 3.9988,14 11.9908,14 15.9878,10 11.0908,10 14.1318,7.426C15.2098,6.506 16.5888,6 18.0088,6 21.3138,6 24.0028,8.691 24.0028,12 24.0028,13.754 23.2378,15.415 21.8818,16.579L10.6908,26.504 13.3388,29.496 24.5068,19.594C26.7278,17.691 27.9988,14.923 27.9988,12 27.9988,6.486 23.5168,2 18.0088,2" />
+                                                        </DrawingGroup.Children>
+                                                    </DrawingGroup>
+                                                </DrawingBrush.Drawing>
+                                            </DrawingBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Viewbox>
+                                <Label Content="{TemplateBinding Content}"  VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.25" TargetName="theBorder" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Command="{Binding DeleteCommand}" Content="Delete">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="32">&#xE74D;</TextBlock>
+                                <Label Content="{TemplateBinding Content}"  VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.25" TargetName="theBorder" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </ToolBar>
+
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
+            <Label Content="Stored Procedure Id"/>
+            <xctk:WatermarkTextBox MinWidth="250" Margin="10,0"
+                     Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Watermark="Enter the stored procedure id" KeepWatermarkOnGotFocus="True"/>
+
+            <Label Content="User Defined Function Body"/>
+
+        </StackPanel>
+
+        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
+                                   FontSize="10pt" FontFamily="Consolas"
+                                   IsReadOnly="False" VerticalScrollBarVisibility="Auto"
+                                   ShowLineNumbers="True"
+                                   Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                                   IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+        </avalonedit:TextEditor>
+    </DockPanel>
+</UserControl>

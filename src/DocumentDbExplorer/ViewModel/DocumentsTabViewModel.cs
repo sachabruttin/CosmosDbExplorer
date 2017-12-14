@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Properties;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.Services.DialogSettings;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using GalaSoft.MvvmLight.Views;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
@@ -29,6 +30,7 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _applyFilterCommand;
         private RelayCommand _closeFilterCommand;
         private DocumentNodeViewModel _node;
+        private RelayCommand _saveLocalCommand;
 
         public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -121,8 +123,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public long TotalItemsCount { get; set; }
         public long ItemsCount => Documents.Count;
-
-
+        
         public DocumentEditorViewModel EditorViewModel { get; set; }
 
         protected Connection Connection => Node.Parent.Parent.Parent.Connection;
@@ -284,6 +285,40 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             IsEditingFilter = false;
                         }));
+            }
+        }
+
+        public RelayCommand SaveLocalCommand
+        {
+            get
+            {
+                return _saveLocalCommand ??
+                (_saveLocalCommand = new RelayCommand(
+                    async x =>
+                    {
+                        var settings = new SaveFileDialogSettings
+                        {
+                            DefaultExt = "json",
+                            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                            AddExtension = true,
+                            FileName = $"{SelectedDocument.Id}.json",
+                            OverwritePrompt = true,
+                            CheckFileExists = false,
+                            Title = "Save document locally"
+                        };
+
+                        await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                        {
+                            if (confirm)
+                            {
+                                await DispatcherHelper.RunAsync(() =>
+                                {
+                                    File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                });
+                            }
+                        });
+                    },
+                    x => SelectedDocument != null));
             }
         }
         

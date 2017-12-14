@@ -1,19 +1,17 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
-using System.Diagnostics;
-using System.Reflection;
-using System.Collections.ObjectModel;
-using DocumentDbExplorer.Messages;
-using GalaSoft.MvvmLight.Threading;
-using System.Linq;
-using GalaSoft.MvvmLight.Ioc;
-using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
+using DocumentDbExplorer.Services;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.ViewModel
 {

@@ -3,9 +3,7 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 

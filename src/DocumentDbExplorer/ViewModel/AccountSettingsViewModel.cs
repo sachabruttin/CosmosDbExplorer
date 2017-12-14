@@ -4,7 +4,6 @@ using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
 using Its.Validation.Configuration;
 
 namespace DocumentDbExplorer.ViewModel

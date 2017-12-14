@@ -1,12 +1,13 @@
 ﻿using System;
+using System.IO;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight;
+using DocumentDbExplorer.Services.DialogSettings;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
@@ -18,6 +19,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
         private CollectionNodeViewModel _node;
+        private RelayCommand _saveLocalCommand;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -76,6 +78,39 @@ namespace DocumentDbExplorer.ViewModel
                                 await _dialogService.ShowError(ex, "Error", "ok", null);
                             }
                         }));
+            }
+        }
+
+        public RelayCommand SaveLocalCommand
+        {
+            get
+            {
+                return _saveLocalCommand ??
+                (_saveLocalCommand = new RelayCommand(
+                    async x =>
+                    {
+                        var settings = new SaveFileDialogSettings
+                        {
+                            DefaultExt = "json",
+                            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                            AddExtension = true,
+                            OverwritePrompt = true,
+                            CheckFileExists = false,
+                            Title = "Save document locally"
+                        };
+
+                        await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                        {
+                            if (confirm)
+                            {
+                                await DispatcherHelper.RunAsync(() =>
+                                {
+                                    File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                });
+                            }
+                        });
+                    },
+                    x => !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
     }

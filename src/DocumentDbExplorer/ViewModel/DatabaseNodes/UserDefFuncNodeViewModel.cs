@@ -5,7 +5,6 @@ using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
-using GalaSoft.MvvmLight.Views;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel

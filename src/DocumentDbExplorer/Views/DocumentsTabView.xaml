@@ -151,6 +151,29 @@
                     </ControlTemplate>
                 </Button.Template>                
             </Button>
+
+            <Separator />
+
+            <Button Command="{Binding SaveLocalCommand}" Content="Save Local">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="32">&#xE78C;</TextBlock>
+                                <Label Content="{TemplateBinding Content}"  VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.25" TargetName="theBorder" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </ToolBar>
 
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" VerticalAlignment="Center"

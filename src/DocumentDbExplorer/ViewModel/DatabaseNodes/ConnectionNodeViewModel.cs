@@ -9,7 +9,6 @@ using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Views;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using GalaSoft.MvvmLight.Views;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel

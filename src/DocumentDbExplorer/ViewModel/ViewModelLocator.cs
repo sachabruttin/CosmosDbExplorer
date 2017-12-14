@@ -42,7 +42,7 @@ namespace DocumentDbExplorer.ViewModel
             else
             {
                 // Create run time view services and models
-                SimpleIoc.Default.Register<IDialogService, DialogService>();
+                SimpleIoc.Default.Register<Services.IDialogService, DialogService>();
                 SimpleIoc.Default.Register<IMessenger, Messenger>();
                 SimpleIoc.Default.Register<IDocumentDbService, DocumentDbService>();
                 SimpleIoc.Default.Register<ISettingsService, SettingsService>();

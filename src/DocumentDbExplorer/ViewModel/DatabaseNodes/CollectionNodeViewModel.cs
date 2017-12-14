@@ -5,14 +5,12 @@ using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
-using GalaSoft.MvvmLight.Views;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
     public class CollectionNodeViewModel : TreeViewItemViewModel
     {
-        private readonly DocumentCollection _collection;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _openSqlQueryCommand;
@@ -27,7 +25,7 @@ namespace DocumentDbExplorer.ViewModel
             : base(parent, parent.MessengerInstance, true)
         {
             Name = collection.Id;
-            _collection = collection;
+            Collection = collection;
             _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
@@ -51,7 +49,7 @@ namespace DocumentDbExplorer.ViewModel
             });
         }
 
-        public DocumentCollection Collection { get { return _collection; } }
+        public DocumentCollection Collection { get; }
 
         public RelayCommand OpenSqlQueryCommand
         {

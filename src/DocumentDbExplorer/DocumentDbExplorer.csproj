@@ -135,6 +135,11 @@
     <Compile Include="Messages\OpenScaleAndSettingsViewMessage.cs" />
     <Compile Include="Messages\RemoveConnectionMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\DialogSettings\FileDialogResult.cs" />
+    <Compile Include="Services\DialogSettings\FileDialogSettings.cs" />
+    <Compile Include="Services\DialogSettings\FolderBrowserDialogSettings.cs" />
+    <Compile Include="Services\DialogSettings\OpenFileDialogSettings.cs" />
+    <Compile Include="Services\DialogSettings\SaveFileDialogSettings.cs" />
     <Compile Include="Services\DocumentDbService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="ViewModel\AccountSettingsViewModel.cs" />

@@ -7,6 +7,7 @@
          xmlns:local="clr-namespace:DocumentDbExplorer.Infrastructure"
          xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
          xmlns:pane="clr-namespace:DocumentDbExplorer.Views.Pane"
+         xmlns:search="clr-namespace:ICSharpCode.AvalonEdit.Search;assembly=ICSharpCode.AvalonEdit"
          mc:Ignorable="d"
          Loaded="Window_Loaded"
          Height="850" Width="1000"
@@ -106,6 +107,9 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Find" Command="ApplicationCommands.Find" />
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" />

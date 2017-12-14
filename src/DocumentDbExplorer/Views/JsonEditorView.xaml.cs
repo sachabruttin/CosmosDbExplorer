@@ -7,6 +7,8 @@ using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.AvalonEdit.Folding;
 using DocumentDbExplorer.Infrastructure.AvalonEdit;
 using System.Windows.Threading;
+using System.Windows;
+using ICSharpCode.AvalonEdit.Search;
 
 namespace DocumentDbExplorer.Views
 {
@@ -25,6 +27,8 @@ namespace DocumentDbExplorer.Views
             InitializeComponent();
 
             editor.TextArea.IndentationStrategy = new CSharpIndentationStrategy(editor.Options);
+
+            SearchPanel.Install(editor);
 
             var foldingUpdateTimer = new DispatcherTimer
             {

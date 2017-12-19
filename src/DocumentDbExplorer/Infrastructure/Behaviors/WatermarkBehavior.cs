@@ -72,7 +72,10 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
             if (AssociatedObject.SelectedItem != null)
             {
                 var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-                layer.Remove(_adorner);
+                if (layer != null)
+                {
+                    layer.Remove(_adorner);
+                }
             }
             else
             {

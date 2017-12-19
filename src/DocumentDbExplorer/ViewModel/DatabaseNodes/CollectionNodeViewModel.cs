@@ -9,6 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
+
     public class CollectionNodeViewModel : TreeViewItemViewModel
     {
         private readonly IDialogService _dialogService;
@@ -141,8 +142,11 @@ namespace DocumentDbExplorer.ViewModel
                             await _dialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
                                 async confirm =>
                                 {
-                                    await _dbService.DeleteCollection(Parent.Parent.Connection, Collection);
-                                    await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                                    if (confirm)
+                                    {
+                                        await _dbService.DeleteCollection(Parent.Parent.Connection, Collection);
+                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                                    }
                                 });
                         }
                         ));

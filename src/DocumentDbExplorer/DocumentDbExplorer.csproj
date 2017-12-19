@@ -123,6 +123,8 @@
     <Compile Include="Infrastructure\Constants.cs" />
     <Compile Include="Infrastructure\Converters\ActiveDocumentConverter.cs" />
     <Compile Include="Infrastructure\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Infrastructure\Converters\IsNotNullToBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\ListBoxMore.cs" />
     <Compile Include="Infrastructure\MarkupExtensions\EnumBindingSourceExtension.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Messages\EditStoredProcedureMessage.cs" />
     <Compile Include="Messages\OpenScaleAndSettingsViewMessage.cs" />
     <Compile Include="Messages\RemoveConnectionMessage.cs" />
+    <Compile Include="Messages\TreeNodeSelectedMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\DialogSettings\FileDialogResult.cs" />
     <Compile Include="Services\DialogSettings\FileDialogSettings.cs" />
@@ -155,6 +158,7 @@
     <Compile Include="ViewModel\DatabaseNodes\CollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ConnectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DatabaseNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\TriggerNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\UserDefFuncNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\StoredProcedureNodeViewModel.cs" />

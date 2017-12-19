@@ -85,6 +85,79 @@
             </fluent:Ribbon.Menu>
 
             <fluent:RibbonTabItem Header="Home" KeyTip="H">
+                <!--<fluent:RibbonGroupBox Header="Account" KeyTip="A"
+                                       IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
+                    <fluent:Button Header="Edit" Command="{Binding Connection.EditConnectionCommand}" />
+                    <fluent:Button Header="Remove" Command="{Binding Connection.RemoveConnectionCommand}" />
+                </fluent:RibbonGroupBox>-->
+
+                <fluent:RibbonGroupBox Header="Database" KeyTip="D"
+                                       IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}">
+                    <fluent:Button Header="New" 
+                                   Command="{Binding Database.AddNewCollectionCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15,3.2495L15,12.8445C15,14.6965,12.417,15.7695,9.555,15.9995L7.195,15.9995C4.313,15.7745,1,14.7435,1,12.7505L1,3.1555C1,1.3185,3.722,0.230499999999999,6.621,-0.000500000000000611L8.891,-0.000500000000000611C11.675,0.225499999999999,15,1.2735,15,3.2495" />
+                                                        <GeometryDrawing Brush="#FF1179D1" Geometry="F1M7.9049,4.1858C5.7329,4.1858 3.9729,3.6828 3.9729,3.0618 3.9729,2.4418 5.7329,1.9388 7.9049,1.9388 10.0769,1.9388 11.8369,2.4418 11.8369,3.0618 11.8369,3.6828 10.0769,4.1858 7.9049,4.1858 M7.7769,0.9528C4.6369,0.9528,1.9999,2.0308,1.9999,3.1558L1.9999,12.7508C1.9999,13.9698 5.2889,15.0478 8.3829,15.0478 11.4769,15.0478 13.9999,14.0158 13.9999,12.8448L13.9999,3.2498C13.9999,2.0778,10.9179,0.9528,7.7769,0.9528" />
+                                                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M12.5,9.3619C11.96,9.3619,11.691,9.6099,11.691,10.1059L11.691,11.0239C11.691,11.5839 11.519,11.9699 11.174,12.1819 10.831,12.3939 10.273,12.4999 9.5,12.4999L9.5,11.7559C9.796,11.7559 10.011,11.7029 10.146,11.5949 10.28,11.4879 10.347,11.3059 10.347,11.0479L10.347,10.2009C10.347,9.5679,10.616,9.1709,11.156,9.0119L11.156,8.9959C10.616,8.8289,10.347,8.4139,10.347,7.7509L10.347,6.9359C10.347,6.4749,10.064,6.2439,9.5,6.2439L9.5,5.4999C10.269,5.4999 10.826,5.6109 11.172,5.8319 11.518,6.0539 11.691,6.4319 11.691,6.9679L11.691,7.8779C11.691,8.3799,11.96,8.6299,12.5,8.6299z M6.5,12.4999C5.733,12.4999 5.174,12.3939 4.826,12.1819 4.477,11.9699 4.303,11.5919 4.303,11.0479L4.303,10.0939C4.303,9.6059,4.035,9.3619,3.5,9.3619L3.5,8.6299C4.035,8.6299,4.303,8.3769,4.303,7.8709L4.303,6.9839C4.303,6.4379 4.476,6.0539 4.82,5.8319 5.165,5.6109 5.725,5.4999 6.5,5.4999L6.5,6.2439C5.936,6.2439,5.655,6.4749,5.655,6.9359L5.655,7.7829C5.655,8.4189,5.384,8.8209,4.842,8.9879L4.842,9.0039C5.384,9.1679,5.655,9.5759,5.655,10.2249L5.655,11.0399C5.655,11.2999 5.721,11.4849 5.853,11.5929 5.985,11.7019 6.201,11.7559 6.5,11.7559z M11.837,3.0619C11.837,2.4419 10.077,1.9389 7.905,1.9389 5.733,1.9389 3.972,2.4419 3.972,3.0619 3.972,3.6829 5.733,4.1859 7.905,4.1859 10.077,4.1859 11.837,3.6829 11.837,3.0619" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Delete" 
+                                   Command="{Binding Database.DeleteDatabaseCommand}"
+                                   LargeIcon="{StaticResource DeleteBigIcon}"/>
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="O" x:Name="Collection"
+                                       Header="Collection"
+                                       IsEnabled="{Binding Collection, Converter={StaticResource isNotNullToBooleanConverter}}">
+
+                    <fluent:SplitButton x:Name="CreateButton"
+                                        KeyTip="A"
+                                        Header="Add Item"
+                                        LargeIcon="{StaticResource CreateIcon}"
+                                        SizeDefinition="Large">
+                        <fluent:MenuItem Header="SQL Query" Icon="{StaticResource SqlQueryIcon}" Command="{Binding Collection.OpenSqlQueryCommand}" />
+                        <fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
+                        <fluent:MenuItem Header="User Definied Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
+                        <fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
+
+                    </fluent:SplitButton>
+
+                    <fluent:Button Header="Import" x:Name="ImportDocuments"
+                                   Icon="{StaticResource ImportDocumentIcon}"
+                                   Command="{Binding Collection.OpenImportDocumentCommand}"
+                                   SizeDefinition="Middle,Small"
+                                   KeyTip="I" />
+                    
+                    <fluent:Button Header="Delete Collection" 
+                                   Icon="{StaticResource DeleteIcon}"
+                                   Command="{Binding Collection.DeleteCollectionCommand}"
+                                   SizeDefinition="Middle,Small"
+                                   KeyTip="D"/>
+
+                    <fluent:Button Header="Remove All Documents" 
+                                   Icon="{StaticResource RemoveAllIcon}" 
+                                   Command="{Binding Collection.ClearAllDocumentsCommand}"
+                                   SizeDefinition="Middle,Small"
+                                   KeyTip="R"/>
+
+                </fluent:RibbonGroupBox>
+                                                       
                 <fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
                                        Header="Clipboard">
                     
@@ -146,7 +219,13 @@
                     </fluent:Button>
 
                 </fluent:RibbonGroupBox>
-
+                
+                <fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview">
+                    <fluent:Button LargeIcon="{StaticResource RefreshBigIcon}"
+                                   Icon="{StaticResource RefreshIcon}"
+                                   Command="{Binding RefreshCommand}"
+                                   Header="Refresh"/>
+                </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
             
         </fluent:Ribbon>

@@ -37,6 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _showAccountSettingsCommand;
         private RelayCommand _exitCommand;
         private IEnumerable<ToolViewModel> _tools;
+        private RelayCommand _refreshCommand;
 
         public event Action RequestClose;
 
@@ -84,7 +85,57 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<EditUserDefFuncMessage>(this, OpenUserDefFunc);
             MessengerInstance.Register<EditTriggerMessage>(this, OpenTrigger);
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
+
+            MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
         }
+
+        private void OnTreeNodeSelected(TreeNodeSelectedMessage message)
+        {
+            CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
+            Connection = message.Item as ConnectionNodeViewModel;
+            Database = message.Item as DatabaseNodeViewModel;
+            Collection = message.Item as CollectionNodeViewModel;
+
+            //switch (message.Item)
+            //{
+            //    case ConnectionNodeViewModel vm:
+            //        Connection = vm;
+            //        Database = null;
+            //        Collection = null;
+            //        break;
+            //    case DatabaseNodeViewModel vm:
+            //        Connection = null;
+            //        Database = vm;
+            //        Collection = null;
+            //        break;
+            //    case CollectionNodeViewModel vm:
+            //        Connection = null;
+            //        Database = null;
+            //        Collection = vm;
+            //        break;
+            //    case ScaleSettingsNodeViewModel vm:
+            //        OnCollectionSubNodeSelected(vm);
+            //        break;
+            //    case DocumentNodeViewModel vm:
+            //        OnCollectionSubNodeSelected(vm);
+            //        break;
+            //    case StoredProcedureRootNodeViewModel vm:
+            //        OnCollectionSubNodeSelected(vm);
+            //        break;
+            //    default:
+            //        Connection = null;
+            //        Database = null;
+            //        Collection = null;
+            //        break;
+            //}
+        }
+
+        //private void OnCollectionSubNodeSelected(TreeViewItemViewModel node)
+        //{
+        //    Connection = null;
+        //    Database = null;
+        //    Collection = node.Parent as CollectionNodeViewModel;
+        //}
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
         {
@@ -257,6 +308,11 @@ namespace DocumentDbExplorer.ViewModel
         }
         public PaneViewModel SelectedTab { get; set; }
 
+        public ConnectionNodeViewModel Connection { get; set; }
+        public DatabaseNodeViewModel Database { get; set; }
+        public CollectionNodeViewModel Collection { get; set; }
+        public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
+
         public RelayCommand ShowAboutCommand
         {
             get
@@ -296,9 +352,26 @@ namespace DocumentDbExplorer.ViewModel
                         }));
             }
         }
+
+        public RelayCommand RefreshCommand
+        {
+            get
+            {
+                return _refreshCommand
+                    ?? (_refreshCommand = new RelayCommand(
+                        x =>
+                        {
+                            CanRefreshNodeViewModel.RefreshCommand.Execute(x);
+                        },
+                        x => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(x)                            
+                        ));
+            }
+        }
+
         public virtual void Close()
         {
             RequestClose?.Invoke();
         }
+
     }
 }

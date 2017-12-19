@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class TriggerRootNodeViewModel : TreeViewItemViewModel
+    public class TriggerRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;

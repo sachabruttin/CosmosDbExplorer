@@ -135,7 +135,8 @@
                                    Header="Find"
                                    Command="ApplicationCommands.Find"
                                    Icon="{StaticResource SearchIcon}"
-                                   SizeDefinition="Middle,Small">
+                                   SizeDefinition="Middle,Small"
+                                   FocusManager.IsFocusScope="True">
                         <fluent:Button.ToolTip>
                             <fluent:ScreenTip Title="Find (Ctrl+F)"
                                               Text="Find text in the content."

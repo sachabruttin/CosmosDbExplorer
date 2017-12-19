@@ -121,15 +121,25 @@
                                    Header="Copy"
                                    Icon="{StaticResource CopyIcon}"
                                    Command="Copy"
+                                   SizeDefinition="Middle,Small"
                                    FocusManager.IsFocusScope="True">
-                        <fluent:Button.SizeDefinition>
-                            <fluent:RibbonControlSizeDefinition Large="Middle"
-                                                                Middle="Small" />
-                        </fluent:Button.SizeDefinition>
                         <fluent:Button.ToolTip>
                             <fluent:ScreenTip Title="Copy (Ctrl+C)"
                                               Text="Copy the contents to the Clipboard."
                                               DisableReason="Copy is currently not available."
+                                              Width="190"/>
+                        </fluent:Button.ToolTip>
+                    </fluent:Button>
+                    <fluent:Button x:Name="findButton"
+                                   KeyTip="F"
+                                   Header="Find"
+                                   Command="ApplicationCommands.Find"
+                                   Icon="{StaticResource SearchIcon}"
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.ToolTip>
+                            <fluent:ScreenTip Title="Find (Ctrl+F)"
+                                              Text="Find text in the content."
+                                              DisableReason="Find is currently not available."
                                               Width="190"/>
                         </fluent:Button.ToolTip>
                     </fluent:Button>

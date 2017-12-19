@@ -18,7 +18,7 @@
                 <!--<ResourceDictionary Source="pack://application:,,,/Fluent;Component/Themes/Colors/BaseDark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Fluent;Component/Themes/Accents/Green.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
-            
+
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel" />
 
             <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
@@ -166,6 +166,28 @@
                                         <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M8.0098,4C8.5628,4 9.0628,3.553 9.0628,3 9.0628,2.447 8.5628,1.953 8.0098,1.953 7.4578,1.953 6.9218,2.447 6.9218,3 6.9218,3.553 7.4578,4 8.0098,4" />
                                         <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M4,5L4,7 8,7 8,14 12,14 12,5z" />
                                         <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M6,14L2,14 2,9 6,9z" />
+                                    </DrawingGroup.Children>
+                                </DrawingGroup>
+                            </DrawingBrush.Drawing>
+                        </DrawingBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Viewbox>
+
+            <Viewbox x:Key="SearchIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                <Rectangle Width="16" Height="16">
+                    <Rectangle.Fill>
+                        <DrawingBrush>
+                            <DrawingBrush.Drawing>
+                                <DrawingGroup>
+                                    <DrawingGroup.Children>
+                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M10.0605,1L3.9995,1C3.0305,1,1.9995,1.701,1.9995,3L1.9995,11.586 -0.000500000000000611,13.586 -0.000500000000000611,14.414 1.5855,16 2.4145,16 3.4875,14.927C3.6565,14.971,3.8285,15,3.9995,15L11.9995,15C13.2985,15,13.9995,13.97,13.9995,13L13.9995,4.556z" />
+                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M4.4141,14L5.5001,14C5.1781,14,4.8601,13.954,4.5511,13.863z" />
+                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M9.6406,2L3.9636,2C3.9636,2,2.9996,2,2.9996,3L2.9996,8.069C3.2866,7.777,3.6266,7.543,3.9996,7.365L3.9996,3 8.9996,3 8.9996,6 11.9996,6 11.9996,13 7.9416,13C7.3106,13.616,6.4506,14,5.4996,14L11.9646,14C12.9646,14,12.9996,13,12.9996,13L12.9996,5z" />
+                                        <GeometryDrawing Brush="#FF00529C" Geometry="F1M5.5,12C4.672,12 4,11.328 4,10.5 4,9.672 4.672,9 5.5,9 6.328,9 7,9.672 7,10.5 7,11.328 6.328,12 5.5,12 M5.5,8.016C4.119,8.016 3,9.119 3,10.5 3,10.932 3.12,11.332 3.312,11.687L1,14 2,15 4.312,12.688C4.667,12.881 5.067,13 5.5,13 6.881,13 8,11.881 8,10.5 8,9.119 6.881,8.016 5.5,8.016" />
+                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,6L9,3 4,3 4,7.365C4.457,7.147 4.961,7.016 5.5,7.016 7.43,7.016 9,8.579 9,10.5 9,11.479 8.593,12.364 7.942,13L12,13 12,6z" />
+                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M4.0493,10.4473C4.0493,11.2753 4.7213,11.9473 5.5493,11.9473 6.3773,11.9473 7.0493,11.2753 7.0493,10.4473 7.0493,9.6193 6.3773,8.9473 5.5493,8.9473 4.7213,8.9473 4.0493,9.6193 4.0493,10.4473" />
                                     </DrawingGroup.Children>
                                 </DrawingGroup>
                             </DrawingBrush.Drawing>

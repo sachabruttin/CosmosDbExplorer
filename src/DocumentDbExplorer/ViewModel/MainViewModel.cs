@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Timers;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -61,8 +62,18 @@ namespace DocumentDbExplorer.ViewModel
             _databaseViewModel = _ioc.GetInstance<DatabaseViewModel>();
             Tabs = new ObservableCollection<PaneViewModel>();
 
+            SpyUsedMemory();
+
             RegisterMessages();
         }
+
+        private void SpyUsedMemory()
+        {
+            var timer = new Timer(TimeSpan.FromSeconds(3).TotalMilliseconds);
+            timer.Elapsed += (s, e) => base.RaisePropertyChanged(() => UsedMemory);
+            timer.Start();
+        }
+
         private void RegisterMessages()
         {
             MessengerInstance.Register<OpenDocumentsViewMessage>(this, OpenDocumentsView);
@@ -228,7 +239,13 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public string Title { get; set; }
+
+        public long UsedMemory => GC.GetTotalMemory(true) / 1014;
+
+        public double Zoom { get; set; }
+
         public ObservableCollection<PaneViewModel> Tabs { get; }
+
         public IEnumerable<ToolViewModel> Tools
         {
             get
@@ -239,6 +256,7 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
         public PaneViewModel SelectedTab { get; set; }
+
         public RelayCommand ShowAboutCommand
         {
             get

@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class StoredProcedureRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class StoredProcedureRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
     {
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
@@ -55,9 +55,11 @@ namespace DocumentDbExplorer.ViewModel
                         }));
             }
         }
+
+        public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class StoredProcedureNodeViewModel : TreeViewItemViewModel
+    public class StoredProcedureNodeViewModel : TreeViewItemViewModel, ICanEditDelete
     {
         private RelayCommand _deleteCommand;
         private readonly IDialogService _dialogService;

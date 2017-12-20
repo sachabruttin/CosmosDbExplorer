@@ -10,7 +10,7 @@ using Microsoft.Azure.Documents;
 namespace DocumentDbExplorer.ViewModel
 {
 
-    public class CollectionNodeViewModel : TreeViewItemViewModel
+    public class CollectionNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel
     {
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
@@ -152,5 +152,7 @@ namespace DocumentDbExplorer.ViewModel
                         ));
             }
         }
+
+        public CollectionNodeViewModel CollectionNode => this;
     }
 }

@@ -94,48 +94,21 @@ namespace DocumentDbExplorer.ViewModel
             CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
             Connection = message.Item as ConnectionNodeViewModel;
             Database = message.Item as DatabaseNodeViewModel;
-            Collection = message.Item as CollectionNodeViewModel;
+            Collection = (message.Item as IHaveCollectionNodeViewModel)?.CollectionNode;
+            CanEditDelete = message.Item as ICanEditDelete;
 
-            //switch (message.Item)
-            //{
-            //    case ConnectionNodeViewModel vm:
-            //        Connection = vm;
-            //        Database = null;
-            //        Collection = null;
-            //        break;
-            //    case DatabaseNodeViewModel vm:
-            //        Connection = null;
-            //        Database = vm;
-            //        Collection = null;
-            //        break;
-            //    case CollectionNodeViewModel vm:
-            //        Connection = null;
-            //        Database = null;
-            //        Collection = vm;
-            //        break;
-            //    case ScaleSettingsNodeViewModel vm:
-            //        OnCollectionSubNodeSelected(vm);
-            //        break;
-            //    case DocumentNodeViewModel vm:
-            //        OnCollectionSubNodeSelected(vm);
-            //        break;
-            //    case StoredProcedureRootNodeViewModel vm:
-            //        OnCollectionSubNodeSelected(vm);
-            //        break;
-            //    default:
-            //        Connection = null;
-            //        Database = null;
-            //        Collection = null;
-            //        break;
-            //}
+            bool mustSelectRibbonTab()
+            {
+                return CanRefreshNodeViewModel != null
+                                    || Connection != null
+                                    || Database != null
+                                    || Collection != null
+                                    || CanEditDelete != null;
+            }
+
+            SelectedRibbonTab = mustSelectRibbonTab() ? 1 : 0;
+            IsTabToolsVisible = mustSelectRibbonTab();
         }
-
-        //private void OnCollectionSubNodeSelected(TreeViewItemViewModel node)
-        //{
-        //    Connection = null;
-        //    Database = null;
-        //    Collection = node.Parent as CollectionNodeViewModel;
-        //}
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
         {
@@ -308,10 +281,15 @@ namespace DocumentDbExplorer.ViewModel
         }
         public PaneViewModel SelectedTab { get; set; }
 
+        public int SelectedRibbonTab { get; set; }
+
+        public bool IsTabToolsVisible { get; set; }
+
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }
         public CollectionNodeViewModel Collection { get; set; }
         public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
+        public ICanEditDelete CanEditDelete { get; set; }
 
         public RelayCommand ShowAboutCommand
         {

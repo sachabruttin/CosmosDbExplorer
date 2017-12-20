@@ -4,7 +4,7 @@ using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel
+    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel
     {
         private RelayCommand _openCommand;
 
@@ -32,5 +32,7 @@ namespace DocumentDbExplorer.ViewModel
                         x => MessengerInstance.Send(new OpenScaleAndSettingsViewMessage(this))));
             }
         }
+
+        public CollectionNodeViewModel CollectionNode => Parent;
     }
 }

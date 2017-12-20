@@ -4,7 +4,7 @@ using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentNodeViewModel : TreeViewItemViewModel
+    public class DocumentNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel
     {
         private RelayCommand _openDocumentCommand;
 
@@ -30,5 +30,7 @@ namespace DocumentDbExplorer.ViewModel
                         x => MessengerInstance.Send(new OpenDocumentsViewMessage(this))));
             }
         }
+
+        public CollectionNodeViewModel CollectionNode => Parent;
     }
 }

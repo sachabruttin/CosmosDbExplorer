@@ -50,6 +50,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public TextDocument Content { get; set; }
 
+        public string SelectedText { get; set; }
+
         public bool IsDirty { get; set; }
 
         public JsonViewerViewModel EditorViewModel { get; set; }
@@ -64,7 +66,8 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             try
                             {
-                                var result = await _dbService.ExecuteQuery(Connection, Node.Collection, Content.Text);
+                                var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
+                                var result = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
 
                                 EditorViewModel.SetText(result, true);
                             }
@@ -77,7 +80,8 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 await _dialogService.ShowError(ex, "Error", "ok", null);
                             }
-                        }));
+                        },
+                        x => !string.IsNullOrEmpty(Content.Text)));
             }
         }
 

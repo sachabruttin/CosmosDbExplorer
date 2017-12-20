@@ -131,6 +131,7 @@
     <Compile Include="Infrastructure\Models\WindowViewModelBase.cs" />
     <Compile Include="Infrastructure\RelayCommand.cs" />
     <Compile Include="Infrastructure\TabContentTemplateSelector.cs" />
+    <Compile Include="Messages\ActivePaneChangedMessage.cs" />
     <Compile Include="Messages\CloseDocumentMessage.cs" />
     <Compile Include="Messages\ConnectionSettingSavedMessage.cs" />
     <Compile Include="Messages\EditTriggerMessage.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="ViewModel\DatabaseViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DocumentNodeViewModel.cs" />
     <Compile Include="ViewModel\DocumentsTabViewModel.cs" />
+    <Compile Include="ViewModel\IAssetTabCommand.cs" />
     <Compile Include="ViewModel\ImportDocumentViewModel.cs" />
     <Compile Include="ViewModel\JsonEditorViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ScaleSettingsNodeViewModel.cs" />

@@ -8,7 +8,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class TriggerTabViewModel : PaneViewModel
+    public class TriggerTabViewModel : PaneViewModel, IAssetTabCommand
     {
         private TriggerNodeViewModel _node;
         private RelayCommand _saveCommand;
@@ -25,7 +25,8 @@ namespace DocumentDbExplorer.ViewModel
             Content = new TextDocument(Constants.Default.Trigger);
             _dialogService = dialogService;
             _dbService = dbService;
-            Title = "New Trigger";
+            Header = "New Trigger";
+            Title = "Trigger";
             ContentId = Guid.NewGuid().ToString();
         }
 
@@ -37,7 +38,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Title = value.Name;
+                    Header = value.Name;
 
                     SetInformation();
                 }

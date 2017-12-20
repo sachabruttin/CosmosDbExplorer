@@ -308,6 +308,24 @@
             </Rectangle>
         </Viewbox>
 
+        <Viewbox x:Key="NewDocumentIcon">
+            <Rectangle Width="32" Height="32">
+                <Rectangle.Fill>
+                    <DrawingBrush>
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8,30C5.492,30,4.194,28.161,4.021,26.339L4,26.277 4,6C4,3.402,6.061,2,8,2L19.733,2 28,10.164 28,26C27.993,27.896,27,29.932,24,29.992L24,30z" />
+                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M19,6L19,12 24,12 24,26 8,26 8,6z M18.912,4L8,4C8,4,6,4,6,6L6,26 6,26.277C6,26.277,6.32,28,8,28L24,28 24.111,28 24.051,27.993C25.993,27.955,26,26,26,26L26,11z" />
+                                    <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M8,6L8,26 24,26 24,12 19,12 19,6z" />
+                                </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Viewbox>
+
     </Window.Resources>
     <DockPanel LastChildFill="True">
 
@@ -412,9 +430,232 @@
                     </fluent:Button>
 
                 </fluent:RibbonGroupBox>
-                
 
-               
+
+                <fluent:RibbonGroupBox KeyTip="D" x:Name="Documents" Header="Documents"
+                                       Visibility="{Binding IsTabDocumentsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                    <fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveDocumentCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M30,30L2,30 2,2 26,2 30,6z" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M20,4L16,4 16,10 20,10z M28,8L28,28 4,28 4,4 10,4 10,14 22,14 22,4 24,4z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M20,4L20,10 16,10 16,4 10,4 10,14 22,14 22,4z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M18.0088,0C15.1648,0,12.4068,1.014,10.2528,2.85L9.9948,3.068 9.9948,0 7.1648,0 1.9988,5.172 1.9988,16 12.8198,16 20.1728,8.64C21.2748,9.353 22.0028,10.593 22.0028,12 22.0028,13.169 21.4838,14.284 20.5558,15.083L7.8678,26.332 12.8818,32 13.5298,32 25.8078,21.113C28.4718,18.832 29.9988,15.509 29.9988,12 29.9988,5.383 24.6198,0 18.0088,0" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M18.0088,2C15.6398,2,13.3428,2.845,11.5458,4.376L7.9948,7.384 7.9948,2 3.9988,6 3.9988,10 3.9988,12 3.9988,14 11.9908,14 15.9878,10 11.0908,10 14.1318,7.426C15.2098,6.506 16.5888,6 18.0088,6 21.3138,6 24.0028,8.691 24.0028,12 24.0028,13.754 23.2378,15.415 21.8818,16.579L10.6908,26.504 13.3388,29.496 24.5068,19.594C26.7278,17.691 27.9988,14.923 27.9988,12 27.9988,6.486 23.5168,2 18.0088,2" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="New Document"
+                                   SizeDefinition="Middle,Small"
+                                   Command="{Binding SelectedTab.NewDocumentCommand}"
+                                   Icon="{StaticResource NewDocumentIcon}" />
+
+                    <fluent:Button Header="Delete Document"
+                                   Command="{Binding SelectedTab.DeleteDocumentCommand}"
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource DeleteIcon}" />
+                        </fluent:Button.Icon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Export"
+                                   Command="{Binding SelectedTab.SaveLocalCommand}"
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" />
+                        </fluent:Button.Icon>
+                    </fluent:Button>
+
+
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                                       Visibility="{Binding IsSettingsTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                    <fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M30,30L2,30 2,2 26,2 30,6z" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M20,4L16,4 16,10 20,10z M28,8L28,28 4,28 4,4 10,4 10,14 22,14 22,4 24,4z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M20,4L20,10 16,10 16,4 10,4 10,14 22,14 22,4z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M18.0088,0C15.1648,0,12.4068,1.014,10.2528,2.85L9.9948,3.068 9.9948,0 7.1648,0 1.9988,5.172 1.9988,16 12.8198,16 20.1728,8.64C21.2748,9.353 22.0028,10.593 22.0028,12 22.0028,13.169 21.4838,14.284 20.5558,15.083L7.8678,26.332 12.8818,32 13.5298,32 25.8078,21.113C28.4718,18.832 29.9988,15.509 29.9988,12 29.9988,5.383 24.6198,0 18.0088,0" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M18.0088,2C15.6398,2,13.3428,2.845,11.5458,4.376L7.9948,7.384 7.9948,2 3.9988,6 3.9988,10 3.9988,12 3.9988,14 11.9908,14 15.9878,10 11.0908,10 14.1318,7.426C15.2098,6.506 16.5888,6 18.0088,6 21.3138,6 24.0028,8.691 24.0028,12 24.0028,13.754 23.2378,15.415 21.8818,16.579L10.6908,26.504 13.3388,29.496 24.5068,19.594C26.7278,17.691 27.9988,14.923 27.9988,12 27.9988,6.486 23.5168,2 18.0088,2" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                                       Visibility="{Binding IsAssetTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                    <fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M30,30L2,30 2,2 26,2 30,6z" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M20,4L16,4 16,10 20,10z M28,8L28,28 4,28 4,4 10,4 10,14 22,14 22,4 24,4z" />
+                                                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M20,4L20,10 16,10 16,4 10,4 10,14 22,14 22,4z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}">
+                        <fluent:Button.LargeIcon>
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="32" Height="32">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M18.0088,0C15.1648,0,12.4068,1.014,10.2528,2.85L9.9948,3.068 9.9948,0 7.1648,0 1.9988,5.172 1.9988,16 12.8198,16 20.1728,8.64C21.2748,9.353 22.0028,10.593 22.0028,12 22.0028,13.169 21.4838,14.284 20.5558,15.083L7.8678,26.332 12.8818,32 13.5298,32 25.8078,21.113C28.4718,18.832 29.9988,15.509 29.9988,12 29.9988,5.383 24.6198,0 18.0088,0" />
+                                                        <GeometryDrawing Brush="#FF414141" Geometry="F1M18.0088,2C15.6398,2,13.3428,2.845,11.5458,4.376L7.9948,7.384 7.9948,2 3.9988,6 3.9988,10 3.9988,12 3.9988,14 11.9908,14 15.9878,10 11.0908,10 14.1318,7.426C15.2098,6.506 16.5888,6 18.0088,6 21.3138,6 24.0028,8.691 24.0028,12 24.0028,13.754 23.2378,15.415 21.8818,16.579L10.6908,26.504 13.3388,29.496 24.5068,19.594C26.7278,17.691 27.9988,14.923 27.9988,12 27.9988,6.486 23.5168,2 18.0088,2" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Delete"
+                                   Command="{Binding SelectedTab.DeleteDocumentCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="Q" Header="Query"
+                                       Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                    
+                    <fluent:Button Header="Run"
+                                   Command="{Binding SelectedTab.ExecuteCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Export"
+                                   Command="{Binding SelectedTab.SaveLocalCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="Q" Header="Import"
+                                       Visibility="{Binding IsImportTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                    <fluent:Button Header="Run"
+                                   Command="{Binding SelectedTab.ExecuteCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:Button Header="Open Document"
+                                   Command="{Binding SelectedTab.OpenFileCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
 
             </fluent:RibbonTabItem>
 
@@ -477,12 +718,17 @@
                                         Header="Add Item"
                                         LargeIcon="{StaticResource CreateIcon}"
                                         SizeDefinition="Large">
-                        <fluent:MenuItem Header="SQL Query" Icon="{StaticResource SqlQueryIcon}" Command="{Binding Collection.OpenSqlQueryCommand}" />
                         <fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
                         <fluent:MenuItem Header="User Definied Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
                         <fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
 
                     </fluent:SplitButton>
+
+                    <fluent:Button Header="SQL Query" 
+                                   Icon="{StaticResource SqlQueryIcon}" 
+                                   SizeDefinition="Middle,Small"
+                                   Command="{Binding Collection.OpenSqlQueryCommand}"
+                                   KeyTip="Q"/>
 
                     <fluent:Button Header="Import" x:Name="ImportDocuments"
                                    Command="{Binding Collection.OpenImportDocumentCommand}"
@@ -493,20 +739,25 @@
                         </fluent:Button.Icon>
                     </fluent:Button>
 
-                    <fluent:Button Header="Delete Collection" 
-                                   Command="{Binding Collection.DeleteCollectionCommand}"
-                                   SizeDefinition="Middle,Small"
-                                   KeyTip="D">
-                        <fluent:Button.Icon>
+                    <fluent:SplitButton KeyTip="D" Header="Delete"
+                                        SizeDefinition="Middle,Small">
+                        <fluent:SplitButton.Icon>
                             <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </fluent:Button.Icon>
-                    </fluent:Button>
+                        </fluent:SplitButton.Icon>
 
-                    <fluent:Button Header="Remove All Documents" 
+                        <fluent:MenuItem Header="Delete Collection" 
+                                   Command="{Binding Collection.DeleteCollectionCommand}">
+                            <fluent:MenuItem.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </fluent:MenuItem.Icon>
+                        </fluent:MenuItem>
+
+                        <fluent:MenuItem Header="Remove All Documents" 
                                    Icon="{StaticResource RemoveAllIcon}" 
                                    Command="{Binding Collection.ClearAllDocumentsCommand}"
-                                   SizeDefinition="Middle,Small"
-                                   KeyTip="R"/>
+                                   />
+
+                    </fluent:SplitButton>
 
                 </fluent:RibbonGroupBox>
 
@@ -594,7 +845,7 @@
                 <pane:PaneStyleSelector>
                     <pane:PaneStyleSelector.ToolStyle>
                         <Style TargetType="{x:Type xcad:LayoutAnchorableItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}" />
+                            <Setter Property="Title" Value="{Binding Model.Header}" />
                             <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource DockBoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                             <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
@@ -604,11 +855,13 @@
                     </pane:PaneStyleSelector.ToolStyle>
                     <pane:PaneStyleSelector.DocumentStyle>
                         <Style TargetType="{x:Type xcad:LayoutItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
+                            <Setter Property="Title" Value="{Binding Model.Header}"/>
                             <Setter Property="ToolTip" Value="{Binding Model.ToolTip}"/>
                             <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
                             <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
                             <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                            <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
+                            <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
                         </Style>
                     </pane:PaneStyleSelector.DocumentStyle>
                 </pane:PaneStyleSelector>

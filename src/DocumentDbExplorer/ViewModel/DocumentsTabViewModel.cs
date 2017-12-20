@@ -38,6 +38,8 @@ namespace DocumentDbExplorer.ViewModel
             _dbService = dbService;
             _dialogService = dialogService;
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<DocumentEditorViewModel>();
+            Title = "Documents";
+            Header = Title;
         }
 
         public DocumentNodeViewModel Node
@@ -48,8 +50,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Title = "Documents";
-                    
+                   
                     var split = Node.Parent.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}>{Title}";
                 }

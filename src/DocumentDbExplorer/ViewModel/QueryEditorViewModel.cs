@@ -38,7 +38,7 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     _node = value;
                     ContentId = Node.Parent.Name;
-                    Title = $"Query - {Node.Parent.Name}";
+                    Header = $"Query - {Node.Parent.Name}";
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}>{Title}";

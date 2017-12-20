@@ -8,7 +8,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class StoredProcedureTabViewModel : PaneViewModel
+    public class StoredProcedureTabViewModel : PaneViewModel, IAssetTabCommand
     {
         private StoredProcedureNodeViewModel _node;
         private RelayCommand _saveCommand;
@@ -23,7 +23,8 @@ namespace DocumentDbExplorer.ViewModel
             Content = new TextDocument(Constants.Default.StoredProcedure);
             _dialogService = dialogService;
             _dbService = dbService;
-            Title = "New Stored Procedure";
+            Header = "New Stored Procedure";
+            Title = "Stored Procedure";
             ContentId = Guid.NewGuid().ToString();
         }
 
@@ -35,7 +36,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Title = value.Name;
+                    Header = value.Name;
 
                     SetInformation();
                 }

@@ -1,6 +1,7 @@
 ﻿using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
@@ -16,11 +17,18 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         public string ToolTip { get; set; }
 
+        public string Header { get; set; }
+
         public string ContentId { get; set; }
 
         public bool IsSelected { get; set; }
 
         public bool IsActive { get; set; }
+
+        public virtual void OnIsActiveChanged()
+        {
+            DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
+        }
 
         public RelayCommand CloseCommand
         {
@@ -47,8 +55,6 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public ToolViewModel(IMessenger messenger) : base(messenger)
         {
         }
-
-        public string Name { get; set; }
 
         public bool IsVisible { get; set; }
     }

@@ -26,7 +26,6 @@ namespace DocumentDbExplorer.ViewModel
         {
             Content = new TextDocument();
             _dbService = dbService;
-
             PropertyChanged += OnPropetyChanged;
         }
 
@@ -53,6 +52,7 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     _node = value;
                     Title = value.Name;
+                    Header = value.Name;
                     Connection = value.Parent.Parent.Parent.Connection;
                     Collection = value.Parent.Collection;
 

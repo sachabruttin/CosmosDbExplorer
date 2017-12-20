@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.Services.DialogSettings;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
@@ -15,6 +18,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private CollectionNodeViewModel _node;
+        private RelayCommand _openFileCommand;
 
         public ImportDocumentViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
@@ -31,7 +35,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Title = Node.Parent.Name;
+                    Header = Node.Parent.Name;
                     
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}>{Title}";
@@ -70,6 +74,44 @@ namespace DocumentDbExplorer.ViewModel
                             }
 
                         }));
+            }
+        }
+
+        public RelayCommand OpenFileCommand
+        {
+            get
+            {
+                return _openFileCommand
+                    ?? (_openFileCommand = new RelayCommand(
+                        async x =>
+                        {
+                            var settings = new OpenFileDialogSettings
+                            {
+                                DefaultExt = "json",
+                                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                                AddExtension = true,
+                                CheckFileExists = true,
+                                Multiselect = false,
+                                Title = "Open document"
+                            };
+
+                            await _dialogService.ShowOpenFileDialog(settings,
+                                async (confirm, result) =>
+                                {
+                                    if (confirm)
+                                    {
+                                        using (var reader = File.OpenText(result.FileName))
+                                        {
+                                            await DispatcherHelper.RunAsync(async () =>
+                                            {
+                                                Content.FileName = result.FileName;
+                                                Content.Text = await reader.ReadToEndAsync();
+                                            });
+                                        }
+                                    }
+                                });
+                        }
+                        ));
             }
         }
     }

@@ -17,8 +17,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService) : base(messenger)
         {
-            Name = "Connections";
-            Title = Name;
+            Header = "Connections";
+            Title = Header;
             IsVisible = true;
 
             _dbService = dbService;

@@ -77,6 +77,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void RegisterMessages()
         {
+            MessengerInstance.Register<ActivePaneChangedMessage>(this, OnActivePaneChanged);
             MessengerInstance.Register<OpenDocumentsViewMessage>(this, OpenDocumentsView);
             MessengerInstance.Register<OpenQueryViewMessage>(this, OpenQueryView);
             MessengerInstance.Register<OpenImportDocumentViewMessage>(this, OpenImportDocumentView);
@@ -87,6 +88,19 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
+
+        }
+
+        private void OnActivePaneChanged(ActivePaneChangedMessage message)
+        {
+            if (message.PaneViewModel is DatabaseViewModel)
+            {
+                IsTabToolsVisible = true;
+            }
+            else
+            {
+                IsTabToolsVisible = false;
+            }
         }
 
         private void OnTreeNodeSelected(TreeNodeSelectedMessage message)
@@ -216,13 +230,11 @@ namespace DocumentDbExplorer.ViewModel
                 var content = _ioc.GetInstance<DocumentsTabViewModel>(contentId);
                 content.Node = message.Node;
                 content.ContentId = contentId;
-                await content.LoadDocuments();
+                
+                Tabs.Add(content);
+                SelectedTab = content;
 
-                await DispatcherHelper.RunAsync(() =>
-                {
-                    Tabs.Add(content);
-                    SelectedTab = content;
-                });
+                await content.LoadDocuments();
             }
         }
 
@@ -230,12 +242,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             var content = _ioc.GetInstance<QueryEditorViewModel>(Guid.NewGuid().ToString());
             content.Node = message.Node;
-
-            DispatcherHelper.RunAsync(() =>
-            {
-                Tabs.Add(content);
-            });
-
+            Tabs.Add(content);
             SelectedTab = content;
         }
 
@@ -254,11 +261,8 @@ namespace DocumentDbExplorer.ViewModel
                 content.Node = message.Node;
                 content.ContentId = contentId;
 
-                DispatcherHelper.RunAsync(() =>
-                {
-                    Tabs.Add(content);
-                    SelectedTab = content;
-                });
+                Tabs.Add(content);
+                SelectedTab = content;
             }
         }
 
@@ -281,9 +285,23 @@ namespace DocumentDbExplorer.ViewModel
         }
         public PaneViewModel SelectedTab { get; set; }
 
+        public void OnSelectedTabChanged()
+        {
+            IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
+            IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
+            IsAssetTabVisible = SelectedTab is IAssetTabCommand;
+            IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
+            IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
+        }
+
         public int SelectedRibbonTab { get; set; }
 
         public bool IsTabToolsVisible { get; set; }
+        public bool IsTabDocumentsVisible { get; set; }
+        public bool IsSettingsTabVisible { get; set; }
+        public bool IsAssetTabVisible { get; set; }
+        public bool IsQueryTabVisible { get; set; }
+        public bool IsImportTabVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

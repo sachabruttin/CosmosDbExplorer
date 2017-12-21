@@ -35,10 +35,10 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Header = Node.Parent.Name;
+                    Header = "Import";
                     
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                    ToolTip = $"{split[1]}>{split[3]}";
                 }
             }
         }

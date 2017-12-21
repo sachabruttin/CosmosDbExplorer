@@ -38,10 +38,10 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     _node = value;
                     ContentId = Node.Parent.Name;
-                    Header = $"Query - {Node.Parent.Name}";
+                    Header = $"SQL Query";
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                    ToolTip = $"{split[1]}>{split[3]}";
                 }
             }
         }

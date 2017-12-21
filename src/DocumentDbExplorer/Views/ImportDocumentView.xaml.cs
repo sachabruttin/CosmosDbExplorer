@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
 using DocumentDbExplorer.Infrastructure.AvalonEdit;
+using DocumentDbExplorer.Infrastructure.Models;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -66,6 +68,14 @@ namespace DocumentDbExplorer.Views
             if (_foldingStrategy != null && _foldingManager != null)
             {
                 _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
+            }
+        }
+
+        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (DataContext is PaneViewModel datacontext)
+            {
+                datacontext.IconSource = FindResource("ImportIcon") as TextBlock;
             }
         }
     }

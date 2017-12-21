@@ -9,7 +9,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:controls="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="300" Loaded="UserControl_Loaded"
              d:DataContext="{x:Type vm:QueryEditorViewModel}">
     <Grid>
         <Grid.RowDefinitions>

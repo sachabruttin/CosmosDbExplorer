@@ -125,6 +125,7 @@
     <Compile Include="Infrastructure\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\Converters\IsNotNullToBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Infrastructure\DocumentHeaderTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\ListBoxMore.cs" />
     <Compile Include="Infrastructure\MarkupExtensions\EnumBindingSourceExtension.cs" />

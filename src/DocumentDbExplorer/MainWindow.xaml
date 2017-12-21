@@ -58,6 +58,25 @@
             </local:TabContentTemplateSelector.ScaleAndSettingsTemplate>
         </local:TabContentTemplateSelector>
 
+        <local:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
+            <local:DocumentHeaderTemplateSelector.ImageTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </local:DocumentHeaderTemplateSelector.ImageTemplate>
+
+            <local:DocumentHeaderTemplateSelector.TextIconTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <ContentControl Content="{Binding Content.IconSource}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </local:DocumentHeaderTemplateSelector.TextIconTemplate>
+        </local:DocumentHeaderTemplateSelector>
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
@@ -551,16 +570,8 @@
         <xcad:DockingManager DocumentsSource="{Binding Tabs}"
                              AnchorablesSource="{Binding Tools}"
                              ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
-                             LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}">
-            <xcad:DockingManager.DocumentHeaderTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconSource}" Margin="0,0,5,0" />
-                        
-                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </DataTemplate>
-            </xcad:DockingManager.DocumentHeaderTemplate>
+                             LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}"
+                             DocumentHeaderTemplateSelector="{StaticResource documentHeaderTemplateSelector}">
 
             <xcad:DockingManager.LayoutItemContainerStyleSelector>
                 <pane:PaneStyleSelector>

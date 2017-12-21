@@ -31,7 +31,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
             DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
         }
 
-        public ImageSource IconSource { get; set; }
+        public object IconSource { get; set; }
 
         public RelayCommand CloseCommand
         {

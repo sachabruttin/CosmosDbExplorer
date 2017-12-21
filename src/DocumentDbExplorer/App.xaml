@@ -354,6 +354,9 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
+
+            <TextBlock x:Key="ImportIcon" Style="{StaticResource ImportDocumentIcon}" />
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

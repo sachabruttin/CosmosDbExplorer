@@ -316,17 +316,6 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Copy.png" />
-    <Resource Include="Images\Cut.png" />
-    <Resource Include="Images\Delete.png" />
-    <Resource Include="Images\Open.png" />
-    <Resource Include="Images\Paste.png" />
-    <Resource Include="Images\Redo.png" />
-    <Resource Include="Images\Save.png" />
-    <Resource Include="Images\Undo.png" />
-    <Resource Include="Images\WordWrap.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\loading.gif" />
   </ItemGroup>
   <ItemGroup>

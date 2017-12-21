@@ -1,4 +1,5 @@
-﻿using DocumentDbExplorer.Messages;
+﻿using System.Windows.Media;
+using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -29,6 +30,8 @@ namespace DocumentDbExplorer.Infrastructure.Models
         {
             DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
         }
+
+        public ImageSource IconSource { get; set; }
 
         public RelayCommand CloseCommand
         {

@@ -9,7 +9,7 @@
              xmlns:db="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:TriggerTabViewModel}">
     <DockPanel>
 

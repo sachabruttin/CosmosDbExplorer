@@ -21,104 +21,6 @@
         <TextBlock x:Key="EditIconText" Style="{StaticResource EditIcon}" />
         <TextBlock x:Key="RefreshIconText" Style="{StaticResource RefreshIcon}" />
 
-        <Viewbox x:Key="AddConnectionIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <Rectangle Width="16" Height="16">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,4L16,7 14.982,7 14.982,11 13,11 13,16 9,16 9,11 7.004,11 7,7 6,7 6,8 2,8 2,6 0,6 0,2 2,2 2,0 6,0 6,2 7,2 7,0.903C7.354,0.377 8.294,0.0270000000000001 9,0.0270000000000001 9.706,0.0270000000000001 10.648,0.377 11,0.903 11.352,0.377 12.275,0.0270000000000001 12.982,0.0270000000000001 13.689,0.0270000000000001 14.648,0.377 15,0.903L15,4z" />
-                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M7,5L7,6 8,6 8,10 10,10 10,15 12,15 12,10 14,10 14,6 15,6 15,5z M14,1.944C14,1.46 13.544,1 13,1 12.457,1 12,1.46 12,1.944L12,4 14,4z M10,4L8,4 8,1.944C8,1.46 8.457,1 9,1 9.544,1 10,1.46 10,1.944z" />
-                                    <GeometryDrawing Brush="#FF388A34" Geometry="F1M7,5L5,5 5,7 3.018,7 3.018,5 1,5 1,3.018 3.018,3.018 3.018,1 5,1 5,3.018 7,3.018z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-        </Viewbox>
-
-        <Viewbox x:Key="ExitIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <Rectangle Width="16" Height="16">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M14,13L2,13 2,2 14,2z" />
-                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M11,10L9.5,10 8,8.5 6.5,10 5,10 7.25,7.75 5,5.5 6.5,5.5 8,7 9.5,5.5 11,5.5 8.75,7.75z M3,12L13,12 13,3 3,3z" />
-                                    <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M11,10L9.5,10 8,8.5 6.5,10 5,10 7.25,7.75 5,5.5 6.5,5.5 8,7 9.5,5.5 11,5.5 8.75,7.75z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-        </Viewbox>
-
-        <Viewbox x:Key="CopyIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <Rectangle Width="16" Height="16">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M5.0004,-0.000199999999999534L5.0004,4.0008 0.9994,4.0008 0.9994,15.9998 10.9994,15.9998 10.9994,12.0008 15.0004,12.0008 15.0004,-0.000199999999999534z" />
-                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M9,6L3,6 3,14 9,14z M10,15L2,15 2,5 10,5z M11,11L11,10 13,10 13,2 7,2 7,4 6,4 6,1 14,1 14,11z" />
-                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M7,2L7,4 11,4 11,10 13,10 13,2z M9,14L3,14 3,6 9,6z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-        </Viewbox>
-
-        <Viewbox x:Key="CutIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <Rectangle Width="16" Height="16">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M11.5029,9C11.3339,9,11.1659,9.014,10.9999,9.041L10.9999,9C10.9999,8.455 10.8559,7.934 10.5839,7.478 11.7569,5.404 12.3779,4.291 12.5299,3.987 12.7349,3.576 12.9919,3.065 12.9999,2.498 13.0079,1.935 12.7629,1.348 12.3429,0.927L11.4139,0 10.3819,0 7.9999,4.764 5.6179,0 4.5889,0 3.6509,0.928000000000001C3.4529,1.125 2.9929,1.673 2.9999,2.475 3.0029,3.064 3.2799,3.619 3.4639,3.987 3.6189,4.296 4.2739,5.471 5.4149,7.479 5.1449,7.936 4.9999,8.456 4.9999,9L4.9999,9.04C4.8349,9.014 4.6679,9 4.5009,9 2.6039,9 0.9999,10.604 0.9999,12.5 0.9999,14.396 2.6039,16 4.5009,16 6.3649,16 7.9999,14.364 7.9999,12.5 7.9999,12.332 7.9999,12.332 7.9999,12.5 7.9999,14.396 9.6049,16 11.5029,16 13.3989,16 14.9999,14.396 14.9999,12.5 14.9999,10.604 13.3989,9 11.5029,9" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M11.4932,14C10.6672,14 10.0002,13.341 10.0002,12.512 10.0002,11.682 10.6672,11 11.4932,11 12.3202,11 13.0002,11.682 13.0002,12.512 13.0002,13.341 12.3202,14 11.4932,14 M8.0022,10C7.4492,10 7.0002,9.553 7.0002,9 7.0002,8.448 7.4472,8 8.0002,8 8.5532,8 9.0002,8.448 9.0002,9 9.0002,9.553 8.5532,10 8.0022,10 M4.4882,14C3.6582,14 3.0002,13.352 3.0002,12.523 3.0002,11.693 3.6582,11 4.4882,11 5.3142,11 6.0002,11.693 6.0002,12.523 6.0002,13.352 5.3142,14 4.4882,14 M11.5032,10C11.0832,10,10.6842,10.127,10.3282,10.328L9.8202,9.82C9.9332,9.57 10.0002,9.293 10.0002,9 10.0002,8.436 9.7632,7.927 9.3862,7.562 10.3282,5.9 11.4392,3.932 11.6362,3.54 11.8062,3.198 11.9952,2.821 12.0002,2.484 12.0052,2.127 11.8152,1.815 11.6362,1.635L11.0002,1 8.0002,7 5.0002,1 4.3582,1.635C4.1802,1.812 3.9972,2.119 4.0002,2.469 4.0022,2.811 4.1852,3.193 4.3582,3.54 4.5552,3.932 5.6682,5.901 6.6132,7.564 6.2362,7.928 6.0002,8.436 6.0002,9 6.0002,9.293 6.0662,9.569 6.1802,9.82L5.6732,10.328C5.3162,10.127 4.9192,10 4.5012,10 3.1702,10 2.0002,11.172 2.0002,12.5 2.0002,13.828 3.1702,15 4.5012,15 5.8282,15 7.0002,13.828 7.0002,12.5 7.0002,12.081 6.8742,11.684 6.6732,11.328L7.1802,10.82C7.4312,10.934 7.7082,11 8.0012,11 8.2942,11 8.5702,10.934 8.8202,10.82L9.3272,11.328C9.1262,11.684 9.0002,12.081 9.0002,12.5 9.0002,13.828 10.1722,15 11.5032,15 12.8342,15 14.0002,13.828 14.0002,12.5 14.0002,11.172 12.8342,10 11.5032,10" />
-                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M13,12.5117C13,11.6817 12.32,10.9997 11.493,10.9997 10.667,10.9997 10,11.6817 10,12.5117 10,13.3407 10.667,13.9997 11.493,13.9997 12.32,13.9997 13,13.3407 13,12.5117 M9,8.9997C9,8.4487 8.553,7.9997 8,7.9997 7.447,7.9997 7,8.4487 7,8.9997 7,9.5527 7.449,9.9997 8.002,9.9997 8.553,9.9997 9,9.5527 9,8.9997 M4.488,13.9997C3.658,13.9997 3,13.3517 3,12.5237 3,11.6937 3.658,10.9997 4.488,10.9997 5.314,10.9997 6,11.6937 6,12.5237 6,13.3517 5.314,13.9997 4.488,13.9997" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-        </Viewbox>
-
-        <Viewbox x:Key="PasteIcon" Width="32" Height="32" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <Rectangle Width="32" Height="32">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M12,3L12,2 11.01,2C10.598,0.836 9.324,0 8.02,0 6.717,0 5.424,0.836 5.01,2L4,2 4,3 2.01,3C2.01,3,2.007,4.769,2.004,7L0,7 0,16 2.01,16 8,16 14,16 14,3z" />
-                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M2,9L6,9 6,14 2,14z M1,15L7,15 7,8 1,8z" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M8.0195,4C7.4685,4 7.0095,3.553 7.0095,3 7.0095,2.447 7.4585,2 8.0095,2 8.5625,2 9.0095,2.447 9.0095,3 9.0095,3.553 8.5725,4 8.0195,4 M10.9995,4L10.9995,3 10.0095,3C10.0095,1.896 9.1155,1 8.0095,1 6.9065,1 6.0095,1.896 6.0095,3L4.9995,3 4.9995,4 2.9995,4 2.9995,7 3.9995,7 3.9995,5 11.9995,5 11.9995,14 7.9995,14 7.9995,15 12.9995,15 12.9995,4z" />
-                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M8.0098,4C8.5628,4 9.0628,3.553 9.0628,3 9.0628,2.447 8.5628,1.953 8.0098,1.953 7.4578,1.953 6.9218,2.447 6.9218,3 6.9218,3.553 7.4578,4 8.0098,4" />
-                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M4,5L4,7 8,7 8,14 12,14 12,5z" />
-                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M6,14L2,14 2,9 6,9z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-        </Viewbox>
-
         <Viewbox x:Key="SearchIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
             <Rectangle Width="16" Height="16">
                 <Rectangle.Fill>
@@ -188,7 +90,7 @@
             </Rectangle>
         </Viewbox>
 
-        <Viewbox x:Key="StoredProcedureIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <!--<Viewbox x:Key="StoredProcedureIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
             <Rectangle Width="16" Height="16">
                 <Rectangle.Fill>
                     <DrawingBrush>
@@ -210,9 +112,9 @@
                     </DrawingBrush>
                 </Rectangle.Fill>
             </Rectangle>
-        </Viewbox>
+        </Viewbox>-->
 
-        <Viewbox x:Key="UdfIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <!--<Viewbox x:Key="UdfIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
             <Rectangle Width="16" Height="16">
                 <Rectangle.Fill>
                     <DrawingBrush>
@@ -230,9 +132,9 @@
                     </DrawingBrush>
                 </Rectangle.Fill>
             </Rectangle>
-        </Viewbox>
+        </Viewbox>-->
 
-        <Viewbox x:Key="TriggerIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        <!--<Viewbox x:Key="TriggerIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
             <Rectangle Width="16" Height="16">
                 <Rectangle.Fill>
                     <DrawingBrush>
@@ -251,7 +153,7 @@
                     </DrawingBrush>
                 </Rectangle.Fill>
             </Rectangle>
-        </Viewbox>
+        </Viewbox>-->
 
         <Viewbox x:Key="RemoveAllIcon" Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
             <Rectangle Width="16" Height="16">
@@ -305,29 +207,12 @@
                             <MenuItem Header="Remove Connection" Command="{Binding RemoveConnectionCommand}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Canvas Width="16" Height="16" Margin="3,0"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">
-                        <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <DrawingGroup.Children>
-                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8.0001,-0.000199999999999534L1.0001,3.4998 1.0001,11.4998 8.0001,15.9998 15.0001,11.4998 15.0001,3.4998z" />
-                                                    <GeometryDrawing Brush="#FF424242" Geometry="F1M8.51,8L8.5,14.5 14,11 14,5z M2,11L7.505,14.5 7.5,8 2,5z M13.75,4L8,7 2.25,4 8,1z" />
-                                                </DrawingGroup.Children>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Viewbox>
-                    </Canvas>
+                    <Image Width="16" Height="16" Margin="3,0" 
+                           gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ConnectionIcon}" 
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    
                     <TextBlock Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -347,28 +232,9 @@
                     <Image  Width="16" Height="16" Margin="3,0" 
                             gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
                             Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource DatabaseIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
-                    <Canvas Width="16" Height="16" Margin="3,0"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">
-                        <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <DrawingGroup.Children>
-                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15,3.2495L15,12.8445C15,14.6965,12.417,15.7695,9.555,15.9995L7.195,15.9995C4.313,15.7745,1,14.7435,1,12.7505L1,3.1555C1,1.3185,3.722,0.230499999999999,6.621,-0.000500000000000611L8.891,-0.000500000000000611C11.675,0.225499999999999,15,1.2735,15,3.2495" />
-                                                    <GeometryDrawing Brush="#FF1179D1" Geometry="F1M7.9049,4.1858C5.7329,4.1858 3.9729,3.6828 3.9729,3.0618 3.9729,2.4418 5.7329,1.9388 7.9049,1.9388 10.0769,1.9388 11.8369,2.4418 11.8369,3.0618 11.8369,3.6828 10.0769,4.1858 7.9049,4.1858 M7.7769,0.9528C4.6369,0.9528,1.9999,2.0308,1.9999,3.1558L1.9999,12.7508C1.9999,13.9698 5.2889,15.0478 8.3829,15.0478 11.4769,15.0478 13.9999,14.0158 13.9999,12.8448L13.9999,3.2498C13.9999,2.0778,10.9179,0.9528,7.7769,0.9528" />
-                                                    <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M12.5,9.3619C11.96,9.3619,11.691,9.6099,11.691,10.1059L11.691,11.0239C11.691,11.5839 11.519,11.9699 11.174,12.1819 10.831,12.3939 10.273,12.4999 9.5,12.4999L9.5,11.7559C9.796,11.7559 10.011,11.7029 10.146,11.5949 10.28,11.4879 10.347,11.3059 10.347,11.0479L10.347,10.2009C10.347,9.5679,10.616,9.1709,11.156,9.0119L11.156,8.9959C10.616,8.8289,10.347,8.4139,10.347,7.7509L10.347,6.9359C10.347,6.4749,10.064,6.2439,9.5,6.2439L9.5,5.4999C10.269,5.4999 10.826,5.6109 11.172,5.8319 11.518,6.0539 11.691,6.4319 11.691,6.9679L11.691,7.8779C11.691,8.3799,11.96,8.6299,12.5,8.6299z M6.5,12.4999C5.733,12.4999 5.174,12.3939 4.826,12.1819 4.477,11.9699 4.303,11.5919 4.303,11.0479L4.303,10.0939C4.303,9.6059,4.035,9.3619,3.5,9.3619L3.5,8.6299C4.035,8.6299,4.303,8.3769,4.303,7.8709L4.303,6.9839C4.303,6.4379 4.476,6.0539 4.82,5.8319 5.165,5.6109 5.725,5.4999 6.5,5.4999L6.5,6.2439C5.936,6.2439,5.655,6.4749,5.655,6.9359L5.655,7.7829C5.655,8.4189,5.384,8.8209,4.842,8.9879L4.842,9.0039C5.384,9.1679,5.655,9.5759,5.655,10.2249L5.655,11.0399C5.655,11.2999 5.721,11.4849 5.853,11.5929 5.985,11.7019 6.201,11.7559 6.5,11.7559z M11.837,3.0619C11.837,2.4419 10.077,1.9389 7.905,1.9389 5.733,1.9389 3.972,2.4419 3.972,3.0619 3.972,3.6829 5.733,4.1859 7.905,4.1859 10.077,4.1859 11.837,3.6829 11.837,3.0619" />
-                                                </DrawingGroup.Children>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Viewbox>
-                    </Canvas>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -380,9 +246,21 @@
                     <StackPanel.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="New SQL Query" Command="{Binding OpenSqlQueryCommand}" Icon="{StaticResource SqlQueryIcon}" />
-                            <MenuItem Header="New Stored Procedure" Command="{Binding NewStoredProcedureCommand}" Icon="{StaticResource StoredProcedureIcon}" />
-                            <MenuItem Header="New User Definied Function" Command="{Binding NewUdfCommand}" Icon="{StaticResource UdfIcon}" />
-                            <MenuItem Header="New Trigger" Command="{Binding NewTriggerCommand}" Icon="{StaticResource TriggerIcon}" />
+                            <MenuItem Header="New Stored Procedure" Command="{Binding NewStoredProcedureCommand}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource StoredProcedureIcon}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="New User Definied Function" Command="{Binding NewUdfCommand}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource UdfIcon}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="New Trigger" Command="{Binding NewTriggerCommand}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource TriggerIcon}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="Import Documents" Command="{Binding OpenImportDocumentCommand}" Icon="{StaticResource ImportDocumentIconText}" />
 
                             <Separator />
@@ -392,31 +270,12 @@
 
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" 
+                           gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource CollectionIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
-                    <Canvas Width="16" Height="16" Margin="3,0">
-                        <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <DrawingGroup.Children>
-                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15,3.5557L15,11.9997C15,12.9697 14.299,13.9997 13,13.9997 13,14.9697 12.299,15.9997 11,15.9997L3,15.9997C2.03,15.9997,1,15.2987,1,13.9997L1,3.9997C1,2.7017 2.03,1.9997 3,1.9997 3,0.7017 4.03,-0.000300000000000189 5,-0.000300000000000189L11.061,-0.000300000000000189z" />
-                                                    <GeometryDrawing Brush="#FF9ECA00" Geometry="F1M11,7L8,7 8,4 3,4 3,14 11,14z M12,6L12,14C12,14,11.965,15,10.965,15L2.965,15C2.965,15,2,15,2,14L2,4C2,3,2.964,3,2.964,3L8.641,3z M14,4L14,12C14,12,13.962,12.97,13,12.995L13,12 13,5.556 13,5 12.385,5 10,2.848 10,2 9.061,2 5,2 4,2C4,1,4.964,1,4.964,1L10.641,1z" />
-                                                    <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M3,4L8,4 8,7 11,7 11,14 3,14z" />
-                                                    <GeometryDrawing Brush="#FF9ECA00" Geometry="F1M10,10.7585C9.64,10.7585,9.46,10.9355,9.46,11.2895L9.46,11.9455C9.46,12.3455 9.346,12.6215 9.116,12.7725 8.887,12.9245 8.515,12.9995 8,12.9995L8,12.4685C8.198,12.4685 8.341,12.4305 8.43,12.3535 8.52,12.2765 8.564,12.1465 8.564,11.9635L8.564,11.3575C8.564,10.9055,8.744,10.6225,9.104,10.5085L9.104,10.4975C8.744,10.3775,8.564,10.0815,8.564,9.6075L8.564,9.0255C8.564,8.6955,8.376,8.5315,8,8.5315L8,7.9995C8.513,7.9995 8.884,8.0785 9.115,8.2375 9.345,8.3955 9.46,8.6655 9.46,9.0485L9.46,9.6985C9.46,10.0565,9.64,10.2355,10,10.2355z M6,12.9995C5.488,12.9995 5.116,12.9245 4.884,12.7725 4.651,12.6215 4.535,12.3515 4.535,11.9635L4.535,11.2815C4.535,10.9325,4.357,10.7585,4,10.7585L4,10.2355C4.357,10.2355,4.535,10.0545,4.535,9.6935L4.535,9.0595C4.535,8.6695 4.65,8.3955 4.88,8.2375 5.11,8.0785 5.483,7.9995 6,7.9995L6,8.5315C5.624,8.5315,5.437,8.6955,5.437,9.0255L5.437,9.6305C5.437,10.0855,5.256,10.3725,4.894,10.4915L4.894,10.5025C5.256,10.6205,5.437,10.9115,5.437,11.3745L5.437,11.9575C5.437,12.1425 5.481,12.2745 5.569,12.3525 5.657,12.4295 5.801,12.4685 6,12.4685z" />
-                                                </DrawingGroup.Children>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Viewbox>
-                    </Canvas>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -429,24 +288,8 @@
                             <cmd:EventToCommand Command="{Binding OpenCommand}" />
                         </behaviors:DoubleClickTrigger>
                     </i:Interaction.Triggers>
-                    <Viewbox Width="16" Height="16" Margin="3,0">
-                        <Rectangle Width="16" Height="16">
-                            <Rectangle.Fill>
-                                <DrawingBrush>
-                                    <DrawingBrush.Drawing>
-                                        <DrawingGroup>
-                                            <DrawingGroup.Children>
-                                                <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,8C16,8.312,15.979,8.618,15.943,8.92L15.873,9.54 13.638,10.335 14.654,12.474 14.269,12.962C13.888,13.444,13.448,13.884,12.964,14.268L12.476,14.655 10.336,13.637 9.542,15.87 8.924,15.942C8.621,15.979 8.313,16 8,16 7.689,16 7.383,15.979 7.081,15.943L6.461,15.873 5.666,13.638 3.525,14.655 3.037,14.268C2.554,13.885,2.115,13.446,1.732,12.963L1.345,12.475 2.362,10.335 0.127000000000001,9.54 0.0559999999999992,8.92C0.0220000000000002,8.618 0,8.312 0,8 0,7.688 0.0220000000000002,7.382 0.0559999999999992,7.08L0.127000000000001,6.46 2.362,5.665 1.345,3.524 1.732,3.036C2.117,2.552,2.556,2.113,3.038,1.731L3.525,1.345 5.667,2.363 6.461,0.127 7.081,0.0560000000000001C7.383,0.0220000000000002 7.689,0 8,0 8.313,0 8.619,0.0220000000000002 8.923,0.0570000000000004L9.541,0.128 10.335,2.363 12.476,1.346 12.964,1.732C13.446,2.114,13.886,2.554,14.269,3.038L14.654,3.525 13.638,5.665 15.873,6.46 15.943,7.08C15.979,7.382,16,7.688,16,8" />
-                                                <GeometryDrawing Brush="#FF424242" Geometry="F1M8,6.5C7.171,6.5 6.5,7.172 6.5,8 6.5,8.828 7.171,9.5 8,9.5 8.829,9.5 9.5,8.828 9.5,8 9.5,7.172 8.829,6.5 8,6.5 M8,5C6.343,5 5,6.343 5,8 5,9.657 6.343,11 8,11 9.657,11 11,9.657 11,8 11,6.343 9.657,5 8,5 M12.714,9.603C12.644,9.81,12.564,10.01,12.468,10.203L13.484,12.342C13.149,12.766,12.767,13.148,12.343,13.484L10.203,12.467C10.01,12.564,9.81,12.643,9.603,12.714L8.808,14.949C8.542,14.98 8.273,15 8,15 7.728,15 7.459,14.98 7.194,14.95L6.399,12.715C6.192,12.644,5.991,12.564,5.798,12.468L3.658,13.484C3.234,13.148,2.852,12.766,2.516,12.342L3.532,10.203C3.437,10.01,3.356,9.81,3.286,9.603L1.05,8.807C1.02,8.542 1,8.273 1,8 1,7.727 1.02,7.458 1.05,7.193L3.286,6.397C3.356,6.19,3.437,5.991,3.532,5.797L2.516,3.658C2.852,3.234,3.234,2.851,3.658,2.516L5.798,3.532C5.991,3.436,6.191,3.356,6.399,3.286L7.194,1.05C7.459,1.02 7.728,1 8,1 8.273,1 8.542,1.02 8.808,1.05L9.603,3.287C9.81,3.357,10.01,3.437,10.203,3.533L12.343,2.516C12.767,2.852,13.149,3.235,13.484,3.658L12.468,5.797C12.564,5.991,12.644,6.19,12.714,6.397L14.95,7.193C14.98,7.458 15,7.727 15,8 15,8.273 14.98,8.542 14.95,8.807z" />
-                                                <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M8,9.5C7.172,9.5 6.5,8.828 6.5,8 6.5,7.172 7.172,6.5 8,6.5 8.828,6.5 9.5,7.172 9.5,8 9.5,8.828 8.828,9.5 8,9.5 M8,5C6.343,5 5,6.343 5,8 5,9.656 6.343,11 8,11 9.657,11 11,9.656 11,8 11,6.343 9.657,5 8,5" />
-                                            </DrawingGroup.Children>
-                                        </DrawingGroup>
-                                    </DrawingBrush.Drawing>
-                                </DrawingBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Viewbox>
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ScaleSettingsIcon}" />
+
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -469,27 +312,7 @@
                             <cmd:EventToCommand Command="{Binding OpenDocumentCommand}" />
                         </behaviors:DoubleClickTrigger>
                     </i:Interaction.Triggers>
-                    <Canvas Width="16" Height="16" Margin="3,0">
-                        <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                            <Rectangle Width="16" Height="16">
-                                <Rectangle.Fill>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <DrawingGroup.Children>
-                                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M4,15C3.03,15,2,14.299,2,13L2,3C2,1.701,3.03,1,4,1L10.061,1 14,4.556 14,13C14,13.97,13.299,15,12,15z" />
-                                                    <GeometryDrawing Brush="#FF9ECA00" Geometry="F1M12,13L4,13 4,3 9,3 9,6 12,6z M9.641,2L3.964,2C3.964,2,3,2,3,3L3,13C3,14,3.965,14,3.965,14L11.965,14C12.965,14,13,13,13,13L13,5z" />
-                                                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M4,3L9,3 9,6 12,6 12,13 4,13z" />
-                                                    <GeometryDrawing Brush="#FF9ECA00" Geometry="F1M11,9.7585C10.64,9.7585,10.46,9.9355,10.46,10.2895L10.46,10.9455C10.46,11.3455 10.346,11.6215 10.116,11.7725 9.887,11.9245 9.515,12.0005 9,12.0005L9,11.4685C9.198,11.4685 9.341,11.4305 9.43,11.3535 9.52,11.2765 9.564,11.1465 9.564,10.9635L9.564,10.3575C9.564,9.9055,9.744,9.6225,10.104,9.5085L10.104,9.4975C9.744,9.3775,9.564,9.0815,9.564,8.6075L9.564,8.0255C9.564,7.6965,9.376,7.5315,9,7.5315L9,7.0005C9.513,7.0005 9.884,7.0785 10.115,7.2375 10.345,7.3955 10.46,7.6655 10.46,8.0485L10.46,8.6985C10.46,9.0565,10.64,9.2355,11,9.2355z M7,12.0005C6.488,12.0005 6.116,11.9245 5.884,11.7725 5.651,11.6215 5.535,11.3515 5.535,10.9635L5.535,10.2815C5.535,9.9325,5.357,9.7585,5,9.7585L5,9.2355C5.357,9.2355,5.535,9.0545,5.535,8.6935L5.535,8.0595C5.535,7.6695 5.65,7.3955 5.88,7.2375 6.11,7.0785 6.483,7.0005 7,7.0005L7,7.5315C6.624,7.5315,6.437,7.6965,6.437,8.0255L6.437,8.6305C6.437,9.0855,6.256,9.3725,5.894,9.4915L5.894,9.5025C6.256,9.6205,6.437,9.9115,6.437,10.3755L6.437,10.9575C6.437,11.1425 6.481,11.2745 6.569,11.3525 6.657,11.4295 6.801,11.4685 7,11.4685z" />
-                                                </DrawingGroup.Children>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Viewbox>
-                    </Canvas>
+                    <Image Source="{StaticResource DocumentIcon}" />
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -503,34 +326,13 @@
                             <MenuItem Header="Refresh Stored Procedures" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" 
+                           gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0"
+                           Source="{StaticResource StoredProcedureIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
-                    <Viewbox Width="16" Height="16" Margin="3,0"
-                             Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">
-                        <Rectangle Width="16" Height="16">
-                            <Rectangle.Fill>
-                                <DrawingBrush>
-                                    <DrawingBrush.Drawing>
-                                        <DrawingGroup>
-                                            <DrawingGroup.Children>
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L4,0 4,4.057C1.662,4.32,0,5.497,0,7L0,13C0,14.711 2.149,16 5,16 7.851,16 10,14.711 10,13L10,12 16,12z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M10,9L13,9 13,8 10,8z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M11,7L12,7 12,6 11,6z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M7,4.2334C7.692,4.4044,8.281,4.6714,8.762,5.0004L10,5.0004 10,4.0004 7,4.0004z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M5,1L5,4C5.345,4,5.679,4.021,6,4.057L6,3 14,3 14,10 10,10 10,11 15,11 15,1z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M10,6L9.714,6C9.888,6.312,10,6.644,10,7z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M5,8.3252C3.001,8.3252 1.675,7.5272 1.675,7.0002 1.675,6.4722 3.001,5.6752 5,5.6752 6.999,5.6752 8.325,6.4722 8.325,7.0002 8.325,7.5272 6.999,8.3252 5,8.3252 M8,5.6892C7.267,5.2702 6.201,5.0002 5,5.0002 3.799,5.0002 2.733,5.2702 2,5.6892 1.385,6.0412 1,6.4962 1,7.0002L1,10.0002 1,13.0002C1,14.1042 2.791,15.0002 5,15.0002 7.209,15.0002 9,14.1042 9,13.0002L9,10.0002 9,7.0002C9,6.4962,8.615,6.0412,8,5.6892" />
-                                                <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M12,7L11,7 11,6 12,6z M6,3L6,4.057C6.35,4.096,6.685,4.155,7,4.233L7,4 10,4 10,5 8.762,5C9.183,5.287,9.505,5.623,9.714,6L10,6 10,7 10,8 13,8 13,9 10,9 10,10 14,10 14,3z" />
-                                                <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M5,5.6748C3.001,5.6748 1.675,6.4728 1.675,6.9998 1.675,7.5278 3.001,8.3248 5,8.3248 6.999,8.3248 8.325,7.5278 8.325,6.9998 8.325,6.4728 6.999,5.6748 5,5.6748" />
-                                            </DrawingGroup.Children>
-                                        </DrawingGroup>
-                                    </DrawingBrush.Drawing>
-                                </DrawingBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Viewbox>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -562,30 +364,13 @@
                             <MenuItem Header="Refresh User Definied Functions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" 
+                           gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0"
+                           Source="{StaticResource UdfIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
-                    <Viewbox Width="16" Height="16" Margin="3,0"
-                             Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">
-                        <Rectangle Width="16" Height="16">
-                            <Rectangle.Fill>
-                                <DrawingBrush>
-                                    <DrawingBrush.Drawing>
-                                        <DrawingGroup>
-                                            <DrawingGroup.Children>
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M10.6553,5.6099C10.4833,5.5509 10.3163,5.5229 10.1493,5.5229 9.8703,5.5229 9.6093,5.5899 9.3823,5.7179L9.5823,4.9519 10.5833,4.7559C10.6513,4.7419 10.7173,4.7229 10.7783,4.6989 10.8283,4.8419 10.8863,5.0249 10.9573,5.2569 10.8393,5.3989 10.7243,5.5309 10.6553,5.6099 M14.2133,5.2509C14.1773,5.1549 14.1423,5.0519 14.1063,4.9439 14.2593,4.9749 14.4003,4.9899 14.5363,4.9899 14.9333,4.9899 15.3023,4.8389 15.5773,4.5629 15.8533,4.2849 16.0003,3.9219 16.0003,3.5129 16.0003,2.9819 15.7653,2.6399 15.5753,2.4519 15.3823,2.2589 15.0363,2.0279 14.4863,2.0279 14.1773,2.0279 13.8823,2.1009 13.6013,2.2479 13.4663,2.3199 13.3283,2.4039 13.1823,2.5329 13.1683,2.5089 12.8403,1.9999 12.8403,1.9999L12.0933,1.9999C12.1313,1.9999 12.1533,1.7349 12.1533,1.5679 12.1533,1.0939 11.9533,0.6769 11.5943,0.3849 11.2813,0.124899999999999 10.8553,-0.000100000000000655 10.3293,-0.000100000000000655 9.6703,-0.000100000000000655 9.0643,0.188899999999999 8.5343,0.5629 8.0453,0.9029 7.6103,1.4189 7.2083,2.1329L6.4993,2.1249 6.1223,3.4159C5.6353,3.1589 5.0893,2.9999 4.5003,2.9999 2.5663,2.9999 1.0003,4.5669 1.0003,6.4999 1.0003,7.4809 1.3493,8.3649 2.0003,8.9999L0.000300000000001077,8.9999 0.000300000000001077,15.9999 9.0003,15.9999 9.0003,8.9999 7.9703,8.9999C8.1713,8.7759 8.3563,8.5179 8.5213,8.2179 8.6053,8.0639 8.6873,7.8869 8.7693,7.6879 8.8423,7.8389 8.9423,7.9769 9.0653,8.0949 9.2593,8.2829 9.6023,8.5069 10.1323,8.5069 10.4263,8.5069 10.7093,8.4459 10.9803,8.3209 11.2233,8.2069 11.4703,8.0189 11.7563,7.7339 11.7863,7.7029 11.8233,7.6659 11.8643,7.6219 12.0243,7.8749 12.2173,8.0749 12.4373,8.2189 12.7283,8.4099 13.0743,8.5069 13.4643,8.5069 13.8583,8.5069 14.2403,8.3809 14.5863,8.1419 14.9563,7.8939 15.3033,7.5119 15.6483,6.9749L16.0003,6.4239 16.0003,5.9609 14.3693,5.0419z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M9.0283,3C9.2143,2 9.4603,1.789 9.7663,1.449 9.9523,1.236 10.1333,1.164 10.3113,1.164 10.3473,1.164 10.3763,1.189 10.3983,1.21 10.4223,1.231 10.4333,1.265 10.4333,1.298 10.4333,1.327 10.4083,1.387 10.3573,1.468 10.3093,1.549 10.2843,1.629 10.2843,1.702 10.2843,1.804 10.3233,1.893 10.4013,1.965 10.4803,2.039 10.5783,2.075 10.6983,2.075 10.8273,2.075 10.9353,2.031 11.0213,1.941 11.1093,1.853 11.1533,1.733 11.1533,1.582 11.1533,1.409 11.0893,1.27 10.9573,1.162 10.8263,1.054 10.6163,1 10.3293,1 9.8793,1 9.4703,1.128 9.1053,1.385 8.7383,1.641 8.3903,2.065 8.0603,2.658 7.9463,2.862 7.8383,2.993 7.7363,3.051 7.6333,3.109 7.4703,3.314 7.2463,3.312L7.0963,4 7.7233,4 7.4603,4.826C7.7973,5.364 8.0003,5.907 8.0003,6.588 8.0003,6.766 7.9753,6.891 7.9533,7.061 8.0883,6.69 8.2243,6.401 8.3623,5.865L8.8893,4 9.5233,4 9.6813,3z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M13.9473,3.8901C13.9943,3.8901 14.0823,3.9071 14.2053,3.9401 14.3313,3.9731 14.4403,3.9901 14.5363,3.9901 14.6683,3.9901 14.7803,3.9461 14.8683,3.8571 14.9573,3.7681 15.0003,3.6531 15.0003,3.5131 15.0003,3.3651 14.9573,3.2461 14.8683,3.1591 14.7803,3.0711 14.6523,3.0281 14.4863,3.0281 14.3413,3.0281 14.2013,3.0621 14.0703,3.1311 13.9403,3.2001 13.7743,3.3471 13.5733,3.5751 13.4243,3.7441 13.2013,4.0251 12.9073,4.4491 12.7903,3.9271 12.5903,3.0001 12.3023,3.0001L10.0003,3.0001 10.0003,3.7741C11.0003,3.7511 10.7223,3.4221 10.8023,3.4221 10.9603,3.4221 11.1853,3.4881 11.2883,3.6191 11.4503,3.8231 11.7243,4.4441 12.0123,5.4811 11.7873,5.7761 11.3843,6.2711 11.3003,6.3621 11.1623,6.5071 11.0583,6.6011 10.9703,6.6451 10.9023,6.6811 10.8293,6.6981 10.7423,6.6981 10.6763,6.6981 10.5703,6.6641 10.4213,6.5921 10.3193,6.5471 10.2283,6.5221 10.1473,6.5221 9.9943,6.5221 9.8693,6.5711 9.7693,6.6681 9.6703,6.7641 9.6233,6.8851 9.6233,7.0351 9.6233,7.1741 9.6683,7.2871 9.7603,7.3761 9.8503,7.4631 9.9753,7.5071 10.1323,7.5071 10.2813,7.5071 10.4233,7.4761 10.5543,7.4161 10.6863,7.3541 10.8513,7.2231 11.0513,7.0231 11.2523,6.8251 11.8003,6.2041 12.1503,5.7701 12.2853,6.1841 12.5463,6.7881 12.6443,6.9761 12.7433,7.1631 12.8563,7.2991 12.9843,7.3821 13.1113,7.4651 13.2713,7.5071 13.4643,7.5071 13.6503,7.5071 13.8393,7.4431 14.0303,7.3101 14.2823,7.1421 14.5413,6.8491 14.8053,6.4351L14.6443,6.3451C14.4633,6.5881 14.3293,6.7421 14.2433,6.8041 14.1863,6.8421 14.1183,6.8611 14.0393,6.8611 13.9473,6.8611 13.8553,6.8041 13.7643,6.6881 13.6113,6.4971 13.2653,5.6621 13.0103,4.7871 13.2383,4.3951 13.4303,4.1411 13.5863,4.0211 13.7013,3.9331 13.8213,3.8901 13.9473,3.8901" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M4.5,9C5.879,9 7,7.881 7,6.5 7,5.12 5.879,4 4.5,4 3.119,4 2,5.12 2,6.5 2,7.881 3.119,9 4.5,9" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M6,10L4.5,12 3,10 1,10 1,15 8,15 8,10z" />
-                                            </DrawingGroup.Children>
-                                        </DrawingGroup>
-                                    </DrawingBrush.Drawing>
-                                </DrawingBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Viewbox>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -617,31 +402,13 @@
                             <MenuItem Header="Refresh Triggers" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" 
+                           gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0"                             
+                           Source="{StaticResource TriggerIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
-                    <Viewbox Width="16" Height="16" Margin="3,0"                             
-                             Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">
-                        <Rectangle Width="16" Height="16">
-                            <Rectangle.Fill>
-                                <DrawingBrush>
-                                    <DrawingBrush.Drawing>
-                                        <DrawingGroup>
-                                            <DrawingGroup.Children>
-                                                <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,15L16,15 16,1 0,1z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M1,2L1,14 4.382,14 4.882,13 2,13 2,5 14,5 14,13 7.414,13 6.414,14 15,14 15,2z" />
-                                                <GeometryDrawing Brush="#FF414141" Geometry="F1M10,9L7,9 10,6 7,6 5,10 7.5,10 6,13z" />
-                                                <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M6.3818,5L1.9998,5 1.9998,13 4.8818,13 5.8818,11 3.9998,11 3.9998,9.764z" />
-                                                <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M11,5L11,6.414 9.414,8 11,8 11,9.414 7.414,13 14,13 14,5z" />
-                                            </DrawingGroup.Children>
-                                        </DrawingGroup>
-                                    </DrawingBrush.Drawing>
-                                </DrawingBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </Viewbox>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>

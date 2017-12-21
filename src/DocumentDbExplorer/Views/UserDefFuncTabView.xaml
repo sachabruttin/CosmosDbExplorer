@@ -7,15 +7,15 @@
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:UserDefFuncTabViewModel}">
     <DockPanel>
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
-            <Label Content="Stored Procedure Id"/>
+            <Label Content="User Definied Function Id"/>
             <xctk:WatermarkTextBox MinWidth="250" Margin="10,0"
                      Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Watermark="Enter the stored procedure id" KeepWatermarkOnGotFocus="True"/>
+                     Watermark="Enter the user definied function id" KeepWatermarkOnGotFocus="True"/>
 
             <Label Content="User Defined Function Body"/>
 

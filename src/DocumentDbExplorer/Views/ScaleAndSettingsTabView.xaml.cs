@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
 using DocumentDbExplorer.Infrastructure.AvalonEdit;
@@ -73,6 +74,7 @@ namespace DocumentDbExplorer.Views
         private async void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             var vm = DataContext as ScaleAndSettingsTabViewModel;
+            vm.IconSource = FindResource("ScaleSettingsIcon") as ImageSource;
             await vm.LoadDataAsync();
         }
     }

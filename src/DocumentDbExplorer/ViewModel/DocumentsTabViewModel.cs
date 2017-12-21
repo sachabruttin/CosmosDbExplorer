@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -40,6 +42,7 @@ namespace DocumentDbExplorer.ViewModel
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<DocumentEditorViewModel>();
             Title = "Documents";
             Header = Title;
+            //IconSource = new Uri(@"/DocumentDbExplorer;component/Images/Paste.png", UriKind.RelativeOrAbsolute);
         }
 
         public DocumentNodeViewModel Node

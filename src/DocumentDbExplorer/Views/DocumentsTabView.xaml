@@ -8,6 +8,7 @@
              xmlns:infra="clr-namespace:DocumentDbExplorer.Infrastructure"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
+             DataContextChanged="UserControl_DataContextChanged"
              d:DesignHeight="300" d:DesignWidth="600" d:DataContext="{x:Type vm:DocumentsTabViewModel}">
     <DockPanel>
 

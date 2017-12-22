@@ -1,1 +1,6 @@
 theme: jekyll-theme-cayman
+
+title: DocumentDb Explorer
+
+show_downloads: "true"
+google_analytics: UA-45847559-1

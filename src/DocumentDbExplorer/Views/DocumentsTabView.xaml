@@ -163,7 +163,10 @@
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
             <local:JsonEditorView Grid.Column="2"
                                   Visibility="{Binding IsVisible, Converter={StaticResource boolToVisibilityConverter}}"
-                                  DataContext="{Binding EditorViewModel}" />
+                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
+                                  DataContext="{Binding EditorViewModel}">
+                
+            </local:JsonEditorView>
         </Grid>
     </DockPanel>
 </UserControl>

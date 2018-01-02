@@ -12,7 +12,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneViewModel
+    public class ImportDocumentViewModel : PaneViewModel, ICanZoom
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
@@ -48,6 +48,8 @@ namespace DocumentDbExplorer.ViewModel
         public TextDocument Content { get; set; }
 
         public bool IsDirty { get; set; }
+
+        public double Zoom { get; set; } = 0.5;
 
         public RelayCommand ExecuteCommand
         {
@@ -100,14 +102,14 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        using (var reader = File.OpenText(result.FileName))
+                                        await DispatcherHelper.RunAsync(async () =>
                                         {
-                                            await DispatcherHelper.RunAsync(async () =>
+                                            using (var reader = File.OpenText(result.FileName))
                                             {
                                                 Content.FileName = result.FileName;
                                                 Content.Text = await reader.ReadToEndAsync();
-                                            });
-                                        }
+                                            }
+                                        });
                                     }
                                 });
                         }

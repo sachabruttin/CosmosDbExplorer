@@ -9,6 +9,7 @@ using DocumentDbExplorer.Infrastructure.AvalonEdit;
 using System.Windows.Threading;
 using System.Windows;
 using ICSharpCode.AvalonEdit.Search;
+using System.Globalization;
 
 namespace DocumentDbExplorer.Views
 {
@@ -71,6 +72,22 @@ namespace DocumentDbExplorer.Views
             {
                 _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
             }
+        }
+
+        public double ZoomLevel
+        {
+            get { return (double)GetValue(ZoomLevelProperty); }
+            set { SetValue(ZoomLevelProperty, value); }
+        }
+
+        public static readonly DependencyProperty ZoomLevelProperty =
+            DependencyProperty.Register("ZoomLevel", typeof(double), typeof(JsonEditorView), new PropertyMetadata(0.5d, OnZoomLevelChanged));
+
+        private static void OnZoomLevelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var value = (double)e.NewValue;
+            var target = (JsonEditorView)d;
+            target.zoomBehavior.ZoomLevel = value;
         }
     }
 }

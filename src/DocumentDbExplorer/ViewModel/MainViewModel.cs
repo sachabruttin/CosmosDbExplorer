@@ -88,7 +88,6 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
-
         }
 
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
@@ -292,6 +291,7 @@ namespace DocumentDbExplorer.ViewModel
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
+            IsZoomVisible = SelectedTab is ICanZoom;
         }
 
         public int SelectedRibbonTab { get; set; }
@@ -302,6 +302,7 @@ namespace DocumentDbExplorer.ViewModel
         public bool IsAssetTabVisible { get; set; }
         public bool IsQueryTabVisible { get; set; }
         public bool IsImportTabVisible { get; set; }
+        public bool IsZoomVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

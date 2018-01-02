@@ -405,35 +405,39 @@
 
         </fluent:Ribbon>
 
-        <fluent:StatusBar DockPanel.Dock="Bottom"
-                          HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+        <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center">
+            
             <fluent:StatusBarItem Title="Used memory"
-                                  HorizontalAlignment="Left"
+                                  HorizontalAlignment="Left" Margin="5,0"
                                   Value="{Binding UsedMemory, StringFormat={}{0:##\,000} KB}" />
 
             <Separator HorizontalAlignment="Right" />
 
-            <fluent:StatusBarItem Title="Zoom"
-                                  HorizontalAlignment="Right"
-                                  Value="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P}}" />
-
-            <fluent:StatusBarItem Title="Test (no content, no value)"
-                                  HorizontalAlignment="Right" />
+            <!--<fluent:StatusBarItem Title="Test (no content, no value)"
+                                  HorizontalAlignment="Right" />-->
 
             <fluent:StatusBarItem Title="Zoom Slider"
-                                  HorizontalAlignment="Right">
+                                  HorizontalAlignment="Right"
+                                  Visibility="{Binding IsZoomVisible, Converter={StaticResource boolToVisibilityConverter}}">
                 <Slider x:Name="zoomSlider"
-                        Minimum="0.5"
-                        Maximum="2.0"
+                        Minimum="0"
+                        Maximum="1"
                         IsDirectionReversed="False"
                         Style="{DynamicResource ZoomSliderStyle}"
-                        Value="{Binding Zoom}"
+                        Value="{Binding SelectedTab.Zoom, Mode=TwoWay}"
                         IsSnapToTickEnabled="True"
-                        TickFrequency="0.1"
-                        SmallChange="0.1"
-                        LargeChange="0.1"
-                        ValueChanged="ZoomSlider_OnValueChanged" />
+                        TickFrequency="0.01"
+                        SmallChange="0.01"
+                        LargeChange="0.5">
+
+                </Slider>
             </fluent:StatusBarItem>
+
+            <fluent:StatusBarItem Title="Zoom" Width="30"
+                                  HorizontalAlignment="Right"
+                                  Value="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P0}, Converter={StaticResource logConverter}}"
+                                  Visibility="{Binding IsZoomVisible, Converter={StaticResource boolToVisibilityConverter}}"/>
+
         </fluent:StatusBar>
 
         <xcad:DockingManager DocumentsSource="{Binding Tabs}"

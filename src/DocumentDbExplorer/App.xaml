@@ -26,6 +26,7 @@
             <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
             <avalonDock:BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter"/>
             <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
+            <converters:LogConverter x:Key="logConverter" />
 
             <Style TargetType="{x:Type RadioButton}" x:Key="SquareRadioButtonStyle">
                 <Setter Property="SnapsToDevicePixels" Value="true"/>

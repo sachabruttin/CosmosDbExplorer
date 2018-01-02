@@ -13,7 +13,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneViewModel
+    public class QueryEditorViewModel : PaneViewModel, ICanZoom
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
@@ -117,5 +117,7 @@ namespace DocumentDbExplorer.ViewModel
                     x => !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
+
+        public double Zoom { get; set; } = 0.5;
     }
 }

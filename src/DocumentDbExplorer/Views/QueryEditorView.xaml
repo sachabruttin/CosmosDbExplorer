@@ -29,8 +29,9 @@
                     <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
                 </avalonEdit:TextEditor.InputBindings>
 
-                <i:Interaction.Behaviors>
-                    <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+            <i:Interaction.Behaviors>
+                <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
                 </i:Interaction.Behaviors>
             </avalonEdit:TextEditor>
 
@@ -38,8 +39,8 @@
 
         <DockPanel Grid.Row="2">
 
-            <local:JsonEditorView DataContext="{Binding EditorViewModel}" />
-
+            <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
+                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
         </DockPanel>
 
     </Grid>

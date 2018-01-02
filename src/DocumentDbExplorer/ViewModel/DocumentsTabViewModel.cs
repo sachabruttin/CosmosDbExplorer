@@ -2,8 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -17,7 +15,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneViewModel
+    public class DocumentsTabViewModel : PaneViewModel, ICanZoom
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
@@ -325,7 +323,9 @@ namespace DocumentDbExplorer.ViewModel
                     x => SelectedDocument != null));
             }
         }
-        
+
+        public double Zoom { get; set; } = 0.5;
+
         private void ClearDocuments()
         {
             HasMore = false;

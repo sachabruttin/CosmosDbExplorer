@@ -3,13 +3,10 @@ using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
 using System.Windows.Controls;
 using System.Xml;
-using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.AvalonEdit.Folding;
 using DocumentDbExplorer.Infrastructure.AvalonEdit;
 using System.Windows.Threading;
 using System.Windows;
-using ICSharpCode.AvalonEdit.Search;
-using System.Globalization;
 
 namespace DocumentDbExplorer.Views
 {
@@ -26,10 +23,7 @@ namespace DocumentDbExplorer.Views
             RegisterCustomHighlighting("JSON");
 
             InitializeComponent();
-
-            editor.TextArea.IndentationStrategy = new CSharpIndentationStrategy(editor.Options);
-
-            SearchPanel.Install(editor);
+            RoslynPad.Editor.SearchReplacePanel.Install(editor);
 
             var foldingUpdateTimer = new DispatcherTimer
             {

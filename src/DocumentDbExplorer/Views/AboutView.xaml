@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="DocumentDbExplorer.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             Padding="20,50,0,0"
+             DataContext="{Binding About, Source={StaticResource Locator}}">
+    <UserControl.Resources>
+
+        <Style x:Key="valueText" TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="FontStyle" Value="Italic" />
+        </Style>
+
+    </UserControl.Resources>
+    <UserControl.Background>
+        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    </UserControl.Background>
+    <DockPanel>
+        <TextBlock Text="About" FontSize="24" DockPanel.Dock="Top" />
+
+        <Grid Margin="10,20" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Product:" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Title}" Style="{StaticResource valueText}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Style="{StaticResource valueText}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Author(s):" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Authors}" Style="{StaticResource valueText}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource valueText}">
+                <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                    <TextBlock Text="{Binding ProjectUrl}" />
+                </Hyperlink>
+            </TextBlock>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="License Url:" />
+            <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource valueText}">
+                <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                    <TextBlock Text="{Binding LicenseUrl}" />
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
+
+        <TextBlock Text="External Packages" FontSize="14" DockPanel.Dock="Top" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl Margin="10" ItemsSource="{Binding ExternalComponents}" >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" />
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Project Url:" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource valueText}">
+                            <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                <TextBlock Text="{Binding ProjectUrl}" />
+                            </Hyperlink>
+                        </TextBlock>
+
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="License Url:" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource valueText}">
+                            <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                <TextBlock Text="{Binding LicenseUrl}" />
+                            </Hyperlink>
+                        </TextBlock>
+
+                        <Separator Grid.Row="2" Grid.ColumnSpan="3" />
+                    </Grid>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </ScrollViewer>
+       
+    </DockPanel>
+</UserControl>

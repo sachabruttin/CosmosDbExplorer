@@ -10,16 +10,18 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneViewModel
+    public class QueryEditorViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
+        private FeedResponse<Document> _queryResult;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -38,10 +40,10 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     _node = value;
                     ContentId = Node.Parent.Name;
-                    Title = $"Query - {Node.Parent.Name}";
+                    Header = $"SQL Query";
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                    ToolTip = $"{split[1]}>{split[3]}";
                 }
             }
         }
@@ -67,9 +69,9 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                                var result = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
+                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
 
-                                EditorViewModel.SetText(result, true);
+                                EditorViewModel.SetText(_queryResult, HideSystemProperties);
                             }
                             catch (DocumentClientException clientEx)
                             {
@@ -117,5 +119,19 @@ namespace DocumentDbExplorer.ViewModel
                     x => !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
+
+        public double Zoom { get; set; } = 0.5;
+        public bool HideSystemProperties { get; set; } = true;
+
+        public void OnHideSystemPropertiesChanged()
+        {
+            if (_queryResult != null)
+            {
+                EditorViewModel.SetText(_queryResult, HideSystemProperties);
+            }
+        }
+
+        public bool EnableScanInQuery { get; set; }
+        public bool EnableCrossPartitionQuery { get; set; }
     }
 }

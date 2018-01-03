@@ -1,4 +1,6 @@
-﻿using DocumentDbExplorer.ViewModel;
+﻿using System;
+using System.Windows.Media;
+using DocumentDbExplorer.ViewModel;
 
 namespace DocumentDbExplorer
 {

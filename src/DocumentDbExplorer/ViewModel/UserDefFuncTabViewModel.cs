@@ -8,7 +8,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserDefFuncTabViewModel : PaneViewModel
+    public class UserDefFuncTabViewModel : PaneViewModel, IAssetTabCommand
     {
         private UserDefFuncNodeViewModel _node;
         private RelayCommand _saveCommand;
@@ -23,7 +23,8 @@ namespace DocumentDbExplorer.ViewModel
             Content = new TextDocument(Constants.Default.UserDefiniedFunction);
             _dialogService = dialogService;
             _dbService = dbService;
-            Title = "New User Definied Function";
+            Header = "New User Definied Function";
+            Title = "User Definied Function";
             ContentId = Guid.NewGuid().ToString();
         }
 
@@ -35,7 +36,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Title = value.Name;
+                    Header = value.Name;
 
                     SetInformation();
                 }

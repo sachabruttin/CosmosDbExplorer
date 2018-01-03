@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading.Tasks;
+using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
@@ -94,6 +95,11 @@ namespace DocumentDbExplorer.Infrastructure.Models
         /// associated with this object is selected.
         /// </summary>
         public bool IsSelected { get; set; }
+
+        public void OnIsSelectedChanged()
+        {
+            MessengerInstance.Send(new TreeNodeSelectedMessage(this));
+        }
 
         public bool IsLoading { get; set; }
 

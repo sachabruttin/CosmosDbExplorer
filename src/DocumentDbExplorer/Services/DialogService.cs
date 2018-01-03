@@ -18,31 +18,31 @@ namespace DocumentDbExplorer.Services
     {
         public Task ShowError(string message, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
             return Task.Run(() => afterHideCallback);
         }
 
         public Task ShowError(Exception error, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(error.GetBaseException().Message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(Application.Current.MainWindow, error.GetBaseException().Message, title, MessageBoxButton.OK, MessageBoxImage.Error);
             return Task.Run(() => afterHideCallback);
         }
 
         public Task ShowMessage(string message, string title)
         {
-            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
             return null;
         }
 
         public Task ShowMessage(string message, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
             return Task.Run(() => afterHideCallback);
         }
 
         public Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
         {
-            var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             var confirmed = result == MessageBoxResult.Yes;
 
             return Task.Run(() => { afterHideCallback(confirmed); return confirmed; });
@@ -50,7 +50,7 @@ namespace DocumentDbExplorer.Services
 
         public Task ShowMessageBox(string message, string title)
         {
-            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
             return Task.FromResult(0);
         }
 
@@ -72,10 +72,10 @@ namespace DocumentDbExplorer.Services
                 FilterIndex = settings.FilterIndex,
                 InitialDirectory = settings.InitialDirectory,
                 Multiselect = settings.Multiselect,
-                Title = settings.Title
+                Title = settings.Title,
             };
 
-            var result = dialog.ShowDialog();
+            var result = dialog.ShowDialog(Application.Current.MainWindow);
             var confirmed = result.GetValueOrDefault();
 
             return Task.Run(() => { afterHideCallback(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames)); return confirmed; });
@@ -98,7 +98,7 @@ namespace DocumentDbExplorer.Services
                 Title = settings.Title
             };
 
-            var result = dialog.ShowDialog();
+            var result = dialog.ShowDialog(Application.Current.MainWindow);
             var confirmed = result.GetValueOrDefault();
 
             return Task.Run(() => { afterHideCallback(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames)); return confirmed; });

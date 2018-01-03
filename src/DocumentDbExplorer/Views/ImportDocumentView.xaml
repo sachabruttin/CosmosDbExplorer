@@ -3,71 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DocumentDbExplorer.Views"
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             mc:Ignorable="d" 
+             xmlns:infra="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:ImportDocumentViewModel}">
-    <DockPanel>
-        <ToolBar DockPanel.Dock="Top">
-            <ToolBar.Resources>
-                <Style TargetType="{x:Type Image}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
-                            <Setter Property="Opacity" Value="0.30" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ToolBar.Resources>
 
-            <Button Command="{Binding ExecuteCommand}" Content="_Import" ToolTip="F5" >
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
-                            <StackPanel Orientation="Horizontal">
-                                <Viewbox Width="32" Height="32" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                                    <Rectangle Width="32" Height="32">
-                                        <Rectangle.Fill>
-                                            <DrawingBrush>
-                                                <DrawingBrush.Drawing>
-                                                    <DrawingGroup>
-                                                        <DrawingGroup.Children>
-                                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M6.0003,-0.000399999999999068L6.0003,31.9996 27.0003,16.2506 27.0003,15.7496z" />
-                                                            <GeometryDrawing Brush="#FF378A33" Geometry="F1M8,4L8,28 24,16z" />
-                                                        </DrawingGroup.Children>
-                                                    </DrawingGroup>
-                                                </DrawingBrush.Drawing>
-                                            </DrawingBrush>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-                                </Viewbox>
-                                <Label Content="{TemplateBinding Content}"  VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.25" TargetName="theBorder" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </ToolBar>
+    <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
+                           FontSize="10pt"
+                           FontFamily="Consolas"
+                           IsReadOnly="False" VerticalScrollBarVisibility="Auto"
+                           ShowLineNumbers="True"
+                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        
+        <i:Interaction.Behaviors>
+            <infra:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/> 
+        </i:Interaction.Behaviors>
+        
+        <avalonEdit:TextEditor.InputBindings>
+            <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
+        </avalonEdit:TextEditor.InputBindings>
+    </avalonEdit:TextEditor>
 
-        <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
-                            FontSize="10pt"
-                            FontFamily="Consolas"
-                            IsReadOnly="False" VerticalScrollBarVisibility="Auto"
-                            ShowLineNumbers="True"
-                            Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            <avalonEdit:TextEditor.InputBindings>
-                <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
-            </avalonEdit:TextEditor.InputBindings>
-        </avalonEdit:TextEditor>
 
-    </DockPanel>
 </UserControl>

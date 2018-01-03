@@ -11,6 +11,7 @@ namespace DocumentDbExplorer.Views
         public AccountSettingsView()
         {
             InitializeComponent();
+            Owner = App.Current.MainWindow;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

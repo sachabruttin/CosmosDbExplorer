@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Timers;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -36,6 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _showAccountSettingsCommand;
         private RelayCommand _exitCommand;
         private IEnumerable<ToolViewModel> _tools;
+        private RelayCommand _refreshCommand;
 
         public event Action RequestClose;
 
@@ -61,10 +63,21 @@ namespace DocumentDbExplorer.ViewModel
             _databaseViewModel = _ioc.GetInstance<DatabaseViewModel>();
             Tabs = new ObservableCollection<PaneViewModel>();
 
+            SpyUsedMemory();
+
             RegisterMessages();
         }
+
+        private void SpyUsedMemory()
+        {
+            var timer = new Timer(TimeSpan.FromSeconds(3).TotalMilliseconds);
+            timer.Elapsed += (s, e) => base.RaisePropertyChanged(() => UsedMemory);
+            timer.Start();
+        }
+
         private void RegisterMessages()
         {
+            MessengerInstance.Register<ActivePaneChangedMessage>(this, OnActivePaneChanged);
             MessengerInstance.Register<OpenDocumentsViewMessage>(this, OpenDocumentsView);
             MessengerInstance.Register<OpenQueryViewMessage>(this, OpenQueryView);
             MessengerInstance.Register<OpenImportDocumentViewMessage>(this, OpenImportDocumentView);
@@ -73,6 +86,43 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<EditUserDefFuncMessage>(this, OpenUserDefFunc);
             MessengerInstance.Register<EditTriggerMessage>(this, OpenTrigger);
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
+
+            MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
+        }
+
+        private void OnActivePaneChanged(ActivePaneChangedMessage message)
+        {
+            if (message.PaneViewModel is DatabaseViewModel)
+            {
+                IsTabToolsVisible = true;
+                SelectedRibbonTab = 1;
+            }
+            else
+            {
+                IsTabToolsVisible = false;
+                SelectedRibbonTab = 0;
+            }
+        }
+
+        private void OnTreeNodeSelected(TreeNodeSelectedMessage message)
+        {
+            CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
+            Connection = message.Item as ConnectionNodeViewModel;
+            Database = message.Item as DatabaseNodeViewModel;
+            Collection = (message.Item as IHaveCollectionNodeViewModel)?.CollectionNode;
+            CanEditDelete = message.Item as ICanEditDelete;
+
+            bool mustSelectRibbonTab()
+            {
+                return CanRefreshNodeViewModel != null
+                                    || Connection != null
+                                    || Database != null
+                                    || Collection != null
+                                    || CanEditDelete != null;
+            }
+
+            SelectedRibbonTab = mustSelectRibbonTab() ? 1 : 0;
+            IsTabToolsVisible = mustSelectRibbonTab();
         }
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
@@ -181,13 +231,11 @@ namespace DocumentDbExplorer.ViewModel
                 var content = _ioc.GetInstance<DocumentsTabViewModel>(contentId);
                 content.Node = message.Node;
                 content.ContentId = contentId;
-                await content.LoadDocuments();
+                
+                Tabs.Add(content);
+                SelectedTab = content;
 
-                await DispatcherHelper.RunAsync(() =>
-                {
-                    Tabs.Add(content);
-                    SelectedTab = content;
-                });
+                await content.LoadDocuments();
             }
         }
 
@@ -195,12 +243,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             var content = _ioc.GetInstance<QueryEditorViewModel>(Guid.NewGuid().ToString());
             content.Node = message.Node;
-
-            DispatcherHelper.RunAsync(() =>
-            {
-                Tabs.Add(content);
-            });
-
+            Tabs.Add(content);
             SelectedTab = content;
         }
 
@@ -219,16 +262,19 @@ namespace DocumentDbExplorer.ViewModel
                 content.Node = message.Node;
                 content.ContentId = contentId;
 
-                DispatcherHelper.RunAsync(() =>
-                {
-                    Tabs.Add(content);
-                    SelectedTab = content;
-                });
+                Tabs.Add(content);
+                SelectedTab = content;
             }
         }
 
         public string Title { get; set; }
+
+        public long UsedMemory => GC.GetTotalMemory(true) / 1014;
+
+        public double Zoom { get; set; }
+
         public ObservableCollection<PaneViewModel> Tabs { get; }
+
         public IEnumerable<ToolViewModel> Tools
         {
             get
@@ -239,6 +285,35 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
         public PaneViewModel SelectedTab { get; set; }
+
+        public void OnSelectedTabChanged()
+        {
+            IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
+            IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
+            IsAssetTabVisible = SelectedTab is IAssetTabCommand;
+            IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
+            IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
+            IsZoomVisible = SelectedTab is ICanZoom;
+            IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
+        }
+
+        public int SelectedRibbonTab { get; set; }
+
+        public bool IsTabToolsVisible { get; set; }
+        public bool IsTabDocumentsVisible { get; set; }
+        public bool IsSettingsTabVisible { get; set; }
+        public bool IsAssetTabVisible { get; set; }
+        public bool IsQueryTabVisible { get; set; }
+        public bool IsImportTabVisible { get; set; }
+        public bool IsZoomVisible { get; set; }
+        public bool IsQuerySettingsVisible { get; set; }
+
+        public ConnectionNodeViewModel Connection { get; set; }
+        public DatabaseNodeViewModel Database { get; set; }
+        public CollectionNodeViewModel Collection { get; set; }
+        public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
+        public ICanEditDelete CanEditDelete { get; set; }
+
         public RelayCommand ShowAboutCommand
         {
             get
@@ -278,9 +353,26 @@ namespace DocumentDbExplorer.ViewModel
                         }));
             }
         }
+
+        public RelayCommand RefreshCommand
+        {
+            get
+            {
+                return _refreshCommand
+                    ?? (_refreshCommand = new RelayCommand(
+                        x =>
+                        {
+                            CanRefreshNodeViewModel.RefreshCommand.Execute(x);
+                        },
+                        x => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(x)                            
+                        ));
+            }
+        }
+
         public virtual void Close()
         {
             RequestClose?.Invoke();
         }
+
     }
 }

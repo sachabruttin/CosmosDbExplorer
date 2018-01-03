@@ -10,7 +10,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DatabaseNodeViewModel : TreeViewItemViewModel
+    public class DatabaseNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
         private readonly Database _database;
         private RelayCommand _refreshCommand;

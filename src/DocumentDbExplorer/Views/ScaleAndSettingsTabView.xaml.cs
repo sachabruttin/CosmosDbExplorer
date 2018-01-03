@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
 using DocumentDbExplorer.Infrastructure.AvalonEdit;
@@ -7,7 +8,6 @@ using DocumentDbExplorer.ViewModel;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using ICSharpCode.AvalonEdit.Indentation.CSharp;
 
 namespace DocumentDbExplorer.Views
 {
@@ -25,7 +25,7 @@ namespace DocumentDbExplorer.Views
 
             InitializeComponent();
 
-            editor.TextArea.IndentationStrategy = new CSharpIndentationStrategy(editor.Options);
+            RoslynPad.Editor.SearchReplacePanel.Install(editor);
 
             var foldingUpdateTimer = new DispatcherTimer
             {
@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.Views
             };
 
             foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            //foldingUpdateTimer.Start();
+            foldingUpdateTimer.Start();
         }
 
         private void RegisterCustomHighlighting(string name)
@@ -73,6 +73,7 @@ namespace DocumentDbExplorer.Views
         private async void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             var vm = DataContext as ScaleAndSettingsTabViewModel;
+            vm.IconSource = FindResource("ScaleSettingsIcon") as ImageSource;
             await vm.LoadDataAsync();
         }
     }

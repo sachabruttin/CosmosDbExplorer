@@ -13,7 +13,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ConnectionNodeViewModel : TreeViewItemViewModel
+    public class ConnectionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
         private RelayCommand _editConnectionCommand;
         private RelayCommand _removeConnectionCommand;

@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="{Binding Title}" Height="370" Width="600"
         DataContext="{Binding AddCollection, Source={StaticResource Locator}}"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -57,8 +57,8 @@
                 </Label.Content>
             </Label>
             <xctk:IntegerUpDown Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                            Margin="20,0"
-                            Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                Margin="20,0" Increment="100"
+                                Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 
         </StackPanel>

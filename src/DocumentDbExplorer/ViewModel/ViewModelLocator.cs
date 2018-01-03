@@ -57,6 +57,7 @@ namespace DocumentDbExplorer.ViewModel
             SimpleIoc.Default.Register<QueryEditorViewModel>();
             SimpleIoc.Default.Register<JsonViewerViewModel>();
             SimpleIoc.Default.Register<ImportDocumentViewModel>();
+            SimpleIoc.Default.Register<AboutViewModel>();
 
             SimpleIoc.Default.Register<ConnectionNodeViewModel>();
             SimpleIoc.Default.Register<StoredProcedureTabViewModel>();
@@ -70,6 +71,7 @@ namespace DocumentDbExplorer.ViewModel
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
         public AccountSettingsViewModel AccountSettings => SimpleIoc.Default.GetInstanceWithoutCaching<AccountSettingsViewModel>();
         public DatabaseViewModel Database => ServiceLocator.Current.GetInstance<DatabaseViewModel>();
+        public AboutViewModel About => ServiceLocator.Current.GetInstance<AboutViewModel>();
 
         public AddCollectionViewModel AddCollection => SimpleIoc.Default.GetInstanceWithoutCaching<AddCollectionViewModel>();
 

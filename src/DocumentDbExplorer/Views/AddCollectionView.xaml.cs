@@ -11,6 +11,7 @@ namespace DocumentDbExplorer.Views
         public AddCollectionView()
         {
             InitializeComponent();
+            Owner = App.Current.MainWindow;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

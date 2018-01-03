@@ -25,7 +25,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             DispatcherHelper.RunAsync(() =>
             {
-                Content.Text = GetDocumentContent(content, true);
+                Content.Text = GetDocumentContent(content, removeSystemProperties);
                 IsDirty = false;
             });
         }
@@ -34,7 +34,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new DocumentDbWithoutSystemPropertyResolver(),
+                ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
                 Formatting = Formatting.Indented
             };
 
@@ -71,7 +71,7 @@ namespace DocumentDbExplorer.ViewModel
             _document = content as Document;
             RaisePropertyChanged(() => IsVisible);
 
-            base.SetText(_document, true);
+            base.SetText(_document, removeSystemProperties);
         }
 
         public string Id => _document?.Id;

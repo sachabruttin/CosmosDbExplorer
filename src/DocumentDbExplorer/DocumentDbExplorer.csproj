@@ -177,6 +177,7 @@
     <Compile Include="ViewModel\DocumentsTabViewModel.cs" />
     <Compile Include="ViewModel\IAssetTabCommand.cs" />
     <Compile Include="ViewModel\ICanZoom.cs" />
+    <Compile Include="ViewModel\IHaveQuerySettings.cs" />
     <Compile Include="ViewModel\ImportDocumentViewModel.cs" />
     <Compile Include="ViewModel\JsonEditorViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ScaleSettingsNodeViewModel.cs" />

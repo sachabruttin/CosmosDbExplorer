@@ -102,16 +102,6 @@
                     </fluent:BackstageTabControl>
                 </fluent:Backstage>
             </fluent:Ribbon.Menu>
-
-            <fluent:Ribbon.ContextualGroups>
-                <fluent:RibbonContextualTabGroup x:Name="tabTools"
-                                                 BorderBrush="Magenta"
-                                                 Background="Magenta"
-                                                 Foreground="Purple"
-                                                 Header="Tools"
-                                                 Visibility="{Binding IsTabToolsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}" />
-            </fluent:Ribbon.ContextualGroups>
-
            
             <fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
                 <!--<fluent:RibbonGroupBox Header="Account" KeyTip="A"
@@ -298,10 +288,16 @@
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
+                <fluent:RibbonGroupBox KeyTip="X" Header="Settings"
+                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                    <fluent:CheckBox Header="Hide System Properties" IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <!--<fluent:CheckBox Header="Enable Scan In Query" IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <fluent:CheckBox Header="Enable Cross Partition Query" IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
+                </fluent:RibbonGroupBox>
+
             </fluent:RibbonTabItem>
 
-            <fluent:RibbonTabItem Header="Connections" Group="{Binding ElementName=tabTools, Mode=OneWay}"
-                                  Visibility="{Binding ElementName=tabTools, Path=Visibility}">
+            <fluent:RibbonTabItem Header="Connections" Group="{Binding ElementName=tabTools, Mode=OneWay}">
 
                 <fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
                     <fluent:Button Command="{Binding RefreshCommand}"

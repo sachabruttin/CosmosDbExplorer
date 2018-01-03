@@ -95,10 +95,12 @@ namespace DocumentDbExplorer.ViewModel
             if (message.PaneViewModel is DatabaseViewModel)
             {
                 IsTabToolsVisible = true;
+                SelectedRibbonTab = 1;
             }
             else
             {
                 IsTabToolsVisible = false;
+                SelectedRibbonTab = 0;
             }
         }
 
@@ -292,6 +294,7 @@ namespace DocumentDbExplorer.ViewModel
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsZoomVisible = SelectedTab is ICanZoom;
+            IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
         }
 
         public int SelectedRibbonTab { get; set; }
@@ -303,6 +306,7 @@ namespace DocumentDbExplorer.ViewModel
         public bool IsQueryTabVisible { get; set; }
         public bool IsImportTabVisible { get; set; }
         public bool IsZoomVisible { get; set; }
+        public bool IsQuerySettingsVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

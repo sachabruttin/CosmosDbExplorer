@@ -15,7 +15,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneViewModel, ICanZoom
+    public class DocumentsTabViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
@@ -29,8 +29,9 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _editFilterCommand;
         private RelayCommand _applyFilterCommand;
         private RelayCommand _closeFilterCommand;
-        private DocumentNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
+        private DocumentNodeViewModel _node;
+        private Document _currentDocument;
 
         public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -60,26 +61,22 @@ namespace DocumentDbExplorer.ViewModel
 
         public ObservableCollection<DocumentDescription> Documents { get; }
 
-        public DocumentDescription SelectedDocument
-        {
-            get { return _selectedDocument; }
-            set
-            {
-                _selectedDocument = value;
-                RaisePropertyChanged(() => SelectedDocument);
+        public DocumentDescription SelectedDocument { get; set; }
 
-                if (value != null)
+        public async void OnSelectedDocumentChanged()
+        {
+            if (SelectedDocument != null)
+            {
+                if (_currentDocument?.Id != SelectedDocument.Id)
                 {
-                    Task.Run(async () =>
-                    {
-                        var document = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, value);
-                        EditorViewModel.SetText(document, true);
-                    });
+                    _currentDocument = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
                 }
-                else
-                {
-                    EditorViewModel.SetText(null, true);
-                }
+
+                EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+            }
+            else
+            {
+                EditorViewModel.SetText(null, HideSystemProperties);
             }
         }
 
@@ -166,7 +163,7 @@ namespace DocumentDbExplorer.ViewModel
                         x =>
                         {
                             SelectedDocument = null;
-                            EditorViewModel.SetText(new Document() { Id = "replace_with_the_new_document_id" }, true);
+                            EditorViewModel.SetText(new Document() { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
                         }                        ,
                         x =>
                         {
@@ -182,20 +179,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        x =>
-                        {
-                            if (SelectedDocument == null)
-                            {
-                                _selectedDocument = new DocumentDescription();
-                                SelectedDocument = null;
-                            }
-                            else
-                            {
-                                var document = _selectedDocument;
-                                _selectedDocument = null;
-                                SelectedDocument = document;
-                            }
-                        },
+                        x => OnSelectedDocumentChanged(),
                         x => EditorViewModel.IsDirty));
             }
         }
@@ -325,6 +309,15 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public double Zoom { get; set; } = 0.5;
+        public bool HideSystemProperties { get; set; } = true;
+
+        public void OnHideSystemPropertiesChanged()
+        {
+            OnSelectedDocumentChanged();
+        }
+
+        public bool EnableScanInQuery { get; set; }
+        public bool EnableCrossPartitionQuery { get; set; }
 
         private void ClearDocuments()
         {

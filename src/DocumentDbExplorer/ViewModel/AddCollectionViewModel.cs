@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
+using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
-using Its.Validation.Configuration;
 using Microsoft.Azure.Documents;
+using Validar;
 
 namespace DocumentDbExplorer.ViewModel
 {
+    [InjectValidation]
     public class AddCollectionViewModel : WindowViewModelBase
     {
         private RelayCommand _saveCommand;
@@ -87,11 +90,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             Close();
                         },
-                        x =>
-                        {
-                            var rule = Validate.That<AddCollectionViewModel>(vm => !string.IsNullOrEmpty(vm.CollectionId?.Trim()) && !string.IsNullOrEmpty(vm.SelectedDatabase?.Trim()));
-                            return rule.Check(this);
-                        }));
+                        x => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
 
@@ -119,6 +118,18 @@ namespace DocumentDbExplorer.ViewModel
                 _selectedDatabase = value;
                 RaisePropertyChanged(() => SelectedDatabase);
             }
+        }
+    }
+
+    public class AddCollectionViewModelValidator : AbstractValidator<AddCollectionViewModel>
+    {
+        public AddCollectionViewModelValidator()
+        {
+            RuleFor(x => x.CollectionId).NotEmpty();
+            RuleFor(x => x.SelectedDatabase).NotEmpty();
+            RuleFor(x => x.Throughput).NotEmpty()
+                                      .Must(throughput => throughput % 100 == 0)
+                                      .WithMessage("Throughput must be a multiple of 100");
         }
     }
 }

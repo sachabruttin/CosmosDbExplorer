@@ -1,13 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
+using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
-using Its.Validation.Configuration;
+using Validar;
 
 namespace DocumentDbExplorer.ViewModel
-{
+{ 
+    [InjectValidation]
     public class AccountSettingsViewModel : WindowViewModelBase
     {
         private RelayCommand _addAccountCommand;
@@ -67,12 +70,18 @@ namespace DocumentDbExplorer.ViewModel
                             MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
                             Close();
                         },       
-                        x =>
-                        {
-                            var rule = Validate.That<AccountSettingsViewModel>(vm => !string.IsNullOrEmpty(vm.Label) && (!string.IsNullOrEmpty(vm.AccountEndpoint) && !string.IsNullOrEmpty(vm.AccountSecret) || UseLocalEmulator));
-                            return rule.Check(this);
-                        }));
+                        x => !((INotifyDataErrorInfo)this).HasErrors));
             }
+        }
+    }
+
+    public class AccountSettingsViewModelValidator : AbstractValidator<AccountSettingsViewModel>
+    {
+        public AccountSettingsViewModelValidator()
+        {
+            RuleFor(x => x.AccountEndpoint).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.AccountSecret).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.Label).NotEmpty().When(x => !x.UseLocalEmulator);
         }
     }
 }

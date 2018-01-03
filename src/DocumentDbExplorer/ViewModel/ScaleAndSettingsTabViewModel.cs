@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
+using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using ICSharpCode.AvalonEdit.Document;
-using Its.Validation.Configuration;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using Validar;
 
 namespace DocumentDbExplorer.ViewModel
 {
+    [InjectValidation]
     public class ScaleAndSettingsTabViewModel : PaneViewModel
     {
         private ScaleSettingsNodeViewModel _node;
@@ -142,12 +142,7 @@ namespace DocumentDbExplorer.ViewModel
                             await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
                             IsDirty = false;
                         },
-                        x =>
-                        {
-                            var rule = Validate.That<ScaleAndSettingsTabViewModel>(vm => vm.Throughput % 100 == 0);
-                            return IsDirty && rule.Check(this);
-                        }
-                        ));
+                        x => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
 
@@ -165,6 +160,16 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return -1;
             }
+        }
+    }
+
+    public class ScaleAndSettingsTabViewModelValidator : AbstractValidator<ScaleAndSettingsTabViewModel>
+    {
+        public ScaleAndSettingsTabViewModelValidator()
+        {
+            RuleFor(x => x.Throughput).NotEmpty()
+                                      .Must(throughput => throughput % 100 == 0)
+                                      .WithMessage("Throughput must be a multiple of 100");
         }
     }
 }

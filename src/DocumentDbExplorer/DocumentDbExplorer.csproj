@@ -135,6 +135,7 @@
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\ListBoxMore.cs" />
     <Compile Include="Infrastructure\MarkupExtensions\EnumBindingSourceExtension.cs" />
+    <Compile Include="Infrastructure\Models\ExternalComponent.cs" />
     <Compile Include="Infrastructure\Models\PaneViewModel.cs" />
     <Compile Include="Infrastructure\ValidationTemplate.cs" />
     <Compile Include="Infrastructure\Models\WindowViewModelBase.cs" />

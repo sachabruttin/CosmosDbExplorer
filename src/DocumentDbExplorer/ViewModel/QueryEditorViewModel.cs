@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -23,6 +24,7 @@ namespace DocumentDbExplorer.ViewModel
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
         private FeedResponse<Document> _queryResult;
+        private readonly StatusBarItem _requestChargeStatusBarItem;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -35,6 +37,9 @@ namespace DocumentDbExplorer.ViewModel
 
             _dbService = dbService;
             _dialogService = dialogService;
+
+            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
         }
 
         public CollectionNodeViewModel Node
@@ -66,6 +71,13 @@ namespace DocumentDbExplorer.ViewModel
 
         public FeedResponseEditorViewModel HeaderViewModel { get; set; }
 
+        public string RequestCharge { get; set; }
+
+        public void OnRequestChargeChanged()
+        {
+            _requestChargeStatusBarItem.DataContext = RequestCharge;
+        }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -79,6 +91,7 @@ namespace DocumentDbExplorer.ViewModel
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
 
+                                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
                                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
                                 HeaderViewModel.SetText(_queryResult, HideSystemProperties);
                             }

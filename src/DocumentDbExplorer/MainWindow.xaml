@@ -82,14 +82,14 @@
             <selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
                 <DataTemplate>
                     <fluent:StatusBarItem Title="Used memory"
-                                  DockPanel.Dock="Left" Margin="5,0"
+                                  Margin="5,0"
                                   Value="{Binding DataContext.UsedMemory, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, StringFormat={}{0:##\,000} KB}" />
                 </DataTemplate>
             </selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
 
             <selector:StatusBarItemTemplateSelector.ZoomTemplate>
                 <DataTemplate>
-                    <fluent:StatusBarItem Title="Zoom" DockPanel.Dock="Right">
+                    <fluent:StatusBarItem Title="Zoom">
                         <Grid DataContext="{Binding DataContext}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -112,6 +112,14 @@
                     </fluent:StatusBarItem>
                 </DataTemplate>
             </selector:StatusBarItemTemplateSelector.ZoomTemplate>
+
+            <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="{Binding Title}"
+                                  Margin="5,0"
+                                  Value="{Binding DataContext}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
         </selector:StatusBarItemTemplateSelector>
     </Window.Resources>
 

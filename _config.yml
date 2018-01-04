@@ -4,4 +4,8 @@ theme: jekyll-theme-cayman
 title: DocumentDb Explorer
 
 show_downloads: "true"
+github:
+  source:
+    branch: "master"
+
 google_analytics: UA-45847559-1

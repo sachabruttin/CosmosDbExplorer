@@ -14,12 +14,6 @@ plugins:
   - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
   - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
   - jekyll-seo-tag
-  - jekyll-readme-index
 
 # seo-tag plugin
 logo: /assets/documentDbColor.png
-
-# readme-index plugin
-readme_index:
-  enabled: true
-  remove_originals: true

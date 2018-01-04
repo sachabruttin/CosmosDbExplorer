@@ -56,6 +56,7 @@ namespace DocumentDbExplorer.ViewModel
             SimpleIoc.Default.Register<DocumentsTabViewModel>();
             SimpleIoc.Default.Register<QueryEditorViewModel>();
             SimpleIoc.Default.Register<JsonViewerViewModel>();
+            SimpleIoc.Default.Register<FeedResponseEditorViewModel>();
             SimpleIoc.Default.Register<ImportDocumentViewModel>();
             SimpleIoc.Default.Register<AboutViewModel>();
 

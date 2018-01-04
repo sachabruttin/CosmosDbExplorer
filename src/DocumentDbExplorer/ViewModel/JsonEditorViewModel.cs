@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using DocumentDbExplorer.Infrastructure.Extensions;
+using DocumentDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -20,6 +20,8 @@ namespace DocumentDbExplorer.ViewModel
         public TextDocument Content { get; set; }
 
         public bool IsDirty { get; set; }
+
+        public bool IsReadOnly { get; set; } = false;
         
         public virtual void SetText(object content, bool removeSystemProperties)
         {
@@ -39,22 +41,6 @@ namespace DocumentDbExplorer.ViewModel
             };
 
             return JsonConvert.SerializeObject(content, settings);
-        }
-    }
-
-    internal class DocumentDbWithoutSystemPropertyResolver : DefaultContractResolver
-    {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        {
-            var systemResourceNames = new List<string> { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
-            var prop = base.CreateProperty(member, memberSerialization);
-
-            if (systemResourceNames.Contains(prop.PropertyName))
-            {
-                prop.Readable = false;
-            }
-
-            return prop;
         }
     }
 
@@ -91,6 +77,33 @@ namespace DocumentDbExplorer.ViewModel
     {
         public JsonViewerViewModel(IMessenger messenger) : base(messenger)
         {
+        }
+    }
+
+    public class FeedResponseEditorViewModel : JsonEditorViewModelBase
+    {
+        public FeedResponseEditorViewModel(IMessenger messenger) : base(messenger)
+        {
+        }
+
+        public override void SetText(object content, bool removeSystemProperties)
+        {
+            DispatcherHelper.RunAsync(() =>
+            {
+                Content.Text = GetHeader(content as FeedResponse<Document>);
+                IsDirty = false;
+            });
+        }
+
+        private string GetHeader(FeedResponse<Document> content)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+            settings.Converters.Add(new OrderedDictionaryConverter());
+
+            return JsonConvert.SerializeObject(content.ResponseHeaders.ToDictionary(), settings);
         }
     }
 }

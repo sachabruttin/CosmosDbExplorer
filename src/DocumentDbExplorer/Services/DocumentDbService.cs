@@ -116,8 +116,7 @@ namespace DocumentDbExplorer.Services
                                                 .AsDocumentQuery()
                                                 .ExecuteNextAsync<Document>();
 
-            return result;
-                                            
+            return result;                              
         }
 
         public DocumentClient GetClient(Connection connection)

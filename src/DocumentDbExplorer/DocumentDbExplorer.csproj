@@ -126,6 +126,8 @@
     <Compile Include="Infrastructure\Behaviors\DoubleClickTrigger.cs" />
     <Compile Include="Infrastructure\Behaviors\WatermarkBehavior.cs" />
     <Compile Include="Infrastructure\Constants.cs" />
+    <Compile Include="Infrastructure\JsonHelpers\DocumentDbWithoutSystemPropertyResolver.cs" />
+    <Compile Include="Infrastructure\JsonHelpers\OrderedDictionaryConverter.cs" />
     <Compile Include="Infrastructure\Converters\ActiveDocumentConverter.cs" />
     <Compile Include="Infrastructure\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\Converters\IsNotNullToBooleanConverter.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\DocumentHeaderTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
+    <Compile Include="Infrastructure\Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Infrastructure\ListBoxMore.cs" />
     <Compile Include="Infrastructure\MarkupExtensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Infrastructure\Models\ExternalComponent.cs" />

@@ -27,6 +27,11 @@ namespace DocumentDbExplorer.ViewModel
         {
             Content = new TextDocument("SELECT * FROM c");
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
+            EditorViewModel.IsReadOnly = true;
+
+            HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<FeedResponseEditorViewModel>();
+            HeaderViewModel.IsReadOnly = true;
+
             _dbService = dbService;
             _dialogService = dialogService;
         }
@@ -58,6 +63,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public JsonViewerViewModel EditorViewModel { get; set; }
 
+        public FeedResponseEditorViewModel HeaderViewModel { get; set; }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -72,6 +79,7 @@ namespace DocumentDbExplorer.ViewModel
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
 
                                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
+                                HeaderViewModel.SetText(_queryResult, HideSystemProperties);
                             }
                             catch (DocumentClientException clientEx)
                             {

@@ -1,3 +1,7 @@
+---
+image: /assets/documentDbColor.png
+---
+
 # DocumentDb Explorer
 
 A nice client explorer for Microsoft DocumentDB.

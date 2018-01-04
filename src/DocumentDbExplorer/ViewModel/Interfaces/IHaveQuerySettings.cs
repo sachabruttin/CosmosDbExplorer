@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.ViewModel
+﻿namespace DocumentDbExplorer.ViewModel.Interfaces
 {
     public interface IHaveQuerySettings
     {

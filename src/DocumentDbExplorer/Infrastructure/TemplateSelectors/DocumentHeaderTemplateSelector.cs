@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using DocumentDbExplorer.ViewModel;
 using Xceed.Wpf.AvalonDock.Layout;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
 {
     public class DocumentHeaderTemplateSelector : DataTemplateSelector
     {

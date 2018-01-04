@@ -14,7 +14,7 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class ScaleAndSettingsTabViewModel : PaneViewModel
+    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel
     {
         private ScaleSettingsNodeViewModel _node;
         private readonly IDocumentDbService _dbService;

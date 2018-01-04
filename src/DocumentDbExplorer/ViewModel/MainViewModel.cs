@@ -9,10 +9,10 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -293,7 +293,6 @@ namespace DocumentDbExplorer.ViewModel
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
-            IsZoomVisible = SelectedTab is ICanZoom;
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
         }
 
@@ -305,7 +304,6 @@ namespace DocumentDbExplorer.ViewModel
         public bool IsAssetTabVisible { get; set; }
         public bool IsQueryTabVisible { get; set; }
         public bool IsImportTabVisible { get; set; }
-        public bool IsZoomVisible { get; set; }
         public bool IsQuerySettingsVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }

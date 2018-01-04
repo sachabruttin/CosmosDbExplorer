@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:controls="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -28,7 +29,9 @@
                                    ShowLineNumbers="True"
                                    Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                    IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            
+            <i:Interaction.Behaviors>
+                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+            </i:Interaction.Behaviors>
         </avalonedit:TextEditor>
     </DockPanel>
 </UserControl>

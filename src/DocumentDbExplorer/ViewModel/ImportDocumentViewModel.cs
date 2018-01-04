@@ -12,7 +12,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneViewModel, ICanZoom
+    public class ImportDocumentViewModel : PaneViewModel
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
@@ -25,6 +25,7 @@ namespace DocumentDbExplorer.ViewModel
             Content = new TextDocument();
             _dialogService = dialogService;
             _dbService = dbService;
+            StatusBarItems.Add(new StatusBarItem(this, StatusBarItemType.Zoom, System.Windows.Controls.Dock.Right));
         }
 
         public CollectionNodeViewModel Node

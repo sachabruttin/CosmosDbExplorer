@@ -8,6 +8,7 @@ using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Properties;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Services.DialogSettings;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -15,11 +16,10 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
+    public class DocumentsTabViewModel : PaneWithZoomViewModel, IHaveQuerySettings
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private DocumentDescription _selectedDocument;
         private RelayCommand _loadMoreCommand;
         private RelayCommand _refreshLoadCommand;
         private RelayCommand _newDocumentCommand;
@@ -41,7 +41,6 @@ namespace DocumentDbExplorer.ViewModel
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<DocumentEditorViewModel>();
             Title = "Documents";
             Header = Title;
-            //IconSource = new Uri(@"/DocumentDbExplorer;component/Images/Paste.png", UriKind.RelativeOrAbsolute);
         }
 
         public DocumentNodeViewModel Node
@@ -308,7 +307,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public double Zoom { get; set; } = 0.5;
         public bool HideSystemProperties { get; set; } = true;
 
         public void OnHideSystemPropertiesChanged()

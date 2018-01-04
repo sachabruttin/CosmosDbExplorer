@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.ObjectModel;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -31,6 +31,8 @@ namespace DocumentDbExplorer.Infrastructure.Models
             DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
         }
 
+        public ObservableCollection<StatusBarItem> StatusBarItems { get; protected set; } = new ObservableCollection<StatusBarItem>();
+
         public object IconSource { get; set; }
 
         public RelayCommand CloseCommand
@@ -51,6 +53,16 @@ namespace DocumentDbExplorer.Infrastructure.Models
         {
             MessengerInstance.Send(new CloseDocumentMessage(this));
         }
+    }
+
+    public class PaneWithZoomViewModel : PaneViewModel
+    {
+        public PaneWithZoomViewModel(IMessenger messenger) : base(messenger)
+        {
+            StatusBarItems.Add(new StatusBarItem(this, StatusBarItemType.Zoom, System.Windows.Controls.Dock.Right));
+        }
+
+        public double Zoom { get; set; } = 0.5;
     }
 
     public class ToolViewModel : PaneViewModel

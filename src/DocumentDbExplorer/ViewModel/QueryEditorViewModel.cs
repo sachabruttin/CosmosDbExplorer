@@ -5,6 +5,7 @@ using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Services.DialogSettings;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -14,7 +15,7 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
+    public class QueryEditorViewModel : PaneWithZoomViewModel, IHaveQuerySettings
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
@@ -128,7 +129,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public double Zoom { get; set; } = 0.5;
         public bool HideSystemProperties { get; set; } = true;
 
         public void OnHideSystemPropertiesChanged()

@@ -38,9 +38,16 @@
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
 
         <DockPanel Grid.Row="2">
-
-            <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
+            <TabControl TabStripPlacement="Bottom">
+                <TabItem Header="Raw Data">
+                    <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
                                   ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                </TabItem>
+                <TabItem Header="Response Headers">
+                    <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                </TabItem>
+            </TabControl>
         </DockPanel>
 
     </Grid>

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using DocumentDbExplorer.ViewModel;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
 {
     public class TabContentTemplateSelector : DataTemplateSelector
     {

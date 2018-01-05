@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,18 +9,20 @@ using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Properties;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Services.DialogSettings;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
+    public class DocumentsTabViewModel : PaneWithZoomViewModel, IHaveQuerySettings
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private DocumentDescription _selectedDocument;
+        private readonly StatusBarItem _requestChargeStatusBarItem;
         private RelayCommand _loadMoreCommand;
         private RelayCommand _refreshLoadCommand;
         private RelayCommand _newDocumentCommand;
@@ -31,17 +34,23 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _closeFilterCommand;
         private RelayCommand _saveLocalCommand;
         private DocumentNodeViewModel _node;
-        private Document _currentDocument;
+        private ResourceResponse<Document> _currentDocument;
 
         public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
             Documents = new ObservableCollection<DocumentDescription>();
             _dbService = dbService;
             _dialogService = dialogService;
+
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<DocumentEditorViewModel>();
+            HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
+            HeaderViewModel.IsReadOnly = true;
+
             Title = "Documents";
             Header = Title;
-            //IconSource = new Uri(@"/DocumentDbExplorer;component/Images/Paste.png", UriKind.RelativeOrAbsolute);
+
+            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
         }
 
         public DocumentNodeViewModel Node
@@ -67,16 +76,16 @@ namespace DocumentDbExplorer.ViewModel
         {
             if (SelectedDocument != null)
             {
-                if (_currentDocument?.Id != SelectedDocument.Id)
+                if (_currentDocument?.Resource.Id != SelectedDocument.Id)
                 {
                     _currentDocument = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
                 }
 
-                EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+                SetStatusBar(_currentDocument);
             }
             else
             {
-                EditorViewModel.SetText(null, HideSystemProperties);
+                SetStatusBar(null);
             }
         }
 
@@ -86,6 +95,23 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool HasMore { get; set; }
         public string ContinuationToken { get; set; }
+
+        public string RequestCharge { get; set; }
+
+        public void OnRequestChargeChanged()
+        {
+            _requestChargeStatusBarItem.DataContext = RequestCharge;
+        }
+
+        private void SetStatusBar(ResourceResponse<Document> response)
+        {
+            RequestCharge = response != null 
+                ? $"Request Charge: {response.RequestCharge}"
+                : null;
+
+            EditorViewModel.SetText(response?.Resource, HideSystemProperties);
+            HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
+        }
 
         public async Task LoadDocuments()
         {
@@ -125,6 +151,8 @@ namespace DocumentDbExplorer.ViewModel
         
         public DocumentEditorViewModel EditorViewModel { get; set; }
 
+        public HeaderEditorViewModel HeaderViewModel { get; set; }
+
         protected Connection Connection => Node.Parent.Parent.Parent.Connection;
 
         protected DocumentCollection Collection => Node.Parent.Collection;
@@ -163,8 +191,9 @@ namespace DocumentDbExplorer.ViewModel
                         x =>
                         {
                             SelectedDocument = null;
+                            SetStatusBar(null);
                             EditorViewModel.SetText(new Document() { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
-                        }                        ,
+                        },
                         x =>
                         {
                             // Can create new document if current document is not a new document
@@ -192,16 +221,20 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveDocumentCommand = new RelayCommand(
                         async x =>
                         {
-                            var document = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text);
+                            var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text);
+                            var document = response.Resource;
+
+                            SetStatusBar(response);
 
                             var description = new DocumentDescription { Id = document.Id, SelfLink = document.SelfLink };
 
                             if (SelectedDocument == null)
                             {
                                 Documents.Add(description);
+                                SelectedDocument = description;
                             }
 
-                            SelectedDocument = description;
+                            HeaderViewModel.SetText(response.ResponseHeaders, HideSystemProperties);
                         },
                         x => EditorViewModel.IsDirty));
             }
@@ -215,16 +248,22 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_deleteDocumentCommand = new RelayCommand(
                         async x =>
                         {
-                            await _dialogService.ShowMessage("Are you sure...", "Delete Document", null, null, async confirm =>
+                            var documentId = SelectedDocument.Id;
+
+                            await _dialogService.ShowMessage($"Are you sure that you want to delete document '{documentId}'?", "Delete Document", null, null, async confirm =>
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument.SelfLink);
+                                    var response = await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument.SelfLink);
+                                    SetStatusBar(response);
 
                                     await DispatcherHelper.RunAsync(() =>
                                     {
                                         Documents.Remove(SelectedDocument);
                                         SelectedDocument = null;
+
+                                        SetStatusBar(response);
+                                        EditorViewModel.SetText(new { result = $"Document '{documentId}' deleted"}, HideSystemProperties);
                                     });
                                 }
                             });
@@ -308,7 +347,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public double Zoom { get; set; } = 0.5;
         public bool HideSystemProperties { get; set; } = true;
 
         public void OnHideSystemPropertiesChanged()

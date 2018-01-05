@@ -29,7 +29,7 @@ namespace DocumentDbExplorer.Views
             };
 
             foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            foldingUpdateTimer.Start();
+            //foldingUpdateTimer.Start();
         }
 
         private void FoldingUpdateTimer_Tick(object sender, EventArgs e)

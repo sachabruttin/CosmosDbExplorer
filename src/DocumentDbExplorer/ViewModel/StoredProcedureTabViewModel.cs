@@ -2,13 +2,14 @@
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class StoredProcedureTabViewModel : PaneViewModel, IAssetTabCommand
+    public class StoredProcedureTabViewModel : PaneWithZoomViewModel, IAssetTabCommand
     {
         private StoredProcedureNodeViewModel _node;
         private RelayCommand _saveCommand;

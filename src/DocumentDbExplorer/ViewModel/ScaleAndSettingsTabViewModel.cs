@@ -14,7 +14,7 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class ScaleAndSettingsTabViewModel : PaneViewModel
+    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel
     {
         private ScaleSettingsNodeViewModel _node;
         private readonly IDocumentDbService _dbService;
@@ -29,7 +29,7 @@ namespace DocumentDbExplorer.ViewModel
             PropertyChanged += OnPropetyChanged;
         }
 
-        private void OnPropetyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnPropetyChanged(object sender, PropertyChangedEventArgs e)
         {
             var names = new[] { "Throughput", "TimeToLiveInSecond", "OffTimeToLive", "NoDefaultTimeToLive", "OnTimeToLive" };
 

@@ -4,7 +4,7 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:views="clr-namespace:DocumentDbExplorer.Views"
-                      xmlns:local="clr-namespace:DocumentDbExplorer.Infrastructure"
+                      xmlns:selector="clr-namespace:DocumentDbExplorer.Infrastructure.TemplateSelectors"
                       xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
                       xmlns:pane="clr-namespace:DocumentDbExplorer.Views.Pane"
                       xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
@@ -15,68 +15,112 @@
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
                       Title="{Binding Title}">
     <Window.Resources>
-        <local:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
-            <local:TabContentTemplateSelector.DocumentsTemplate>
+        <selector:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
+            <selector:TabContentTemplateSelector.DocumentsTemplate>
                 <DataTemplate>
                     <views:DocumentsTabView/>
                 </DataTemplate>
-            </local:TabContentTemplateSelector.DocumentsTemplate>
-            <local:TabContentTemplateSelector.QueryEditorTemplate>
+            </selector:TabContentTemplateSelector.DocumentsTemplate>
+            <selector:TabContentTemplateSelector.QueryEditorTemplate>
                 <DataTemplate>
                     <views:QueryEditorView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.QueryEditorTemplate>
-            <local:TabContentTemplateSelector.ImportDocumentTemplate>
+            </selector:TabContentTemplateSelector.QueryEditorTemplate>
+            <selector:TabContentTemplateSelector.ImportDocumentTemplate>
                 <DataTemplate>
                     <views:ImportDocumentView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.ImportDocumentTemplate>
-            <local:TabContentTemplateSelector.DatabaseViewTemplate>
+            </selector:TabContentTemplateSelector.ImportDocumentTemplate>
+            <selector:TabContentTemplateSelector.DatabaseViewTemplate>
                 <DataTemplate>
                     <views:DatabaseView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.DatabaseViewTemplate>
-            <local:TabContentTemplateSelector.StoredProcedureViewTemplate>
+            </selector:TabContentTemplateSelector.DatabaseViewTemplate>
+            <selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
                 <DataTemplate>
                     <views:StoredProcedureTabView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.StoredProcedureViewTemplate>
-            <local:TabContentTemplateSelector.UserDefFuncViewTemplate>
+            </selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
+            <selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
                 <DataTemplate>
                     <views:UserDefFuncTabView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.UserDefFuncViewTemplate>
-            <local:TabContentTemplateSelector.TriggerViewTemplate>
+            </selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
+            <selector:TabContentTemplateSelector.TriggerViewTemplate>
                 <DataTemplate>
                     <views:TriggerTabView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.TriggerViewTemplate>
-            <local:TabContentTemplateSelector.ScaleAndSettingsTemplate>
+            </selector:TabContentTemplateSelector.TriggerViewTemplate>
+            <selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>
                 <DataTemplate>
                     <views:ScaleAndSettingsTabView />
                 </DataTemplate>
-            </local:TabContentTemplateSelector.ScaleAndSettingsTemplate>
-        </local:TabContentTemplateSelector>
+            </selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>
+        </selector:TabContentTemplateSelector>
 
-        <local:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
-            <local:DocumentHeaderTemplateSelector.ImageTemplate>
+        <selector:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
+            <selector:DocumentHeaderTemplateSelector.ImageTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{Binding IconSource}" Margin="0,0,5,0" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
-            </local:DocumentHeaderTemplateSelector.ImageTemplate>
+            </selector:DocumentHeaderTemplateSelector.ImageTemplate>
 
-            <local:DocumentHeaderTemplateSelector.TextIconTemplate>
+            <selector:DocumentHeaderTemplateSelector.TextIconTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <ContentControl Content="{Binding Content.IconSource}" Margin="0,0,5,0" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
-            </local:DocumentHeaderTemplateSelector.TextIconTemplate>
-        </local:DocumentHeaderTemplateSelector>
+            </selector:DocumentHeaderTemplateSelector.TextIconTemplate>
+        </selector:DocumentHeaderTemplateSelector>
+
+        <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">
+            <selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="Used memory"
+                                  Margin="5,0"
+                                  Value="{Binding DataContext.UsedMemory, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, StringFormat={}{0:##\,000} KB}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ZoomTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="Zoom">
+                        <Grid DataContext="{Binding DataContext}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Slider x:Name="zoomSlider" Grid.Column="0"
+                                    Minimum="0" Maximum="1"
+                                    IsDirectionReversed="False"
+                                    Style="{DynamicResource ZoomSliderStyle}"
+                                    Value="{Binding Zoom, Mode=TwoWay}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="0.01"
+                                    SmallChange="0.01"
+                                    LargeChange="0.5" />
+
+                            <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P0}, Converter={StaticResource logConverter}}"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ZoomTemplate>
+
+            <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="{Binding Title}"
+                                  Margin="5,0"
+                                  Value="{Binding DataContext}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+        </selector:StatusBarItemTemplateSelector>
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
@@ -93,16 +137,16 @@
                         <fluent:BackstageTabItem Header="About">
                             <views:AboutView />
                         </fluent:BackstageTabItem>
-                        
+
                         <fluent:SeparatorTabItem />
-                        
+
                         <fluent:Button Header="Exit" Command="{Binding ExitCommand}"
                                        Icon="{StaticResource ExitIcon}"
                                        KeyTip="X"/>
                     </fluent:BackstageTabControl>
                 </fluent:Backstage>
             </fluent:Ribbon.Menu>
-           
+
             <fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
                 <!--<fluent:RibbonGroupBox Header="Account" KeyTip="A"
                                        IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
@@ -250,7 +294,7 @@
 
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Query"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
-                    
+
                     <fluent:Button Header="Run"
                                    Command="{Binding SelectedTab.ExecuteCommand}"
                                    SizeDefinition="Large">
@@ -309,9 +353,9 @@
                             <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
                         </fluent:Button.LargeIcon>
                     </fluent:Button>
-                    
+
                 </fluent:RibbonGroupBox>
-                
+
                 <fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1"
                                        IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}">
                     <fluent:Button Header="New" 
@@ -322,7 +366,7 @@
                                    Command="{Binding Database.DeleteDatabaseCommand}">
                         <fluent:Button.LargeIcon>
                             <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
-                        </fluent:Button.LargeIcon>                        
+                        </fluent:Button.LargeIcon>
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
@@ -401,38 +445,20 @@
 
         </fluent:Ribbon>
 
-        <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center">
-            
-            <fluent:StatusBarItem Title="Used memory"
-                                  HorizontalAlignment="Left" Margin="5,0"
-                                  Value="{Binding UsedMemory, StringFormat={}{0:##\,000} KB}" />
-
-            <Separator HorizontalAlignment="Right" />
-
-            <!--<fluent:StatusBarItem Title="Test (no content, no value)"
-                                  HorizontalAlignment="Right" />-->
-
-            <fluent:StatusBarItem Title="Zoom Slider"
-                                  HorizontalAlignment="Right"
-                                  Visibility="{Binding IsZoomVisible, Converter={StaticResource boolToVisibilityConverter}}">
-                <Slider x:Name="zoomSlider"
-                        Minimum="0"
-                        Maximum="1"
-                        IsDirectionReversed="False"
-                        Style="{DynamicResource ZoomSliderStyle}"
-                        Value="{Binding SelectedTab.Zoom, Mode=TwoWay}"
-                        IsSnapToTickEnabled="True"
-                        TickFrequency="0.01"
-                        SmallChange="0.01"
-                        LargeChange="0.5">
-
-                </Slider>
-            </fluent:StatusBarItem>
-
-            <fluent:StatusBarItem Title="Zoom" Width="30"
-                                  HorizontalAlignment="Right"
-                                  Value="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P0}, Converter={StaticResource logConverter}}"
-                                  Visibility="{Binding IsZoomVisible, Converter={StaticResource boolToVisibilityConverter}}"/>
+        <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center" 
+                          ItemsSource="{Binding SelectedTab.StatusBarItems}"
+                          ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
+                          UsesItemContainerTemplate="False" >
+            <fluent:StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel LastChildFill="False" />
+                </ItemsPanelTemplate>
+            </fluent:StatusBar.ItemsPanel>
+            <fluent:StatusBar.ItemContainerStyle>
+                <Style TargetType="fluent:StatusBarItem">
+                    <Setter Property="DockPanel.Dock" Value="{Binding Dock}" />
+                </Style>
+            </fluent:StatusBar.ItemContainerStyle>
 
         </fluent:StatusBar>
 

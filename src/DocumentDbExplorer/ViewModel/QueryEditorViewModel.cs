@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Services.DialogSettings;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -14,7 +16,7 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneViewModel, ICanZoom, IHaveQuerySettings
+    public class QueryEditorViewModel : PaneWithZoomViewModel, IHaveQuerySettings
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
@@ -22,13 +24,22 @@ namespace DocumentDbExplorer.ViewModel
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
         private FeedResponse<Document> _queryResult;
+        private readonly StatusBarItem _requestChargeStatusBarItem;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
             Content = new TextDocument("SELECT * FROM c");
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
+            EditorViewModel.IsReadOnly = true;
+
+            HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
+            HeaderViewModel.IsReadOnly = true;
+
             _dbService = dbService;
             _dialogService = dialogService;
+
+            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
         }
 
         public CollectionNodeViewModel Node
@@ -58,6 +69,15 @@ namespace DocumentDbExplorer.ViewModel
 
         public JsonViewerViewModel EditorViewModel { get; set; }
 
+        public HeaderEditorViewModel HeaderViewModel { get; set; }
+
+        public string RequestCharge { get; set; }
+
+        public void OnRequestChargeChanged()
+        {
+            _requestChargeStatusBarItem.DataContext = RequestCharge;
+        }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -71,7 +91,9 @@ namespace DocumentDbExplorer.ViewModel
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
 
+                                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
                                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
+                                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
                             }
                             catch (DocumentClientException clientEx)
                             {
@@ -120,7 +142,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public double Zoom { get; set; } = 0.5;
         public bool HideSystemProperties { get; set; } = true;
 
         public void OnHideSystemPropertiesChanged()

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Specialized;
+using DocumentDbExplorer.Infrastructure.Extensions;
+using DocumentDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -20,18 +20,37 @@ namespace DocumentDbExplorer.ViewModel
         public TextDocument Content { get; set; }
 
         public bool IsDirty { get; set; }
+
+        public bool IsReadOnly { get; set; } = false;
         
         public virtual void SetText(object content, bool removeSystemProperties)
         {
             DispatcherHelper.RunAsync(() =>
             {
-                Content.Text = GetDocumentContent(content, removeSystemProperties);
+                Content.Text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+                RaisePropertyChanged(() => HasContent);
                 IsDirty = false;
             });
         }
 
-        protected string GetDocumentContent(object content, bool removeSystemProperties)
+        protected abstract string GetDocumentContent(object content, bool removeSystemProperties);
+
+        public bool HasContent => Content.TextLength != 0;
+    }
+
+    public class JsonViewerViewModel : JsonEditorViewModelBase
+    {
+        public JsonViewerViewModel(IMessenger messenger) : base(messenger)
         {
+        }
+
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        {
+            if (content == null)
+            {
+                return null;
+            }
+
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
@@ -42,23 +61,7 @@ namespace DocumentDbExplorer.ViewModel
         }
     }
 
-    internal class DocumentDbWithoutSystemPropertyResolver : DefaultContractResolver
-    {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        {
-            var systemResourceNames = new List<string> { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
-            var prop = base.CreateProperty(member, memberSerialization);
-
-            if (systemResourceNames.Contains(prop.PropertyName))
-            {
-                prop.Readable = false;
-            }
-
-            return prop;
-        }
-    }
-
-    public class DocumentEditorViewModel : JsonEditorViewModelBase
+    public class DocumentEditorViewModel : JsonViewerViewModel
     {
         private Document _document;
         
@@ -69,9 +72,7 @@ namespace DocumentDbExplorer.ViewModel
         public override void SetText(object content, bool removeSystemProperties)
         {
             _document = content as Document;
-            RaisePropertyChanged(() => IsVisible);
-
-            base.SetText(_document, removeSystemProperties);
+            base.SetText(content, removeSystemProperties);
         }
 
         public string Id => _document?.Id;
@@ -84,13 +85,28 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public bool IsVisible => _document != null;
     }
 
-    public class JsonViewerViewModel : JsonEditorViewModelBase
+    public class HeaderEditorViewModel : JsonEditorViewModelBase
     {
-        public JsonViewerViewModel(IMessenger messenger) : base(messenger)
+        public HeaderEditorViewModel(IMessenger messenger) : base(messenger)
         {
+        }
+
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        {
+            if (content == null)
+            {
+                return null;
+            }
+
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+            settings.Converters.Add(new OrderedDictionaryConverter());
+
+            return JsonConvert.SerializeObject(((NameValueCollection)content).ToDictionary(), settings);
         }
     }
 }

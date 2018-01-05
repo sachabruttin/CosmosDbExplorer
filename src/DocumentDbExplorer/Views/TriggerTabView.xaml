@@ -7,7 +7,8 @@
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:markup="clr-namespace:DocumentDbExplorer.Infrastructure.MarkupExtensions"
              xmlns:db="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
-             xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:controls="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:TriggerTabViewModel}">
@@ -39,7 +40,9 @@
                                    ShowLineNumbers="True"
                                    Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                    IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
+            <i:Interaction.Behaviors>
+                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+            </i:Interaction.Behaviors>
         </avalonedit:TextEditor>
     </DockPanel>
 </UserControl>

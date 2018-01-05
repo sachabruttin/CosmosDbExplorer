@@ -161,12 +161,22 @@
             </Grid>
             
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <local:JsonEditorView Grid.Column="2"
-                                  Visibility="{Binding IsVisible, Converter={StaticResource boolToVisibilityConverter}}"
-                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
-                                  DataContext="{Binding EditorViewModel}">
-                
-            </local:JsonEditorView>
+            <TabControl Grid.Column="2" TabStripPlacement="Bottom">
+                <TabItem Header="Raw Data" Visibility="{Binding Visibility, ElementName=documentEditor}" >
+                    <local:JsonEditorView x:Name="documentEditor" 
+                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
+                                          DataContext="{Binding EditorViewModel}"
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </TabItem>
+                <TabItem Header="Response Headers" Visibility="{Binding Visibility, ElementName=headerEditor}">
+                    <local:JsonEditorView x:Name="headerEditor" 
+                                          DataContext="{Binding HeaderViewModel}" 
+                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </TabItem>
+            </TabControl>
+
+
         </Grid>
     </DockPanel>
 </UserControl>

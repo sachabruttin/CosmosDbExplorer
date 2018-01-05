@@ -32,7 +32,7 @@ namespace DocumentDbExplorer.ViewModel
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
             EditorViewModel.IsReadOnly = true;
 
-            HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<FeedResponseEditorViewModel>();
+            HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
             HeaderViewModel.IsReadOnly = true;
 
             _dbService = dbService;
@@ -69,7 +69,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public JsonViewerViewModel EditorViewModel { get; set; }
 
-        public FeedResponseEditorViewModel HeaderViewModel { get; set; }
+        public HeaderEditorViewModel HeaderViewModel { get; set; }
 
         public string RequestCharge { get; set; }
 
@@ -93,7 +93,7 @@ namespace DocumentDbExplorer.ViewModel
 
                                 RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
                                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
-                                HeaderViewModel.SetText(_queryResult, HideSystemProperties);
+                                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
                             }
                             catch (DocumentClientException clientEx)
                             {

@@ -21,13 +21,13 @@ namespace DocumentDbExplorer.Services
 
         Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken);
 
-        Task<Document> GetDocument(Connection connection, DocumentDescription document);
+        Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document);
 
-        Task<Document> UpdateDocument(Connection connection, string altLink, string content);
+        Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content);
 
         Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query);
 
-        Task DeleteDocument(Connection connection, string documentLink);
+        Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink);
 
         Task CleanCollection(Connection connection, DocumentCollection collection);
 
@@ -105,9 +105,9 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task DeleteDocument(Connection connection, string documentLink)
+        public async Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink)
         {
-            await GetClient(connection).DeleteDocumentAsync(documentLink);
+            return await GetClient(connection).DeleteDocumentAsync(documentLink);
         }
 
         public async Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query)
@@ -143,10 +143,10 @@ namespace DocumentDbExplorer.Services
             return result.ToList();
         }
 
-        public async Task<Document> GetDocument(Connection connection, DocumentDescription document)
+        public async Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document)
         {
             var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink);
-            return response.Resource;
+            return response;
         }
 
         public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
@@ -193,11 +193,11 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task<Document> UpdateDocument(Connection connection, string altLink, string content)
+        public async Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content)
         {
             var instance = JsonConvert.DeserializeObject(content);
             var response = await GetClient(connection).UpsertDocumentAsync(altLink, instance);
-            return response.Resource;
+            return response;
         }
 
         public async Task<StoredProcedure> CreateStoredProcedure(Connection connection, DocumentCollection collection, string id, string function)

@@ -1,11 +1,11 @@
-﻿using DocumentDbExplorer.Infrastructure.Extensions;
+﻿using System.Collections.Specialized;
+using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
@@ -27,13 +27,19 @@ namespace DocumentDbExplorer.ViewModel
         {
             DispatcherHelper.RunAsync(() =>
             {
-                Content.Text = GetDocumentContent(content, removeSystemProperties);
+                Content.Text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+                RaisePropertyChanged(() => HasContent);
                 IsDirty = false;
             });
         }
 
-        protected string GetDocumentContent(object content, bool removeSystemProperties)
+        protected virtual string GetDocumentContent(object content, bool removeSystemProperties)
         {
+            if (content == null)
+            {
+                return null;
+            }
+
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
@@ -42,6 +48,8 @@ namespace DocumentDbExplorer.ViewModel
 
             return JsonConvert.SerializeObject(content, settings);
         }
+
+        public bool HasContent => Content.TextLength != 0;
     }
 
     public class DocumentEditorViewModel : JsonEditorViewModelBase
@@ -55,9 +63,7 @@ namespace DocumentDbExplorer.ViewModel
         public override void SetText(object content, bool removeSystemProperties)
         {
             _document = content as Document;
-            RaisePropertyChanged(() => IsVisible);
-
-            base.SetText(_document, removeSystemProperties);
+            base.SetText(content, removeSystemProperties);
         }
 
         public string Id => _document?.Id;
@@ -70,7 +76,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public bool IsVisible => _document != null;
     }
 
     public class JsonViewerViewModel : JsonEditorViewModelBase
@@ -80,30 +85,26 @@ namespace DocumentDbExplorer.ViewModel
         }
     }
 
-    public class FeedResponseEditorViewModel : JsonEditorViewModelBase
+    public class HeaderEditorViewModel : JsonEditorViewModelBase
     {
-        public FeedResponseEditorViewModel(IMessenger messenger) : base(messenger)
+        public HeaderEditorViewModel(IMessenger messenger) : base(messenger)
         {
         }
 
-        public override void SetText(object content, bool removeSystemProperties)
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
         {
-            DispatcherHelper.RunAsync(() =>
+            if (content == null)
             {
-                Content.Text = GetHeader(content as FeedResponse<Document>);
-                IsDirty = false;
-            });
-        }
+                return null;
+            }
 
-        private string GetHeader(FeedResponse<Document> content)
-        {
             var settings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented
             };
             settings.Converters.Add(new OrderedDictionaryConverter());
 
-            return JsonConvert.SerializeObject(content.ResponseHeaders.ToDictionary(), settings);
+            return JsonConvert.SerializeObject(((NameValueCollection)content).ToDictionary(), settings);
         }
     }
 }

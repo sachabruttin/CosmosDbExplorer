@@ -29,7 +29,7 @@ namespace DocumentDbExplorer.ViewModel
             PropertyChanged += OnPropetyChanged;
         }
 
-        private void OnPropetyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnPropetyChanged(object sender, PropertyChangedEventArgs e)
         {
             var names = new[] { "Throughput", "TimeToLiveInSecond", "OffTimeToLive", "NoDefaultTimeToLive", "OnTimeToLive" };
 

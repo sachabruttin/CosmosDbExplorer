@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.Views
             };
 
             foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            foldingUpdateTimer.Start();
+            //foldingUpdateTimer.Start();
         }
 
         private void RegisterCustomHighlighting(string name)

@@ -29,19 +29,28 @@ namespace DocumentDbExplorer.Views
             };
 
             foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            foldingUpdateTimer.Start();
+            //foldingUpdateTimer.Start();
         }
 
         private void FoldingUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (_foldingManager == null && editor.TextArea?.Document?.Text != null)
+            try
             {
-                _foldingManager = FoldingManager.Install(editor.TextArea);
-            }
 
-            if (_foldingStrategy != null && _foldingManager != null)
+                if (_foldingManager == null && editor.TextArea?.Document?.Text != null)
+                {
+                    _foldingManager = FoldingManager.Install(editor.TextArea);
+                }
+
+                if (_foldingStrategy != null && _foldingManager != null && editor.Document != null)
+                {
+                    _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
+                }
+            }
+            catch (Exception ex)
             {
-                _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
+                System.Diagnostics.Debug.WriteLine("FoldingUpdateTimer_Tick Exception: " + ex.Message);
+                // silently fails
             }
         }
 

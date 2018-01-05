@@ -33,7 +33,18 @@ namespace DocumentDbExplorer.ViewModel
             });
         }
 
-        protected virtual string GetDocumentContent(object content, bool removeSystemProperties)
+        protected abstract string GetDocumentContent(object content, bool removeSystemProperties);
+
+        public bool HasContent => Content.TextLength != 0;
+    }
+
+    public class JsonViewerViewModel : JsonEditorViewModelBase
+    {
+        public JsonViewerViewModel(IMessenger messenger) : base(messenger)
+        {
+        }
+
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
         {
             if (content == null)
             {
@@ -48,11 +59,9 @@ namespace DocumentDbExplorer.ViewModel
 
             return JsonConvert.SerializeObject(content, settings);
         }
-
-        public bool HasContent => Content.TextLength != 0;
     }
 
-    public class DocumentEditorViewModel : JsonEditorViewModelBase
+    public class DocumentEditorViewModel : JsonViewerViewModel
     {
         private Document _document;
         
@@ -76,13 +85,6 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-    }
-
-    public class JsonViewerViewModel : JsonEditorViewModelBase
-    {
-        public JsonViewerViewModel(IMessenger messenger) : base(messenger)
-        {
-        }
     }
 
     public class HeaderEditorViewModel : JsonEditorViewModelBase

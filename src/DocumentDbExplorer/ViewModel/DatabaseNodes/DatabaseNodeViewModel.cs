@@ -38,12 +38,17 @@ namespace DocumentDbExplorer.ViewModel
         protected override async Task LoadChildren()
         {
             IsLoading = true;
+
             var collections = await _dbService.GetCollections(Parent.Connection, _database);
 
-            foreach (var collection in collections)
+            await DispatcherHelper.RunAsync(() =>
             {
-                await DispatcherHelper.RunAsync(() => Children.Add(new CollectionNodeViewModel(collection, this)));
-            }
+                Children.Add(new UsersNodeViewModel(_database, this));
+                foreach (var collection in collections)
+                {
+                    Children.Add(new CollectionNodeViewModel(collection, this));
+                }
+            });
 
             IsLoading = false;
         }
@@ -77,7 +82,7 @@ namespace DocumentDbExplorer.ViewModel
                             vm.Connection = Parent.Connection;
                             vm.SelectedDatabase = _database.Id;
 
-                            
+
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {
                                 Children.Clear();

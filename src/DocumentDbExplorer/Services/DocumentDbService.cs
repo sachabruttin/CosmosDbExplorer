@@ -57,6 +57,10 @@ namespace DocumentDbExplorer.Services
 
         Task<DocumentCollection> CreateCollection(Connection connection, Database database, DocumentCollection collection, int throughput);
         Task DeleteCollection(Connection connection, DocumentCollection collection);
+
+        Task<IList<User>> GetUsers(Connection connection, Database database);
+
+        Task<IList<Permission>> GetPermission(Connection connection, User user);
     }
 
     public class DocumentDescriptionList : List<DocumentDescription>
@@ -311,6 +315,18 @@ namespace DocumentDbExplorer.Services
         public async Task DeleteDatabase(Connection connection, Database database)
         {
             await GetClient(connection).DeleteDatabaseAsync(database.SelfLink);
+        }
+
+        public async Task<IList<User>> GetUsers(Connection connection, Database database)
+        {
+            var response = await GetClient(connection).ReadUserFeedAsync(database.UsersLink);
+            return response.Select(u => u).OrderBy(u => u.Id).ToList();
+        }
+
+        public async Task<IList<Permission>> GetPermission(Connection connection, User user)
+        {
+            var response = await GetClient(connection).ReadPermissionFeedAsync(user.PermissionsLink);
+            return response.Select(p => p).OrderBy(p => p.Id).ToList();
         }
     }
 }

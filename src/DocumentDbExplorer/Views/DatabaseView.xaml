@@ -78,6 +78,70 @@
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
+                DataType="{x:Type vm:UsersNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Refresh Users" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <Separator />
+                            <MenuItem Header="New User" Command="{Binding AddNewCollectionCommand}" />
+                        </ContextMenu>
+                    </StackPanel.ContextMenu>
+                    <Image  Width="16" Height="16" Margin="3,0" 
+                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource UsersIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:UserNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <Separator />
+                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />
+                        </ContextMenu>
+                    </StackPanel.ContextMenu>
+                    <Image  Width="16" Height="16" Margin="3,0" 
+                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource UserIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:PermissionNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <Separator />
+                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />
+                        </ContextMenu>
+                    </StackPanel.ContextMenu>
+                    <Image  Width="16" Height="16" Margin="3,0" 
+                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
+                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource PermissionIcon}"
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+            </HierarchicalDataTemplate>
+
+
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:CollectionNodeViewModel}"
                 ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal">

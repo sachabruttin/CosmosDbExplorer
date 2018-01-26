@@ -14,8 +14,19 @@
         
         <Expander Header="Scale" IsExpanded="True" DockPanel.Dock="Top" Margin="0,10">
             <StackPanel Margin="10,5">
-                <Label Content="Throughput (400 - 10,000 RU/s)"/>
-                <xctk:IntegerUpDown Increment="100" Minimum="400" Maximum="10000" HorizontalAlignment="Left"
+                <!--<Label Content="Throughput (400 - 10,000 RU/s)"/>-->
+                <Label>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Throughput ({0:N0} - {1:N0} RU/s)">
+                                <Binding Path="MinThroughput" />
+                                <Binding Path="MaxThroughput" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Label>
+                <xctk:IntegerUpDown Increment="100" Minimum="{Binding MinThroughput}" Maximum="{Binding MaxThroughput}" 
+                                    HorizontalAlignment="Left"
                                     Text="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Width="150" Margin="20,0"/>
             </StackPanel>
@@ -39,6 +50,12 @@
                                      IsChecked="{Binding OnTimeToLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
+                    <StackPanel Visibility="{Binding PartitionKey, Converter={StaticResource nullToVisibilityConverter}}">
+                        <Label Content="Partition Key" />
+                        <TextBox Margin="20,5" IsReadOnly="True" Text="{Binding PartitionKey}" 
+                                 Background="{x:Static SystemColors.ControlLightBrush}"/>
+                    </StackPanel>
+                    
                     <StackPanel Orientation="Horizontal" Margin="20,5" Visibility="{Binding OnTimeToLive, Converter={StaticResource boolToVisibilityConverter}}">
                         <xctk:IntegerUpDown Value="{Binding TimeToLiveInSecond}" 
                                             Width="150" Height="22" VerticalContentAlignment="Center"

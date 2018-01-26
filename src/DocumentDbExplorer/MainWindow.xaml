@@ -335,8 +335,12 @@
                 <fluent:RibbonGroupBox KeyTip="X" Header="Settings"
                                        Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
                     <fluent:CheckBox Header="Hide System Properties" IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <!--<fluent:CheckBox Header="Enable Scan In Query" IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <fluent:CheckBox Header="Enable Cross Partition Query" IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
+                    <fluent:CheckBox Header="Enable Scan In Query" 
+                                     IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                    <fluent:CheckBox Header="Enable Cross Partition Query" 
+                                     IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
                 </fluent:RibbonGroupBox>
 
             </fluent:RibbonTabItem>
@@ -369,6 +373,7 @@
                         </fluent:Button.LargeIcon>
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
+
 
                 <fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
                                        Header="Collection"
@@ -422,24 +427,19 @@
 
                 </fluent:RibbonGroupBox>
 
-                <!--<fluent:RibbonGroupBox KeyTip="I" x:Name="Items" TabIndex="3"
-                                       Header="Items"
-                                       IsEnabled="{Binding CanEditDelete, Converter={StaticResource isNotNullToBooleanConverter}}">
-                    <fluent:Button Header="Edit" 
-                                   SizeDefinition="Middle"
-                                   KeyTip="E"
-                                   Command="{Binding CanEditDelete.EditCommand}"
-                                   Icon="{StaticResource EditIcon}"/>
+                <fluent:RibbonGroupBox Header="Users" KeyTip="U" TabIndex="3">
+                    <fluent:Button Header="New" 
+                                   Command="{Binding Users.AddNewCommand}"
+                                   LargeIcon="{StaticResource CreateIcon}"/>
 
-                    <fluent:Button Header="Delete"
-                                   SizeDefinition="Middle"
-                                   Command="{Binding CanEditDelete.DeleteCommand}"
-                                   KeyTip="D">
-                        <fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </fluent:Button.Icon>
+                    <fluent:Button Header="Delete" 
+                                   Command="{Binding Users.DeleteCommand}">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                        </fluent:Button.LargeIcon>
                     </fluent:Button>
-                </fluent:RibbonGroupBox>-->
+                </fluent:RibbonGroupBox>
+
             </fluent:RibbonTabItem>
 
 

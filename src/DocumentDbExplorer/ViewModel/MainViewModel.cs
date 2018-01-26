@@ -219,7 +219,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private async void OpenDocumentsView(OpenDocumentsViewMessage message)
         {
-            var contentId = message.Node.Parent.Name;
+            var contentId = $"Documents:{message.Node.Parent.Collection.AltLink}";
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is DocumentsTabViewModel);
 
             if (tab != null)
@@ -249,7 +249,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenImportDocumentView(OpenImportDocumentViewMessage message)
         {
-            var contentId = message.Node.Parent.Name;
+            var contentId = $"Import:{message.Node.Collection.AltLink}";
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is ImportDocumentViewModel);
 
             if (tab != null)
@@ -309,6 +309,7 @@ namespace DocumentDbExplorer.ViewModel
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }
         public CollectionNodeViewModel Collection { get; set; }
+        public UsersNodeViewModel Users { get; set; }
         public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
         public ICanEditDelete CanEditDelete { get; set; }
 

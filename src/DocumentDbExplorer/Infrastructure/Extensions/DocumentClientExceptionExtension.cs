@@ -9,7 +9,17 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
 {
     public static class DocumentClientExceptionExtension
     {
-        public static DocumentClientExceptionMessage Parse(this DocumentClientException exception)
+        public static string Parse(this DocumentClientException exception)
+        {
+            if (exception.Message.StartsWith("Message: {"))
+            {
+                return ParseSyntaxException(exception).ToString();
+            }
+
+            return exception.Message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        }
+
+        private static DocumentClientExceptionMessage ParseSyntaxException(DocumentClientException exception)
         {
             var message = exception.Message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                             .First()
@@ -17,6 +27,7 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
 
             return JsonConvert.DeserializeObject<DocumentClientExceptionMessage>(message);
         }
+
     }
 
     public class Location

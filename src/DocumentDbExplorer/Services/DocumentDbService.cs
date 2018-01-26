@@ -25,7 +25,7 @@ namespace DocumentDbExplorer.Services
 
         Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content);
 
-        Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query);
+        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery);
 
         Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink);
 
@@ -88,6 +88,9 @@ namespace DocumentDbExplorer.Services
 
         [JsonProperty(PropertyName = "_self")]
         public string SelfLink { get; set; }
+
+        [JsonProperty(PropertyName = "_partitionKey")]
+        public string PartitionKey { get; set; }
     }
     
     public class DocumentDbService : IDocumentDbService
@@ -96,7 +99,9 @@ namespace DocumentDbExplorer.Services
         {
             var sqlQuery = "SELECT * FROM c";
             var client = GetClient(connection);
-            var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery).AsDocumentQuery();
+            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery, feedOptions).AsDocumentQuery();
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault()?.TrimStart('/');
 
             //While there are more results
             while (results.HasMoreResults)
@@ -104,7 +109,13 @@ namespace DocumentDbExplorer.Services
                 //enumerate and delete the documents in this batch
                 foreach (Document doc in await results.ExecuteNextAsync())
                 {
-                    await client.DeleteDocumentAsync(doc.SelfLink);
+                    var requestOptions = new RequestOptions();
+                    if (partitionKey != null)
+                    {
+                        requestOptions.PartitionKey = new PartitionKey(doc.GetPropertyValue<string>(partitionKey));
+                    }
+
+                    await client.DeleteDocumentAsync(doc.SelfLink, requestOptions);
                 }
             }
         }
@@ -114,18 +125,32 @@ namespace DocumentDbExplorer.Services
             return await GetClient(connection).DeleteDocumentAsync(documentLink);
         }
 
-        public async Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query)
+        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery)
         {
-            var result = await GetClient(connection).CreateDocumentQuery<Document>(collection.DocumentsLink, query)
-                                                .AsDocumentQuery()
-                                                .ExecuteNextAsync<Document>();
+            var options = new FeedOptions
+            {
+                EnableCrossPartitionQuery = enableCrossPartitionQuery.GetValueOrDefault(),
+                EnableScanInQuery = enableScanInQuery
+            };
+
+            var result = await GetClient(connection)
+                                    .CreateDocumentQuery(collection.DocumentsLink, query, options)                                            
+                                    .AsDocumentQuery()
+                                    .ExecuteNextAsync();
 
             return result;                              
         }
 
+        private static Dictionary<Connection, DocumentClient> _clientInstances = new Dictionary<Connection, DocumentClient>();
+
         public DocumentClient GetClient(Connection connection)
         {
-            return new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey);
+            if (!_clientInstances.ContainsKey(connection))
+            {
+                _clientInstances.Add(connection, new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey));
+            }
+
+            return _clientInstances[connection];
         }
 
         public async Task<List<DocumentCollection>> GetCollections(Connection connection, Database database)
@@ -149,14 +174,33 @@ namespace DocumentDbExplorer.Services
 
         public async Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document)
         {
-            var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink);
-            return response;
+
+            var options = document.PartitionKey != null
+                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
+                            : new RequestOptions();
+
+            try
+            {
+                var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
         {
-            var sql = $"SELECT c.id, c._self FROM c {filter}";
-            var feedOptions = new FeedOptions { MaxItemCount = maxItems, RequestContinuation = continuationToken };
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
+            if (partitionKey != null)
+            {
+                partitionKey = $", c.{partitionKey.TrimStart('/')} as _partitionKey";
+            }
+
+
+            var sql = $"SELECT c.id, c._self {partitionKey} FROM c {filter}";
+            var feedOptions = new FeedOptions { MaxItemCount = maxItems, RequestContinuation = continuationToken, EnableCrossPartitionQuery = true };
 
             var query = GetClient(connection).CreateDocumentQuery<DocumentDescription>(collection.DocumentsLink, sql, feedOptions).AsDocumentQuery();
 
@@ -199,7 +243,8 @@ namespace DocumentDbExplorer.Services
 
         public async Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content)
         {
-            var instance = JsonConvert.DeserializeObject(content);
+            //var instance = JsonConvert.DeserializeObject(content);
+            var instance = JObject.Parse(content);
             var response = await GetClient(connection).UpsertDocumentAsync(altLink, instance);
             return response;
         }

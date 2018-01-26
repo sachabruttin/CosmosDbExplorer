@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
@@ -61,12 +62,15 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                   
+
+                    PartitionKey = Node.Parent.Collection.PartitionKey?.Paths.FirstOrDefault();
                     var split = Node.Parent.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}>{Title}";
                 }
             }
         }
+
+        public string PartitionKey { get; set; }
 
         public ObservableCollection<DocumentDescription> Documents { get; }
 
@@ -137,8 +141,7 @@ namespace DocumentDbExplorer.ViewModel
             }
             catch (DocumentClientException clientEx)
             {
-                var errors = clientEx.Parse();
-                await _dialogService.ShowError(errors.ToString(), "Error", "ok", null);
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
             }
             catch (Exception ex)
             {
@@ -354,8 +357,8 @@ namespace DocumentDbExplorer.ViewModel
             OnSelectedDocumentChanged();
         }
 
-        public bool EnableScanInQuery { get; set; }
-        public bool EnableCrossPartitionQuery { get; set; }
+        public bool? EnableScanInQuery { get; set; } 
+        public bool? EnableCrossPartitionQuery { get; set; }
 
         private void ClearDocuments()
         {

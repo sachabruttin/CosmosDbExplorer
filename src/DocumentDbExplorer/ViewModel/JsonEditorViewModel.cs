@@ -6,6 +6,7 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
@@ -57,7 +58,17 @@ namespace DocumentDbExplorer.ViewModel
                 Formatting = Formatting.Indented
             };
 
-            return JsonConvert.SerializeObject(content, settings);
+            var json = JsonConvert.SerializeObject(content);
+
+            try
+            {
+                var documents = JsonConvert.DeserializeObject<Document[]>(json);
+                return JsonConvert.SerializeObject(documents, settings);
+            }
+            catch
+            {
+                return json;
+            }
         }
     }
 
@@ -72,7 +83,23 @@ namespace DocumentDbExplorer.ViewModel
         public override void SetText(object content, bool removeSystemProperties)
         {
             _document = content as Document;
-            base.SetText(content, removeSystemProperties);
+            base.SetText(_document, removeSystemProperties);
+        }
+
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        {
+            if (_document == null)
+            {
+                return null;
+            }
+
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(_document, settings);
         }
 
         public string Id => _document?.Id;

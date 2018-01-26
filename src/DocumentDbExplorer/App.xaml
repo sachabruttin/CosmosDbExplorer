@@ -28,6 +28,7 @@
             <avalonDock:BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter"/>
             <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
             <converters:LogConverter x:Key="logConverter" />
+            <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />
 
             <ControlTemplate x:Key="ValidationTemplate">
                 <StackPanel Orientation="Horizontal">

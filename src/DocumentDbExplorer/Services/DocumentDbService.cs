@@ -19,7 +19,7 @@ namespace DocumentDbExplorer.Services
 
         Task<List<DocumentCollection>> GetCollections(Connection connection, Database database);
 
-        Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, bool? enableCrossPartitionQuery, bool? enableScanInQuery, string continuationToken);
+        Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken);
 
         Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document);
 
@@ -211,7 +211,7 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, bool? enableCrossPartitionQuery, bool? enableScanInQuery, string continuationToken)
+        public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
         {
             var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
             if (partitionKey != null)
@@ -225,8 +225,8 @@ namespace DocumentDbExplorer.Services
             {
                 MaxItemCount = maxItems,
                 RequestContinuation = continuationToken,
-                EnableCrossPartitionQuery = enableCrossPartitionQuery.GetValueOrDefault(),
-                EnableScanInQuery = enableScanInQuery
+                EnableCrossPartitionQuery = true,
+                EnableScanInQuery = true
             };
 
             var query = GetClient(connection).CreateDocumentQuery<DocumentDescription>(collection.DocumentsLink, sql, feedOptions).AsDocumentQuery();

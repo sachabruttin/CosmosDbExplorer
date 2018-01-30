@@ -105,7 +105,7 @@ namespace DocumentDbExplorer.ViewModel
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
 
                                 RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
-                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation);
+                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation ?? string.Empty);
 
                                 QueryInformation = $"Returned {_queryResult.Count} documents." + 
                                                         (ContinuationToken?.Token != null 

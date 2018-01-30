@@ -125,8 +125,6 @@ namespace DocumentDbExplorer.ViewModel
                                        Node.Parent.Collection,
                                        Filter,
                                        Settings.Default.MaxDocumentToRetrieve,
-                                       EnableCrossPartitionQuery,
-                                       EnableScanInQuery,
                                        ContinuationToken);
 
                 var list = result as DocumentDescriptionList;
@@ -359,8 +357,8 @@ namespace DocumentDbExplorer.ViewModel
             OnSelectedDocumentChanged();
         }
 
-        public bool? EnableScanInQuery { get; set; } = false;
-        public bool? EnableCrossPartitionQuery { get; set; } = false;
+        public bool? EnableScanInQuery { get; set; } = null;
+        public bool? EnableCrossPartitionQuery { get; set; } = null;
 
         private void ClearDocuments()
         {

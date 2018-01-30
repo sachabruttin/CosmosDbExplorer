@@ -19,7 +19,7 @@ namespace DocumentDbExplorer.Services
 
         Task<List<DocumentCollection>> GetCollections(Connection connection, Database database);
 
-        Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken);
+        Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, bool? enableCrossPartitionQuery, bool? enableScanInQuery, string continuationToken);
 
         Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document);
 
@@ -211,7 +211,7 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
+        public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, bool? enableCrossPartitionQuery, bool? enableScanInQuery, string continuationToken)
         {
             var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
             if (partitionKey != null)
@@ -221,7 +221,13 @@ namespace DocumentDbExplorer.Services
 
 
             var sql = $"SELECT c.id, c._self {partitionKey} FROM c {filter}";
-            var feedOptions = new FeedOptions { MaxItemCount = maxItems, RequestContinuation = continuationToken, EnableCrossPartitionQuery = true };
+            var feedOptions = new FeedOptions
+            {
+                MaxItemCount = maxItems,
+                RequestContinuation = continuationToken,
+                EnableCrossPartitionQuery = enableCrossPartitionQuery.GetValueOrDefault(),
+                EnableScanInQuery = enableScanInQuery
+            };
 
             var query = GetClient(connection).CreateDocumentQuery<DocumentDescription>(collection.DocumentsLink, sql, feedOptions).AsDocumentQuery();
 

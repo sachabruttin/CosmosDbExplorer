@@ -13,6 +13,7 @@ using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -88,6 +89,8 @@ namespace DocumentDbExplorer.ViewModel
             _queryInformationStatusBarItem.DataContext = QueryInformation;
         }
 
+        public ResponseContinuation ContinuationToken { get; set; }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -102,8 +105,10 @@ namespace DocumentDbExplorer.ViewModel
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
 
                                 RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
+                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation);
+
                                 QueryInformation = $"Returned {_queryResult.Count} documents." + 
-                                                        (_queryResult.ResponseContinuation != null 
+                                                        (ContinuationToken?.Token != null 
                                                                 ?" (more results available)" 
                                                                 : string.Empty);
 

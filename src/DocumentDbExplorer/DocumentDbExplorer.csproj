@@ -134,6 +134,7 @@
     <Compile Include="Infrastructure\Converters\IsNotNullToBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\LogConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Infrastructure\Models\ResponseContinuation.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentHeaderTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />

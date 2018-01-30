@@ -229,7 +229,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             SetStatusBar(response);
 
-                            var description = new DocumentDescription { Id = document.Id, SelfLink = document.SelfLink };
+                            var description = new DocumentDescription(document, Collection);
 
                             if (SelectedDocument == null)
                             {

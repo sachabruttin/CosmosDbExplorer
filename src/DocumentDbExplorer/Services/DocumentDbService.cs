@@ -83,6 +83,27 @@ namespace DocumentDbExplorer.Services
 
     public class DocumentDescription
     {
+        [JsonConstructor]
+        public DocumentDescription(string id, string selfLink, string partitionKey)
+        {
+            Id = id;
+            SelfLink = selfLink;
+            PartitionKey = partitionKey;
+        }
+
+        public DocumentDescription(Document document, DocumentCollection collection)
+        {
+            Id = document.Id;
+            SelfLink = document.SelfLink;
+
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
+
+            if (partitionKey != null)
+            {
+                PartitionKey = document.GetPropertyValue<string>(partitionKey.TrimStart('/'));
+            }
+        }
+
         [JsonProperty(PropertyName ="id")]
         public string Id  { get; set; }
 

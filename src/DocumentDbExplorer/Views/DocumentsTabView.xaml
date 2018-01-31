@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:infra="clr-namespace:DocumentDbExplorer.Infrastructure"
+             xmlns:template="clr-namespace:DocumentDbExplorer.Infrastructure.TemplateSelectors"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              DataContextChanged="UserControl_DataContextChanged"
@@ -69,7 +70,7 @@
         
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.3*" MinWidth="100"/>
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="0.7*" />
             </Grid.ColumnDefinitions>
@@ -82,13 +83,15 @@
                 
                 <Grid Grid.Row="0" Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.5*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" />
+                    <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" TextTrimming="CharacterEllipsis" />
+                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
 
-                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="1"
+                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="2"
                             ToolTip="Refresh">
                         <Button.Template>
                             <ControlTemplate>
@@ -104,23 +107,49 @@
                         </Button.Template>
                     </Button>
                 </Grid>
-                <infra:ListBoxMore Grid.Row="1"
-                     ItemsSource="{Binding Documents}" 
-                     DisplayMemberPath="Id"
-                     SelectedValue="{Binding SelectedDocument}">
-                <infra:ListBoxMore.Style>
+               
+                <infra:ListBoxMore Grid.Row="1" 
+                                   ItemsSource="{Binding Documents}"
+                                   SelectedValue="{Binding SelectedDocument}"
+                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                   HorizontalContentAlignment="Stretch">
+                    <infra:ListBoxMore.ItemTemplateSelector>
+                        <template:DocumentDescriptionTemplateSelector>
+                            <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                </DataTemplate>
+                            </template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                            <template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.5*" />
+                                            <ColumnDefinition Width="0.5*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                        <TextBlock Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                    </Grid>
+                                </DataTemplate>
+
+                            </template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                        </template:DocumentDescriptionTemplateSelector>
+                    </infra:ListBoxMore.ItemTemplateSelector>
+
+                    <infra:ListBoxMore.Style>
                     <Style TargetType="ListBox">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ListBox}">
                                     <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="True">
                                         <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                                     <Button Grid.Row="1" x:Name="PART_MoreButton" 
                                                             Visibility="{Binding Path=HasMore, Converter={StaticResource boolToVisibilityConverter}}"
                                                             Command="{Binding Path=LoadMoreCommand}">
@@ -135,8 +164,8 @@
                                                             </TextBlock>
                                                         </Button.Content>
                                                     </Button>
-                                            </Grid>
-                                        </ScrollViewer>
+                                                </Grid>
+                                            </ScrollViewer>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsEnabled" Value="False">

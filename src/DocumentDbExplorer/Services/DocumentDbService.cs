@@ -25,7 +25,7 @@ namespace DocumentDbExplorer.Services
 
         Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content);
 
-        Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query);
+        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery);
 
         Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink);
 
@@ -57,6 +57,18 @@ namespace DocumentDbExplorer.Services
 
         Task<DocumentCollection> CreateCollection(Connection connection, Database database, DocumentCollection collection, int throughput);
         Task DeleteCollection(Connection connection, DocumentCollection collection);
+
+        Task<IList<User>> GetUsers(Connection connection, Database database);
+
+        Task<User> SaveUser(Connection connection, Database database, User user);
+
+        Task DeleteUser(Connection connection, User user);
+
+        Task<IList<Permission>> GetPermission(Connection connection, User user);
+
+        Task<Permission> SavePermission(Connection connection, User user, Permission permission);
+
+        Task DeletePermission(Connection connection, Permission permission);
     }
 
     public class DocumentDescriptionList : List<DocumentDescription>
@@ -79,11 +91,35 @@ namespace DocumentDbExplorer.Services
 
     public class DocumentDescription
     {
+        [JsonConstructor]
+        public DocumentDescription(string id, string selfLink, string partitionKey)
+        {
+            Id = id;
+            SelfLink = selfLink;
+            PartitionKey = partitionKey;
+        }
+
+        public DocumentDescription(Document document, DocumentCollection collection)
+        {
+            Id = document.Id;
+            SelfLink = document.SelfLink;
+
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
+
+            if (partitionKey != null)
+            {
+                PartitionKey = document.GetPropertyValue<string>(partitionKey.TrimStart('/'));
+            }
+        }
+
         [JsonProperty(PropertyName ="id")]
         public string Id  { get; set; }
 
         [JsonProperty(PropertyName = "_self")]
         public string SelfLink { get; set; }
+
+        [JsonProperty(PropertyName = "_partitionKey")]
+        public string PartitionKey { get; set; }
     }
     
     public class DocumentDbService : IDocumentDbService
@@ -92,7 +128,9 @@ namespace DocumentDbExplorer.Services
         {
             var sqlQuery = "SELECT * FROM c";
             var client = GetClient(connection);
-            var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery).AsDocumentQuery();
+            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery, feedOptions).AsDocumentQuery();
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault()?.TrimStart('/');
 
             //While there are more results
             while (results.HasMoreResults)
@@ -100,7 +138,13 @@ namespace DocumentDbExplorer.Services
                 //enumerate and delete the documents in this batch
                 foreach (Document doc in await results.ExecuteNextAsync())
                 {
-                    await client.DeleteDocumentAsync(doc.SelfLink);
+                    var requestOptions = new RequestOptions();
+                    if (partitionKey != null)
+                    {
+                        requestOptions.PartitionKey = new PartitionKey(doc.GetPropertyValue<string>(partitionKey));
+                    }
+
+                    await client.DeleteDocumentAsync(doc.SelfLink, requestOptions);
                 }
             }
         }
@@ -110,18 +154,32 @@ namespace DocumentDbExplorer.Services
             return await GetClient(connection).DeleteDocumentAsync(documentLink);
         }
 
-        public async Task<FeedResponse<Document>> ExecuteQuery(Connection connection, DocumentCollection collection, string query)
+        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery)
         {
-            var result = await GetClient(connection).CreateDocumentQuery<Document>(collection.DocumentsLink, query)
-                                                .AsDocumentQuery()
-                                                .ExecuteNextAsync<Document>();
+            var options = new FeedOptions
+            {
+                EnableCrossPartitionQuery = enableCrossPartitionQuery.GetValueOrDefault(),
+                EnableScanInQuery = enableScanInQuery
+            };
+
+            var result = await GetClient(connection)
+                                    .CreateDocumentQuery(collection.DocumentsLink, query, options)                                            
+                                    .AsDocumentQuery()
+                                    .ExecuteNextAsync();
 
             return result;                              
         }
 
+        private static Dictionary<Connection, DocumentClient> _clientInstances = new Dictionary<Connection, DocumentClient>();
+
         public DocumentClient GetClient(Connection connection)
         {
-            return new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey);
+            if (!_clientInstances.ContainsKey(connection))
+            {
+                _clientInstances.Add(connection, new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey));
+            }
+
+            return _clientInstances[connection];
         }
 
         public async Task<List<DocumentCollection>> GetCollections(Connection connection, Database database)
@@ -145,14 +203,39 @@ namespace DocumentDbExplorer.Services
 
         public async Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document)
         {
-            var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink);
-            return response;
+
+            var options = document.PartitionKey != null
+                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
+                            : new RequestOptions();
+
+            try
+            {
+                var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
         {
-            var sql = $"SELECT c.id, c._self FROM c {filter}";
-            var feedOptions = new FeedOptions { MaxItemCount = maxItems, RequestContinuation = continuationToken };
+            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
+            if (partitionKey != null)
+            {
+                partitionKey = $", c.{partitionKey.TrimStart('/')} as _partitionKey";
+            }
+
+
+            var sql = $"SELECT c.id, c._self {partitionKey} FROM c {filter}";
+            var feedOptions = new FeedOptions
+            {
+                MaxItemCount = maxItems,
+                RequestContinuation = continuationToken,
+                EnableCrossPartitionQuery = true,
+                EnableScanInQuery = true
+            };
 
             var query = GetClient(connection).CreateDocumentQuery<DocumentDescription>(collection.DocumentsLink, sql, feedOptions).AsDocumentQuery();
 
@@ -195,7 +278,8 @@ namespace DocumentDbExplorer.Services
 
         public async Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content)
         {
-            var instance = JsonConvert.DeserializeObject(content);
+            //var instance = JsonConvert.DeserializeObject(content);
+            var instance = JObject.Parse(content);
             var response = await GetClient(connection).UpsertDocumentAsync(altLink, instance);
             return response;
         }
@@ -312,5 +396,56 @@ namespace DocumentDbExplorer.Services
         {
             await GetClient(connection).DeleteDatabaseAsync(database.SelfLink);
         }
+
+        public async Task<IList<User>> GetUsers(Connection connection, Database database)
+        {
+            var response = await GetClient(connection).ReadUserFeedAsync(database.UsersLink);
+            return response.Select(u => u).OrderBy(u => u.Id).ToList();
+        }
+
+        public async Task<User> SaveUser(Connection connection, Database database, User user)
+        {
+            if (user.SelfLink != null)
+            {
+                var response = await GetClient(connection).ReplaceUserAsync(user);
+                return response.Resource;
+            }
+            else
+            {
+                var response = await GetClient(connection).CreateUserAsync(database.SelfLink, user);
+                return response.Resource;
+            }
+        }
+
+        public Task DeleteUser(Connection connection, User user)
+        {
+            return GetClient(connection).DeleteUserAsync(user.SelfLink);
+        }
+
+        public async Task<IList<Permission>> GetPermission(Connection connection, User user)
+        {
+            var response = await GetClient(connection).ReadPermissionFeedAsync(user.PermissionsLink);
+            return response.Select(p => p).OrderBy(p => p.Id).ToList();
+        }
+
+        public async Task<Permission> SavePermission(Connection connection, User user, Permission permission)
+        {
+            if (permission.SelfLink != null)
+            {
+                var response = await GetClient(connection).ReplacePermissionAsync(permission);
+                return response.Resource;
+            }
+            else
+            {
+                var response = await GetClient(connection).CreatePermissionAsync(user.SelfLink, permission);
+                return response;
+            }
+        }
+
+        public Task DeletePermission(Connection connection, Permission permission)
+        {
+            return GetClient(connection).DeletePermissionAsync(permission.SelfLink);
+        }
+
     }
 }

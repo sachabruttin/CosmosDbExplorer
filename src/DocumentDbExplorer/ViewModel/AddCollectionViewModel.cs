@@ -41,7 +41,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string PartitionKey { get; set; }
 
-        public int MaxThroughput => IsFixedStorage ? 10000 : 1000000; 
+        public int MaxThroughput => IsFixedStorage ? 10000 : 50000; 
 
         public int MinThroughput => IsFixedStorage ? 400 : 1000; 
 

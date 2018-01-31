@@ -56,6 +56,16 @@
                     <views:ScaleAndSettingsTabView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>
+            <selector:TabContentTemplateSelector.UserEditTempalate>
+                <DataTemplate>
+                    <views:UserEditView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.UserEditTempalate>
+            <selector:TabContentTemplateSelector.PermissionEditTemplate>
+                <DataTemplate>
+                    <views:PermissionEditView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.PermissionEditTemplate>
         </selector:TabContentTemplateSelector>
 
         <selector:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
@@ -284,7 +294,7 @@
                                    LargeIcon="{StaticResource DiscardIcon}" />
 
                     <fluent:Button Header="Delete"
-                                   Command="{Binding SelectedTab.DeleteDocumentCommand}"
+                                   Command="{Binding SelectedTab.DeleteCommand}"
                                    SizeDefinition="Large">
                         <fluent:Button.LargeIcon>
                             <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
@@ -335,8 +345,12 @@
                 <fluent:RibbonGroupBox KeyTip="X" Header="Settings"
                                        Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
                     <fluent:CheckBox Header="Hide System Properties" IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <!--<fluent:CheckBox Header="Enable Scan In Query" IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <fluent:CheckBox Header="Enable Cross Partition Query" IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
+                    <fluent:CheckBox Header="Enable Scan In Query" 
+                                     IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                    <fluent:CheckBox Header="Enable Cross Partition Query" 
+                                     IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
                 </fluent:RibbonGroupBox>
 
             </fluent:RibbonTabItem>
@@ -370,6 +384,7 @@
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
+
                 <fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
                                        Header="Collection"
                                        IsEnabled="{Binding Collection, Converter={StaticResource isNotNullToBooleanConverter}}">
@@ -402,9 +417,7 @@
 
                     <fluent:SplitButton KeyTip="D" Header="Delete"
                                         SizeDefinition="Middle,Small">
-                        <fluent:SplitButton.Icon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </fluent:SplitButton.Icon>
+v
 
                         <fluent:MenuItem Header="Delete Collection" 
                                    Command="{Binding Collection.DeleteCollectionCommand}">
@@ -422,24 +435,29 @@
 
                 </fluent:RibbonGroupBox>
 
-                <!--<fluent:RibbonGroupBox KeyTip="I" x:Name="Items" TabIndex="3"
-                                       Header="Items"
-                                       IsEnabled="{Binding CanEditDelete, Converter={StaticResource isNotNullToBooleanConverter}}">
-                    <fluent:Button Header="Edit" 
-                                   SizeDefinition="Middle"
-                                   KeyTip="E"
-                                   Command="{Binding CanEditDelete.EditCommand}"
-                                   Icon="{StaticResource EditIcon}"/>
+                <fluent:RibbonGroupBox Header="Users" KeyTip="U" TabIndex="3"
+                                       IsEnabled="{Binding Users, Converter={StaticResource isNotNullToBooleanConverter}}">
 
-                    <fluent:Button Header="Delete"
-                                   SizeDefinition="Middle"
-                                   Command="{Binding CanEditDelete.DeleteCommand}"
-                                   KeyTip="D">
-                        <fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </fluent:Button.Icon>
+                    <fluent:Button Header="Add User" 
+                                   Command="{Binding Users.AddUserCommand}"
+                                   LargeIcon="{StaticResource UserIcon}">
                     </fluent:Button>
-                </fluent:RibbonGroupBox>-->
+                        
+
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox Header="Permissions" KeyTip="U" TabIndex="3"
+                                       IsEnabled="{Binding UserNode, Converter={StaticResource isNotNullToBooleanConverter}}">
+
+                    <fluent:Button Header="Add Permission" 
+                                   Command="{Binding UserNode.AddPermissionCommand}"
+                                   LargeIcon="{StaticResource PermissionIcon}">
+                    </fluent:Button>
+
+
+                </fluent:RibbonGroupBox>
+
+
             </fluent:RibbonTabItem>
 
 

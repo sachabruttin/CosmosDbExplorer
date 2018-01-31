@@ -13,6 +13,7 @@ using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -23,8 +24,9 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
-        private FeedResponse<Document> _queryResult;
+        private FeedResponse<dynamic> _queryResult;
         private readonly StatusBarItem _requestChargeStatusBarItem;
+        private readonly StatusBarItem _queryInformationStatusBarItem;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -40,6 +42,8 @@ namespace DocumentDbExplorer.ViewModel
 
             _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
+            _queryInformationStatusBarItem = new StatusBarItem(QueryInformation, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_queryInformationStatusBarItem);
         }
 
         public CollectionNodeViewModel Node
@@ -78,6 +82,15 @@ namespace DocumentDbExplorer.ViewModel
             _requestChargeStatusBarItem.DataContext = RequestCharge;
         }
 
+        public string QueryInformation { get; set; }
+
+        public void OnQueryInformationChanged()
+        {
+            _queryInformationStatusBarItem.DataContext = QueryInformation;
+        }
+
+        public ResponseContinuation ContinuationToken { get; set; }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -89,16 +102,22 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query);
+                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
 
                                 RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
+                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation ?? string.Empty);
+
+                                QueryInformation = $"Returned {_queryResult.Count} documents." + 
+                                                        (ContinuationToken?.Token != null 
+                                                                ?" (more results available)" 
+                                                                : string.Empty);
+
                                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
                                 HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
                             }
                             catch (DocumentClientException clientEx)
                             {
-                                var errors = clientEx.Parse();
-                                await _dialogService.ShowError(errors.ToString(), "Error", "ok", null);
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
                             }
                             catch (Exception ex)
                             {
@@ -152,7 +171,7 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public bool EnableScanInQuery { get; set; }
-        public bool EnableCrossPartitionQuery { get; set; }
+        public bool? EnableScanInQuery { get; set; } = false;
+        public bool? EnableCrossPartitionQuery { get; set; } = false;
     }
 }

@@ -72,6 +72,8 @@ namespace DocumentDbExplorer.ViewModel
             OffTimeToLive = Collection.DefaultTimeToLive == null;
             NoDefaultTimeToLive = Collection.DefaultTimeToLive == -1;
             OnTimeToLive = Collection.DefaultTimeToLive >= 0;
+            PartitionKey = Collection.PartitionKey?.Paths.FirstOrDefault();
+            IsFixedStorage = PartitionKey == null;
 
             Content = new TextDocument(JsonConvert.SerializeObject(Collection.IndexingPolicy, Formatting.Indented));
         }
@@ -81,6 +83,14 @@ namespace DocumentDbExplorer.ViewModel
         public DocumentCollection Collection { get; protected set; }
 
         public int Throughput { get; set; }
+
+        public string PartitionKey { get; set; }
+
+        public bool IsFixedStorage { get; set; }
+
+        public int MaxThroughput => IsFixedStorage ? 10000 : 50000;
+
+        public int MinThroughput => IsFixedStorage ? 400 : 1000;
 
         public int? TimeToLiveInSecond { get; set; }
 

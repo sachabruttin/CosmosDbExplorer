@@ -64,9 +64,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             catch (DocumentClientException clientEx)
                             {
-                                var errors = clientEx.Parse();
-
-                                await _dialogService.ShowError(errors.ToString(), "Error", "ok", null);
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
                             }
                             catch (Exception ex)
                             {

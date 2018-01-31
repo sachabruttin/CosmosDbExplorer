@@ -86,6 +86,8 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<EditUserDefFuncMessage>(this, OpenUserDefFunc);
             MessengerInstance.Register<EditTriggerMessage>(this, OpenTrigger);
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
+            MessengerInstance.Register<EditUserMessage>(this, OpenEditUser);
+            MessengerInstance.Register<EditPermissionMessage>(this, OpenPermission);
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
         }
@@ -110,6 +112,8 @@ namespace DocumentDbExplorer.ViewModel
             Connection = message.Item as ConnectionNodeViewModel;
             Database = message.Item as DatabaseNodeViewModel;
             Collection = (message.Item as IHaveCollectionNodeViewModel)?.CollectionNode;
+            Users = message.Item as UsersNodeViewModel;
+            UserNode = message.Item as UserNodeViewModel;
             CanEditDelete = message.Item as ICanEditDelete;
 
             bool mustSelectRibbonTab()
@@ -118,7 +122,9 @@ namespace DocumentDbExplorer.ViewModel
                                     || Connection != null
                                     || Database != null
                                     || Collection != null
-                                    || CanEditDelete != null;
+                                    || CanEditDelete != null
+                                    || Users != null
+                                    || UserNode != null;
             }
 
             SelectedRibbonTab = mustSelectRibbonTab() ? 1 : 0;
@@ -166,6 +172,45 @@ namespace DocumentDbExplorer.ViewModel
                 SelectedTab = content;
             }
         }
+
+        private void OpenEditUser(EditUserMessage message)
+        {
+            var contentId = message?.Node?.ContentId;
+            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
+
+            if (tab != null)
+            {
+                SelectedTab = tab;
+            }
+            else
+            {
+                var content = _ioc.GetInstance<UserEditViewModel>(contentId);
+                content.Node = message.Node;
+
+                Tabs.Add(content);
+                SelectedTab = content;
+            }
+        }
+
+        private void OpenPermission(EditPermissionMessage message)
+        {
+            var contentId = message?.Node?.ContentId;
+            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
+
+            if (tab != null)
+            {
+                SelectedTab = tab;
+            }
+            else
+            {
+                var content = _ioc.GetInstance<PermissionEditViewModel>(contentId);
+                content.Node = message.Node;
+
+                Tabs.Add(content);
+                SelectedTab = content;
+            }
+        }
+
 
         private void OpenUserDefFunc(EditUserDefFuncMessage message)
         {
@@ -219,7 +264,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private async void OpenDocumentsView(OpenDocumentsViewMessage message)
         {
-            var contentId = message.Node.Parent.Name;
+            var contentId = $"Documents:{message.Node.Parent.Collection.AltLink}";
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is DocumentsTabViewModel);
 
             if (tab != null)
@@ -249,7 +294,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenImportDocumentView(OpenImportDocumentViewMessage message)
         {
-            var contentId = message.Node.Parent.Name;
+            var contentId = $"Import:{message.Node.Collection.AltLink}";
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is ImportDocumentViewModel);
 
             if (tab != null)
@@ -309,6 +354,8 @@ namespace DocumentDbExplorer.ViewModel
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }
         public CollectionNodeViewModel Collection { get; set; }
+        public UsersNodeViewModel Users { get; set; }
+        public UserNodeViewModel UserNode { get; set; }
         public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
         public ICanEditDelete CanEditDelete { get; set; }
 

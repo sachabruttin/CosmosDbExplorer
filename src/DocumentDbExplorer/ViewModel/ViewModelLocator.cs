@@ -65,6 +65,8 @@ namespace DocumentDbExplorer.ViewModel
             SimpleIoc.Default.Register<UserDefFuncTabViewModel>();
             SimpleIoc.Default.Register<TriggerTabViewModel>();
             SimpleIoc.Default.Register<ScaleAndSettingsTabViewModel>();
+            SimpleIoc.Default.Register<UserEditViewModel>();
+            SimpleIoc.Default.Register<PermissionEditViewModel>();
 
             SimpleIoc.Default.Register<AddCollectionViewModel>();
         }

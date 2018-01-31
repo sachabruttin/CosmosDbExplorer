@@ -14,6 +14,9 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
         public DataTemplate UserDefFuncViewTemplate { get; set; }
         public DataTemplate TriggerViewTemplate { get; set; }
         public DataTemplate ScaleAndSettingsTemplate { get; set; }
+        public DataTemplate UserEditTempalate { get; set; }
+
+        public DataTemplate PermissionEditTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -55,6 +58,16 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
             if (item is ScaleAndSettingsTabViewModel)
             {
                 return ScaleAndSettingsTemplate;
+            }
+
+            if (item is UserEditViewModel)
+            {
+                return UserEditTempalate;
+            }
+
+            if (item is PermissionEditViewModel)
+            {
+                return PermissionEditTemplate;
             }
 
             return base.SelectTemplate(item, container);

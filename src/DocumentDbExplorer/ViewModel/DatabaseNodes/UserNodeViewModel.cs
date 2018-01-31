@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
@@ -10,20 +11,23 @@ namespace DocumentDbExplorer.ViewModel
 {
     public class UserNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
-        private readonly User _user;
         private readonly UsersNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
+        private RelayCommand _openCommand;
+        private RelayCommand _addPermissionCommand;
 
         public UserNodeViewModel(User user, UsersNodeViewModel parent)
             : base(parent, parent.MessengerInstance, true)
         {
-            _user = user;
+            User = user;
             _parent = parent;
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => _user.Id;
+        public string Name => User.Id;
+
+        public string ContentId => User.AltLink;
 
         public new UsersNodeViewModel Parent
         {
@@ -34,7 +38,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var permissions = await _dbService.GetPermission(Parent.Parent.Parent.Connection, _user);
+            var permissions = await _dbService.GetPermission(Parent.Parent.Parent.Connection, User);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -60,5 +64,27 @@ namespace DocumentDbExplorer.ViewModel
                         }));
             }
         }
+
+        public RelayCommand OpenCommand
+        {
+            get
+            {
+                return _openCommand
+                    ?? (_openCommand = new RelayCommand(
+                        x => MessengerInstance.Send(new EditUserMessage(this))));
+            }
+        }
+
+        public RelayCommand AddPermissionCommand
+        {
+            get
+            {
+                return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
+                    x => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this))
+                    )));
+            }
+        }
+
+        public User User { get; set; }
     }
 }

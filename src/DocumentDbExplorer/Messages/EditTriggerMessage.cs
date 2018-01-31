@@ -19,4 +19,27 @@ namespace DocumentDbExplorer.Messages
 
         public DocumentCollection Collection { get; set; }
     }
+
+    public class EditUserMessage
+    {
+        public EditUserMessage(UserNodeViewModel node)
+        {
+            Node = node;
+            Connection = node.Parent.Parent.Parent.Connection;
+        }
+
+        public UserNodeViewModel Node { get; }
+
+        public Connection Connection { get; }
+    }
+
+    public class EditPermissionMessage
+    {
+        public EditPermissionMessage(PermissionNodeViewModel node)
+        {
+            Node = node;
+        }
+
+        public PermissionNodeViewModel Node { get; }
+    }
 }

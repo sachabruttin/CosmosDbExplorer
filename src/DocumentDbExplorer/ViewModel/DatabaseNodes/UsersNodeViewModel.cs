@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
@@ -14,6 +16,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly DatabaseNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
+        private RelayCommand _addUserCommand;
 
         public UsersNodeViewModel(Database database, DatabaseNodeViewModel parent)
                 : base(parent, parent.MessengerInstance, true)
@@ -25,6 +28,8 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public string Name { get; set; }
+        
+        public Database Database => _database;
 
         public new DatabaseNodeViewModel Parent
         {
@@ -39,17 +44,31 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_refreshCommand = new RelayCommand(
                         async x =>
                         {
-                            Children.Clear();
-                            await LoadChildren();
+                            await DispatcherHelper.RunAsync(async () =>
+                            {
+                                Children.Clear();
+                                await LoadChildren();
+                            });
                         }));
             }
         }
+
+        public RelayCommand AddUserCommand
+        {
+            get
+            {
+                return _addUserCommand ?? (_addUserCommand = new RelayCommand(
+                    x => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this))
+                    )));
+            }
+        }
+
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var users = await _dbService.GetUsers(Parent.Parent.Connection, _database);
+            var users = await _dbService.GetUsers(Parent.Parent.Connection, _database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {

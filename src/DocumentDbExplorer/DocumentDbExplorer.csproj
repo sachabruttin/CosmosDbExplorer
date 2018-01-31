@@ -200,6 +200,8 @@
     <Compile Include="ViewModel\StoredProcedureTabViewModel.cs" />
     <Compile Include="ViewModel\TriggerTabViewModel.cs" />
     <Compile Include="ViewModel\UserDefFuncTabViewModel.cs" />
+    <Compile Include="ViewModel\PermissionEditViewModel.cs" />
+    <Compile Include="ViewModel\UserEditViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
@@ -223,6 +225,9 @@
       <DependentUpon>JsonEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pane\PaneStyleSelector.cs" />
+    <Compile Include="Views\PermissionEditView.xaml.cs">
+      <DependentUpon>PermissionEditView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\QueryEditorView.xaml.cs">
       <DependentUpon>QueryEditorView.xaml</DependentUpon>
     </Compile>
@@ -237,6 +242,9 @@
     </Compile>
     <Compile Include="Views\UserDefFuncTabView.xaml.cs">
       <DependentUpon>UserDefFuncTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserEditView.xaml.cs">
+      <DependentUpon>UserEditView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -283,6 +291,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\PermissionEditView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\QueryEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -300,6 +312,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserDefFuncTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserEditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

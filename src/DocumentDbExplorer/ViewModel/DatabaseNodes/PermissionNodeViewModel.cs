@@ -1,21 +1,31 @@
 ﻿using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
     public class PermissionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
-        private readonly Permission _permission;
         private RelayCommand _refreshCommand;
+        private RelayCommand _openCommand;
 
         public PermissionNodeViewModel(Permission permission, UserNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
-            _permission = permission;
+            Permission = permission;
         }
 
-        public string Name => _permission.Id;
+        public Permission Permission { get; set; }
+
+        public string Name => Permission.Id;
+
+        public string ContentId => Permission.AltLink;
+
+        public new UserNodeViewModel Parent
+        {
+            get { return base.Parent as UserNodeViewModel; }
+        }
 
         public RelayCommand RefreshCommand
         {
@@ -28,6 +38,15 @@ namespace DocumentDbExplorer.ViewModel
                             Children.Clear();
                             await LoadChildren();
                         }));
+            }
+        }
+
+        public RelayCommand OpenCommand
+        {
+            get
+            {
+                return _openCommand ?? (_openCommand = new RelayCommand(
+                    x => MessengerInstance.Send(new EditPermissionMessage(this))));
             }
         }
     }

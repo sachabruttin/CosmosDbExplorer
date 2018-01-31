@@ -60,7 +60,15 @@ namespace DocumentDbExplorer.Services
 
         Task<IList<User>> GetUsers(Connection connection, Database database);
 
+        Task<User> SaveUser(Connection connection, Database database, User user);
+
+        Task DeleteUser(Connection connection, User user);
+
         Task<IList<Permission>> GetPermission(Connection connection, User user);
+
+        Task<Permission> SavePermission(Connection connection, User user, Permission permission);
+
+        Task DeletePermission(Connection connection, Permission permission);
     }
 
     public class DocumentDescriptionList : List<DocumentDescription>
@@ -395,10 +403,49 @@ namespace DocumentDbExplorer.Services
             return response.Select(u => u).OrderBy(u => u.Id).ToList();
         }
 
+        public async Task<User> SaveUser(Connection connection, Database database, User user)
+        {
+            if (user.SelfLink != null)
+            {
+                var response = await GetClient(connection).ReplaceUserAsync(user);
+                return response.Resource;
+            }
+            else
+            {
+                var response = await GetClient(connection).CreateUserAsync(database.SelfLink, user);
+                return response.Resource;
+            }
+        }
+
+        public Task DeleteUser(Connection connection, User user)
+        {
+            return GetClient(connection).DeleteUserAsync(user.SelfLink);
+        }
+
         public async Task<IList<Permission>> GetPermission(Connection connection, User user)
         {
             var response = await GetClient(connection).ReadPermissionFeedAsync(user.PermissionsLink);
             return response.Select(p => p).OrderBy(p => p.Id).ToList();
         }
+
+        public async Task<Permission> SavePermission(Connection connection, User user, Permission permission)
+        {
+            if (permission.SelfLink != null)
+            {
+                var response = await GetClient(connection).ReplacePermissionAsync(permission);
+                return response.Resource;
+            }
+            else
+            {
+                var response = await GetClient(connection).CreatePermissionAsync(user.SelfLink, permission);
+                return response;
+            }
+        }
+
+        public Task DeletePermission(Connection connection, Permission permission)
+        {
+            return GetClient(connection).DeletePermissionAsync(permission.SelfLink);
+        }
+
     }
 }

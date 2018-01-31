@@ -59,8 +59,11 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_refreshCommand = new RelayCommand(
                         async x =>
                         {
-                            Children.Clear();
-                            await LoadChildren();
+                            await DispatcherHelper.RunAsync(async () =>
+                            {
+                                Children.Clear();
+                                await LoadChildren();
+                            });
                         }));
             }
         }

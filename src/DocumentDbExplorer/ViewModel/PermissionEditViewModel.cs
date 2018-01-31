@@ -141,13 +141,14 @@ namespace DocumentDbExplorer.ViewModel
                             else
                             {
                                 permission = _node.Permission;
-                                permission.Id = PermissionId;
-                                permission.ResourceLink = ResourceLink;
-                                permission.PermissionMode = PermissionMode;
-                                permission.ResourcePartitionKey = ResourcePartitionKey != null
-                                                          ? new PartitionKey(ResourcePartitionKey)
-                                                          : null;
                             }
+
+                            permission.Id = PermissionId;
+                            permission.ResourceLink = ResourceLink;
+                            permission.PermissionMode = PermissionMode;
+                            permission.ResourcePartitionKey = ResourcePartitionKey != null
+                                                        ? new PartitionKey(ResourcePartitionKey)
+                                                        : null;
 
                             permission = await _dbService.SavePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
 

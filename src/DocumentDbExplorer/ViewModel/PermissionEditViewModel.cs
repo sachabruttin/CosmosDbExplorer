@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DocumentDbExplorer.Infrastructure;
+using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.ViewModel.Interfaces;
@@ -32,6 +33,8 @@ namespace DocumentDbExplorer.ViewModel
         {
             _dbService = dbService;
             _dialogService = dialogService;
+            Header = "New Permission";
+            Title = "Permission";
             PropertyChanged += (s, e) => IsDirty = IsEntityChanged();
         }
 
@@ -73,6 +76,9 @@ namespace DocumentDbExplorer.ViewModel
             ResourceLink = Permission?.ResourceLink;
             ResourcePartitionKey = Permission?.ResourcePartitionKey?.ToString();
 
+            var split = _node.Parent.User.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}>{Title}";
+
             IsDirty = false;
         }
 
@@ -88,7 +94,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Header = value.Name;
+                    Header = value.Name ?? "New Permission";
                     Title = "Permission";
                     ContentId = value.ContentId;
 
@@ -150,15 +156,23 @@ namespace DocumentDbExplorer.ViewModel
                                                         ? new PartitionKey(ResourcePartitionKey)
                                                         : null;
 
-                            permission = await _dbService.SavePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
+                            try
+                            {
+                                permission = await _dbService.SavePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
 
-                            Header = permission.Id;
-                            Node.Permission = permission;
-                            ContentId = Node.ContentId;
+                                Header = permission.Id;
+                                Node.Permission = permission;
+                                ContentId = Node.ContentId;
 
-                            RaisePropertyChanged(() => IsNewDocument);
-                            Node.Parent.RefreshCommand.Execute(null);
-                            IsDirty = false;
+                                RaisePropertyChanged(() => IsNewDocument);
+                                Node.Parent.RefreshCommand.Execute(null);
+                                IsDirty = false;
+                            }
+                            catch (DocumentClientException ex)
+                            {
+                                var msg = ex.Parse();
+                                await _dialogService.ShowError(msg, "Error", null, null);
+                            }
                         },
                         x => IsDirty && IsValid));
             }
@@ -176,10 +190,20 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeletePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission);
-                                    Node.Parent.RefreshCommand.Execute(null);
-
-                                    await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
+                                    try
+                                    {
+                                        await _dbService.DeletePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission);
+                                    }
+                                    catch (DocumentClientException ex)
+                                    {
+                                        var msg = ex.Parse();
+                                        await _dialogService.ShowError(msg, "Error", null, null);
+                                    }
+                                    finally
+                                    {
+                                        Node.Parent.RefreshCommand.Execute(null);
+                                        await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
+                                    }
                                 }
                             });
                         },

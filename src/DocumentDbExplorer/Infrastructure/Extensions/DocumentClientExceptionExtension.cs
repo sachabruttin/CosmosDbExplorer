@@ -11,23 +11,40 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
     {
         public static string Parse(this DocumentClientException exception)
         {
+            var message = exception.Message;
             if (exception.Message.StartsWith("Message: {"))
             {
-                return ParseSyntaxException(exception).ToString();
+                message = ParseSyntaxException(exception).ToString();
             }
 
-            return exception.Message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            return message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
         }
 
-        private static DocumentClientExceptionMessage ParseSyntaxException(DocumentClientException exception)
+        private static string ParseSyntaxException(DocumentClientException exception)
         {
             var message = exception.Message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                             .First()
                             .Remove(0, "Message: ".Length);
 
-            return JsonConvert.DeserializeObject<DocumentClientExceptionMessage>(message);
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<DocumentClientExceptionMessage>(message);
+                return obj.ToString();
+            }
+            catch
+            {
+                try
+                {
+                    var obj = JsonConvert.DeserializeObject<dynamic>(message);
+                    List<string> res = obj.Errors.ToObject<List<string>>();
+                    return string.Join(string.Empty, res);
+                }
+                catch
+                {
+                    return exception.Message;
+                }
+            }
         }
-
     }
 
     public class Location

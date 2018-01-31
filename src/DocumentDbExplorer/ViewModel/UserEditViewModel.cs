@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
+using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.ViewModel.Interfaces;
@@ -30,6 +31,8 @@ namespace DocumentDbExplorer.ViewModel
         {
             _dbService = dbService;
             _dialogService = dialogService;
+            Header = "New User";
+            Title = "User";
         }
 
         public string UserId { get; set; }
@@ -42,6 +45,10 @@ namespace DocumentDbExplorer.ViewModel
         private void SetInformation()
         {
             UserId = _node?.User?.Id;
+
+            var split = _node.Parent.Database.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{Title}";
+
             IsDirty = false;
         }
 
@@ -57,7 +64,7 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Header = value.Name;
+                    Header = value.Name ?? "New User";
                     Title = "User";
                     ContentId = value.ContentId;
 
@@ -100,15 +107,23 @@ namespace DocumentDbExplorer.ViewModel
                                 user.Id = UserId;    
                             }
 
-                            user = await _dbService.SaveUser(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
+                            try
+                            {
+                                user = await _dbService.SaveUser(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
 
-                            Header = user.Id;
-                            Node.User = user;
-                            ContentId = Node.ContentId;
+                                Header = user.Id;
+                                Node.User = user;
+                                ContentId = Node.ContentId;
 
-                            RaisePropertyChanged(() => IsNewDocument);
-                            Node.Parent.RefreshCommand.Execute(null);
-                            IsDirty = false;
+                                RaisePropertyChanged(() => IsNewDocument);
+                                Node.Parent.RefreshCommand.Execute(null);
+                                IsDirty = false;
+                            }
+                            catch (DocumentClientException ex)
+                            {
+                                var msg = ex.Parse();
+                                await _dialogService.ShowError(msg, "Error", null, null);
+                            }
                         },
                         x => IsDirty && IsValid));
             }
@@ -126,10 +141,20 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteUser(Node.Parent.Parent.Parent.Connection, Node.User);
-                                    Node.Parent.RefreshCommand.Execute(null);
-
-                                    await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
+                                    try
+                                    {
+                                        await _dbService.DeleteUser(Node.Parent.Parent.Parent.Connection, Node.User);
+                                    }
+                                    catch (DocumentClientException ex)
+                                    {
+                                        var msg = ex.Parse();
+                                        await _dialogService.ShowError(msg, "Error", null, null);
+                                    }
+                                    finally
+                                    {
+                                        Node.Parent.RefreshCommand.Execute(null);
+                                        await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
+                                    }
                                 }
                             });
                         },

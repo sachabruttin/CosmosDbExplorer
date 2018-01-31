@@ -20,7 +20,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string Name => Permission.Id;
 
-        public string ContentId => Permission.AltLink;
+        public string ContentId => Permission.AltLink ?? "NewPermission";
 
         public new UserNodeViewModel Parent
         {

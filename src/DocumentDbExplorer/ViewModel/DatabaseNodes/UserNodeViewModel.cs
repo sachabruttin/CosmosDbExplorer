@@ -27,7 +27,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string Name => User.Id;
 
-        public string ContentId => User.AltLink;
+        public string ContentId => User.AltLink ?? "NewUser";
 
         public new UsersNodeViewModel Parent
         {

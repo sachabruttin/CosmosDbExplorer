@@ -87,6 +87,7 @@ namespace DocumentDbExplorer.Services
         public string ContinuationToken { get; set; }
 
         public long CollectionSize { get; set; }
+        public double RequestCharge { get; internal set; }
     }
 
     public class DocumentDescription
@@ -243,7 +244,8 @@ namespace DocumentDbExplorer.Services
             var list = new DocumentDescriptionList(result.Select((doc, index) => doc).ToList())
             {
                 ContinuationToken = result.ResponseContinuation,
-                CollectionSize = long.Parse(result.CurrentResourceQuotaUsage.Split(new[] { ';' })[2].Split(new[] { '=' })[1])
+                CollectionSize = long.Parse(result.CurrentResourceQuotaUsage.Split(new[] { ';' })[2].Split(new[] { '=' })[1]),
+                RequestCharge = result.RequestCharge
             };
 
             return list;

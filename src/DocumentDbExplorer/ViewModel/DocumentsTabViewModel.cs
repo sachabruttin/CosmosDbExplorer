@@ -24,6 +24,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
+        private readonly StatusBarItem _progessBarStatusBarItem;
         private RelayCommand _loadMoreCommand;
         private RelayCommand _refreshLoadCommand;
         private RelayCommand _newDocumentCommand;
@@ -50,8 +51,10 @@ namespace DocumentDbExplorer.ViewModel
             Title = "Documents";
             Header = Title;
 
-            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = IsRunning, IsVisible = IsRunning }, StatusBarItemType.ProgessBar, "Progess", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
         public DocumentNodeViewModel Node
@@ -104,7 +107,15 @@ namespace DocumentDbExplorer.ViewModel
 
         public void OnRequestChargeChanged()
         {
-            _requestChargeStatusBarItem.DataContext = RequestCharge;
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
+        }
+
+        public bool IsRunning { get; set; }
+
+        public void OnIsRunningChanged()
+        {
+            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
 
         private void SetStatusBar(ResourceResponse<Document> response)
@@ -121,15 +132,16 @@ namespace DocumentDbExplorer.ViewModel
         {
             try
             {
-                var result = await _dbService.GetDocuments(Node.Parent.Parent.Parent.Connection,
+                IsRunning = true;
+                var list = await _dbService.GetDocuments(Node.Parent.Parent.Parent.Connection,
                                        Node.Parent.Collection,
                                        Filter,
                                        Settings.Default.MaxDocumentToRetrieve,
                                        ContinuationToken);
 
-                var list = result as DocumentDescriptionList;
                 HasMore = list.HasMore;
                 ContinuationToken = list.ContinuationToken;
+                RequestCharge = $"Request Charge: {list.RequestCharge}";
 
                 foreach (var document in list)
                 {
@@ -146,6 +158,10 @@ namespace DocumentDbExplorer.ViewModel
             catch (Exception ex)
             {
                 await _dialogService.ShowError(ex, "Error", "ok", null);
+            }
+            finally
+            {
+                IsRunning = false;
             }
         }
 
@@ -181,7 +197,8 @@ namespace DocumentDbExplorer.ViewModel
                             var count = Documents.Count;
                             ClearDocuments();
                             await LoadDocuments();
-                        }));
+                        },
+                        x => !IsRunning));
             }
         }
 
@@ -200,7 +217,7 @@ namespace DocumentDbExplorer.ViewModel
                         x =>
                         {
                             // Can create new document if current document is not a new document
-                            return !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
+                            return !IsRunning && !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
                         }));
             }
         }
@@ -212,7 +229,7 @@ namespace DocumentDbExplorer.ViewModel
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
                         x => OnSelectedDocumentChanged(),
-                        x => EditorViewModel.IsDirty));
+                        x => !IsRunning && EditorViewModel.IsDirty));
             }
         }
 
@@ -224,22 +241,35 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveDocumentCommand = new RelayCommand(
                         async x =>
                         {
-                            var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text);
-                            var document = response.Resource;
-
-                            SetStatusBar(response);
-
-                            var description = new DocumentDescription(document, Collection);
-
-                            if (SelectedDocument == null)
+                            IsRunning = true;
+                            try
                             {
-                                Documents.Add(description);
-                                SelectedDocument = description;
-                            }
+                                var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text);
+                                var document = response.Resource;
 
-                            HeaderViewModel.SetText(response.ResponseHeaders, HideSystemProperties);
+                                SetStatusBar(response);
+
+                                var description = new DocumentDescription(document, Collection);
+
+                                if (SelectedDocument == null)
+                                {
+                                    Documents.Add(description);
+                                    SelectedDocument = description;
+                                }
+
+                                HeaderViewModel.SetText(response.ResponseHeaders, HideSystemProperties);
+                            }
+                            catch (DocumentClientException ex)
+                            {
+                                var message = ex.Parse();
+                                await _dialogService.ShowError(message, "Error", null, null);
+                            }
+                            finally
+                            {
+                                IsRunning = false;
+                            }
                         },
-                        x => EditorViewModel.IsDirty));
+                        x => !IsRunning && EditorViewModel.IsDirty));
             }
         }
 
@@ -257,7 +287,9 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
+                                    IsRunning = true;
                                     var response = await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument.SelfLink);
+                                    IsRunning = false;
                                     SetStatusBar(response);
 
                                     await DispatcherHelper.RunAsync(() =>
@@ -271,7 +303,7 @@ namespace DocumentDbExplorer.ViewModel
                                 }
                             });
                         }, 
-                        x => SelectedDocument != null && !EditorViewModel.IsNewDocument));
+                        x => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
             }
         }
 
@@ -341,12 +373,24 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 await DispatcherHelper.RunAsync(() =>
                                 {
-                                    File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    try
+                                    {
+                                        IsRunning = true;
+                                        File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    }
+                                    catch
+                                    {
+                                        // TOOD: 
+                                    }
+                                    finally
+                                    {
+                                        IsRunning = false;
+                                    }
                                 });
                             }
                         });
                     },
-                    x => SelectedDocument != null));
+                    x => !IsRunning && SelectedDocument != null));
             }
         }
 

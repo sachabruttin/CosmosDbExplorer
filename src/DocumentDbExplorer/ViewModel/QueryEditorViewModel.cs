@@ -27,6 +27,7 @@ namespace DocumentDbExplorer.ViewModel
         private FeedResponse<dynamic> _queryResult;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
+        private readonly StatusBarItem _progessBarStatusBarItem;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -40,10 +41,12 @@ namespace DocumentDbExplorer.ViewModel
             _dbService = dbService;
             _dialogService = dialogService;
 
-            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
-            _queryInformationStatusBarItem = new StatusBarItem(QueryInformation, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
+            _queryInformationStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = QueryInformation, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_queryInformationStatusBarItem);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = IsRunning, IsVisible = IsRunning }, StatusBarItemType.ProgessBar, "Progess", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
         public CollectionNodeViewModel Node
@@ -71,6 +74,15 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsDirty { get; set; }
 
+        public bool IsRunning { get; set; }
+
+        public void OnIsRunningChanged()
+        {
+            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
+            _queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
+        }
+
         public JsonViewerViewModel EditorViewModel { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
@@ -79,14 +91,14 @@ namespace DocumentDbExplorer.ViewModel
 
         public void OnRequestChargeChanged()
         {
-            _requestChargeStatusBarItem.DataContext = RequestCharge;
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
         }
 
         public string QueryInformation { get; set; }
 
         public void OnQueryInformationChanged()
         {
-            _queryInformationStatusBarItem.DataContext = QueryInformation;
+            _queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
         public ResponseContinuation ContinuationToken { get; set; }
@@ -101,6 +113,8 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             try
                             {
+                                IsRunning = true;
+
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
                                 _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
 
@@ -123,8 +137,12 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 await _dialogService.ShowError(ex, "Error", "ok", null);
                             }
+                            finally
+                            {
+                                IsRunning = false;
+                            }
                         },
-                        x => !string.IsNullOrEmpty(Content.Text)));
+                        x => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
             }
         }
 
@@ -152,12 +170,24 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 await DispatcherHelper.RunAsync(() =>
                                 {
-                                    File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    try
+                                    {
+                                        IsRunning = true;
+                                        File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    }
+                                    catch
+                                    { 
+                                        // TODO:
+                                    }
+                                    finally
+                                    {
+                                        IsRunning = false;
+                                    }
                                 });
                             }
                         });
                     },
-                    x => !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
+                    x => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
 

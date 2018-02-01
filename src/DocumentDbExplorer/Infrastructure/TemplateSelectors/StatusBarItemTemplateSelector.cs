@@ -9,6 +9,7 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
         public DataTemplate UsedMemoryTemplate { get; set; }
         public DataTemplate ZoomTemplate { get; set; }
         public DataTemplate SimpleTextTemplate { get; set; }
+        public DataTemplate ProgressBarTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -20,6 +21,8 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
                     return ZoomTemplate;
                 case StatusBarItemType.SimpleText:
                     return SimpleTextTemplate;
+                case StatusBarItemType.ProgessBar:
+                    return ProgressBarTemplate;
                 default:
                     return base.SelectTemplate(item, container);
             }

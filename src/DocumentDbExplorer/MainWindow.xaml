@@ -100,7 +100,7 @@
             <selector:StatusBarItemTemplateSelector.ZoomTemplate>
                 <DataTemplate>
                     <fluent:StatusBarItem Title="Zoom">
-                        <Grid DataContext="{Binding DataContext}">
+                        <Grid DataContext="{Binding DataContext.Value}" Margin="5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
@@ -126,10 +126,22 @@
             <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
                 <DataTemplate>
                     <fluent:StatusBarItem Title="{Binding Title}"
-                                  Margin="5,0"
-                                  Value="{Binding DataContext}" />
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}" 
+                                          Value="{Binding DataContext.Value}" />
                 </DataTemplate>
             </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="{Binding Title}" 
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}">
+                        <ProgressBar IsIndeterminate="True" Width="150" Height="12" VerticalAlignment="Center"/>
+                    </fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+            
         </selector:StatusBarItemTemplateSelector>
     </Window.Resources>
 

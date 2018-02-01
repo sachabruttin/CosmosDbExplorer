@@ -354,15 +354,69 @@
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
-                <fluent:RibbonGroupBox KeyTip="X" Header="Settings"
-                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                <fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
+                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"
+                                       Grid.IsSharedSizeScope="True">
+                    
                     <fluent:CheckBox Header="Hide System Properties" IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
                     <fluent:CheckBox Header="Enable Scan In Query" 
                                      IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}">
+                        <fluent:CheckBox.ToolTip>
+                            <fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets the option to enable scans on the queries which couldn't be served as indexing was opted out on the requested paths in the Azure Cosmos DB service."
+                                              Width="190" />
+                        </fluent:CheckBox.ToolTip>
+                    </fluent:CheckBox>
+
                     <fluent:CheckBox Header="Enable Cross Partition Query" 
                                      IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                                     IsEnabled="{Binding SelectedTab.EnableCrossPartitionQuery, Converter={StaticResource nullToEnabledConverter}}">
+                        <fluent:CheckBox.ToolTip>
+                            <fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets a value indicating whether users are enabled to send more than one request to execute the query in the Azure Cosmos DB service. More than one request is necessary if the query is not scoped to single partition key value."
+                                              Width="190" />
+                        </fluent:CheckBox.ToolTip>
+                    </fluent:CheckBox>
+
+                    <fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
+                                    Value="{Binding SelectedTab.MaxItemCount, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxItemCount, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="130"
+                                    Size="Large">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Item Count"
+                                              Text="Sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
+                    <fluent:Spinner Header="Max DoP" Minimum="-1" Format="N0" Increment="1"
+                                    Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch"
+                                    Size="Large">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Degree of Parallelism"
+                                              Text="Sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
+                    <fluent:Spinner Header="Max Buffer" Minimum="-1" Format="N0" Increment="100"                  
+                                    Value="{Binding SelectedTab.MaxBufferItem, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxBufferItem, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch" 
+                                    Size="Large">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Buffer"
+                                              Text="Sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
                 </fluent:RibbonGroupBox>
 
             </fluent:RibbonTabItem>
@@ -409,7 +463,6 @@
                         <fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
                         <fluent:MenuItem Header="User Definied Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
                         <fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
-
                     </fluent:SplitButton>
 
                     <fluent:Button Header="SQL Query" 

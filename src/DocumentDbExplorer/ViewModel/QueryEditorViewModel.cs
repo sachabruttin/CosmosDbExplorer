@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentDbExplorer.Infrastructure;
@@ -101,7 +102,7 @@ namespace DocumentDbExplorer.ViewModel
             _queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
-        public ResponseContinuation ContinuationToken { get; set; }
+        public List<ResponseContinuation> ContinuationTokens { get; set; }
 
         public RelayCommand ExecuteCommand
         {
@@ -116,13 +117,13 @@ namespace DocumentDbExplorer.ViewModel
                                 IsRunning = true;
 
                                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
+                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this);
 
                                 RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
-                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation ?? string.Empty);
+                                ContinuationTokens = JsonConvert.DeserializeObject<List<ResponseContinuation>>(_queryResult.ResponseContinuation ?? string.Empty, new ResponseContinuationListConverter());
 
                                 QueryInformation = $"Returned {_queryResult.Count} documents." + 
-                                                        (ContinuationToken?.Token != null 
+                                                        (ContinuationTokens != null 
                                                                 ?" (more results available)" 
                                                                 : string.Empty);
 
@@ -203,5 +204,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool? EnableScanInQuery { get; set; } = false;
         public bool? EnableCrossPartitionQuery { get; set; } = false;
+        public int? MaxItemCount { get; set; } = 100;
+        public int? MaxDOP { get; set; } = -1;
+        public int? MaxBufferItem { get; set; } = -1;
     }
 }

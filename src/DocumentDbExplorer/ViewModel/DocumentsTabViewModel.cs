@@ -403,6 +403,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool? EnableScanInQuery { get; set; } = null;
         public bool? EnableCrossPartitionQuery { get; set; } = null;
+        public int? MaxItemCount { get; set; } = null;
+        public int? MaxDOP { get; set; } = null;
+        public int? MaxBufferItem { get; set; } = null;
 
         private void ClearDocuments()
         {

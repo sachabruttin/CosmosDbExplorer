@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json.Linq;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.ViewModel.Interfaces;
 
 namespace DocumentDbExplorer.Services
 {
@@ -25,7 +26,7 @@ namespace DocumentDbExplorer.Services
 
         Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content);
 
-        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery);
+        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings);
 
         Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink);
 
@@ -155,12 +156,15 @@ namespace DocumentDbExplorer.Services
             return await GetClient(connection).DeleteDocumentAsync(documentLink);
         }
 
-        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, bool? enableCrossPartitionQuery, bool? enableScanInQuery)
+        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings)
         {
             var options = new FeedOptions
             {
-                EnableCrossPartitionQuery = enableCrossPartitionQuery.GetValueOrDefault(),
-                EnableScanInQuery = enableScanInQuery
+                EnableCrossPartitionQuery = querySettings.EnableCrossPartitionQuery.GetValueOrDefault(),
+                EnableScanInQuery = querySettings.EnableScanInQuery,
+                MaxItemCount = querySettings.MaxItemCount,
+                MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
+                MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1)
             };
 
             var result = await GetClient(connection)

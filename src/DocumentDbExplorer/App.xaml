@@ -147,6 +147,10 @@
                 <Setter Property="Text" Value="&#xE72C;" />
             </Style>
 
+            <Style x:Key="NextPageIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
+                <Setter Property="Text" Value="&#xE893;" />
+            </Style>
+
             <DrawingImage x:Key="DocumentIcon">
                 <DrawingImage.Drawing>
                     <DrawingGroup>
@@ -467,6 +471,7 @@
                     </DrawingGroup>
                 </DrawingImage.Drawing>
             </DrawingImage>
+
 
             <TextBlock x:Key="ImportIcon" Style="{StaticResource ImportDocumentIcon}" />
             <TextBlock x:Key="DeleteIconText" Style="{StaticResource DeleteIcon}" />

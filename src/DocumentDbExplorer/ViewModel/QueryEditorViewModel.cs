@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -26,6 +27,8 @@ namespace DocumentDbExplorer.ViewModel
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
         private FeedResponse<dynamic> _queryResult;
+        private RelayCommand _goToNextPageCommand;
+        private RelayCommand _goToPreviousPageCommand;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
@@ -102,7 +105,7 @@ namespace DocumentDbExplorer.ViewModel
             _queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
-        public List<ResponseContinuation> ContinuationTokens { get; set; }
+        public string ContinuationToken { get; set; }
 
         public RelayCommand ExecuteCommand
         {
@@ -110,40 +113,54 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async x =>
-                        {
-                            try
-                            {
-                                IsRunning = true;
-
-                                var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this);
-
-                                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
-                                ContinuationTokens = JsonConvert.DeserializeObject<List<ResponseContinuation>>(_queryResult.ResponseContinuation ?? string.Empty, new ResponseContinuationListConverter());
-
-                                QueryInformation = $"Returned {_queryResult.Count} documents." + 
-                                                        (ContinuationTokens != null 
-                                                                ?" (more results available)" 
-                                                                : string.Empty);
-
-                                EditorViewModel.SetText(_queryResult, HideSystemProperties);
-                                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
-                            }
-                            catch (DocumentClientException clientEx)
-                            {
-                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
-                            }
-                            catch (Exception ex)
-                            {
-                                await _dialogService.ShowError(ex, "Error", "ok", null);
-                            }
-                            finally
-                            {
-                                IsRunning = false;
-                            }
-                        },
+                        async x => await ExecuteQueryAsync(null),
                         x => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+            }
+        }
+
+        private async Task ExecuteQueryAsync(string token)
+        {
+            try
+            {
+                IsRunning = true;
+                
+                var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
+                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this, token);
+
+                ContinuationToken = _queryResult.ResponseContinuation;
+
+                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
+                QueryInformation = $"Returned {_queryResult.Count} documents." +
+                                        (ContinuationToken != null
+                                                ? " (more results available)"
+                                                : string.Empty);
+
+                EditorViewModel.SetText(_queryResult, HideSystemProperties);
+                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
+            }
+            catch (DocumentClientException clientEx)
+            {
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error", "ok", null);
+            }
+            finally
+            {
+                IsRunning = false;
+            }
+        }
+
+        public RelayCommand GoToNextPageCommand
+        {
+            get
+            {
+                return _goToNextPageCommand
+                    ?? (_goToNextPageCommand = new RelayCommand(
+                        async x => await ExecuteQueryAsync(ContinuationToken),
+                        x => ContinuationToken != null && !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+
             }
         }
 

@@ -327,11 +327,20 @@
 
                     <fluent:Button Header="Export"
                                    Command="{Binding SelectedTab.SaveLocalCommand}"
-                                   SizeDefinition="Large">
-                        <fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="32" />
-                        </fluent:Button.LargeIcon>
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
+                        </fluent:Button.Icon>
                     </fluent:Button>
+
+                    <fluent:Button Header="Next Page"
+                                   Command="{Binding SelectedTab.GoToNextPageCommand}"
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource NextPageIcon}" FontSize="16" />
+                        </fluent:Button.Icon>
+                    </fluent:Button>
+
                 </fluent:RibbonGroupBox>
 
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Import"

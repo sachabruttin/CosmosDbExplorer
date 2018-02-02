@@ -26,9 +26,9 @@ namespace DocumentDbExplorer.Services
 
         Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content);
 
-        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings);
+        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings, string continuationToken);
 
-        Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink);
+        Task<ResourceResponse<Document>> DeleteDocument(Connection connection, DocumentDescription document);
 
         Task CleanCollection(Connection connection, DocumentCollection collection);
 
@@ -151,12 +151,16 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task<ResourceResponse<Document>> DeleteDocument(Connection connection, string documentLink)
+        public async Task<ResourceResponse<Document>> DeleteDocument(Connection connection, DocumentDescription document)
         {
-            return await GetClient(connection).DeleteDocumentAsync(documentLink);
+            var options = document.PartitionKey != null
+                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
+                            : new RequestOptions();
+
+            return await GetClient(connection).DeleteDocumentAsync(document.SelfLink, options);
         }
 
-        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings)
+        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings, string continuationToken)
         {
             var options = new FeedOptions
             {
@@ -164,7 +168,8 @@ namespace DocumentDbExplorer.Services
                 EnableScanInQuery = querySettings.EnableScanInQuery,
                 MaxItemCount = querySettings.MaxItemCount,
                 MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
-                MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1)
+                MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
+                RequestContinuation = continuationToken
             };
 
             var result = await GetClient(connection)
@@ -213,15 +218,8 @@ namespace DocumentDbExplorer.Services
                             ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
                             : new RequestOptions();
 
-            try
-            {
-                var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            var response = await GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
+            return response;
         }
 
         public async Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)

@@ -288,7 +288,7 @@ namespace DocumentDbExplorer.ViewModel
                                 if (confirm)
                                 {
                                     IsRunning = true;
-                                    var response = await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument.SelfLink);
+                                    var response = await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
                                     IsRunning = false;
                                     SetStatusBar(response);
 

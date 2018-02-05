@@ -28,7 +28,6 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _saveLocalCommand;
         private FeedResponse<dynamic> _queryResult;
         private RelayCommand _goToNextPageCommand;
-        private RelayCommand _goToPreviousPageCommand;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
@@ -107,6 +106,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public string ContinuationToken { get; set; }
 
+        public Dictionary<string, string> QueryMetrics { get; set; }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -134,6 +135,19 @@ namespace DocumentDbExplorer.ViewModel
                                         (ContinuationToken != null
                                                 ? " (more results available)"
                                                 : string.Empty);
+
+                if (_queryResult.ResponseHeaders.AllKeys.Contains("x-ms-documentdb-query-metrics"))
+                {
+                    QueryMetrics = _queryResult.ResponseHeaders.GetValues("x-ms-documentdb-query-metrics")
+                                                             .First()
+                                                             .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                                             .Select(part => part.Split('='))
+                                                             .ToDictionary(split => split[0], split => split[1]);
+                }
+                else
+                {
+                    QueryMetrics = new Dictionary<string, string>();
+                }
 
                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
                 HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);

@@ -47,6 +47,14 @@
                     <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
                                   ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
                 </TabItem>
+                <TabItem Header="Query Metrics">
+                    <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="Auto" />
+                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
             </TabControl>
         </DockPanel>
 

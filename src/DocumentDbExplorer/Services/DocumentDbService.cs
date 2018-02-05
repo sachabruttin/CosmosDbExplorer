@@ -169,7 +169,8 @@ namespace DocumentDbExplorer.Services
                 MaxItemCount = querySettings.MaxItemCount,
                 MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
                 MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
-                RequestContinuation = continuationToken
+                RequestContinuation = continuationToken,
+                PopulateQueryMetrics = true
             };
 
             var result = await GetClient(connection)

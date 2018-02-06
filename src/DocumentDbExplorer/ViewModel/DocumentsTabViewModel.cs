@@ -128,11 +128,18 @@ namespace DocumentDbExplorer.ViewModel
             HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
         }
 
-        public async Task LoadDocuments()
+        public async Task LoadDocuments(bool cleanContent = false)
         {
             try
             {
                 IsRunning = true;
+
+                if (cleanContent)
+                {
+                    Documents.Clear();
+                    ContinuationToken = null;
+                }
+
                 var list = await _dbService.GetDocuments(Node.Parent.Parent.Parent.Connection,
                                        Node.Parent.Collection,
                                        Filter,
@@ -182,7 +189,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _loadMoreCommand
                     ?? (_loadMoreCommand = new RelayCommand(
-                        async x => await LoadDocuments()));
+                        async x => await LoadDocuments(false)));
             }
         }
 
@@ -194,9 +201,7 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_refreshLoadCommand = new RelayCommand(
                         async x =>
                         {
-                            var count = Documents.Count;
-                            ClearDocuments();
-                            await LoadDocuments();
+                            await LoadDocuments(true);
                         },
                         x => !IsRunning));
             }
@@ -329,8 +334,7 @@ namespace DocumentDbExplorer.ViewModel
                         async x =>
                         {
                             IsEditingFilter = false;
-                            ClearDocuments();
-                            await LoadDocuments();
+                            await LoadDocuments(true);
                         }));
             }
         }

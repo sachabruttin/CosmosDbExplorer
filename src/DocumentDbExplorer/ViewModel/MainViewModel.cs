@@ -280,7 +280,7 @@ namespace DocumentDbExplorer.ViewModel
                 Tabs.Add(content);
                 SelectedTab = content;
 
-                await content.LoadDocuments();
+                await content.LoadDocuments(true);
             }
         }
 

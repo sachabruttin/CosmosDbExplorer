@@ -72,6 +72,7 @@ namespace DocumentDbExplorer.ViewModel
                             vm.AccountSecret = Connection.AuthenticationKey;
                             vm.Label = Connection.Label;
                             vm.UseLocalEmulator = Connection.IsLocalEmulator();
+                            vm.ConnectionType = Connection.ConnectionType;
 
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {

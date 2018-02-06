@@ -4,16 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             xmlns:markup="clr-namespace:DocumentDbExplorer.Infrastructure.MarkupExtensions"
+             xmlns:models="clr-namespace:DocumentDbExplorer.Infrastructure.Models"
              DataContext="{Binding AccountSettings, Source={StaticResource Locator}}"
              mc:Ignorable="d" 
              Title="{Binding Title}" 
-             Width="400" Height="220"
+             Width="400" Height="250"
              ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
              Loaded="Window_Loaded">
     <StackPanel Orientation="Vertical" Margin="10">
         <TextBlock>Please enter your Azure DocumentDB endpoint and secret key.</TextBlock>
         <Grid Margin="0,10">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -33,8 +36,14 @@
             <Label Grid.Row="2" Grid.Column="0">Account Secret:</Label>
             <TextBox Grid.Row="2" Grid.Column="1" Height="22" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      IsReadOnly="{Binding UseLocalEmulator}"/>
+
+            <Label Grid.Row="3" Grid.Column="0">Connection Type:</Label>
+            <ComboBox Grid.Row="3" Grid.Column="1" Height="22"
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type models:ConnectionType}}}"
+                      SelectedValue="{Binding ConnectionType}" />
         </Grid>
 
+        
         <CheckBox Content="Use local emulator" Margin="0,5" 
                   IsChecked="{Binding UseLocalEmulator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 

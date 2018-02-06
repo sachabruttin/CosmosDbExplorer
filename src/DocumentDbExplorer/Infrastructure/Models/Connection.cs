@@ -1,15 +1,19 @@
 ﻿using System;
+using System.ComponentModel;
+using DocumentDbExplorer.Infrastructure.MarkupExtensions;
+using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
     public class Connection : IEquatable<Connection>
     {
-        public Connection(string label, Uri endpoint, string secret)
+        public Connection(string label, Uri endpoint, string secret, ConnectionType connectionType)
         {
             Label = label;
             DatabaseUri = endpoint;
             AuthenticationKey = secret;
+            ConnectionType = connectionType;
         }
 
         [JsonProperty]
@@ -20,6 +24,9 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         [JsonProperty]
         public string AuthenticationKey { get; protected set; }
+
+        [JsonProperty]
+        public ConnectionType ConnectionType { get; protected set; }
 
         public bool IsLocalEmulator()
         {
@@ -36,5 +43,15 @@ namespace DocumentDbExplorer.Infrastructure.Models
         {
             return Label.GetHashCode();
         }
+    }
+
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    public enum ConnectionType
+    {
+        Gateway,
+        [Description("Direct HTTPS")]
+        DirectHttps,
+        [Description("Direct TCP")]
+        DirectTcp
     }
 }

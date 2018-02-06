@@ -127,6 +127,7 @@
     <Compile Include="Infrastructure\Behaviors\WatermarkBehavior.cs" />
     <Compile Include="Infrastructure\Constants.cs" />
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
+    <Compile Include="Infrastructure\Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\JsonHelpers\DocumentDbWithoutSystemPropertyResolver.cs" />
     <Compile Include="Infrastructure\JsonHelpers\OrderedDictionaryConverter.cs" />
     <Compile Include="Infrastructure\Converters\ActiveDocumentConverter.cs" />

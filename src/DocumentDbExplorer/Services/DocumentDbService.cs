@@ -9,6 +9,8 @@ using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json.Linq;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.ViewModel.Interfaces;
+using GalaSoft.MvvmLight.Messaging;
+using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.Services
 {
@@ -126,6 +128,17 @@ namespace DocumentDbExplorer.Services
     
     public class DocumentDbService : IDocumentDbService
     {
+        public DocumentDbService(IMessenger messenger)
+        {
+            messenger.Register<ConnectionSettingSavedMessage>(this, msg => 
+            {
+                if (_clientInstances.ContainsKey(msg.Connection))
+                {
+                    _clientInstances.Remove(msg.Connection);
+                }
+            });
+        }
+
         public async Task CleanCollection(Connection connection, DocumentCollection collection)
         {
             var sqlQuery = "SELECT * FROM c";
@@ -187,6 +200,12 @@ namespace DocumentDbExplorer.Services
         {
             if (!_clientInstances.ContainsKey(connection))
             {
+                var policy = new ConnectionPolicy
+                {
+                    ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
+                    ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp
+                };
+
                 _clientInstances.Add(connection, new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey));
             }
 

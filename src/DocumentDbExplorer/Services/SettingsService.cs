@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using Newtonsoft.Json;
 
@@ -64,7 +65,7 @@ namespace DocumentDbExplorer.Services
 
             if (existing != null)
             {
-                existing = connection;
+                connections.Replace(existing, connection);
             }
             else
             {

@@ -28,6 +28,7 @@ namespace DocumentDbExplorer.ViewModel
         public string AccountEndpoint { get; set; }
         public string AccountSecret { get; set; }
         public string Label { get; set; }
+        public ConnectionType ConnectionType { get; set; }
 
         public bool UseLocalEmulator
         {
@@ -65,7 +66,7 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_addAccountCommand = new RelayCommand(
                         async x =>
                         {
-                            var connection = new Connection(Label, new Uri(AccountEndpoint), AccountSecret);
+                            var connection = new Connection(Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType);
                             await _settingsService.SaveConnectionAsync(connection);
                             MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
                             Close();

@@ -130,8 +130,8 @@ namespace DocumentDbExplorer.ViewModel
 
                 ContinuationToken = _queryResult.ResponseContinuation;
 
-                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
-                QueryInformation = $"Returned {_queryResult.Count} documents." +
+                RequestCharge = $"Request Charge: {_queryResult.RequestCharge:N2}";
+                QueryInformation = $"Returned {_queryResult.Count:N0} document(s)." +
                                         (ContinuationToken != null
                                                 ? " (more results available)"
                                                 : string.Empty);

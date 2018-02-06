@@ -121,7 +121,7 @@ namespace DocumentDbExplorer.ViewModel
         private void SetStatusBar(ResourceResponse<Document> response)
         {
             RequestCharge = response != null 
-                ? $"Request Charge: {response.RequestCharge}"
+                ? $"Request Charge: {response.RequestCharge:N2}"
                 : null;
 
             EditorViewModel.SetText(response?.Resource, HideSystemProperties);
@@ -141,7 +141,7 @@ namespace DocumentDbExplorer.ViewModel
 
                 HasMore = list.HasMore;
                 ContinuationToken = list.ContinuationToken;
-                RequestCharge = $"Request Charge: {list.RequestCharge}";
+                RequestCharge = $"Request Charge: {list.RequestCharge:N2}";
 
                 foreach (var document in list)
                 {

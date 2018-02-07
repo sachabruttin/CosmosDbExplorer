@@ -65,6 +65,7 @@ namespace DocumentDbExplorer.ViewModel
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}";
+                    AccentColor = Node.Parent.Parent.Connection.AccentColor;
                 }
             }
         }

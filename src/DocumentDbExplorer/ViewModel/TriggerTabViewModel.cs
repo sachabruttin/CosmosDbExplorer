@@ -40,6 +40,7 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     _node = value;
                     Header = value.Name;
+                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
 
                     SetInformation();
                 }

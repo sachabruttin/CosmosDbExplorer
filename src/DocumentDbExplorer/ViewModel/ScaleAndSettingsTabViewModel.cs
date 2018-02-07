@@ -59,6 +59,8 @@ namespace DocumentDbExplorer.ViewModel
                     var split = Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}>{Title}";
 
+                    AccentColor = Connection.AccentColor;
+
                     SetInformation();
                 }
 

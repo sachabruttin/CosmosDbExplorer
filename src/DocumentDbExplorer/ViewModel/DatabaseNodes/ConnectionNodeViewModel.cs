@@ -73,6 +73,7 @@ namespace DocumentDbExplorer.ViewModel
                             vm.Label = Connection.Label;
                             vm.UseLocalEmulator = Connection.IsLocalEmulator();
                             vm.ConnectionType = Connection.ConnectionType;
+                            vm.AccentColor = Connection.AccentColor;
 
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {

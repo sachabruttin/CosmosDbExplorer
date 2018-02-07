@@ -29,6 +29,7 @@
             <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
             <converters:LogConverter x:Key="logConverter" />
             <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />
+            <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
 
             <ControlTemplate x:Key="ValidationTemplate">
                 <StackPanel Orientation="Horizontal">

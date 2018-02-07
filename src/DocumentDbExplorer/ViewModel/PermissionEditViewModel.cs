@@ -97,7 +97,7 @@ namespace DocumentDbExplorer.ViewModel
                     Header = value.Name ?? "New Permission";
                     Title = "Permission";
                     ContentId = value.ContentId;
-
+                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
                     SetInformation();
                 }
             }

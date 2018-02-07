@@ -1,19 +1,21 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure.MarkupExtensions;
-using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
+
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
     public class Connection : IEquatable<Connection>
     {
-        public Connection(string label, Uri endpoint, string secret, ConnectionType connectionType)
+        public Connection(string label, Uri endpoint, string secret, ConnectionType connectionType, Color? accentColor)
         {
             Label = label;
             DatabaseUri = endpoint;
             AuthenticationKey = secret;
             ConnectionType = connectionType;
+            AccentColor = accentColor;
         }
 
         [JsonProperty]
@@ -27,6 +29,9 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         [JsonProperty]
         public ConnectionType ConnectionType { get; protected set; }
+
+        [JsonProperty]
+        public Color? AccentColor { get; protected set; }
 
         public bool IsLocalEmulator()
         {

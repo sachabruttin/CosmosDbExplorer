@@ -74,17 +74,25 @@
         <selector:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
             <selector:DocumentHeaderTemplateSelector.ImageTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconSource}" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    </StackPanel>
+                    <DockPanel LastChildFill="True">
+                        <StackPanel Orientation="Horizontal">
+                            <Canvas Height="10" Width="10" Margin="0,0,2,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
+                                <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
+                            </Canvas>
+                            <Image Source="{Binding IconSource}" VerticalAlignment="Center" Margin="0,0,5,0" />
+                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DockPanel>
                 </DataTemplate>
             </selector:DocumentHeaderTemplateSelector.ImageTemplate>
 
             <selector:DocumentHeaderTemplateSelector.TextIconTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <ContentControl Content="{Binding Content.IconSource}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                        <Canvas Height="10" Width="10" Margin="0,0,5,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
+                            <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
+                        </Canvas>
+                        <ContentControl Content="{Binding Content.IconSource}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>

@@ -126,6 +126,7 @@
     <Compile Include="Infrastructure\Behaviors\DoubleClickTrigger.cs" />
     <Compile Include="Infrastructure\Behaviors\WatermarkBehavior.cs" />
     <Compile Include="Infrastructure\Constants.cs" />
+    <Compile Include="Infrastructure\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
     <Compile Include="Infrastructure\Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\JsonHelpers\DocumentDbWithoutSystemPropertyResolver.cs" />

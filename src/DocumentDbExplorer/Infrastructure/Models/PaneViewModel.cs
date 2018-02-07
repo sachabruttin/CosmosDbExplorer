@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Media;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -34,6 +35,8 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public ObservableCollection<StatusBarItem> StatusBarItems { get; protected set; } = new ObservableCollection<StatusBarItem>();
 
         public object IconSource { get; set; }
+
+        public Color? AccentColor { get; set; }
 
         public RelayCommand CloseCommand
         {

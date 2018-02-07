@@ -67,7 +67,7 @@ namespace DocumentDbExplorer.ViewModel
                     Header = value.Name ?? "New User";
                     Title = "User";
                     ContentId = value.ContentId;
-
+                    AccentColor = value.Parent.Parent.Parent.Connection.AccentColor;
                     SetInformation();
                 }
             }

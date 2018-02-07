@@ -96,12 +96,14 @@ namespace DocumentDbExplorer.ViewModel
         {
             if (message.PaneViewModel is DatabaseViewModel)
             {
-                IsTabToolsVisible = true;
+                IsRequestOptionsVisible = false;
+                IsConnectionOptionsVisible = true;
                 SelectedRibbonTab = 1;
             }
             else
             {
-                IsTabToolsVisible = false;
+                IsConnectionOptionsVisible = ShouldConnectionOptionBeVisible();
+                OnSelectedTabChanged();
                 SelectedRibbonTab = 0;
             }
         }
@@ -116,19 +118,18 @@ namespace DocumentDbExplorer.ViewModel
             UserNode = message.Item as UserNodeViewModel;
             CanEditDelete = message.Item as ICanEditDelete;
 
-            bool mustSelectRibbonTab()
-            {
-                return CanRefreshNodeViewModel != null
+            IsConnectionOptionsVisible = ShouldConnectionOptionBeVisible();
+        }
+
+        private bool ShouldConnectionOptionBeVisible()
+        {
+            return CanRefreshNodeViewModel != null
                                     || Connection != null
                                     || Database != null
                                     || Collection != null
                                     || CanEditDelete != null
                                     || Users != null
                                     || UserNode != null;
-            }
-
-            SelectedRibbonTab = mustSelectRibbonTab() ? 1 : 0;
-            IsTabToolsVisible = mustSelectRibbonTab();
         }
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
@@ -210,7 +211,6 @@ namespace DocumentDbExplorer.ViewModel
                 SelectedTab = content;
             }
         }
-
 
         private void OpenUserDefFunc(EditUserDefFuncMessage message)
         {
@@ -339,17 +339,19 @@ namespace DocumentDbExplorer.ViewModel
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
+            IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;
+            IsConnectionOptionsVisible = false; // Only visible when selecting a tab
         }
 
         public int SelectedRibbonTab { get; set; }
-
-        public bool IsTabToolsVisible { get; set; }
+        public bool IsConnectionOptionsVisible { get; set; }
         public bool IsTabDocumentsVisible { get; set; }
         public bool IsSettingsTabVisible { get; set; }
         public bool IsAssetTabVisible { get; set; }
         public bool IsQueryTabVisible { get; set; }
         public bool IsImportTabVisible { get; set; }
         public bool IsQuerySettingsVisible { get; set; }
+        public bool IsRequestOptionsVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

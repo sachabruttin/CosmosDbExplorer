@@ -191,6 +191,7 @@
     <Compile Include="ViewModel\Interfaces\IAssetTabCommand.cs" />
     <Compile Include="ViewModel\Interfaces\IHaveQuerySettings.cs" />
     <Compile Include="ViewModel\ImportDocumentViewModel.cs" />
+    <Compile Include="ViewModel\Interfaces\IHaveRequestOptions.cs" />
     <Compile Include="ViewModel\JsonEditorViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ScaleSettingsNodeViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

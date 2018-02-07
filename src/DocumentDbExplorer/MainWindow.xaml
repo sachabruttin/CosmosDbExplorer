@@ -8,6 +8,9 @@
                       xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
                       xmlns:pane="clr-namespace:DocumentDbExplorer.Views.Pane"
                       xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
+                      xmlns:markup="clr-namespace:DocumentDbExplorer.Infrastructure.MarkupExtensions"
+                      xmlns:clientSdk="clr-namespace:Microsoft.Azure.Documents.Client;assembly=Microsoft.Azure.Documents.Client"
+                      xmlns:sdk="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
                       mc:Ignorable="d"
                       Loaded="Window_Loaded"
                       Height="850" Width="1000"
@@ -169,13 +172,23 @@
                 </fluent:Backstage>
             </fluent:Ribbon.Menu>
 
+            <fluent:Ribbon.ContextualGroups>
+                <fluent:RibbonContextualTabGroup x:Name="optionsGroup" Header="Options"
+                                                 Background="Green" BorderBrush="Green"
+                                                 Visibility="{Binding IsRequestOptionsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+                <fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
+                                                 MinWidth="100"
+                                                 Background="Violet" BorderBrush="Violet"
+                                                 Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}" />
+            </fluent:Ribbon.ContextualGroups>
+            
             <fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
                 <!--<fluent:RibbonGroupBox Header="Account" KeyTip="A"
                                        IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
                     <fluent:Button Header="Edit" Command="{Binding Connection.EditConnectionCommand}" />
                     <fluent:Button Header="Remove" Command="{Binding Connection.RemoveConnectionCommand}" />
                 </fluent:RibbonGroupBox>-->
-
 
                 <fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
                                        Header="Clipboard" TabIndex="0">
@@ -394,7 +407,7 @@
                                     Visibility="{Binding SelectedTab.MaxItemCount, Converter={StaticResource nullToVisibilityConverter}}"
                                     HorizontalAlignment="Stretch"
                                     MinWidth="130"
-                                    Size="Large">
+                                    Size="Large" Margin="1">
                         <fluent:Spinner.ToolTip>
                             <fluent:ScreenTip Title="Max Item Count"
                                               Text="Sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service."
@@ -406,7 +419,8 @@
                                     Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
                                     HorizontalAlignment="Stretch"
-                                    Size="Large">
+                                    Size="Large"
+                                    Margin="1">
                         <fluent:Spinner.ToolTip>
                             <fluent:ScreenTip Title="Max Degree of Parallelism"
                                               Text="Sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
@@ -418,7 +432,7 @@
                                     Value="{Binding SelectedTab.MaxBufferItem, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxBufferItem, Converter={StaticResource nullToVisibilityConverter}}"
                                     HorizontalAlignment="Stretch" 
-                                    Size="Large">
+                                    Size="Large" Margin="1">
                         <fluent:Spinner.ToolTip>
                             <fluent:ScreenTip Title="Max Buffer"
                                               Text="Sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
@@ -430,7 +444,8 @@
 
             </fluent:RibbonTabItem>
 
-            <fluent:RibbonTabItem Header="Connections" Group="{Binding ElementName=tabTools, Mode=OneWay}">
+            <fluent:RibbonTabItem Header="Tools" 
+                                  Group="{Binding ElementName=connectionGroup, Mode=OneWay}">
 
                 <fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
                     <fluent:Button Command="{Binding RefreshCommand}"
@@ -458,7 +473,6 @@
                         </fluent:Button.LargeIcon>
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
-
 
                 <fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
                                        Header="Collection"
@@ -534,7 +548,62 @@ v
 
             </fluent:RibbonTabItem>
 
+            <fluent:RibbonTabItem Header="Request Options"
+                                  Group="{Binding ElementName=optionsGroup, Mode=OneWay}">
 
+                <fluent:RibbonGroupBox KeyTip="R" Header="Reset">
+                    <fluent:Button Header="Reset Options"
+                                   Command="{Binding SelectedTab.ResetRequestOptionsCommand}">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" />
+                        </fluent:Button.Icon>
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
+                
+
+                <fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
+                                       Grid.IsSharedSizeScope="True">
+                    <fluent:ComboBox Header="Indexing Directive" Width="220" Margin="1" 
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexingDirective}}}"
+                                     SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+                    
+                    <fluent:ComboBox Header="Consistency Level" Width="220" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:ConsistencyLevel}}}"
+                                     SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEditable="False"/>
+
+                    <fluent:TextBox Header="Partition Key" Width="220" Margin="1"
+                                    Text="{Binding SelectedTab.PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+
+
+                <fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
+                    <fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type clientSdk:AccessConditionType}}}"
+                                     SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+
+                    <fluent:TextBox Header="ETag" Margin="1"
+                                    Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
+                                       Grid.IsSharedSizeScope="True">
+                    <fluent:TextBox Header="Pre-Trigger" Width="220" Margin="1"
+                                    Text="{Binding SelectedTab.PreTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <fluent:TextBox Header="Post-Trigger" Width="220" Margin="1" 
+                                    Text="{Binding SelectedTab.PostTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+                
+            </fluent:RibbonTabItem>
         </fluent:Ribbon>
 
         <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center" 

@@ -5,20 +5,23 @@ using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Services.DialogSettings;
+using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel
+    public class ImportDocumentViewModel : PaneWithZoomViewModel, IHaveRequestOptions
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private CollectionNodeViewModel _node;
         private RelayCommand _openFileCommand;
+        private RelayCommand _resetRequestOptionsCommand;
 
         public ImportDocumentViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
@@ -59,7 +62,7 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             try
                             {
-                                var count = await _dbService.ImportDocument(Connection, Node.Collection, Content.Text);
+                                var count = await _dbService.ImportDocument(Connection, Node.Collection, Content.Text, this);
                                 await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import");
                             }
                             catch (DocumentClientException clientEx)
@@ -110,6 +113,33 @@ namespace DocumentDbExplorer.ViewModel
                                 });
                         }
                         ));
+            }
+        }
+
+        public IndexingDirective? IndexingDirective { get; set; }
+        public ConsistencyLevel? ConsistencyLevel { get; set; }
+        public string PartitionKey { get; set; }
+        public AccessConditionType? AccessConditionType { get; set; }
+        public string AccessCondition { get; set; }
+        public string PreTrigger { get; set; }
+        public string PostTrigger { get; set; }
+
+        public RelayCommand ResetRequestOptionsCommand
+        {
+            get
+            {
+                return _resetRequestOptionsCommand
+                    ?? (_resetRequestOptionsCommand = new RelayCommand(
+                        x =>
+                        {
+                            IndexingDirective = null;
+                            ConsistencyLevel = null;
+                            PartitionKey = null;
+                            AccessConditionType = null;
+                            AccessCondition = null;
+                            PreTrigger = null;
+                            PostTrigger = null;
+                        }));
             }
         }
     }

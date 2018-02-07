@@ -19,7 +19,7 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneWithZoomViewModel, IHaveQuerySettings
+    public class DocumentsTabViewModel : PaneWithZoomViewModel, IHaveQuerySettings, IHaveRequestOptions
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
@@ -37,6 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _saveLocalCommand;
         private DocumentNodeViewModel _node;
         private ResourceResponse<Document> _currentDocument;
+        private RelayCommand _resetRequestOptionsCommand;
 
         public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -83,12 +84,26 @@ namespace DocumentDbExplorer.ViewModel
         {
             if (SelectedDocument != null)
             {
+                IsRunning = true;
+
                 if (_currentDocument?.Resource.Id != SelectedDocument.Id)
                 {
-                    _currentDocument = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                    try
+                    {
+                        _currentDocument = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                    }
+                    catch (DocumentClientException clientEx)
+                    {
+                        await _dialogService.ShowError(clientEx.Parse(), "Error", null, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error", "ok", null);
+                    }
                 }
 
                 SetStatusBar(_currentDocument);
+                IsRunning = false;
             }
             else
             {
@@ -120,7 +135,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void SetStatusBar(ResourceResponse<Document> response)
         {
-            RequestCharge = response != null 
+            RequestCharge = response != null
                 ? $"Request Charge: {response.RequestCharge:N2}"
                 : null;
 
@@ -174,7 +189,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public long TotalItemsCount { get; set; }
         public long ItemsCount => Documents.Count;
-        
+
         public DocumentEditorViewModel EditorViewModel { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
@@ -249,7 +264,7 @@ namespace DocumentDbExplorer.ViewModel
                             IsRunning = true;
                             try
                             {
-                                var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text);
+                                var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text, this);
                                 var document = response.Resource;
 
                                 SetStatusBar(response);
@@ -303,11 +318,11 @@ namespace DocumentDbExplorer.ViewModel
                                         SelectedDocument = null;
 
                                         SetStatusBar(response);
-                                        EditorViewModel.SetText(new { result = $"Document '{documentId}' deleted"}, HideSystemProperties);
+                                        EditorViewModel.SetText(new { result = $"Document '{documentId}' deleted" }, HideSystemProperties);
                                     });
                                 }
                             });
-                        }, 
+                        },
                         x => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
             }
         }
@@ -417,5 +432,34 @@ namespace DocumentDbExplorer.ViewModel
             ContinuationToken = null;
             Documents.Clear();
         }
+
+
+        public RelayCommand ResetRequestOptionsCommand
+        {
+            get
+            {
+                return _resetRequestOptionsCommand
+                    ?? (_resetRequestOptionsCommand = new RelayCommand(
+                        x =>
+                        {
+                            var instance = ((IHaveRequestOptions)this);
+                            instance.IndexingDirective = null;
+                            instance.ConsistencyLevel = null;
+                            instance.PartitionKey = null;
+                            instance.AccessConditionType = null;
+                            instance.AccessCondition = null;
+                            instance.PreTrigger = null;
+                            instance.PostTrigger = null;
+                        }));
+            }
+        }
+
+        IndexingDirective? IHaveRequestOptions.IndexingDirective { get; set; }
+        ConsistencyLevel? IHaveRequestOptions.ConsistencyLevel { get; set; }
+        string IHaveRequestOptions.PartitionKey { get; set; }
+        AccessConditionType? IHaveRequestOptions.AccessConditionType { get; set; }
+        string IHaveRequestOptions.AccessCondition { get; set; }
+        string IHaveRequestOptions.PreTrigger { get; set; }
+        string IHaveRequestOptions.PostTrigger { get; set; }
     }
 }

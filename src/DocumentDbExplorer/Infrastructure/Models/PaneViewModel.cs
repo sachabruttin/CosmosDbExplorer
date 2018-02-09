@@ -10,14 +10,22 @@ namespace DocumentDbExplorer.Infrastructure.Models
     public class PaneViewModel : ViewModelBase
     {
         private RelayCommand _closeCommand;
+        private readonly StatusBarItem _pathStatusBarItem;
 
         public PaneViewModel(IMessenger messenger) : base(messenger)
         {
+            _pathStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = ToolTip, IsVisible = true }, StatusBarItemType.SimpleText, "Path", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_pathStatusBarItem);
         }
 
         public string Title { get; set; }
 
         public string ToolTip { get; set; }
+
+        public virtual void OnToolTipChanged()
+        {
+            _pathStatusBarItem.DataContext.Value = ToolTip;
+        }
 
         public string Header { get; set; }
 

@@ -27,6 +27,11 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public object Value { get; set; }
     }
 
+    public class StatusBarItemContextCancellableCommand : StatusBarItemContext
+    {
+        public bool IsCancellable { get; set; }
+    }
+
     public enum StatusBarItemType
     {
         UsedMemory,

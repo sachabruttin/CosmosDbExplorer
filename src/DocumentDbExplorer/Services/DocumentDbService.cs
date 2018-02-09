@@ -11,6 +11,7 @@ using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using DocumentDbExplorer.Messages;
+using System.Threading;
 
 namespace DocumentDbExplorer.Services
 {
@@ -28,13 +29,13 @@ namespace DocumentDbExplorer.Services
 
         Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content, IHaveRequestOptions requestOptions);
 
-        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings,  string continuationToken);
+        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings,  string continuationToken, CancellationToken cancellationToken);
 
         Task<ResourceResponse<Document>> DeleteDocument(Connection connection, DocumentDescription document);
 
         Task CleanCollection(Connection connection, DocumentCollection collection);
 
-        Task<int> ImportDocument(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions);
+        Task<int> ImportDocument(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken);
 
         Task<IList<StoredProcedure>> GetStoredProcedures(Connection connection, DocumentCollection collection);
 
@@ -173,7 +174,7 @@ namespace DocumentDbExplorer.Services
             return await GetClient(connection).DeleteDocumentAsync(document.SelfLink, options);
         }
 
-        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings, string continuationToken)
+        public async Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings, string continuationToken, CancellationToken cancellationToken)
         {
             var feedOptions = new FeedOptions
             {
@@ -183,15 +184,13 @@ namespace DocumentDbExplorer.Services
                 MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
                 MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
                 RequestContinuation = continuationToken,
-                PopulateQueryMetrics = true,
+                PopulateQueryMetrics = true,               
             };
 
-            var result = await GetClient(connection)
+            return await GetClient(connection)
                                     .CreateDocumentQuery(collection.DocumentsLink, query, feedOptions)                                            
                                     .AsDocumentQuery()
-                                    .ExecuteNextAsync();
-
-            return result;                              
+                                    .ExecuteNextAsync(cancellationToken);
         }
 
         private static Dictionary<Connection, DocumentClient> _clientInstances = new Dictionary<Connection, DocumentClient>();
@@ -206,7 +205,10 @@ namespace DocumentDbExplorer.Services
                     ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp
                 };
 
-                _clientInstances.Add(connection, new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy));
+                var client = new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy);
+                client.OpenAsync();
+
+                _clientInstances.Add(connection, client);
             }
 
             return _clientInstances[connection];
@@ -273,7 +275,7 @@ namespace DocumentDbExplorer.Services
             return list;
         }
 
-        public async Task<int> ImportDocument(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions)
+        public async Task<int> ImportDocument(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken)
         {
             var client = GetClient(connection);
             var documents = GetDocuments(content).ToList();
@@ -282,7 +284,12 @@ namespace DocumentDbExplorer.Services
 
             foreach (var document in documents)
             {
-                await client.UpsertDocumentAsync(collection.SelfLink, document, options);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                await client.UpsertDocumentAsync(collection.SelfLink, document, options, disableAutomaticIdGeneration: true);
             }
 
             return documents.Count;

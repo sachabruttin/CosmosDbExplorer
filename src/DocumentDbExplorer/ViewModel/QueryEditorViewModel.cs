@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
@@ -31,6 +32,8 @@ namespace DocumentDbExplorer.ViewModel
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
+        private CancellationTokenSource _cancellationToken;
+        private RelayCommand _cancelCommand;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -48,7 +51,7 @@ namespace DocumentDbExplorer.ViewModel
             StatusBarItems.Add(_requestChargeStatusBarItem);
             _queryInformationStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = QueryInformation, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_queryInformationStatusBarItem);
-            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = IsRunning, IsVisible = IsRunning }, StatusBarItemType.ProgessBar, "Progess", System.Windows.Controls.Dock.Left);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
@@ -85,6 +88,15 @@ namespace DocumentDbExplorer.ViewModel
             _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
             _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
             _queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
+
+            if (IsRunning)
+            {
+                _cancellationToken = new CancellationTokenSource();
+            }
+            else
+            {
+                _cancellationToken = null;
+            }
         }
 
         public JsonViewerViewModel EditorViewModel { get; set; }
@@ -120,14 +132,28 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
+        public RelayCommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(
+                    x => _cancellationToken.Cancel(),
+                    x => IsRunning));
+            }
+        }
+
         private async Task ExecuteQueryAsync(string token)
         {
             try
             {
                 IsRunning = true;
-                
+
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
+
                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this, token);
+                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this, token, _cancellationToken.Token);
+
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 
                 ContinuationToken = _queryResult.ResponseContinuation;
 
@@ -152,6 +178,15 @@ namespace DocumentDbExplorer.ViewModel
 
                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
                 HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
+            }
+            catch (OperationCanceledException)
+            {
+                ContinuationToken = null;
+                RequestCharge = null;
+                QueryInformation = null;
+                QueryMetrics = new Dictionary<string, string>();
+                EditorViewModel.SetText(null, HideSystemProperties);
+                HeaderViewModel.SetText(null, HideSystemProperties);
             }
             catch (DocumentClientException clientEx)
             {
@@ -201,16 +236,16 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             if (confirm)
                             {
-                                await DispatcherHelper.RunAsync(() =>
+                                await DispatcherHelper.RunAsync(async () =>
                                 {
                                     try
                                     {
                                         IsRunning = true;
                                         File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
                                     }
-                                    catch
-                                    { 
-                                        // TODO:
+                                    catch (Exception ex)
+                                    {
+                                        await _dialogService.ShowError(ex, "Error", "ok", null);
                                     }
                                     finally
                                     {

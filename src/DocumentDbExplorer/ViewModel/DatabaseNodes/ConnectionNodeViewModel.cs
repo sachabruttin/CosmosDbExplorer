@@ -50,7 +50,7 @@ namespace DocumentDbExplorer.ViewModel
             }
             catch (HttpRequestException ex)
             {
-                await _dialogService.ShowError(ex, "Error", null, null);
+                await DispatcherHelper.RunAsync(async () => await _dialogService.ShowError(ex, "Error", null, null));
             }
             finally
             {

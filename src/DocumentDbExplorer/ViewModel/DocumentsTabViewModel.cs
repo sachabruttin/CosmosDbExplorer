@@ -54,7 +54,7 @@ namespace DocumentDbExplorer.ViewModel
 
             _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
-            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = IsRunning, IsVisible = IsRunning }, StatusBarItemType.ProgessBar, "Progess", System.Windows.Controls.Dock.Left);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = IsRunning, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 

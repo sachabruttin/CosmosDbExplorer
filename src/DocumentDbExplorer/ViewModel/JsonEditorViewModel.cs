@@ -47,7 +47,7 @@ namespace DocumentDbExplorer.ViewModel
         {
         }
 
-        protected override string GetDocumentContent(dynamic content, bool removeSystemProperties)
+        protected override string GetDocumentContent(object content, bool removeSystemProperties)
         {
             if (content == null)
             {
@@ -60,7 +60,15 @@ namespace DocumentDbExplorer.ViewModel
                 Formatting = Formatting.Indented
             };
 
-            return JsonConvert.SerializeObject((FeedResponse<dynamic>)content, settings);
+            try
+            {
+                FeedResponse<Document> doc = (dynamic)content;
+                return JsonConvert.SerializeObject(doc, settings);
+            }
+            catch
+            {
+                return JsonConvert.SerializeObject(content, settings);
+            }
         }
     }
 

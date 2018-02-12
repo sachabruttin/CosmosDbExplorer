@@ -26,9 +26,11 @@ namespace DocumentDbExplorer.ViewModel
         
         public virtual void SetText(object content, bool removeSystemProperties)
         {
+            var text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+
             DispatcherHelper.RunAsync(() =>
             {
-                Content.Text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+                Content.Text = text;
                 RaisePropertyChanged(() => HasContent);
                 IsDirty = false;
             });
@@ -45,7 +47,7 @@ namespace DocumentDbExplorer.ViewModel
         {
         }
 
-        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        protected override string GetDocumentContent(dynamic content, bool removeSystemProperties)
         {
             if (content == null)
             {
@@ -58,17 +60,7 @@ namespace DocumentDbExplorer.ViewModel
                 Formatting = Formatting.Indented
             };
 
-            var json = JsonConvert.SerializeObject(content);
-
-            try
-            {
-                var documents = JsonConvert.DeserializeObject<Document[]>(json);
-                return JsonConvert.SerializeObject(documents, settings);
-            }
-            catch
-            {
-                return json;
-            }
+            return JsonConvert.SerializeObject((FeedResponse<dynamic>)content, settings);
         }
     }
 

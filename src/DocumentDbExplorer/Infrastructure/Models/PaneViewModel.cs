@@ -70,7 +70,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
     {
         public PaneWithZoomViewModel(IMessenger messenger) : base(messenger)
         {
-            StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, null, System.Windows.Controls.Dock.Right));
+            StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, "Zoom", System.Windows.Controls.Dock.Right));
         }
 
         public double Zoom { get; set; } = 0.5;

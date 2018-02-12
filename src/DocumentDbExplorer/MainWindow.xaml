@@ -626,7 +626,7 @@ v
         <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center" 
                           ItemsSource="{Binding SelectedTab.StatusBarItems}"
                           ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
-                          UsesItemContainerTemplate="False" >
+                          UsesItemContainerTemplate="True"  >
             <fluent:StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel LastChildFill="False" />
@@ -635,6 +635,7 @@ v
             <fluent:StatusBar.ItemContainerStyle>
                 <Style TargetType="fluent:StatusBarItem">
                     <Setter Property="DockPanel.Dock" Value="{Binding Dock}" />
+                    <Setter Property="Title" Value="{Binding Title}" />
                 </Style>
             </fluent:StatusBar.ItemContainerStyle>
 

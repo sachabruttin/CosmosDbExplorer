@@ -20,7 +20,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public Dock Dock { get; set; } 
     }
 
-    public class StatusBarItemContext : ViewModelBase
+    public class StatusBarItemContext : ObservableObject
     {
         public bool IsVisible { get; set; }
 

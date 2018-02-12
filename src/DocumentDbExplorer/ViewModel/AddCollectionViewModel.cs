@@ -37,37 +37,42 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsFixedStorage { get; set; }
 
+        public void OnIsFixedStorageChanged()
+        {
+            if (Throughput > 10000)
+            {
+                Throughput = 10000;
+            }
+
+            RaisePropertyChanged(() => MinThroughput);
+            RaisePropertyChanged(() => MaxThroughput);
+        }
+
         public bool IsUnlimitedStorage { get; set; }
+
+        public void OnIsUnlimitedStorageChanged()
+        {
+            if (Throughput < 1000)
+            {
+                Throughput = 1000;
+            }
+
+            RaisePropertyChanged(() => MinThroughput);
+            RaisePropertyChanged(() => MaxThroughput);
+        }
 
         public string PartitionKey { get; set; }
 
-        public int MaxThroughput => IsFixedStorage ? 10000 : 50000; 
+        public int MaxThroughput => IsFixedStorage ? 10000 : 100000; 
 
         public int MinThroughput => IsFixedStorage ? 400 : 1000; 
 
         public int Throughput { get; set; }
 
-        public void OnPropertyChanged(string propertyName, object before, object after)
+        public void OnThroughputChanged()
         {
-            if (propertyName == "IsFixedStorage" && (bool)after)
-            {
-                if (Throughput > 10000)
-                {
-                    Throughput = 10000;
-                }
-            }
-
-            if (propertyName == "IsUnlimitedStorage" && (bool)after)
-            {
-                if (Throughput < 1000)
-                {
-                    Throughput = 1000;
-                }
-            }
-
-            RaisePropertyChanged(() => MinThroughput);
-            RaisePropertyChanged(() => MaxThroughput);
-            RaisePropertyChanged(() => Throughput);
+            const decimal hourly = 0.00008m;
+            EstimatedPrice = $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
         }
 
         public RelayCommand SaveCommand
@@ -119,6 +124,8 @@ namespace DocumentDbExplorer.ViewModel
                 RaisePropertyChanged(() => SelectedDatabase);
             }
         }
+
+        public string EstimatedPrice { get; set; }
     }
 
     public class AddCollectionViewModelValidator : AbstractValidator<AddCollectionViewModel>
@@ -130,6 +137,8 @@ namespace DocumentDbExplorer.ViewModel
             RuleFor(x => x.Throughput).NotEmpty()
                                       .Must(throughput => throughput % 100 == 0)
                                       .WithMessage("Throughput must be a multiple of 100");
+            RuleFor(x => x.PartitionKey).NotEmpty()
+                                        .When(x => x.IsUnlimitedStorage);
         }
     }
 }

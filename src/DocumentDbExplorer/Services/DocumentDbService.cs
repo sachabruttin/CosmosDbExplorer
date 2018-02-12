@@ -73,6 +73,8 @@ namespace DocumentDbExplorer.Services
         Task<Permission> SavePermission(Connection connection, User user, Permission permission);
 
         Task DeletePermission(Connection connection, Permission permission);
+
+        Task<int> GetPartitionKeyRangeCount(Connection connection, DocumentCollection collection);
     }
 
     public class DocumentDescriptionList : List<DocumentDescription>
@@ -494,5 +496,24 @@ namespace DocumentDbExplorer.Services
             return GetClient(connection).DeletePermissionAsync(permission.SelfLink);
         }
 
+        public async Task<int> GetPartitionKeyRangeCount(Connection connection, DocumentCollection collection)
+        {
+            var client = GetClient(connection);
+            FeedResponse<PartitionKeyRange> response;
+            var result = 0;
+
+            do
+            {
+                response = await client.ReadPartitionKeyRangeFeedAsync(collection.SelfLink, new FeedOptions { MaxItemCount = 1000 });
+
+                foreach (var item in response)
+                {
+                    result++;
+                }
+            }
+            while (!string.IsNullOrEmpty(response.ResponseContinuation));
+
+            return result;
+        }
     }
 }

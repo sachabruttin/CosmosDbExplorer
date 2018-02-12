@@ -69,7 +69,7 @@ namespace DocumentDbExplorer.ViewModel
 
                     PartitionKey = Node.Parent.Collection.PartitionKey?.Paths.FirstOrDefault();
                     var split = Node.Parent.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                    ToolTip = $"{split[1]}>{split[3]}";
                     AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
                 }
             }

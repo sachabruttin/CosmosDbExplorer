@@ -47,7 +47,7 @@ namespace DocumentDbExplorer.ViewModel
             UserId = _node?.User?.Id;
 
             var split = _node.Parent.Database.AltLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{Title}";
+            ToolTip = $"{split[1]}";
 
             IsDirty = false;
         }

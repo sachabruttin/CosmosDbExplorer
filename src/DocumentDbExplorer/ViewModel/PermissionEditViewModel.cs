@@ -77,7 +77,7 @@ namespace DocumentDbExplorer.ViewModel
             ResourcePartitionKey = Permission?.ResourcePartitionKey?.ToString();
 
             var split = _node.Parent.User.AltLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{split[3]}>{Title}";
+            ToolTip = $"{split[1]}>{split[3]}";
 
             IsDirty = false;
         }

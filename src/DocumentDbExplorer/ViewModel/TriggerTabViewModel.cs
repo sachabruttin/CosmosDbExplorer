@@ -56,7 +56,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 _collection = value;
                 var split = value.AltLink.Split(new char[] { '/' });
-                ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                ToolTip = $"{split[1]}>{split[3]}";
             }
         }
 

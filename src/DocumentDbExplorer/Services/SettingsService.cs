@@ -76,10 +76,9 @@ namespace DocumentDbExplorer.Services
 
         private async Task SaveAsync(IEnumerable<Connection> connections)
         {
-
             var json = JsonConvert.SerializeObject(connections);
 
-            using (var fs = File.Open(_configurationFilePath, FileMode.Truncate))
+            using (var fs = File.Open(_configurationFilePath, FileMode.Create))
             {
                 var info = new UTF8Encoding(true).GetBytes(json);
                 await fs.WriteAsync(info, 0, info.Length);

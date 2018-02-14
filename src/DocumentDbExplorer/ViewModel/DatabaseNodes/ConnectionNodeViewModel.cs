@@ -50,7 +50,7 @@ namespace DocumentDbExplorer.ViewModel
             }
             catch (HttpRequestException ex)
             {
-                await _dialogService.ShowError(ex, "Error", null, null);
+                await DispatcherHelper.RunAsync(async () => await _dialogService.ShowError(ex, "Error", null, null));
             }
             finally
             {
@@ -72,6 +72,8 @@ namespace DocumentDbExplorer.ViewModel
                             vm.AccountSecret = Connection.AuthenticationKey;
                             vm.Label = Connection.Label;
                             vm.UseLocalEmulator = Connection.IsLocalEmulator();
+                            vm.ConnectionType = Connection.ConnectionType;
+                            vm.AccentColor = Connection.AccentColor;
 
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {

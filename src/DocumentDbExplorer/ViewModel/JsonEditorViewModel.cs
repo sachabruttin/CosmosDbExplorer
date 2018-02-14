@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
@@ -26,9 +27,11 @@ namespace DocumentDbExplorer.ViewModel
         
         public virtual void SetText(object content, bool removeSystemProperties)
         {
+            var text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+
             DispatcherHelper.RunAsync(() =>
             {
-                Content.Text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
+                Content.Text = text;
                 RaisePropertyChanged(() => HasContent);
                 IsDirty = false;
             });
@@ -58,16 +61,14 @@ namespace DocumentDbExplorer.ViewModel
                 Formatting = Formatting.Indented
             };
 
-            var json = JsonConvert.SerializeObject(content);
-
             try
             {
-                var documents = JsonConvert.DeserializeObject<Document[]>(json);
-                return JsonConvert.SerializeObject(documents, settings);
+                FeedResponse<Document> doc = (dynamic)content;
+                return JsonConvert.SerializeObject(doc, settings);
             }
             catch
             {
-                return json;
+                return JsonConvert.SerializeObject(content, settings);
             }
         }
     }

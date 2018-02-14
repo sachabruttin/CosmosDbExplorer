@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Media;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -9,14 +10,22 @@ namespace DocumentDbExplorer.Infrastructure.Models
     public class PaneViewModel : ViewModelBase
     {
         private RelayCommand _closeCommand;
+        private readonly StatusBarItem _pathStatusBarItem;
 
         public PaneViewModel(IMessenger messenger) : base(messenger)
         {
+            _pathStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = ToolTip, IsVisible = true }, StatusBarItemType.SimpleText, "Path", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_pathStatusBarItem);
         }
 
         public string Title { get; set; }
 
         public string ToolTip { get; set; }
+
+        public virtual void OnToolTipChanged()
+        {
+            _pathStatusBarItem.DataContext.Value = ToolTip;
+        }
 
         public string Header { get; set; }
 
@@ -34,6 +43,8 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public ObservableCollection<StatusBarItem> StatusBarItems { get; protected set; } = new ObservableCollection<StatusBarItem>();
 
         public object IconSource { get; set; }
+
+        public Color? AccentColor { get; set; }
 
         public RelayCommand CloseCommand
         {
@@ -59,7 +70,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
     {
         public PaneWithZoomViewModel(IMessenger messenger) : base(messenger)
         {
-            StatusBarItems.Add(new StatusBarItem(this, StatusBarItemType.Zoom, null, System.Windows.Controls.Dock.Right));
+            StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, "Zoom", System.Windows.Controls.Dock.Right));
         }
 
         public double Zoom { get; set; } = 0.5;

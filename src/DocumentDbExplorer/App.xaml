@@ -29,6 +29,7 @@
             <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
             <converters:LogConverter x:Key="logConverter" />
             <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />
+            <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
 
             <ControlTemplate x:Key="ValidationTemplate">
                 <StackPanel Orientation="Horizontal">
@@ -145,6 +146,10 @@
 
             <Style x:Key="RefreshIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
                 <Setter Property="Text" Value="&#xE72C;" />
+            </Style>
+
+            <Style x:Key="NextPageIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
+                <Setter Property="Text" Value="&#xE893;" />
             </Style>
 
             <DrawingImage x:Key="DocumentIcon">
@@ -468,6 +473,20 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
+            <DrawingImage x:Key="StopIcon">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
+                            <GeometryDrawing Brush="#FFE41400" Geometry="F1M11,11L5,11 5,5 11,5z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                            <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M11,11L5,11 5,5 11,5z" />
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+            
+            
             <TextBlock x:Key="ImportIcon" Style="{StaticResource ImportDocumentIcon}" />
             <TextBlock x:Key="DeleteIconText" Style="{StaticResource DeleteIcon}" />
             <TextBlock x:Key="EditIconText" Style="{StaticResource EditIcon}" />

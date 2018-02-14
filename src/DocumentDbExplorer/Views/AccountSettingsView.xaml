@@ -4,16 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
-             DataContext="{Binding AccountSettings, Source={StaticResource Locator}}"
+             xmlns:markup="clr-namespace:DocumentDbExplorer.Infrastructure.MarkupExtensions"
+             xmlns:models="clr-namespace:DocumentDbExplorer.Infrastructure.Models"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        DataContext="{Binding AccountSettings, Source={StaticResource Locator}}"
              mc:Ignorable="d" 
              Title="{Binding Title}" 
-             Width="400" Height="220"
+             Width="400" SizeToContent="Height"
              ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
              Loaded="Window_Loaded">
-    <StackPanel Orientation="Vertical" Margin="10">
-        <TextBlock>Please enter your Azure DocumentDB endpoint and secret key.</TextBlock>
-        <Grid Margin="0,10">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0">Please enter your Azure DocumentDB endpoint and secret key.</TextBlock>
+        <Grid Margin="0,10" Grid.Row="1">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -33,14 +44,24 @@
             <Label Grid.Row="2" Grid.Column="0">Account Secret:</Label>
             <TextBox Grid.Row="2" Grid.Column="1" Height="22" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      IsReadOnly="{Binding UseLocalEmulator}"/>
+
+            <Label Grid.Row="3" Grid.Column="0">Connection Type:</Label>
+            <ComboBox Grid.Row="3" Grid.Column="1" Height="22"
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type models:ConnectionType}}}"
+                      SelectedValue="{Binding ConnectionType}" />
+
+            <Label Grid.Row="4" Grid.Column="0">Accent Color:</Label>
+            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" Height="22"
+                              DisplayColorAndName="False" SelectedColor="{Binding AccentColor}"/>
         </Grid>
 
-        <CheckBox Content="Use local emulator" Margin="0,5" 
+        
+        <CheckBox Content="Use local emulator" Margin="0,5" Grid.Row="2"
                   IsChecked="{Binding UseLocalEmulator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10">
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10" Grid.Row="3">
             <Button Content="OK" IsDefault="True" Width="80" Command="{Binding AddAccountCommand}"  />
             <Button Content="Cancel" IsCancel="True" Width="80" Margin="20,0,0,0" />
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

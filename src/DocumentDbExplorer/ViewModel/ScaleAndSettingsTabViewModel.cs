@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
@@ -57,7 +58,9 @@ namespace DocumentDbExplorer.ViewModel
                     Collection = value.Parent.Collection;
 
                     var split = Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}>{Title}";
+                    ToolTip = $"{split[1]}>{split[3]}";
+
+                    AccentColor = Connection.AccentColor;
 
                     SetInformation();
                 }
@@ -84,13 +87,41 @@ namespace DocumentDbExplorer.ViewModel
 
         public int Throughput { get; set; }
 
+        public void OnThroughputChanged()
+        {
+            const decimal hourly = 0.00008m;
+            EstimatedPrice = $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
+        }
+
         public string PartitionKey { get; set; }
 
         public bool IsFixedStorage { get; set; }
 
-        public int MaxThroughput => IsFixedStorage ? 10000 : 50000;
+        public int PartitionCount { get; set; }
 
-        public int MinThroughput => IsFixedStorage ? 400 : 1000;
+        public void OnPartitionCountChanged()
+        {
+            RaisePropertyChanged(() => MaxThroughput);
+            RaisePropertyChanged(() => MinThroughput);
+        }
+
+        public int MaxThroughput
+        {
+            get
+            {
+                return PartitionCount * 10000;
+            }
+        }
+
+        public int MinThroughput
+        {
+            get
+            {
+                return IsFixedStorage ? 400 : Math.Max(1000, PartitionCount * 100);
+            }
+        }
+
+        public string EstimatedPrice { get; set; }
 
         public int? TimeToLiveInSecond { get; set; }
 
@@ -119,7 +150,15 @@ namespace DocumentDbExplorer.ViewModel
         public async Task LoadDataAsync()
         {
             IsLoading = true;
-            Throughput = await _dbService.GetThroughput(Connection, Collection);
+
+            var throughputTask = _dbService.GetThroughput(Connection, Collection);
+            var partitionTask = _dbService.GetPartitionKeyRangeCount(Connection, Collection);
+
+            var result = await Task.WhenAll(throughputTask, partitionTask);
+
+            PartitionCount = result[1];
+            Throughput = result[0];
+
             IsLoading = false;
         }
 

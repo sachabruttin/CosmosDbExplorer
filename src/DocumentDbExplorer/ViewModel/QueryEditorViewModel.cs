@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -25,8 +28,12 @@ namespace DocumentDbExplorer.ViewModel
         private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
         private FeedResponse<dynamic> _queryResult;
+        private RelayCommand _goToNextPageCommand;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
+        private readonly StatusBarItem _progessBarStatusBarItem;
+        private CancellationTokenSource _cancellationToken;
+        private RelayCommand _cancelCommand;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
@@ -40,10 +47,12 @@ namespace DocumentDbExplorer.ViewModel
             _dbService = dbService;
             _dialogService = dialogService;
 
-            _requestChargeStatusBarItem = new StatusBarItem(RequestCharge, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
-            _queryInformationStatusBarItem = new StatusBarItem(QueryInformation, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
+            _queryInformationStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = QueryInformation, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_queryInformationStatusBarItem);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
         public CollectionNodeViewModel Node
@@ -59,6 +68,7 @@ namespace DocumentDbExplorer.ViewModel
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}";
+                    AccentColor = Node.Parent.Parent.Connection.AccentColor;
                 }
             }
         }
@@ -71,6 +81,24 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsDirty { get; set; }
 
+        public bool IsRunning { get; set; }
+
+        public void OnIsRunningChanged()
+        {
+            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
+            _queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
+
+            if (IsRunning)
+            {
+                _cancellationToken = new CancellationTokenSource();
+            }
+            else
+            {
+                _cancellationToken = null;
+            }
+        }
+
         public JsonViewerViewModel EditorViewModel { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
@@ -79,17 +107,19 @@ namespace DocumentDbExplorer.ViewModel
 
         public void OnRequestChargeChanged()
         {
-            _requestChargeStatusBarItem.DataContext = RequestCharge;
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
         }
 
         public string QueryInformation { get; set; }
 
         public void OnQueryInformationChanged()
         {
-            _queryInformationStatusBarItem.DataContext = QueryInformation;
+            _queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
-        public ResponseContinuation ContinuationToken { get; set; }
+        public string ContinuationToken { get; set; }
+
+        public Dictionary<string, string> QueryMetrics { get; set; }
 
         public RelayCommand ExecuteCommand
         {
@@ -97,34 +127,90 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async x =>
-                        {
-                            try
-                            {
-                                var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, EnableCrossPartitionQuery, EnableScanInQuery);
+                        async x => await ExecuteQueryAsync(null),
+                        x => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+            }
+        }
 
-                                RequestCharge = $"Request Charge: {_queryResult.RequestCharge}";
-                                ContinuationToken = JsonConvert.DeserializeObject<ResponseContinuation>(_queryResult.ResponseContinuation ?? string.Empty);
+        public RelayCommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(
+                    x => _cancellationToken.Cancel(),
+                    x => IsRunning));
+            }
+        }
 
-                                QueryInformation = $"Returned {_queryResult.Count} documents." + 
-                                                        (ContinuationToken?.Token != null 
-                                                                ?" (more results available)" 
-                                                                : string.Empty);
+        private async Task ExecuteQueryAsync(string token)
+        {
+            try
+            {
+                IsRunning = true;
 
-                                EditorViewModel.SetText(_queryResult, HideSystemProperties);
-                                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
-                            }
-                            catch (DocumentClientException clientEx)
-                            {
-                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
-                            }
-                            catch (Exception ex)
-                            {
-                                await _dialogService.ShowError(ex, "Error", "ok", null);
-                            }
-                        },
-                        x => !string.IsNullOrEmpty(Content.Text)));
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
+
+                var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
+                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this, token, _cancellationToken.Token);
+
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
+
+                ContinuationToken = _queryResult.ResponseContinuation;
+
+                RequestCharge = $"Request Charge: {_queryResult.RequestCharge:N2}";
+                QueryInformation = $"Returned {_queryResult.Count:N0} document(s)." +
+                                        (ContinuationToken != null
+                                                ? " (more results available)"
+                                                : string.Empty);
+
+                if (_queryResult.ResponseHeaders.AllKeys.Contains("x-ms-documentdb-query-metrics"))
+                {
+                    QueryMetrics = _queryResult.ResponseHeaders.GetValues("x-ms-documentdb-query-metrics")
+                                                             .First()
+                                                             .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                                             .Select(part => part.Split('='))
+                                                             .ToDictionary(split => split[0], split => split[1]);
+                }
+                else
+                {
+                    QueryMetrics = new Dictionary<string, string>();
+                }
+
+                EditorViewModel.SetText(_queryResult, HideSystemProperties);
+                HeaderViewModel.SetText(_queryResult.ResponseHeaders, HideSystemProperties);
+            }
+            catch (OperationCanceledException)
+            {
+                ContinuationToken = null;
+                RequestCharge = null;
+                QueryInformation = null;
+                QueryMetrics = new Dictionary<string, string>();
+                EditorViewModel.SetText(null, HideSystemProperties);
+                HeaderViewModel.SetText(null, HideSystemProperties);
+            }
+            catch (DocumentClientException clientEx)
+            {
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error", "ok", null);
+            }
+            finally
+            {
+                IsRunning = false;
+            }
+        }
+
+        public RelayCommand GoToNextPageCommand
+        {
+            get
+            {
+                return _goToNextPageCommand
+                    ?? (_goToNextPageCommand = new RelayCommand(
+                        async x => await ExecuteQueryAsync(ContinuationToken),
+                        x => ContinuationToken != null && !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+
             }
         }
 
@@ -150,14 +236,26 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             if (confirm)
                             {
-                                await DispatcherHelper.RunAsync(() =>
+                                await DispatcherHelper.RunAsync(async () =>
                                 {
-                                    File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    try
+                                    {
+                                        IsRunning = true;
+                                        File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        await _dialogService.ShowError(ex, "Error", "ok", null);
+                                    }
+                                    finally
+                                    {
+                                        IsRunning = false;
+                                    }
                                 });
                             }
                         });
                     },
-                    x => !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
+                    x => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
 
@@ -173,5 +271,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool? EnableScanInQuery { get; set; } = false;
         public bool? EnableCrossPartitionQuery { get; set; } = false;
+        public int? MaxItemCount { get; set; } = 100;
+        public int? MaxDOP { get; set; } = -1;
+        public int? MaxBufferItem { get; set; } = -1;
     }
 }

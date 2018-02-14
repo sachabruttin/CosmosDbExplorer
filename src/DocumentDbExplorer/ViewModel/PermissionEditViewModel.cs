@@ -77,7 +77,7 @@ namespace DocumentDbExplorer.ViewModel
             ResourcePartitionKey = Permission?.ResourcePartitionKey?.ToString();
 
             var split = _node.Parent.User.AltLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{split[3]}>{Title}";
+            ToolTip = $"{split[1]}>{split[3]}";
 
             IsDirty = false;
         }
@@ -97,7 +97,7 @@ namespace DocumentDbExplorer.ViewModel
                     Header = value.Name ?? "New Permission";
                     Title = "Permission";
                     ContentId = value.ContentId;
-
+                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
                     SetInformation();
                 }
             }

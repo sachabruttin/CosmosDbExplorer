@@ -45,12 +45,20 @@
                             <MenuItem Header="Remove Connection" Command="{Binding RemoveConnectionCommand}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
+
+                    <Canvas Height="10" Width="10" 
+                            Visibility="{Binding Connection.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
+                        <Ellipse Fill="{Binding Connection.AccentColor, Converter={StaticResource colorToBrushConverter}}" 
+                                 Width="10" Height="10"/>
+                    </Canvas>
+
                     <Image Width="16" Height="16" Margin="3,0" 
                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ConnectionIcon}" 
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
-                    
+                    <Image Width="16" Height="16" Source="{StaticResource ConnectionIcon}"
+                           Margin="3,0" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
+
+
                     <TextBlock Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
                 </StackPanel>
             </HierarchicalDataTemplate>

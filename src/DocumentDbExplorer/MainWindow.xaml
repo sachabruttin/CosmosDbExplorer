@@ -8,6 +8,9 @@
                       xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
                       xmlns:pane="clr-namespace:DocumentDbExplorer.Views.Pane"
                       xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
+                      xmlns:markup="clr-namespace:DocumentDbExplorer.Infrastructure.MarkupExtensions"
+                      xmlns:clientSdk="clr-namespace:Microsoft.Azure.Documents.Client;assembly=Microsoft.Azure.Documents.Client"
+                      xmlns:sdk="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
                       mc:Ignorable="d"
                       Loaded="Window_Loaded"
                       Height="850" Width="1000"
@@ -71,17 +74,25 @@
         <selector:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
             <selector:DocumentHeaderTemplateSelector.ImageTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconSource}" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    </StackPanel>
+                    <DockPanel LastChildFill="True">
+                        <StackPanel Orientation="Horizontal">
+                            <Canvas Height="10" Width="10" Margin="0,0,2,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
+                                <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
+                            </Canvas>
+                            <Image Source="{Binding IconSource}" VerticalAlignment="Center" Margin="0,0,5,0" />
+                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DockPanel>
                 </DataTemplate>
             </selector:DocumentHeaderTemplateSelector.ImageTemplate>
 
             <selector:DocumentHeaderTemplateSelector.TextIconTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <ContentControl Content="{Binding Content.IconSource}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                        <Canvas Height="10" Width="10" Margin="0,0,5,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
+                            <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
+                        </Canvas>
+                        <ContentControl Content="{Binding Content.IconSource}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
@@ -100,7 +111,7 @@
             <selector:StatusBarItemTemplateSelector.ZoomTemplate>
                 <DataTemplate>
                     <fluent:StatusBarItem Title="Zoom">
-                        <Grid DataContext="{Binding DataContext}">
+                        <Grid DataContext="{Binding DataContext.Value}" Margin="5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
@@ -126,10 +137,31 @@
             <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
                 <DataTemplate>
                     <fluent:StatusBarItem Title="{Binding Title}"
-                                  Margin="5,0"
-                                  Value="{Binding DataContext}" />
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}" 
+                                          Value="{Binding DataContext.Value}" />
                 </DataTemplate>
             </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+                <DataTemplate>
+                    <fluent:StatusBarItem Title="{Binding Title}" 
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <ProgressBar IsIndeterminate="True" Width="150" Height="12" VerticalAlignment="Center"/>
+                            <Button Command="{Binding DataContext.Value}" Margin="3,0" ToolTip="Stop Execution" Height="16"
+                                    BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                    Visibility="{Binding DataContext.IsCancellable, Converter={StaticResource boolToVisibilityConverter}}">
+                                <Button.Content>
+                                    <Image Source="{StaticResource StopIcon}" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+            
         </selector:StatusBarItemTemplateSelector>
     </Window.Resources>
 
@@ -157,13 +189,23 @@
                 </fluent:Backstage>
             </fluent:Ribbon.Menu>
 
+            <fluent:Ribbon.ContextualGroups>
+                <fluent:RibbonContextualTabGroup x:Name="optionsGroup" Header="Options"
+                                                 Background="Green" BorderBrush="Green"
+                                                 Visibility="{Binding IsRequestOptionsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+                <fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
+                                                 MinWidth="100"
+                                                 Background="Violet" BorderBrush="Violet"
+                                                 Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}" />
+            </fluent:Ribbon.ContextualGroups>
+            
             <fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
                 <!--<fluent:RibbonGroupBox Header="Account" KeyTip="A"
                                        IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
                     <fluent:Button Header="Edit" Command="{Binding Connection.EditConnectionCommand}" />
                     <fluent:Button Header="Remove" Command="{Binding Connection.RemoveConnectionCommand}" />
                 </fluent:RibbonGroupBox>-->
-
 
                 <fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
                                        Header="Clipboard" TabIndex="0">
@@ -315,11 +357,20 @@
 
                     <fluent:Button Header="Export"
                                    Command="{Binding SelectedTab.SaveLocalCommand}"
-                                   SizeDefinition="Large">
-                        <fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="32" />
-                        </fluent:Button.LargeIcon>
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
+                        </fluent:Button.Icon>
                     </fluent:Button>
+
+                    <fluent:Button Header="Next Page"
+                                   Command="{Binding SelectedTab.GoToNextPageCommand}"
+                                   SizeDefinition="Middle,Small">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource NextPageIcon}" FontSize="16" />
+                        </fluent:Button.Icon>
+                    </fluent:Button>
+
                 </fluent:RibbonGroupBox>
 
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Import"
@@ -342,20 +393,76 @@
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
-                <fluent:RibbonGroupBox KeyTip="X" Header="Settings"
-                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                <fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
+                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"
+                                       Grid.IsSharedSizeScope="True">
+                    
                     <fluent:CheckBox Header="Hide System Properties" IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
                     <fluent:CheckBox Header="Enable Scan In Query" 
                                      IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}">
+                        <fluent:CheckBox.ToolTip>
+                            <fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets the option to enable scans on the queries which couldn't be served as indexing was opted out on the requested paths in the Azure Cosmos DB service."
+                                              Width="190" />
+                        </fluent:CheckBox.ToolTip>
+                    </fluent:CheckBox>
+
                     <fluent:CheckBox Header="Enable Cross Partition Query" 
                                      IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}" />
+                                     IsEnabled="{Binding SelectedTab.EnableCrossPartitionQuery, Converter={StaticResource nullToEnabledConverter}}">
+                        <fluent:CheckBox.ToolTip>
+                            <fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets a value indicating whether users are enabled to send more than one request to execute the query in the Azure Cosmos DB service. More than one request is necessary if the query is not scoped to single partition key value."
+                                              Width="190" />
+                        </fluent:CheckBox.ToolTip>
+                    </fluent:CheckBox>
+
+                    <fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
+                                    Value="{Binding SelectedTab.MaxItemCount, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxItemCount, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="130"
+                                    Size="Large" Margin="1">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Item Count"
+                                              Text="Sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
+                    <fluent:Spinner Header="Max DoP" Minimum="-1" Format="N0" Increment="1"
+                                    Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch"
+                                    Size="Large"
+                                    Margin="1">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Degree of Parallelism"
+                                              Text="Sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
+                    <fluent:Spinner Header="Max Buffer" Minimum="-1" Format="N0" Increment="100"                  
+                                    Value="{Binding SelectedTab.MaxBufferItem, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxBufferItem, Converter={StaticResource nullToVisibilityConverter}}"
+                                    HorizontalAlignment="Stretch" 
+                                    Size="Large" Margin="1">
+                        <fluent:Spinner.ToolTip>
+                            <fluent:ScreenTip Title="Max Buffer"
+                                              Text="Sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
+                                              Width="190" />
+                        </fluent:Spinner.ToolTip>
+                    </fluent:Spinner>
+
                 </fluent:RibbonGroupBox>
 
             </fluent:RibbonTabItem>
 
-            <fluent:RibbonTabItem Header="Connections" Group="{Binding ElementName=tabTools, Mode=OneWay}">
+            <fluent:RibbonTabItem Header="Tools" 
+                                  Group="{Binding ElementName=connectionGroup, Mode=OneWay}">
 
                 <fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
                     <fluent:Button Command="{Binding RefreshCommand}"
@@ -384,7 +491,6 @@
                     </fluent:Button>
                 </fluent:RibbonGroupBox>
 
-
                 <fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
                                        Header="Collection"
                                        IsEnabled="{Binding Collection, Converter={StaticResource isNotNullToBooleanConverter}}">
@@ -397,7 +503,6 @@
                         <fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
                         <fluent:MenuItem Header="User Definied Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
                         <fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
-
                     </fluent:SplitButton>
 
                     <fluent:Button Header="SQL Query" 
@@ -460,13 +565,68 @@ v
 
             </fluent:RibbonTabItem>
 
+            <fluent:RibbonTabItem Header="Request Options"
+                                  Group="{Binding ElementName=optionsGroup, Mode=OneWay}">
 
+                <fluent:RibbonGroupBox KeyTip="R" Header="Reset">
+                    <fluent:Button Header="Reset Options"
+                                   Command="{Binding SelectedTab.ResetRequestOptionsCommand}">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" />
+                        </fluent:Button.Icon>
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
+                
+
+                <fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
+                                       Grid.IsSharedSizeScope="True">
+                    <fluent:ComboBox Header="Indexing Directive" Width="220" Margin="1" 
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexingDirective}}}"
+                                     SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+                    
+                    <fluent:ComboBox Header="Consistency Level" Width="220" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:ConsistencyLevel}}}"
+                                     SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEditable="False"/>
+
+                    <fluent:TextBox Header="Partition Key" Width="220" Margin="1"
+                                    Text="{Binding SelectedTab.PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+
+
+                <fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
+                    <fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type clientSdk:AccessConditionType}}}"
+                                     SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+
+                    <fluent:TextBox Header="ETag" Margin="1"
+                                    Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+
+                <fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
+                                       Grid.IsSharedSizeScope="True">
+                    <fluent:TextBox Header="Pre-Trigger" Width="220" Margin="1"
+                                    Text="{Binding SelectedTab.PreTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <fluent:TextBox Header="Post-Trigger" Width="220" Margin="1" 
+                                    Text="{Binding SelectedTab.PostTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                </fluent:RibbonGroupBox>
+                
+            </fluent:RibbonTabItem>
         </fluent:Ribbon>
 
         <fluent:StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Center" 
                           ItemsSource="{Binding SelectedTab.StatusBarItems}"
                           ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
-                          UsesItemContainerTemplate="False" >
+                          UsesItemContainerTemplate="True"  >
             <fluent:StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel LastChildFill="False" />
@@ -475,6 +635,7 @@ v
             <fluent:StatusBar.ItemContainerStyle>
                 <Style TargetType="fluent:StatusBarItem">
                     <Setter Property="DockPanel.Dock" Value="{Binding Dock}" />
+                    <Setter Property="Title" Value="{Binding Title}" />
                 </Style>
             </fluent:StatusBar.ItemContainerStyle>
 

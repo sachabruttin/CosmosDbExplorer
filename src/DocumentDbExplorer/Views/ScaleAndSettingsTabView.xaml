@@ -25,10 +25,13 @@
                         </TextBlock.Text>
                     </TextBlock>
                 </Label>
-                <xctk:IntegerUpDown Increment="100" Minimum="{Binding MinThroughput}" Maximum="{Binding MaxThroughput}" 
+                <xctk:IntegerUpDown Increment="1000" Minimum="{Binding MinThroughput}" Maximum="{Binding MaxThroughput}" 
                                     HorizontalAlignment="Left"
                                     Text="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Width="150" Margin="20,0"/>
+
+                <TextBlock Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
+                           Margin="20,0"/>
             </StackPanel>
         </Expander>
 

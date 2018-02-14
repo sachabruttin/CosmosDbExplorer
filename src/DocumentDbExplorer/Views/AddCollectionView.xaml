@@ -8,7 +8,8 @@
         xmlns:behaviors="clr-namespace:DocumentDbExplorer.Infrastructure.Behaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="370" Width="600"
+        Title="{Binding Title}" Width="600"
+        SizeToContent="Height"
         DataContext="{Binding AddCollection, Source={StaticResource Locator}}"
         Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
@@ -60,7 +61,8 @@
                                 Margin="20,0" Increment="100"
                                 Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-
+            <TextBlock Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
+                           Margin="20,0"/>
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal" Margin="0,20,30,20">

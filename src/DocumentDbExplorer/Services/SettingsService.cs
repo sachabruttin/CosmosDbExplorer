@@ -80,7 +80,7 @@ namespace DocumentDbExplorer.Services
 
             var json = JsonConvert.SerializeObject(connections, Formatting.Indented);
 
-            using (var fs = File.Open(_configurationFilePath, FileMode.Truncate))
+            using (var fs = File.Open(_configurationFilePath, FileMode.Create))
             {
                 var info = new UTF8Encoding(true).GetBytes(json);
                 await fs.WriteAsync(info, 0, info.Length);

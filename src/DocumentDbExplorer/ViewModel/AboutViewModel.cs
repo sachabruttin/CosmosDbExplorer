@@ -36,7 +36,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string Title => ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(_assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retriving assembly title";
 
-        public string Authors => "Sacha Bruttin";
+        public List<Author> Authors => new List<Author> { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace")};
 
         public string LicenseUrl => "https://github.com/sachabruttin/DocumentDbExplorer/blob/master/LICENSE";
 

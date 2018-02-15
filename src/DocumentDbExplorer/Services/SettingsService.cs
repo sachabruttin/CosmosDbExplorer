@@ -12,7 +12,7 @@ namespace DocumentDbExplorer.Services
 {
     public interface ISettingsService
     {
-        Task<IEnumerable<Connection>> GetConnectionsAsync();
+        Task<Dictionary<Guid, Connection>> GetConnectionsAsync();
 
         Task SaveConnectionAsync(Connection connection);
         Task RemoveConnection(Connection connection);
@@ -24,6 +24,8 @@ namespace DocumentDbExplorer.Services
         public static readonly string _configurationFilePath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DocumentDbExplorer" , _configurationFileName);
 
+        public static Dictionary<Guid, Connection> _connections;
+
         public SettingsService()
         {
             if (!Directory.Exists(Path.GetDirectoryName(_configurationFilePath)))
@@ -32,47 +34,48 @@ namespace DocumentDbExplorer.Services
             }
         }
 
-        public async Task<IEnumerable<Connection>> GetConnectionsAsync()
+        public async Task<Dictionary<Guid, Connection>> GetConnectionsAsync()
         {
+            if (_connections != null)
+            {
+                return _connections;
+            }
+
             if (File.Exists(_configurationFilePath))
             {
                 using (var reader = File.OpenText(_configurationFilePath))
                 {
                     var json = await reader.ReadToEndAsync();
-                    return JsonConvert.DeserializeObject<IEnumerable<Connection>>(json);
+                    _connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json).ToDictionary(c => c.Id);
+                    return _connections;
                 }
             }
             else
             {
-                return Enumerable.Empty<Connection>();
+                return new Dictionary<Guid, Connection>();
             }
         }
 
         public async Task RemoveConnection(Connection connection)
-        {
-            var connections = (await GetConnectionsAsync()).ToList();
-            
-            if (connections.Remove(connection))
+        {           
+            if (_connections.Remove(connection.Id))
             {
-                await SaveAsync(connections);
+                await SaveAsync(_connections.Values);
             }
         }
 
         public async Task SaveConnectionAsync(Connection connection)
         {
-            var connections = (await GetConnectionsAsync()).ToList();
-            var existing = connections.FirstOrDefault(e => e.Equals(connection));
-
-            if (existing != null)
+            if (_connections.ContainsKey(connection.Id))
             {
-                connections.Replace(existing, connection);
+                _connections[connection.Id] = connection;
             }
             else
             {
-                connections.Add(connection);
+                _connections.Add(connection.Id, connection);
             }
 
-            await SaveAsync(connections);
+            await SaveAsync(_connections.Values);
         }
 
         private async Task SaveAsync(IEnumerable<Connection> connections)

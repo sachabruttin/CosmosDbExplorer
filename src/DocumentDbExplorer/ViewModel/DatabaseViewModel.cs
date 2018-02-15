@@ -41,7 +41,7 @@ namespace DocumentDbExplorer.ViewModel
             var nodes = connections.Select(c =>
             {
                 var connection = SimpleIoc.Default.GetInstanceWithoutCaching<ConnectionNodeViewModel>();
-                connection.Connection = c;
+                connection.Connection = c.Value;
 
                 return connection;
             });

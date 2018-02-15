@@ -68,13 +68,8 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             var form = new AccountSettingsView();
                             var vm = (AccountSettingsViewModel)form.DataContext;
-                            vm.AccountEndpoint = Connection.DatabaseUri.ToString();
-                            vm.AccountSecret = Connection.AuthenticationKey;
-                            vm.Label = Connection.Label;
-                            vm.UseLocalEmulator = Connection.IsLocalEmulator();
-                            vm.ConnectionType = Connection.ConnectionType;
-                            vm.AccentColor = Connection.AccentColor;
-
+                            vm.SetConnection(Connection);
+                            
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {
                                 Children.Clear();

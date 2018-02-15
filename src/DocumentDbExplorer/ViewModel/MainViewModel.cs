@@ -384,6 +384,9 @@ namespace DocumentDbExplorer.ViewModel
                     x =>
                     {
                         var form = new Views.AccountSettingsView();
+                        var vm = (AccountSettingsViewModel)form.DataContext;
+                        vm.SetConnection(new Connection(Guid.NewGuid()));
+
                         var result = form.ShowDialog();
                     }));
             }

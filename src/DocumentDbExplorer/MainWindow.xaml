@@ -376,7 +376,7 @@
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Import"
                                        Visibility="{Binding IsImportTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <fluent:Button Header="Run"
+                    <fluent:Button Header="Import"
                                    Command="{Binding SelectedTab.ExecuteCommand}"
                                    SizeDefinition="Large">
                         <fluent:Button.LargeIcon>

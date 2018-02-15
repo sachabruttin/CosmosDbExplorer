@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SyntaxDefinition name="Json" extensions=".js" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Digits" foreground="#8700FF" exampleText="3.14" />
-  <Color name="Value" foreground="#000CFF" exampleText="var text = &quot;Hello, World!&quot;;" />
-  <Color name="ParamName" foreground="#057500"  exampleText="var text = &quot;Hello, World!&quot;;" />
+  <Color name="Digits" foreground="#09885a" exampleText="3.14" />
+  <Color name="Value" foreground="#0451a5" exampleText="var text = &quot;Hello, World!&quot;;" />
+  <Color name="ParamName" foreground="#a31515"  exampleText="var text = &quot;Hello, World!&quot;;" />
+  <Color name="Boolean" foreground="Orchid" fontWeight="bold" exampleText="true" />
   <RuleSet ignoreCase="false">
-    <Keywords color="Digits" >
+    <Keywords color="Boolean" >
       <Word>true</Word>
       <Word>false</Word>
     </Keywords>

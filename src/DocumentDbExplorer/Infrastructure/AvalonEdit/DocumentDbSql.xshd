@@ -5,12 +5,12 @@
                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
   <!-- T-SQL Reference: http://msdn.microsoft.com/de-de/library/ms189826%28v=sql.90%29.aspx -->
-  <Color name="Digits"  foreground="DarkBlue" exampleText="3.1415f"/>
+  <Color name="Digits"  foreground="#09885a" exampleText="3.1415f"/>
   <Color name="Comment" foreground="Green" exampleText="string text = &quot;Hello, World!&quot;"/>
   <Color name="Punctuation" foreground="Silver" exampleText="string text = &quot;Hello, World!&quot;"/>
 
-  <Color name="String" foreground="Olive" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="String2" foreground="#993" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="String" foreground="#a31515" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="String2" foreground="#a31515" exampleText="string text = &quot;Hello, World!&quot;"/>
 
   <Color name="Keyword" fontWeight="bold" foreground="Blue" exampleText="SELECT"/>
   <Color name="Function" fontWeight="bold" foreground="Orchid" exampleText="ARRAY_CONCAT" />

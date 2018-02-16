@@ -8,82 +8,113 @@
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:controls="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Loaded="UserControl_Loaded"
+             d:DesignHeight="600" d:DesignWidth="900" Loaded="UserControl_Loaded"
              d:DataContext="{x:Type vm:QueryEditorViewModel}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.3*" />
-            <RowDefinition Height="5" />
-            <RowDefinition Height="0.7*" />
-        </Grid.RowDefinitions>
+    <xcad:DockingManager>
+        <xcad:DockingManager.DocumentHeaderTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                    <TextBlock Text="{Binding Title}" />
+                </StackPanel>
+            </DataTemplate>
+        </xcad:DockingManager.DocumentHeaderTemplate>
 
-        <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
+        <xcad:LayoutRoot x:Name="_layoutRoot">
+            <xcad:LayoutPanel Orientation="Vertical">
+                <xcad:LayoutPanel>
+                    <xcad:LayoutDocumentPaneGroup Orientation="Vertical">
+                        <xcad:LayoutDocumentPane ShowHeader="True">
+                            <xcad:LayoutDocument CanClose="False" Title="Query" IconSource="{StaticResource SqlQueryIcon}">
+                                <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
                                FontSize="10pt"
                                FontFamily="Consolas"
                                IsReadOnly="False" VerticalScrollBarVisibility="Auto"
                                ShowLineNumbers="True"
                                Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            <avalonEdit:TextEditor.InputBindings>
-                <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
-            </avalonEdit:TextEditor.InputBindings>
+                                    <avalonEdit:TextEditor.InputBindings>
+                                        <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
+                                    </avalonEdit:TextEditor.InputBindings>
 
-            <i:Interaction.Behaviors>
-                <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
-                <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
-            </i:Interaction.Behaviors>
+                                    <i:Interaction.Behaviors>
+                                        <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                                        <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                    </i:Interaction.Behaviors>
 
-            <avalonEdit:TextEditor.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Cut"  Command="ApplicationCommands.Cut">
-                        <MenuItem.Icon>
-                            <Image Source="{StaticResource CutIcon}" Height="16" Width="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
-                        <MenuItem.Icon>
-                            <Image Source="{StaticResource CopyIcon}" Height="16" Width="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
-                        <MenuItem.Icon>
-                            <Image Source="{StaticResource PasteIcon}" Height="16" Width="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator />
-                    <MenuItem Header="Execute" Command="{Binding ExecuteCommand}" InputGestureText="F5">
-                        <MenuItem.Icon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
-            </avalonEdit:TextEditor.ContextMenu>
-        </avalonEdit:TextEditor>
+                                    <avalonEdit:TextEditor.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Cut"  Command="ApplicationCommands.Cut">
+                                                <MenuItem.Icon>
+                                                    <Image Source="{StaticResource CutIcon}" Height="16" Width="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
+                                                <MenuItem.Icon>
+                                                    <Image Source="{StaticResource CopyIcon}" Height="16" Width="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
+                                                <MenuItem.Icon>
+                                                    <Image Source="{StaticResource PasteIcon}" Height="16" Width="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Execute" Command="{Binding ExecuteCommand}" InputGestureText="F5">
+                                                <MenuItem.Icon>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="16" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </avalonEdit:TextEditor.ContextMenu>
+                                </avalonEdit:TextEditor>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
+                </xcad:LayoutPanel>
 
-        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
 
-        <DockPanel Grid.Row="2">
-            <TabControl TabStripPlacement="Bottom">
-                <TabItem Header="Raw Data">
-                    <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
-                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
-                </TabItem>
-                <TabItem Header="Response Headers">
-                    <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
-                                  ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
-                </TabItem>
-                <TabItem Header="Query Metrics">
-                    <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="Auto" />
-                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="*" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
+                <xcad:LayoutPanel DockHeight="500" Orientation="Horizontal">
+                    <xcad:LayoutAnchorablePaneGroup>
 
-    </Grid>
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="Raw Data" CanClose="False" CanHide="False" CanAutoHide="False" 
+                                                   IconSource="{StaticResource ResultPaneIcon}">
+                                <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+
+                    <xcad:LayoutAnchorablePaneGroup>
+                        <xcad:LayoutAnchorablePane>
+
+                            <xcad:LayoutAnchorable Title="Query Metrics" CanClose="False" CanHide="False" AutoHideMinHeight="400" IconSource="{StaticResource StatisticsIcon}">
+                                <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="Auto" />
+                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="*" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </xcad:LayoutAnchorable>
+
+                            <xcad:LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">
+                                <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+
+                            </xcad:LayoutAnchorable>
+
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+
+
+
+            </xcad:LayoutPanel>
+        </xcad:LayoutRoot>
+
+    </xcad:DockingManager>
 
 </UserControl>

@@ -8,6 +8,7 @@
              xmlns:infra="clr-namespace:DocumentDbExplorer.Infrastructure"
              xmlns:template="clr-namespace:DocumentDbExplorer.Infrastructure.TemplateSelectors"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              mc:Ignorable="d" 
              DataContextChanged="UserControl_DataContextChanged"
              d:DesignHeight="300" d:DesignWidth="600" d:DataContext="{x:Type vm:DocumentsTabViewModel}">
@@ -21,10 +22,10 @@
                                     Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}}"
                                     Watermark="Type query predicate (e.g. WHERE c.id = '1')" KeepWatermarkOnGotFocus="True"/>
-            
+
             <TextBlock Text="{Binding Filter}" Margin="5,0" VerticalAlignment="Center"
                        Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
-            
+
             <Button Margin="5,0" Padding="5,0" 
                     Command="{Binding ApplyFilterCommand}"
                     Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}}"
@@ -67,130 +68,161 @@
                     Command="{Binding EditFilterCommand}"
                     Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">Edit Filter</Button>
         </StackPanel>
-        
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.3*" MinWidth="100"/>
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="0.7*" />
-            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                
-                <Grid Grid.Row="0" Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" />
-                        <ColumnDefinition Width="0.5*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+        <xcad:DockingManager Grid.Column="2">
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding Title}" />
+                    </StackPanel>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+            
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                <xcad:LayoutPanel Orientation="Horizontal">
 
-                    <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" TextTrimming="CharacterEllipsis" />
-                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+                    <xcad:LayoutAnchorablePane DockWidth="200">
+                        <xcad:LayoutAnchorable Title="Documents" CanHide="False" CanClose="False"
+                                               AutoHideWidth="240"
+                                               IconSource="{StaticResource DocumentIcon}">
 
-                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="2"
-                            ToolTip="Refresh">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets">&#xE72C;</TextBlock>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </Grid>
-               
-                <infra:ListBoxMore Grid.Row="1" 
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+
+                                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="2" ToolTip="Refresh">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets">&#xE72C;</TextBlock>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+
+                                <infra:ListBoxMore Grid.Row="1" 
                                    ItemsSource="{Binding Documents}"
                                    SelectedValue="{Binding SelectedDocument}"
                                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                    HorizontalContentAlignment="Stretch">
-                    <infra:ListBoxMore.ItemTemplateSelector>
-                        <template:DocumentDescriptionTemplateSelector>
-                            <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                                </DataTemplate>
-                            </template:DocumentDescriptionTemplateSelector.DefaultTemplate>
-                            <template:DocumentDescriptionTemplateSelector.PartitionTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.5*" />
-                                            <ColumnDefinition Width="0.5*" />
-                                        </Grid.ColumnDefinitions>
+                                    <infra:ListBoxMore.ItemTemplateSelector>
+                                        <template:DocumentDescriptionTemplateSelector>
+                                            <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                </DataTemplate>
+                                            </template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                                            <template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.5*" />
+                                                            <ColumnDefinition Width="0.5*" />
+                                                        </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                                        <TextBlock Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
-                                    </Grid>
-                                </DataTemplate>
+                                                        <TextBlock Grid.Column="0" Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                    </Grid>
+                                                </DataTemplate>
 
-                            </template:DocumentDescriptionTemplateSelector.PartitionTemplate>
-                        </template:DocumentDescriptionTemplateSelector>
-                    </infra:ListBoxMore.ItemTemplateSelector>
+                                            </template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                                        </template:DocumentDescriptionTemplateSelector>
+                                    </infra:ListBoxMore.ItemTemplateSelector>
 
-                    <infra:ListBoxMore.Style>
-                    <Style TargetType="ListBox">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBox}">
-                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="True">
-                                        <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-                                                    <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                    <Button Grid.Row="1" x:Name="PART_MoreButton" 
+                                    <infra:ListBoxMore.Style>
+                                        <Style TargetType="ListBox">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListBox}">
+                                                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="True">
+                                                            <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
+                                                                <Grid>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                    </Grid.RowDefinitions>
+                                                                    <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                                    <Button Grid.Row="1" x:Name="PART_MoreButton" 
                                                             Visibility="{Binding Path=HasMore, Converter={StaticResource boolToVisibilityConverter}}"
                                                             Command="{Binding Path=LoadMoreCommand}">
-                                                        <Button.Content>
-                                                            <TextBlock>
-                                                                <TextBlock.Text>
-                                                                    <MultiBinding StringFormat="Load More ({0}/Max: {1})">
-                                                                        <Binding Path="ItemsCount" />
-                                                                        <Binding Path="TotalItemsCount" />
-                                                                    </MultiBinding>
-                                                                </TextBlock.Text>
-                                                            </TextBlock>
-                                                        </Button.Content>
-                                                    </Button>
-                                                </Grid>
-                                            </ScrollViewer>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Background" TargetName="Bd" Value="White"/>
-                                            <Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9"/>
-                                        </Trigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsGrouping" Value="True"/>
-                                                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                                        </MultiTrigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </infra:ListBoxMore.Style>
-            </infra:ListBoxMore>
+                                                                        <Button.Content>
+                                                                            <TextBlock>
+                                                                                <TextBlock.Text>
+                                                                                    <MultiBinding StringFormat="Load More ({0}/Max: {1})">
+                                                                                        <Binding Path="ItemsCount" />
+                                                                                        <Binding Path="TotalItemsCount" />
+                                                                                    </MultiBinding>
+                                                                                </TextBlock.Text>
+                                                                            </TextBlock>
+                                                                        </Button.Content>
+                                                                    </Button>
+                                                                </Grid>
+                                                            </ScrollViewer>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Background" TargetName="Bd" Value="White"/>
+                                                                <Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9"/>
+                                                            </Trigger>
+                                                            <MultiTrigger>
+                                                                <MultiTrigger.Conditions>
+                                                                    <Condition Property="IsGrouping" Value="True"/>
+                                                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
+                                                                </MultiTrigger.Conditions>
+                                                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                                                            </MultiTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </infra:ListBoxMore.Style>
+                                </infra:ListBoxMore>
 
-            </Grid>
-            
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl Grid.Column="2" TabStripPlacement="Bottom">
+                            </Grid>
+
+                        </xcad:LayoutAnchorable>
+                    </xcad:LayoutAnchorablePane>
+
+                    <xcad:LayoutDocumentPaneGroup>
+                        <xcad:LayoutDocumentPane >
+                            <xcad:LayoutDocument Title="Raw Data" CanClose="False" IconSource="{StaticResource ResultPaneIcon}">
+                                <local:JsonEditorView x:Name="documentEditor" 
+                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
+                                          DataContext="{Binding EditorViewModel}"
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                            </xcad:LayoutDocument>
+                            <xcad:LayoutDocument Title="Response Headers" CanClose="False" IconSource="{StaticResource HttpIcon}">
+                                <local:JsonEditorView x:Name="headerEditor" 
+                                          DataContext="{Binding HeaderViewModel}" 
+                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+        <!--<TabControl Grid.Column="2" TabStripPlacement="Bottom">
                 <TabItem Header="Raw Data" Visibility="{Binding Visibility, ElementName=documentEditor}" >
                     <local:JsonEditorView x:Name="documentEditor" 
                                           ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
@@ -203,9 +235,7 @@
                                           ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
                                           Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
                 </TabItem>
-            </TabControl>
+            </TabControl>-->
 
-
-        </Grid>
     </DockPanel>
 </UserControl>

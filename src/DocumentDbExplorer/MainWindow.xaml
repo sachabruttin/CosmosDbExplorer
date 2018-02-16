@@ -522,7 +522,9 @@
 
                     <fluent:SplitButton KeyTip="D" Header="Delete"
                                         SizeDefinition="Middle,Small">
-v
+                        <fluent:SplitButton.Icon>
+                            <TextBlock Style="{StaticResource DeleteIcon}" />
+                        </fluent:SplitButton.Icon>
 
                         <fluent:MenuItem Header="Delete Collection" 
                                    Command="{Binding Collection.DeleteCollectionCommand}">

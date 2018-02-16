@@ -5,21 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="600" d:DesignWidth="600"
              Padding="20,50,0,0"
-             DataContext="{Binding About, Source={StaticResource Locator}}">
+             DataContext="{Binding About, Source={StaticResource Locator}}"
+             Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <UserControl.Resources>
-
         <Style x:Key="valueText" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="Black" />
-            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="Margin" Value="5,0" />
             <Setter Property="FontStyle" Value="Italic" />
         </Style>
-
     </UserControl.Resources>
-    <UserControl.Background>
-        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
-    </UserControl.Background>
+    
     <DockPanel>
         <TextBlock Text="About" FontSize="24" DockPanel.Dock="Top" HorizontalAlignment="Left" Width="280"
                    Foreground="Black"/>
@@ -64,44 +61,45 @@
         <TextBlock Text="External Packages" FontSize="14" DockPanel.Dock="Top" Foreground="Black" />
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl Margin="10" ItemsSource="{Binding ExternalComponents}" >
+            <ItemsControl Margin="10" ItemsSource="{Binding ExternalComponents}" 
+                           Grid.IsSharedSizeScope="True">
                 <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnOne" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnTwo" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Foreground="Black"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Foreground="Black" Margin="0,0,10,0"/>
 
                             <TextBlock Grid.Row="0" Grid.Column="1" Text="Project Url:" Foreground="Black"/>
-                        <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource valueText}">
-                            <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                                <TextBlock Text="{Binding ProjectUrl}" />
-                            </Hyperlink>
-                        </TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource valueText}">
+                                <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <TextBlock Text="{Binding ProjectUrl}" />
+                                </Hyperlink>
+                            </TextBlock>
 
                             <TextBlock Grid.Row="1" Grid.Column="1" Text="License Url:" Foreground="Black"/>
-                        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource valueText}">
-                            <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                                <TextBlock Text="{Binding LicenseUrl}" />
-                            </Hyperlink>
-                        </TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource valueText}">
+                                <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <TextBlock Text="{Binding LicenseUrl}" />
+                                </Hyperlink>
+                             </TextBlock>
 
-                        <Separator Grid.Row="2" Grid.ColumnSpan="3" />
-                    </Grid>
+                            <Separator Grid.Row="2" Grid.ColumnSpan="3" />
+                        </Grid>
 
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
-       
+
     </DockPanel>
 </UserControl>

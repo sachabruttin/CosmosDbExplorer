@@ -13,9 +13,9 @@ namespace DocumentDbExplorer.Services
     public interface ISettingsService
     {
         Task<Dictionary<Guid, Connection>> GetConnectionsAsync();
-
         Task SaveConnectionAsync(Connection connection);
         Task RemoveConnection(Connection connection);
+        Task ReorderConnections(int sourceIndex, int targetIndex);
     }
 
     public class SettingsService : ISettingsService
@@ -46,7 +46,9 @@ namespace DocumentDbExplorer.Services
                 using (var reader = File.OpenText(_configurationFilePath))
                 {
                     var json = await reader.ReadToEndAsync();
-                    _connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json).ToDictionary(c => c.Id);
+                    _connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json)
+                        .ToDictionary(c => c.Id);
+
                     return _connections;
                 }
             }
@@ -62,6 +64,13 @@ namespace DocumentDbExplorer.Services
             {
                 await SaveAsync(_connections.Values);
             }
+        }
+
+        public Task ReorderConnections(int sourceIndex, int targetIndex)
+        {
+            _connections = _connections.Values.ToList().Move(sourceIndex, targetIndex).ToDictionary(c => c.Id);
+
+            return SaveAsync(_connections.Values);
         }
 
         public async Task SaveConnectionAsync(Connection connection)

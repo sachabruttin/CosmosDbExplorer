@@ -6,6 +6,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:local="clr-namespace:DocumentDbExplorer.Views"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:behaviors="clr-namespace:DocumentDbExplorer.Infrastructure.Behaviors"
              xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
@@ -14,7 +15,10 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Loaded="UserControl_Loaded">
     
-    <TreeView ItemsSource="{Binding Nodes}">
+    <TreeView ItemsSource="{Binding Nodes}"
+              dd:DragDrop.IsDragSource="True"
+              dd:DragDrop.IsDropTarget="True"
+              dd:DragDrop.DropHandler="{Binding}">
 
         <TreeView.ItemContainerStyle>
             <Style TargetType="{x:Type TreeViewItem}">

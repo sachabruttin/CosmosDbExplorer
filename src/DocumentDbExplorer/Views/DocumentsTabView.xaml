@@ -69,7 +69,7 @@
                     Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">Edit Filter</Button>
         </StackPanel>
 
-        <xcad:DockingManager Grid.Column="2">
+        <xcad:DockingManager Grid.Column="2" AllowMixedOrientation="True">
             <xcad:DockingManager.DocumentHeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">

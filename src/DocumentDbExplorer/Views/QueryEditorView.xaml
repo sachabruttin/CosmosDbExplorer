@@ -12,7 +12,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900" Loaded="UserControl_Loaded"
              d:DataContext="{x:Type vm:QueryEditorViewModel}">
-    <xcad:DockingManager>
+    
+    <xcad:DockingManager AllowMixedOrientation="True">
         <xcad:DockingManager.DocumentHeaderTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal">
@@ -29,12 +30,12 @@
                         <xcad:LayoutDocumentPane ShowHeader="True">
                             <xcad:LayoutDocument CanClose="False" Title="Query" IconSource="{StaticResource SqlQueryIcon}">
                                 <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
-                               FontSize="10pt"
-                               FontFamily="Consolas"
-                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
-                               ShowLineNumbers="True"
-                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                               FontSize="10pt"
+                                               FontFamily="Consolas"
+                                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
+                                               ShowLineNumbers="True"
+                                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <avalonEdit:TextEditor.InputBindings>
                                         <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
                                     </avalonEdit:TextEditor.InputBindings>
@@ -92,12 +93,15 @@
                         <xcad:LayoutAnchorablePane>
 
                             <xcad:LayoutAnchorable Title="Query Metrics" CanClose="False" CanHide="False" AutoHideMinHeight="400" IconSource="{StaticResource StatisticsIcon}">
-                                <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False">
+                                <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False" 
+                                          SelectionUnit="FullRow" AlternationCount="1" AlternatingRowBackground="AliceBlue"
+                                          ClipboardCopyMode="IncludeHeader" ContextMenu="{StaticResource JsonEditorContextMenu}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="Auto" />
-                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="*" />
+                                        <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="0.5*" ClipboardContentBinding="{Binding Key}" />
+                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="0.5*" ClipboardContentBinding="{Binding Value}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
+
                             </xcad:LayoutAnchorable>
 
                             <xcad:LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">

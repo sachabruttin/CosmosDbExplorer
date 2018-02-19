@@ -647,7 +647,8 @@
                              AnchorablesSource="{Binding Tools}"
                              ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
                              LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}"
-                             DocumentHeaderTemplateSelector="{StaticResource documentHeaderTemplateSelector}">
+                             DocumentHeaderTemplateSelector="{StaticResource documentHeaderTemplateSelector}"
+                             AllowMixedOrientation="True">
 
             <xcad:DockingManager.LayoutItemContainerStyleSelector>
                 <pane:PaneStyleSelector>

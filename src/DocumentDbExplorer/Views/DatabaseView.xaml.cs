@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using DocumentDbExplorer.ViewModel;
 
 namespace DocumentDbExplorer.Views
@@ -16,7 +17,8 @@ namespace DocumentDbExplorer.Views
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as DatabaseViewModel;
+            var vm = (DatabaseViewModel)DataContext;
+            vm.IconSource = FindResource("ConnectionIcon") as ImageSource;
             await vm.LoadNodesAsync();
         }
     }

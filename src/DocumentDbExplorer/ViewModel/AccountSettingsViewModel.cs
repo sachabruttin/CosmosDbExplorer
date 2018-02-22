@@ -18,13 +18,26 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
         private bool _useLocalEmulator;
+        private Connection _connection;
 
         public AccountSettingsViewModel(IMessenger messenger, IDialogService dialogService, ISettingsService settingsService) : base(messenger)
         {
             _dialogService = dialogService;
             _settingsService = settingsService;
         }
-        
+
+        public void SetConnection(Connection connection)
+        {
+            _connection = connection;
+
+            AccountEndpoint = _connection.DatabaseUri?.ToString();
+            AccountSecret = _connection.AuthenticationKey;
+            Label = _connection.Label;
+            UseLocalEmulator = _connection.IsLocalEmulator();
+            ConnectionType = _connection.ConnectionType;
+            AccentColor = _connection.AccentColor;
+        }
+
         public string Title => "Account Settings";
         public string AccountEndpoint { get; set; }
         public string AccountSecret { get; set; }
@@ -75,8 +88,8 @@ namespace DocumentDbExplorer.ViewModel
                 return _addAccountCommand
                     ?? (_addAccountCommand = new RelayCommand(
                         async x =>
-                        {
-                            var connection = new Connection(Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
+                        { 
+                            var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
                             await _settingsService.SaveConnectionAsync(connection);
                             MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
                             Close();

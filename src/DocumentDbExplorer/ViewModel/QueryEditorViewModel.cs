@@ -37,7 +37,6 @@ namespace DocumentDbExplorer.ViewModel
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
         {
-            Content = new TextDocument("SELECT * FROM c");
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
             EditorViewModel.IsReadOnly = true;
 
@@ -65,6 +64,7 @@ namespace DocumentDbExplorer.ViewModel
                     _node = value;
                     ContentId = Node.Parent.Name;
                     Header = $"SQL Query";
+                    Content = new TextDocument($"SELECT * FROM {Node.Collection.Id} AS {Node.Collection.Id.Substring(0, 1).ToLower()}");
 
                     var split = Node.Collection.AltLink.Split(new char[] { '/' });
                     ToolTip = $"{split[1]}>{split[3]}";

@@ -29,6 +29,7 @@ namespace DocumentDbExplorer.ViewModel
                 new ExternalComponent { Name = "PropertyChanged.Fody", LicenseUrl = "http://www.opensource.org/licenses/mit-license.php", ProjectUrl = "http://github.com/Fody/PropertyChanged"},
                 new ExternalComponent { Name = "Validar.Fody", LicenseUrl = "http://www.opensource.org/licenses/mit-license.php", ProjectUrl = "http://github.com/Fody/Validar"},
                 new ExternalComponent { Name = "WpfAnimatedGif", LicenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt", ProjectUrl = "https://github.com/XamlAnimatedGif/WpfAnimatedGif"},
+                new ExternalComponent { Name = "GongSolutions.WPF.DragDrop", LicenseUrl = "https://github.com/punker76/gong-wpf-dragdrop#license", ProjectUrl = "https://github.com/punker76/gong-wpf-dragdrop"}
             }.OrderBy(ec => ec.Name).ToList();
         }
 

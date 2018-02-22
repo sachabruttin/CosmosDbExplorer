@@ -1,23 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SyntaxDefinition name="Json" extensions=".js" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Digits" foreground="#8700FF" exampleText="3.14" />
-  <Color name="Value" foreground="#000CFF" exampleText="var text = &quot;Hello, World!&quot;;" />
-  <Color name="ParamName" foreground="#057500"  exampleText="var text = &quot;Hello, World!&quot;;" />
-  <RuleSet ignoreCase="false">
-    <Keywords color="Digits" >
+  <Color name="Boolean" foreground="Orchid" fontWeight="bold" exampleText="true" />
+  <Color name="PropertyName" foreground="#a31515"  exampleText="var text = &quot;Hello, World!&quot;;" />
+  <Color name="Value" foreground="#0451a5" exampleText="var text = &quot;Hello, World!&quot;;" />
+  <Color name="Digits" foreground="#09885a" exampleText="3.14" />
+
+  <RuleSet ignoreCase="true">
+    <Keywords color="Boolean">
       <Word>true</Word>
       <Word>false</Word>
     </Keywords>
-    <Span color="ParamName">
+
+    <Span color="PropertyName" multiline="false">
       <Begin>"</Begin>
-      <End>(?=:)</End>
+      <End>"(?=:)</End>
     </Span>
+
     <Span color="Value" multiline="true">
-      <Begin>
-        (?&lt;=:)\040"[^"]*
-      </Begin>
-      <End>"</End>
+      <Begin>(?:(:\s*))"</Begin>
+      <End>[^\\]"</End>
     </Span>
+
     <Rule color="Digits">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>
   </RuleSet>
 </SyntaxDefinition>

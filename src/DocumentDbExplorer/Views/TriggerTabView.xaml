@@ -35,11 +35,12 @@
         </StackPanel>
 
         <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
-                                   FontSize="10pt" FontFamily="Consolas"
-                                   IsReadOnly="False" VerticalScrollBarVisibility="Auto"
-                                   ShowLineNumbers="True"
-                                   Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                                   IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                               FontSize="10pt" FontFamily="Consolas"
+                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
+                               ShowLineNumbers="True"
+                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               ContextMenu="{StaticResource JsonEditorContextMenu}">
             <i:Interaction.Behaviors>
                 <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
             </i:Interaction.Behaviors>

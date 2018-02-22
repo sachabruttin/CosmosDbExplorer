@@ -107,7 +107,8 @@ namespace DocumentDbExplorer.ViewModel
                                 IsRunning = false;
                             }
 
-                        }));
+                        },
+                        x => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
             }
         }
 

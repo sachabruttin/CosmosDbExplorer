@@ -9,8 +9,15 @@ namespace DocumentDbExplorer.Infrastructure.Models
 {
     public class Connection : IEquatable<Connection>
     {
-        public Connection(string label, Uri endpoint, string secret, ConnectionType connectionType, Color? accentColor)
+        public Connection(Guid id)
         {
+            Id = id;
+        }
+
+        [JsonConstructor]
+        public Connection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, Color? accentColor)
+        {
+            Id = id ?? Guid.NewGuid();
             Label = label;
             DatabaseUri = endpoint;
             AuthenticationKey = secret;
@@ -19,7 +26,10 @@ namespace DocumentDbExplorer.Infrastructure.Models
         }
 
         [JsonProperty]
-        public string Label { get; set; }
+        public Guid Id { get; protected set; }
+
+        [JsonProperty]
+        public string Label { get; protected set; }
 
         [JsonProperty]
         public Uri DatabaseUri { get; protected set; }
@@ -41,12 +51,12 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         public bool Equals(Connection other)
         {
-            return Label.Equals(other.Label);
+            return Id.Equals(other.Id);
         }
 
         public override int GetHashCode()
         {
-            return Label.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 

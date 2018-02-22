@@ -12,13 +12,11 @@
   See http://www.galasoft.ch/mvvm
 */
 
-using System;
+using CommonServiceLocator;
 using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
-using Microsoft.Practices.ServiceLocation;
 
 namespace DocumentDbExplorer.ViewModel
 {

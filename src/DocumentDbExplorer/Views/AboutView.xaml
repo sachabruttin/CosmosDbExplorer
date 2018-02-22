@@ -40,8 +40,18 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Foreground="Black" />
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Style="{StaticResource valueText}" />
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Author(s):" Foreground="Black" />
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Authors}" Style="{StaticResource valueText}" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Contributors:" Foreground="Black" />
+            <ItemsControl Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Authors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Style="{StaticResource valueText}">
+                            <Hyperlink NavigateUri="{Binding Profile}" RequestNavigate="Hyperlink_RequestNavigate_Github">
+                                <TextBlock Text="{Binding Name}" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" Foreground="Black" />
             <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource valueText}">

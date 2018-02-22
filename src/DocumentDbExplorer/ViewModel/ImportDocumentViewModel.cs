@@ -122,6 +122,16 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
+        public RelayCommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(
+                    x => _cancellationToken.Cancel(),
+                    x => IsRunning));
+            }
+        }
+
         public RelayCommand OpenFileCommand
         {
             get

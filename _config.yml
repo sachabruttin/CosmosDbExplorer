@@ -3,7 +3,7 @@ theme: jekyll-theme-cayman
 
 title: DocumentDb Explorer
 
-show_downloads: "true"
+show_downloads: "false"
 github:
   tar_url: http://github.com/sachabruttin/DocumentDbExplorer/tarball/master
   zip_url: http://github.com/sachabruttin/DocumentDbExplorer/zipball/master

@@ -167,7 +167,6 @@
     <Compile Include="Infrastructure\Converters\LogConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
-    <Compile Include="Infrastructure\TemplateSelectors\DocumentHeaderTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Infrastructure\ListBoxMore.cs" />

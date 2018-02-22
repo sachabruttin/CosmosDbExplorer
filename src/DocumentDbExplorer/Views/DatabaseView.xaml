@@ -50,20 +50,19 @@
                         </ContextMenu>
                     </StackPanel.ContextMenu>
 
-                    <Canvas Height="10" Width="10" 
+                    <Canvas Height="10" Width="10" Margin="0,0,3,0"
                             Visibility="{Binding Connection.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
                         <Ellipse Fill="{Binding Connection.AccentColor, Converter={StaticResource colorToBrushConverter}}" 
                                  Width="10" Height="10"/>
                     </Canvas>
 
-                    <Image Width="16" Height="16" Margin="3,0" 
+                    <Image Width="16" Height="16" 
                            gif:ImageBehavior.AnimatedSource="/DocumentDbExplorer;component/Images/loading.gif"
                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
                     <Image Width="16" Height="16" Source="{StaticResource ConnectionIcon}"
-                           Margin="3,0" Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
+                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
 
-
-                    <TextBlock Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
+                    <TextBlock Margin="3,0,0,0" Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
 
@@ -167,7 +166,6 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
 
-
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:CollectionNodeViewModel}"
                 ItemsSource="{Binding Children}">
@@ -249,7 +247,7 @@
                             <cmd:EventToCommand Command="{Binding OpenDocumentCommand}" />
                         </behaviors:DoubleClickTrigger>
                     </i:Interaction.Triggers>
-                    <Image Source="{StaticResource DocumentIcon}" />
+                    <Image Source="{StaticResource DocumentIcon}" Width="16" Height="16" Margin="3,0"  />
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>

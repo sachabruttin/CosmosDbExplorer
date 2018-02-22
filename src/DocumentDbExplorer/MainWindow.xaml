@@ -71,34 +71,6 @@
             </selector:TabContentTemplateSelector.PermissionEditTemplate>
         </selector:TabContentTemplateSelector>
 
-        <selector:DocumentHeaderTemplateSelector x:Key="documentHeaderTemplateSelector">
-            <selector:DocumentHeaderTemplateSelector.ImageTemplate>
-                <DataTemplate>
-                    <DockPanel LastChildFill="True">
-                        <StackPanel Orientation="Horizontal">
-                            <Canvas Height="10" Width="10" Margin="0,0,2,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
-                                <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
-                            </Canvas>
-                            <Image Source="{Binding IconSource}" VerticalAlignment="Center" Margin="0,0,5,0" />
-                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </DockPanel>
-                </DataTemplate>
-            </selector:DocumentHeaderTemplateSelector.ImageTemplate>
-
-            <selector:DocumentHeaderTemplateSelector.TextIconTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Canvas Height="10" Width="10" Margin="0,0,5,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
-                            <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10"/>
-                        </Canvas>
-                        <ContentControl Content="{Binding Content.IconSource}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </DataTemplate>
-            </selector:DocumentHeaderTemplateSelector.TextIconTemplate>
-        </selector:DocumentHeaderTemplateSelector>
-
         <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">
             <selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
                 <DataTemplate>
@@ -647,7 +619,7 @@
                              AnchorablesSource="{Binding Tools}"
                              ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
                              LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}"
-                             DocumentHeaderTemplateSelector="{StaticResource documentHeaderTemplateSelector}"
+                             DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}"
                              AllowMixedOrientation="True">
 
             <xcad:DockingManager.LayoutItemContainerStyleSelector>
@@ -660,6 +632,8 @@
                             <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
                             <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
                             <Setter Property="CanHide" Value="False" />
+                            <Setter Property="CanClose" Value="False" />
+                            <Setter Property="IconSource" Value="{Binding Model.IconSource}" />
                         </Style>
                     </pane:PaneStyleSelector.ToolStyle>
                     <pane:PaneStyleSelector.DocumentStyle>

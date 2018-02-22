@@ -210,6 +210,7 @@
     <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\IHaveCollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\PermissionNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\ResourceNodeViewModelBase.cs" />
     <Compile Include="ViewModel\DatabaseNodes\TriggerNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\UserDefFuncNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\StoredProcedureNodeViewModel.cs" />

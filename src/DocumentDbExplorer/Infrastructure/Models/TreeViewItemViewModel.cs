@@ -23,7 +23,6 @@ namespace DocumentDbExplorer.Infrastructure.Models
     public class TreeViewItemViewModel : ObservableObject
     {
         private static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModel();
-        private readonly ObservableCollection<TreeViewItemViewModel> _children;
 
         private bool _isExpanded;
 
@@ -31,11 +30,11 @@ namespace DocumentDbExplorer.Infrastructure.Models
         {
             Parent = parent;
             MessengerInstance = messenger;
-            _children = new ObservableCollection<TreeViewItemViewModel>();
+            Children = new ObservableCollection<TreeViewItemViewModel>();
 
             if (lazyLoadChildren)
             {
-                _children.Add(DummyChild);
+                Children.Add(DummyChild);
             }
         }
 
@@ -47,10 +46,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children
-        {
-            get { return _children; }
-        }
+        public ObservableCollection<TreeViewItemViewModel> Children { get; private set; }
 
         /// <summary>
         /// Returns true if this object's Children have not yet been populated.

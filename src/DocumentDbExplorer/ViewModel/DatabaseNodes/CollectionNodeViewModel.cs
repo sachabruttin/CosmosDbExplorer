@@ -1,19 +1,14 @@
 ﻿using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
 
-    public class CollectionNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel
+    public class CollectionNodeViewModel : ResourceNodeViewModelBase, IHaveCollectionNodeViewModel
     {
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
         private RelayCommand _openSqlQueryCommand;
         private RelayCommand _openImportDocumentCommand;
         private RelayCommand _clearAllDocumentsCommand;
@@ -23,15 +18,10 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _deleteCollectionCommand;
 
         public CollectionNodeViewModel(DocumentCollection collection, DatabaseNodeViewModel parent) 
-            : base(parent, parent.MessengerInstance, true)
+            : base(collection, parent, true)
         {
-            Name = collection.Id;
             Collection = collection;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
-
-        public string Name { get; set; }
 
         public new DatabaseNodeViewModel Parent
         {
@@ -73,15 +63,15 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_clearAllDocumentsCommand = new RelayCommand(
                         async x =>
                         {
-                            await _dialogService.ShowMessage($"All documents will be removed from the collection {Parent.Name} .\n\nAre you sure you want to continue?",
+                            await DialogService.ShowMessage($"All documents will be removed from the collection {Parent.Name} .\n\nAre you sure you want to continue?",
                                 "Cleanup collection", null, null,
                                 async confirm =>
                                 {
                                     if (confirm)
                                     {
                                         // TODO: Show Please wait...
-                                        await _dbService.CleanCollection(Parent.Parent.Connection, Collection);
-                                        await _dialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection");
+                                        await DbService.CleanCollection(Parent.Parent.Connection, Collection);
+                                        await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection");
                                     }
                                 });
                         }));
@@ -139,12 +129,12 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_deleteCollectionCommand = new RelayCommand(
                         async x =>
                         {
-                            await _dialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
+                            await DialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
                                 async confirm =>
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteCollection(Parent.Parent.Connection, Collection);
+                                        await DbService.DeleteCollection(Parent.Parent.Connection, Collection);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

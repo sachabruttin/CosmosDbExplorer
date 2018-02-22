@@ -76,6 +76,15 @@
                             <Separator />
                             <MenuItem Header="New Collection" Command="{Binding AddNewCollectionCommand}" />
                             <MenuItem Header="Delete Database" Command="{Binding DeleteDatabaseCommand}" Icon="{StaticResource DeleteIconText}" />
+                            <Separator />
+                            <MenuItem Header="Copy">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource CopyIcon}" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
+                                <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
+                                <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
+                            </MenuItem>
                         </ContextMenu>
                     </StackPanel.ContextMenu>
                     <Image  Width="16" Height="16" Margin="3,0" 
@@ -201,7 +210,16 @@
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource RemoveAllIcon}" />
                                 </MenuItem.Icon>
-                            </MenuItem> 
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Copy">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource CopyIcon}" />
+                                </MenuItem.Icon>
+                                <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
+                                <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
+                                <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
+                            </MenuItem>
 
                         </ContextMenu>
                     </StackPanel.ContextMenu>

@@ -156,6 +156,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Infrastructure\AvalonEdit\AvalonCommands.cs" />
     <Compile Include="Infrastructure\AvalonEdit\SearchReplacePanel.cs" />
     <Compile Include="Infrastructure\AvalonEdit\SelectedTextBehavior.cs" />
     <Compile Include="Infrastructure\AvalonEdit\TextAreaZoomBehavior.cs" />

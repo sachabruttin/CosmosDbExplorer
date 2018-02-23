@@ -18,6 +18,9 @@ namespace DocumentDbExplorer.Views
         {
             RegisterCustomHighlighting("DocumentDbSql");
             InitializeComponent();
+
+            // https://stackoverflow.com/a/1066009/20761
+            NameScope.SetNameScope(editorContextMenu, NameScope.GetNameScope(this));
         }
 
         private void RegisterCustomHighlighting(string name)

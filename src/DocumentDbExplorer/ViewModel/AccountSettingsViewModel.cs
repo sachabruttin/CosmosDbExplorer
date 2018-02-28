@@ -88,11 +88,18 @@ namespace DocumentDbExplorer.ViewModel
                 return _addAccountCommand
                     ?? (_addAccountCommand = new RelayCommand(
                         async x =>
-                        { 
-                            var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
-                            await _settingsService.SaveConnectionAsync(connection);
-                            MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
-                            Close();
+                        {
+                            try
+                            {
+                                var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
+                                await _settingsService.SaveConnectionAsync(connection);
+                                MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
+                                Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                await _dialogService.ShowError(ex, "Error saving connection", null, null);
+                            }
                         },       
                         x => !((INotifyDataErrorInfo)this).HasErrors));
             }

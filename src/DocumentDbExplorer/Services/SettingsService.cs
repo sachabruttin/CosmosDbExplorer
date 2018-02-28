@@ -47,15 +47,15 @@ namespace DocumentDbExplorer.Services
                 {
                     var json = await reader.ReadToEndAsync();
                     _connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json)
-                        .ToDictionary(c => c.Id);
-
-                    return _connections;
+                                              .ToDictionary(c => c.Id);
                 }
             }
             else
             {
-                return new Dictionary<Guid, Connection>();
+                _connections = new Dictionary<Guid, Connection>();
             }
+
+            return _connections;
         }
 
         public async Task RemoveConnection(Connection connection)

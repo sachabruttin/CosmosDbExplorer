@@ -71,7 +71,7 @@ namespace DocumentDbExplorer.ViewModel
                                     {
                                         // TODO: Show Please wait...
                                         await DbService.CleanCollection(Parent.Parent.Connection, Collection);
-                                        await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection");
+                                        await DispatcherHelper.RunAsync(async () => await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection"));
                                     }
                                 });
                         }));

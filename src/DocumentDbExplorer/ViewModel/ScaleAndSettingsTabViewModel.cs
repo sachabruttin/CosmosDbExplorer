@@ -187,6 +187,7 @@ namespace DocumentDbExplorer.ViewModel
                         async x =>
                         {
                             Collection.DefaultTimeToLive = GetTimeToLive();
+                            Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
                             await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
                             IsDirty = false;

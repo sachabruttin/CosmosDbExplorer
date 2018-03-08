@@ -48,7 +48,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _addNewCollectionCommand
                     ?? (_addNewCollectionCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var form = new AddCollectionView();
                             var vm = (AddCollectionViewModel)form.DataContext;
@@ -73,7 +73,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteDatabaseCommand
                     ?? (_deleteDatabaseCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var msg = $"Are you sure you want to delete the database '{Name}' and all his content?";
                             await DialogService.ShowMessage(msg, "Delete", null, null,

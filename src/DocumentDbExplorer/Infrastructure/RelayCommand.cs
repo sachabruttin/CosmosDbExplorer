@@ -6,38 +6,24 @@ namespace DocumentDbExplorer.Infrastructure
 {
     public class RelayCommand : ICommand
     {
-        #region Fields
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
 
-        readonly Action<object> _execute;
-        readonly Predicate<object> _canExecute;
-
-        #endregion // Fields
-
-        #region Constructors
-
-        public RelayCommand(Action<object> execute)
+        public RelayCommand(Action execute)
         : this(execute, null)
         {
         }
 
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        public RelayCommand(Action execute, Func<bool> canExecute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
-        #endregion // Constructors
-
-        #region ICommand Members
 
         [DebuggerStepThrough]
         public bool CanExecute(object parameter)
         {
-            return _canExecute == null ? true : _canExecute(parameter);
+            return _canExecute == null ? true : _canExecute();
         }
 
         public event EventHandler CanExecuteChanged
@@ -48,21 +34,14 @@ namespace DocumentDbExplorer.Infrastructure
 
         public void Execute(object parameter)
         {
-            _execute(parameter);
+            _execute();
         }
-
-        #endregion // ICommand Members
     }
+
     public class RelayCommand<T> : ICommand
     {
-        #region Fields
-
         readonly Action<T> _execute;
         readonly Predicate<T> _canExecute;
-
-        #endregion // Fields
-
-        #region Constructors
 
         public RelayCommand(Action<T> execute)
         : this(execute, null)
@@ -74,9 +53,6 @@ namespace DocumentDbExplorer.Infrastructure
             _execute = execute ?? throw new ArgumentNullException("execute");
             _canExecute = canExecute;
         }
-        #endregion // Constructors
-
-        #region ICommand Members
 
         [DebuggerStepThrough]
         public bool CanExecute(object parameter)
@@ -94,7 +70,5 @@ namespace DocumentDbExplorer.Infrastructure
         {
             _execute((T)parameter);
         }
-
-        #endregion // ICommand Members
     }
 }

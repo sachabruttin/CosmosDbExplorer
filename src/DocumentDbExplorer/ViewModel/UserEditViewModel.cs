@@ -79,11 +79,11 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             SetInformation();
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -93,7 +93,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             User user = null;
 
@@ -104,7 +104,7 @@ namespace DocumentDbExplorer.ViewModel
                             else
                             {
                                 user = _node.User;
-                                user.Id = UserId;    
+                                user.Id = UserId;
                             }
 
                             try
@@ -125,7 +125,7 @@ namespace DocumentDbExplorer.ViewModel
                                 await _dialogService.ShowError(msg, "Error", null, null);
                             }
                         },
-                        x => IsDirty && IsValid));
+                        () => IsDirty && IsValid));
             }
         }
 
@@ -135,7 +135,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
                             {
@@ -158,7 +158,7 @@ namespace DocumentDbExplorer.ViewModel
                                 }
                             });
                         },
-                        x => !IsNewDocument));
+                        () => !IsNewDocument));
             }
         }
 

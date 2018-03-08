@@ -64,19 +64,19 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _editConnectionCommand
                     ?? (_editConnectionCommand = new RelayCommand(
-                        async x => 
+                        async () => 
                         {
                             var form = new AccountSettingsView();
                             var vm = (AccountSettingsViewModel)form.DataContext;
                             vm.SetConnection(Connection);
-                            
+
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {
                                 Children.Clear();
                                 await LoadChildren();
                             }
                         }
-                        )); 
+                        ));
             }
         }
 
@@ -86,7 +86,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _removeConnectionCommand
                     ?? (_removeConnectionCommand = new RelayCommand(
-                        async x => 
+                        async () => 
                         {
                             await _dialogService.ShowMessage("Are you sure that you want to delete this connection?", "Delete connection", null, null,
                                 async confirm =>
@@ -108,7 +108,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Children.Clear();
                             await LoadChildren();
@@ -122,7 +122,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _addNewCollectionCommand
                     ?? (_addNewCollectionCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var form = new AddCollectionView();
                             var vm = (AddCollectionViewModel)form.DataContext;

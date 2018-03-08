@@ -127,8 +127,8 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async x => await ExecuteQueryAsync(null),
-                        x => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+                        async () => await ExecuteQueryAsync(null),
+                        () => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
             }
         }
 
@@ -137,8 +137,8 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand(
-                    x => _cancellationToken.Cancel(),
-                    x => IsRunning));
+                    () => _cancellationToken.Cancel(),
+                    () => IsRunning));
             }
         }
 
@@ -208,8 +208,8 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _goToNextPageCommand
                     ?? (_goToNextPageCommand = new RelayCommand(
-                        async x => await ExecuteQueryAsync(ContinuationToken),
-                        x => ContinuationToken != null && !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+                        async () => await ExecuteQueryAsync(ContinuationToken),
+                        () => ContinuationToken != null && !IsRunning && !string.IsNullOrEmpty(Content.Text)));
 
             }
         }
@@ -220,7 +220,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveLocalCommand ??
                 (_saveLocalCommand = new RelayCommand(
-                    async x =>
+                    async () =>
                     {
                         var settings = new SaveFileDialogSettings
                         {
@@ -255,7 +255,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                         });
                     },
-                    x => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
+                    () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }
         }
 

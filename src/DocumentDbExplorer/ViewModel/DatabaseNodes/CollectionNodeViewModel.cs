@@ -47,11 +47,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _openSqlQueryCommand
-                    ?? (_openSqlQueryCommand = new RelayCommand(
-                        x =>
-                        {
-                            MessengerInstance.Send(new OpenQueryViewMessage(this));
-                        }));
+                    ?? (_openSqlQueryCommand = new RelayCommand(() => MessengerInstance.Send(new OpenQueryViewMessage(this))));
             }
         }
 
@@ -61,7 +57,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _clearAllDocumentsCommand
                     ?? (_clearAllDocumentsCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DialogService.ShowMessage($"All documents will be removed from the collection {Parent.Name} .\n\nAre you sure you want to continue?",
                                 "Cleanup collection", null, null,
@@ -84,7 +80,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openImportDocumentCommand
                     ?? (_openImportDocumentCommand = new RelayCommand(
-                       x => MessengerInstance.Send(new OpenImportDocumentViewMessage(this))));
+                       () => MessengerInstance.Send(new OpenImportDocumentViewMessage(this))));
             }
         }
 
@@ -94,7 +90,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newStoredProcedureCommand
                     ?? (_newStoredProcedureCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditStoredProcedureMessage(this, null))
+                        () => MessengerInstance.Send(new EditStoredProcedureMessage(this, null))
                         ));
             }
         }
@@ -105,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newUdfCommand
                     ?? (_newUdfCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditUserDefFuncMessage(this, null))
+                        () => MessengerInstance.Send(new EditUserDefFuncMessage(this, null))
                         ));
             }
         }
@@ -116,7 +112,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newTriggerCommand
                     ?? (_newTriggerCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditTriggerMessage(this, null))
+                        () => MessengerInstance.Send(new EditTriggerMessage(this, null))
                         ));
             }
         }
@@ -127,7 +123,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCollectionCommand
                     ?? (_deleteCollectionCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
                                 async confirm =>

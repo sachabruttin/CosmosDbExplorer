@@ -168,13 +168,13 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             SetInformation();
                             await LoadDataAsync();
                             IsDirty = false;
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -184,7 +184,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Collection.DefaultTimeToLive = GetTimeToLive();
                             Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
@@ -192,7 +192,7 @@ namespace DocumentDbExplorer.ViewModel
                             await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
                             IsDirty = false;
                         },
-                        x => !((INotifyDataErrorInfo)this).HasErrors));
+                        () => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
 

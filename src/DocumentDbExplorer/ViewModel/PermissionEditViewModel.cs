@@ -109,7 +109,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyToClipboardCommand
                     ?? (_copyToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Permission?.Token))); 
+                        () => Clipboard.SetText(Permission?.Token))); 
             }
         }
 
@@ -119,11 +119,11 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             SetInformation();
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -133,7 +133,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Permission permission = null;
 
@@ -174,7 +174,7 @@ namespace DocumentDbExplorer.ViewModel
                                 await _dialogService.ShowError(msg, "Error", null, null);
                             }
                         },
-                        x => IsDirty && IsValid));
+                        () => IsDirty && IsValid));
             }
         }
 
@@ -184,7 +184,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
                             {
@@ -207,7 +207,7 @@ namespace DocumentDbExplorer.ViewModel
                                 }
                             });
                         },
-                        x => !IsNewDocument));
+                        () => !IsNewDocument));
             }
         }
 

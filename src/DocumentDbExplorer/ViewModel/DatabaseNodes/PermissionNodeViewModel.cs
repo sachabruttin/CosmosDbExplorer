@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Children.Clear();
                             await LoadChildren();
@@ -46,7 +46,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _openCommand ?? (_openCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditPermissionMessage(this))));
+                    () => MessengerInstance.Send(new EditPermissionMessage(this))));
             }
         }
     }

@@ -81,7 +81,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var collection = new DocumentCollection { Id = CollectionId.Trim() };
 
@@ -95,7 +95,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             Close();
                         },
-                        x => !((INotifyDataErrorInfo)this).HasErrors));
+                        () => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
 

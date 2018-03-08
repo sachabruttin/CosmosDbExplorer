@@ -51,7 +51,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
             get
             {
                 return _closeCommand
-                    ?? (_closeCommand = new RelayCommand(x => OnClose(), x => CanClose()));
+                    ?? (_closeCommand = new RelayCommand(OnClose, CanClose));
             }
         }
 

@@ -49,7 +49,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Children.Clear();
                             await LoadChildren().ConfigureAwait(false);
@@ -94,7 +94,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are sure you want to delete this Stored Procedure?", "Delete", null, null,
                                 async confirm =>
@@ -115,7 +115,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _editCommand
                     ?? (_editCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditStoredProcedureMessage(Parent.Parent, this))));
+                        () => MessengerInstance.Send(new EditStoredProcedureMessage(Parent.Parent, this))));
             }
         }
     }

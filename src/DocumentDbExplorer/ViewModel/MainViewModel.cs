@@ -136,7 +136,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
         {
-            //var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -372,7 +372,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _showAboutCommand
                     ?? (_showAboutCommand = new RelayCommand(
-                    async x =>
+                    async () =>
                     {
                         var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
                         var name = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute), false))?.Title ?? "Unknown Title";
@@ -386,7 +386,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _showAccountSettingsCommand
                     ?? (_showAccountSettingsCommand = new RelayCommand(
-                    x =>
+                    () =>
                     {
                         var form = new Views.AccountSettingsView();
                         var vm = (AccountSettingsViewModel)form.DataContext;
@@ -402,7 +402,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _exitCommand
                     ?? (_exitCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             Close();
                         }));
@@ -415,11 +415,8 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        x =>
-                        {
-                            CanRefreshNodeViewModel.RefreshCommand.Execute(x);
-                        },
-                        x => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(x)                            
+                        () => CanRefreshNodeViewModel.RefreshCommand.Execute(null),
+                        () => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(null)
                         ));
             }
         }

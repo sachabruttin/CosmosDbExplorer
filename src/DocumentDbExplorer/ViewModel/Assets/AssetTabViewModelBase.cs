@@ -105,7 +105,7 @@ namespace DocumentDbExplorer.ViewModel.Assets
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             if (IsNewDocument)
                             {
@@ -116,7 +116,7 @@ namespace DocumentDbExplorer.ViewModel.Assets
                                 SetInformation(Node.Resource);
                             }
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -126,12 +126,12 @@ namespace DocumentDbExplorer.ViewModel.Assets
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
                             SetInformation(resource);
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -141,7 +141,7 @@ namespace DocumentDbExplorer.ViewModel.Assets
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
                             {
@@ -153,7 +153,7 @@ namespace DocumentDbExplorer.ViewModel.Assets
                                 }
                             }).ConfigureAwait(false);
                         },
-                        x => !IsNewDocument));
+                        () => !IsNewDocument));
             }
         }
     }

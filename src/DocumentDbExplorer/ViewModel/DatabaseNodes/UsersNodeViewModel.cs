@@ -42,7 +42,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
@@ -58,7 +58,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addUserCommand ?? (_addUserCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this))
+                    () => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this))
                     )));
             }
         }

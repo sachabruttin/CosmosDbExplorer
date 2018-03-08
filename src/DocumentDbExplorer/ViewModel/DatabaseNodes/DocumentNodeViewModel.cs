@@ -27,7 +27,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openDocumentCommand
                     ?? (_openDocumentCommand = new RelayCommand(
-                        x => {
+                        () => {
                             IsSelected = false;
                             MessengerInstance.Send(new OpenDocumentsViewMessage(this));
                         }));

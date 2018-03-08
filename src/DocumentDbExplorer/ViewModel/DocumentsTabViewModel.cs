@@ -205,7 +205,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _loadMoreCommand
                     ?? (_loadMoreCommand = new RelayCommand(
-                        async x => await LoadDocuments(false)));
+                        async () => await LoadDocuments(false)));
             }
         }
 
@@ -215,11 +215,11 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshLoadCommand
                     ?? (_refreshLoadCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await LoadDocuments(true);
                         },
-                        x => !IsRunning));
+                        () => !IsRunning));
             }
         }
 
@@ -229,13 +229,13 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newDocumentCommand
                     ?? (_newDocumentCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             SelectedDocument = null;
                             SetStatusBar(null);
                             EditorViewModel.SetText(new Document() { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
                         },
-                        x =>
+                        () =>
                         {
                             // Can create new document if current document is not a new document
                             return !IsRunning && !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
@@ -249,8 +249,8 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        x => OnSelectedDocumentChanged(),
-                        x => !IsRunning && EditorViewModel.IsDirty));
+                        () => OnSelectedDocumentChanged(),
+                        () => !IsRunning && EditorViewModel.IsDirty));
             }
         }
 
@@ -260,7 +260,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveDocumentCommand
                     ?? (_saveDocumentCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             IsRunning = true;
                             try
@@ -290,7 +290,7 @@ namespace DocumentDbExplorer.ViewModel
                                 IsRunning = false;
                             }
                         },
-                        x => !IsRunning && EditorViewModel.IsDirty));
+                        () => !IsRunning && EditorViewModel.IsDirty));
             }
         }
 
@@ -300,7 +300,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteDocumentCommand
                     ?? (_deleteDocumentCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var documentId = SelectedDocument.Id;
 
@@ -324,7 +324,7 @@ namespace DocumentDbExplorer.ViewModel
                                 }
                             });
                         },
-                        x => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
+                        () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
             }
         }
 
@@ -334,7 +334,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _editFilterCommand
                     ?? (_editFilterCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             IsEditingFilter = true;
                         }));
@@ -347,7 +347,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _applyFilterCommand
                     ?? (_applyFilterCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             IsEditingFilter = false;
                             await LoadDocuments(true);
@@ -361,7 +361,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _closeFilterCommand
                     ?? (_closeFilterCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             IsEditingFilter = false;
                         }));
@@ -374,7 +374,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveLocalCommand ??
                 (_saveLocalCommand = new RelayCommand(
-                    async x =>
+                    async () =>
                     {
                         var settings = new SaveFileDialogSettings
                         {
@@ -410,7 +410,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                         });
                     },
-                    x => !IsRunning && SelectedDocument != null));
+                    () => !IsRunning && SelectedDocument != null));
             }
         }
 
@@ -441,7 +441,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _resetRequestOptionsCommand
                     ?? (_resetRequestOptionsCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             var instance = ((IHaveRequestOptions)this);
                             instance.IndexingDirective = null;

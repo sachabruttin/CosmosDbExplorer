@@ -57,7 +57,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
@@ -74,7 +74,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openCommand
                     ?? (_openCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditUserMessage(this))));
+                        () => MessengerInstance.Send(new EditUserMessage(this))));
             }
         }
 
@@ -83,7 +83,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this))
+                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this))
                     )));
             }
         }

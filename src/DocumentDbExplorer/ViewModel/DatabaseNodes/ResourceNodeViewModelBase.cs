@@ -30,7 +30,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
@@ -47,7 +47,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copySelfLinkToClipboardCommand
                     ?? (_copySelfLinkToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Resource.SelfLink)
+                        () => Clipboard.SetText(Resource.SelfLink)
                         ));
             }
         }
@@ -58,7 +58,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyAltLinkToClipboardCommand
                     ?? (_copyAltLinkToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Resource.AltLink)
+                        () => Clipboard.SetText(Resource.AltLink)
                         ));
             }
         }
@@ -69,7 +69,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyResourceToClipboardCommand
                     ?? (_copyResourceToClipboardCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             using (var stream = new MemoryStream())
                             {

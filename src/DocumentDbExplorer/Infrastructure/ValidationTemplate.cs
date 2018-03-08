@@ -64,11 +64,11 @@ namespace DocumentDbExplorer.Infrastructure
             }
         }
 
-        public string this[string propertyName]
+        public string this[string columnName]
         {
             get
             {
-                var strings = _validationResult.Errors.Where(x => x.PropertyName == propertyName)
+                var strings = _validationResult.Errors.Where(x => x.PropertyName == columnName)
                                               .Select(x => x.ErrorMessage)
                                               .ToArray();
 

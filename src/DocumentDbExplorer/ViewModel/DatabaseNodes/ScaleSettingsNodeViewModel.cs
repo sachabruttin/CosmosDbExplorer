@@ -29,7 +29,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openCommand
                     ?? (_openCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new OpenScaleAndSettingsViewMessage(this))));
+                        () => MessengerInstance.Send(new OpenScaleAndSettingsViewMessage(this))));
             }
         }
 

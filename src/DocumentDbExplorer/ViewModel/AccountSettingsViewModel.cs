@@ -87,7 +87,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _addAccountCommand
                     ?? (_addAccountCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             try
                             {
@@ -101,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 await _dialogService.ShowError(ex, "Error saving connection", null, null);
                             }
                         },       
-                        x => !((INotifyDataErrorInfo)this).HasErrors));
+                        () => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
     }

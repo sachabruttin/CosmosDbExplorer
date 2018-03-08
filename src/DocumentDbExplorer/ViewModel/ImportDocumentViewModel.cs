@@ -82,7 +82,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             try
                             {
@@ -108,7 +108,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
 
                         },
-                        x => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+                        () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
             }
         }
 
@@ -117,8 +117,8 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand(
-                    x => _cancellationToken.Cancel(),
-                    x => IsRunning));
+                    () => _cancellationToken.Cancel(),
+                    () => IsRunning));
             }
         }
 
@@ -128,7 +128,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openFileCommand
                     ?? (_openFileCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var settings = new OpenFileDialogSettings
                             {
@@ -174,7 +174,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _resetRequestOptionsCommand
                     ?? (_resetRequestOptionsCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             IndexingDirective = null;
                             ConsistencyLevel = null;

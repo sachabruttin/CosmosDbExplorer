@@ -212,9 +212,11 @@
     <Compile Include="ViewModel\AccountSettingsViewModel.cs" />
     <Compile Include="Infrastructure\Models\Connection.cs" />
     <Compile Include="ViewModel\AddCollectionViewModel.cs" />
+    <Compile Include="ViewModel\Assets\AssetTabViewModelBase.cs" />
     <Compile Include="ViewModel\DatabaseNodes\CollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ConnectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DatabaseNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\IAssetNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanEditDelete.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\IHaveCollectionNodeViewModel.cs" />
@@ -238,9 +240,9 @@
     <Compile Include="Infrastructure\Models\TreeViewItemViewModel.cs" />
     <Compile Include="ViewModel\QueryEditorViewModel.cs" />
     <Compile Include="ViewModel\ScaleAndSettingsTabViewModel.cs" />
-    <Compile Include="ViewModel\StoredProcedureTabViewModel.cs" />
-    <Compile Include="ViewModel\TriggerTabViewModel.cs" />
-    <Compile Include="ViewModel\UserDefFuncTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\StoredProcedureTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\TriggerTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\UserDefFuncTabViewModel.cs" />
     <Compile Include="ViewModel\PermissionEditViewModel.cs" />
     <Compile Include="ViewModel\UserEditViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -415,6 +417,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

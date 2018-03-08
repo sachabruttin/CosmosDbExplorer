@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -9,30 +10,43 @@ using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace DocumentDbExplorer.ViewModel.Assets
 {
-    public class StoredProcedureTabViewModel : PaneWithZoomViewModel, IAssetTabCommand
+    public abstract class AssetTabViewModelBase<TNode, TResource> : PaneWithZoomViewModel, IAssetTabCommand
+        where TNode : TreeViewItemViewModel, IAssetNode<TResource>
+        where TResource : Resource
     {
-        private StoredProcedureNodeViewModel _node;
-        private RelayCommand _saveCommand;
-        private RelayCommand _deleteCommand;
-        private RelayCommand _discardCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
-        private DocumentCollection _collection;
-        private string _altLink;
 
-        public StoredProcedureTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
+        private TNode _node;
+        private DocumentCollection _collection;
+        private RelayCommand _discardCommand;
+        private RelayCommand _saveCommand;
+        private RelayCommand _deleteCommand;
+
+        protected AssetTabViewModelBase(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
-            Content = new TextDocument(Constants.Default.StoredProcedure);
+            Content = new TextDocument(GetDefaultContent());
             _dialogService = dialogService;
             _dbService = dbService;
-            Header = "New Stored Procedure";
-            Title = "Stored Procedure";
+            Header = GetDefaultHeader();
+            Title = GetDefaultTitle();
             ContentId = Guid.NewGuid().ToString();
         }
 
-        public StoredProcedureNodeViewModel Node
+        protected abstract string GetDefaultHeader();
+        protected abstract string GetDefaultTitle();
+        protected abstract string GetDefaultContent();
+        protected abstract void SetInformationImpl(TResource resource);
+        protected abstract Task<TResource> SaveAsyncImpl(IDocumentDbService dbService);
+        protected abstract Task DeleteAsyncImpl(IDocumentDbService dbService);
+
+        protected string AltLink { get; set; }
+
+        public TextDocument Content { get; set; }
+
+        public TNode Node
         {
             get { return _node; }
             set
@@ -40,14 +54,21 @@ namespace DocumentDbExplorer.ViewModel
                 if (_node != value)
                 {
                     _node = value;
-                    Header = value.Name;
 
-                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
-                    _altLink = _node.StoredProcedure.AltLink;
-
-                    SetInformation();
+                    AccentColor = _node.AccentColor;
+                    SetInformation(_node.Resource);
                 }
             }
+        }
+
+        protected void SetInformation(TResource resource)
+        {
+            Id = resource.Id;
+            AltLink = resource.AltLink;
+            ContentId = AltLink;
+            Header = resource.Id;
+
+            SetInformationImpl(resource);
         }
 
         public Connection Connection { get; set; }
@@ -63,26 +84,11 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        private void SetInformation()
-        {
-            Id = _node.StoredProcedure.Id;
-
-            SetText(_node.StoredProcedure.Body);
-        }
-
         public string Id { get; set; }
-
-        public TextDocument Content { get; set; }
 
         public bool IsDirty { get; set; }
 
-        public bool IsNewDocument
-        {
-            get
-            {
-                return _altLink == null;
-            }
-        }
+        public bool IsNewDocument => AltLink == null;
 
         protected void SetText(string content)
         {
@@ -101,13 +107,13 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_discardCommand = new RelayCommand(
                         x =>
                         {
-                            if (Node?.StoredProcedure == null)
+                            if (IsNewDocument)
                             {
-                                SetText(Constants.Default.StoredProcedure);
+                                SetText(Constants.Default.UserDefiniedFunction);
                             }
                             else
                             {
-                                SetInformation();
+                                SetInformation(Node.Resource);
                             }
                         },
                         x => IsDirty));
@@ -122,11 +128,8 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async x =>
                         {
-                            var proc = await _dbService.SaveStoredProcedure(Connection, Collection, Id, Content.Text, _altLink).ConfigureAwait(false);
-                            _altLink = proc.AltLink;
-                            Id = proc.Id;
-
-                            SetText(proc.Body);
+                            var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
+                            SetInformation(resource);
                         },
                         x => IsDirty));
             }
@@ -144,7 +147,7 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteStoredProcedure(Connection, _altLink).ConfigureAwait(false);
+                                    await DeleteAsyncImpl(_dbService).ConfigureAwait(false);
                                     MessengerInstance.Send(new RemoveNodeMessage(_node));
                                     MessengerInstance.Send(new CloseDocumentMessage(this));
                                 }

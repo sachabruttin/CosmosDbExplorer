@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using DocumentDbExplorer.ViewModel;
+using DocumentDbExplorer.ViewModel.Assets;
 
 namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
 {

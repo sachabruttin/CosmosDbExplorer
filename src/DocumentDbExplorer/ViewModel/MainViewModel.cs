@@ -9,6 +9,7 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Assets;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
@@ -135,7 +136,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            //var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -155,7 +156,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenTrigger(EditTriggerMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -177,7 +178,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenEditUser(EditUserMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -196,7 +197,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenPermission(EditPermissionMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -215,7 +216,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenUserDefFunc(EditUserDefFuncMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -237,7 +238,7 @@ namespace DocumentDbExplorer.ViewModel
 
         private void OpenStoredProcedure(EditStoredProcedureMessage message)
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message?.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)

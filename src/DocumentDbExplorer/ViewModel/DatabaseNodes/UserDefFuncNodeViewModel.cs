@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -59,7 +60,7 @@ namespace DocumentDbExplorer.ViewModel
         public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class UserDefFuncNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class UserDefFuncNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<UserDefinedFunction>
     {
         private RelayCommand _deleteCommand;
         private readonly IDialogService _dialogService;
@@ -69,21 +70,23 @@ namespace DocumentDbExplorer.ViewModel
         public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, UserDefinedFunction function)
             : base(parent, parent.MessengerInstance, false)
         {
-            Function = function;
+            Resource = function;
             _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Function?.Id;
+        public string Name => Resource?.Id;
 
-        public string ContentId => Function?.AltLink;
+        public string ContentId => Resource?.AltLink;
+
+        public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
 
         public new UserDefFuncRootNodeViewModel Parent
         {
             get { return base.Parent as UserDefFuncRootNodeViewModel; }
         }
 
-        public UserDefinedFunction Function { get; }
+        public UserDefinedFunction Resource { get; }
 
         public RelayCommand DeleteCommand
         {
@@ -98,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Function.AltLink);
+                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Resource.AltLink);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

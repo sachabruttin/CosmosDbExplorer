@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -59,7 +60,7 @@ namespace DocumentDbExplorer.ViewModel
         public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class TriggerNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class TriggerNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<Trigger>
     {
         private RelayCommand _deleteCommand;
         private readonly IDialogService _dialogService;
@@ -69,16 +70,18 @@ namespace DocumentDbExplorer.ViewModel
         public TriggerNodeViewModel(TriggerRootNodeViewModel parent, Trigger trigger)
             : base(parent, parent.MessengerInstance, false)
         {
-            Trigger = trigger;
+            Resource = trigger;
             _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Trigger?.Id;
+        public string Name => Resource?.Id;
 
-        public string ContentId => Trigger.AltLink;
+        public string ContentId => Resource.AltLink;
 
-        public Trigger Trigger { get; }
+        public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
+
+        public Trigger Resource { get; }
 
         public new TriggerRootNodeViewModel Parent
         {
@@ -98,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Trigger.SelfLink).ConfigureAwait(false);
+                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

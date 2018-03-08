@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
@@ -59,7 +60,7 @@ namespace DocumentDbExplorer.ViewModel
         public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class StoredProcedureNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class StoredProcedureNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<StoredProcedure>
     {
         private RelayCommand _deleteCommand;
         private readonly IDialogService _dialogService;
@@ -69,21 +70,23 @@ namespace DocumentDbExplorer.ViewModel
         public StoredProcedureNodeViewModel(StoredProcedureRootNodeViewModel parent, StoredProcedure storedProcedure)
             : base(parent, parent.MessengerInstance, false)
         {
-            StoredProcedure = storedProcedure;
+            Resource = storedProcedure;
             _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => StoredProcedure.Id;
+        public string Name => Resource.Id;
 
-        public string ContentId => StoredProcedure.AltLink;
+        public string ContentId => Resource.AltLink;
+
+        public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
 
         public new StoredProcedureRootNodeViewModel Parent
         {
             get { return base.Parent as StoredProcedureRootNodeViewModel; }
         }
 
-        public StoredProcedure StoredProcedure { get; }
+        public StoredProcedure Resource { get; }
 
         public RelayCommand DeleteCommand
         {
@@ -98,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, StoredProcedure.SelfLink).ConfigureAwait(false);
+                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 }).ConfigureAwait(false);

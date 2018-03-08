@@ -198,6 +198,7 @@
     <Compile Include="Messages\EditStoredProcedureMessage.cs" />
     <Compile Include="Messages\OpenScaleAndSettingsViewMessage.cs" />
     <Compile Include="Messages\RemoveConnectionMessage.cs" />
+    <Compile Include="Messages\RemoveNodeMessage.cs" />
     <Compile Include="Messages\TreeNodeSelectedMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\DialogSettings\FileDialogResult.cs" />

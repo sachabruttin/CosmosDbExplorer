@@ -32,7 +32,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _storedProcedure = await _dbService.GetStoredProcedures(Parent.Parent.Parent.Connection, Parent.Collection);
+            var _storedProcedure = await _dbService.GetStoredProcedures(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var sp in _storedProcedure)
             {
@@ -51,7 +51,7 @@ namespace DocumentDbExplorer.ViewModel
                         async x =>
                         {
                             Children.Clear();
-                            await LoadChildren();
+                            await LoadChildren().ConfigureAwait(false);
                         }));
             }
         }
@@ -75,14 +75,14 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public string Name => StoredProcedure.Id;
-        
-        public string ContentId => StoredProcedure.SelfLink;
+
+        public string ContentId => StoredProcedure.AltLink;
 
         public new StoredProcedureRootNodeViewModel Parent
         {
             get { return base.Parent as StoredProcedureRootNodeViewModel; }
         }
-        
+
         public StoredProcedure StoredProcedure { get; }
 
         public RelayCommand DeleteCommand
@@ -98,10 +98,10 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, StoredProcedure.SelfLink);
+                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, StoredProcedure.SelfLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
-                                });
+                                }).ConfigureAwait(false);
                         }));
             }
         }

@@ -1,9 +1,11 @@
 ﻿using System;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
@@ -18,6 +20,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private DocumentCollection _collection;
+        private string _altLink;
 
         public UserDefFuncTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
@@ -40,6 +43,7 @@ namespace DocumentDbExplorer.ViewModel
                     Header = value.Name;
 
                     AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+                    _altLink = _node.Function.AltLink;
 
                     SetInformation();
                 }
@@ -74,14 +78,17 @@ namespace DocumentDbExplorer.ViewModel
         {
             get
             {
-                return Node?.Function?.SelfLink == null;
+                return _altLink == null;
             }
         }
 
         protected void SetText(string content)
         {
-            Content = new TextDocument(content);
-            IsDirty = false;
+            DispatcherHelper.RunAsync(() =>
+            {
+                Content = new TextDocument(content);
+                IsDirty = false;
+            });
         }
 
         public RelayCommand DiscardCommand
@@ -113,8 +120,9 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async x =>
                         {
-                            var proc = await _dbService.CreateUdf(Connection, Collection, Id, Content.Text);
+                            var proc = await _dbService.SaveUdf(Connection, Collection, Id, Content.Text, _altLink).ConfigureAwait(false);
                             Id = proc.Id;
+                            _altLink = proc.AltLink;
                             SetText(proc.Body);
                         },
                         x => IsDirty));
@@ -133,9 +141,11 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteUdf(Connection, Node.Function.SelfLink);
+                                    await _dbService.DeleteUdf(Connection, _altLink).ConfigureAwait(false);
+                                    MessengerInstance.Send(new RemoveNodeMessage(_node));
+                                    MessengerInstance.Send(new CloseDocumentMessage(this));
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
                         x => !IsNewDocument));
             }

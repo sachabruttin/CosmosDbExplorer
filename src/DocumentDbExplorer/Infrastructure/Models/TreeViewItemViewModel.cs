@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
+using System;
+using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
@@ -31,10 +33,19 @@ namespace DocumentDbExplorer.Infrastructure.Models
             Parent = parent;
             MessengerInstance = messenger;
             Children = new ObservableCollection<TreeViewItemViewModel>();
+            messenger.Register<RemoveNodeMessage>(this, OnRemoveNodeMessage);
 
             if (lazyLoadChildren)
             {
                 Children.Add(DummyChild);
+            }
+        }
+
+        private void OnRemoveNodeMessage(RemoveNodeMessage msg)
+        {
+            if (msg.Node == this && Parent != null)
+            {
+                DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
             }
         }
 
@@ -46,7 +57,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children { get; private set; }
+        public ObservableCollection<TreeViewItemViewModel> Children { get; }
 
         /// <summary>
         /// Returns true if this object's Children have not yet been populated.
@@ -108,10 +119,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
             return Task.FromResult<object>(null);
         }
 
-        public TreeViewItemViewModel Parent
-        {
-            get; private set;
-        }
+        public TreeViewItemViewModel Parent { get; }
 
         public IMessenger MessengerInstance { get; }
     }

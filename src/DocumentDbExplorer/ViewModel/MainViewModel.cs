@@ -13,6 +13,7 @@ using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -258,8 +259,11 @@ namespace DocumentDbExplorer.ViewModel
 
         private void CloseDocument(CloseDocumentMessage msg)
         {
-            Tabs.Remove(msg.Paneviewmodel);
-            SelectedTab = Tabs.LastOrDefault();
+            DispatcherHelper.RunAsync(() =>
+            {
+                Tabs.Remove(msg.Paneviewmodel);
+                SelectedTab = Tabs.LastOrDefault();
+            });
         }
 
         private async void OpenDocumentsView(OpenDocumentsViewMessage message)

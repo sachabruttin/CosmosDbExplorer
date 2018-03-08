@@ -51,7 +51,7 @@ namespace DocumentDbExplorer.ViewModel
                         async x =>
                         {
                             Children.Clear();
-                            await LoadChildren();
+                            await LoadChildren().ConfigureAwait(false);
                         }));
             }
         }
@@ -76,7 +76,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string Name => Trigger?.Id;
 
-        public string ContentId => Trigger?.SelfLink;
+        public string ContentId => Trigger.AltLink;
 
         public Trigger Trigger { get; }
 
@@ -84,7 +84,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             get { return base.Parent as TriggerRootNodeViewModel; }
         }
-        
+
         public RelayCommand DeleteCommand
         {
             get
@@ -98,7 +98,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Trigger.SelfLink);
+                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Trigger.SelfLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

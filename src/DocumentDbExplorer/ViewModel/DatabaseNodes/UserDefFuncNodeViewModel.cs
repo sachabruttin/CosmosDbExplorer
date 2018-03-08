@@ -51,7 +51,7 @@ namespace DocumentDbExplorer.ViewModel
                         async x =>
                         {
                             Children.Clear();
-                            await LoadChildren();
+                            await LoadChildren().ConfigureAwait(false);
                         }));
             }
         }
@@ -76,7 +76,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public string Name => Function?.Id;
 
-        public string ContentId => Function?.SelfLink;
+        public string ContentId => Function?.AltLink;
 
         public new UserDefFuncRootNodeViewModel Parent
         {
@@ -98,7 +98,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Function.SelfLink);
+                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Function.AltLink);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

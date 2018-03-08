@@ -1,9 +1,11 @@
 ﻿using System;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
@@ -18,6 +20,7 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private DocumentCollection _collection;
+        private string _altLink;
 
         public StoredProcedureTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
@@ -40,6 +43,7 @@ namespace DocumentDbExplorer.ViewModel
                     Header = value.Name;
 
                     AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+                    _altLink = _node.StoredProcedure.AltLink;
 
                     SetInformation();
                 }
@@ -76,14 +80,17 @@ namespace DocumentDbExplorer.ViewModel
         {
             get
             {
-                return Node?.StoredProcedure?.SelfLink == null;
+                return _altLink == null;
             }
         }
 
         protected void SetText(string content)
         {
-            Content = new TextDocument(content);
-            IsDirty = false;
+            DispatcherHelper.RunAsync(() =>
+            {
+                Content = new TextDocument(content);
+                IsDirty = false;
+            });
         }
 
         public RelayCommand DiscardCommand
@@ -115,7 +122,8 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async x =>
                         {
-                            var proc = await _dbService.CreateStoredProcedure(Connection, Collection, Id, Content.Text);
+                            var proc = await _dbService.SaveStoredProcedure(Connection, Collection, Id, Content.Text, _altLink).ConfigureAwait(false);
+                            _altLink = proc.AltLink;
                             Id = proc.Id;
 
                             SetText(proc.Body);
@@ -136,9 +144,11 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteStoredProcedure(Connection, Node.StoredProcedure.SelfLink);
+                                    await _dbService.DeleteStoredProcedure(Connection, _altLink).ConfigureAwait(false);
+                                    MessengerInstance.Send(new RemoveNodeMessage(_node));
+                                    MessengerInstance.Send(new CloseDocumentMessage(this));
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
                         x => !IsNewDocument));
             }

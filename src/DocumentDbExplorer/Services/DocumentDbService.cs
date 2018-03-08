@@ -39,19 +39,19 @@ namespace DocumentDbExplorer.Services
 
         Task<IList<StoredProcedure>> GetStoredProcedures(Connection connection, DocumentCollection collection);
 
-        Task<StoredProcedure> CreateStoredProcedure(Connection connection, DocumentCollection collection, string id, string function);
+        Task<StoredProcedure> SaveStoredProcedure(Connection connection, DocumentCollection collection, string id, string function, string storeProcedureLink);
 
         Task DeleteStoredProcedure(Connection connection, string storedProcedureLink);
 
         Task<IList<UserDefinedFunction>> GetUdfs(Connection connection, DocumentCollection collection);
 
-        Task<UserDefinedFunction> CreateUdf(Connection connection, DocumentCollection collection, string id, string function);
+        Task<UserDefinedFunction> SaveUdf(Connection connection, DocumentCollection collection, string id, string function, string altLink);
 
         Task DeleteUdf(Connection connection, string udfLink);
 
         Task<IList<Trigger>> GetTriggers(Connection connection, DocumentCollection collection);
 
-        Task<Trigger> CreateTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation);
+        Task<Trigger> SaveTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation, string altLink);
 
         Task DeleteTrigger(Connection connection, string triggerLink);
 
@@ -333,30 +333,40 @@ namespace DocumentDbExplorer.Services
             return GetClient(connection).UpsertDocumentAsync(altLink, instance, options);
         }
 
-        public async Task<StoredProcedure> CreateStoredProcedure(Connection connection, DocumentCollection collection, string id, string function)
+        public async Task<StoredProcedure> SaveStoredProcedure(Connection connection, DocumentCollection collection, string id, string function, string storeProcedureLink)
         {
             var proc = new StoredProcedure { Id = id, Body = function };
 
-            var response = await GetClient(connection).UpsertStoredProcedureAsync(collection.SelfLink, proc);
+            if (!string.IsNullOrEmpty(storeProcedureLink))
+            {
+                await GetClient(connection).DeleteStoredProcedureAsync(storeProcedureLink).ConfigureAwait(false);
+            }
+
+            var response = await GetClient(connection).CreateStoredProcedureAsync(collection.SelfLink, proc).ConfigureAwait(false);
             return response.Resource;
         }
 
-        public async Task<UserDefinedFunction> CreateUdf(Connection connection, DocumentCollection collection, string id, string function)
+        public async Task<UserDefinedFunction> SaveUdf(Connection connection, DocumentCollection collection, string id, string function, string altLink)
         {
             var proc = new UserDefinedFunction { Id = id, Body = function };
 
-            var response = await GetClient(connection).UpsertUserDefinedFunctionAsync(collection.SelfLink, proc);
+            if (!string.IsNullOrEmpty(altLink))
+            {
+                await GetClient(connection).DeleteUserDefinedFunctionAsync(altLink).ConfigureAwait(false);
+            }
+
+            var response = await GetClient(connection).CreateUserDefinedFunctionAsync(collection.SelfLink, proc).ConfigureAwait(false);
             return response.Resource;
         }
 
-        public async Task DeleteStoredProcedure(Connection connection, string storedProcedureLink)
+        public Task DeleteStoredProcedure(Connection connection, string storedProcedureLink)
         {
-            await GetClient(connection).DeleteStoredProcedureAsync(storedProcedureLink);
+            return GetClient(connection).DeleteStoredProcedureAsync(storedProcedureLink);
         }
 
-        public async Task DeleteUdf(Connection connection, string udfLink)
+        public Task DeleteUdf(Connection connection, string udfLink)
         {
-            await GetClient(connection).DeleteUserDefinedFunctionAsync(udfLink);
+            return GetClient(connection).DeleteUserDefinedFunctionAsync(udfLink);
         }
 
         public async Task<IList<StoredProcedure>> GetStoredProcedures(Connection connection, DocumentCollection collection)
@@ -377,17 +387,22 @@ namespace DocumentDbExplorer.Services
             return response.Select(sp => sp).ToList();
         }
 
-        public async Task<Trigger> CreateTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation)
+        public async Task<Trigger> SaveTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation, string altLink)
         {
             var item = new Trigger { Id = id, Body = trigger, TriggerType = triggerType, TriggerOperation = triggerOperation };
 
-            var response = await GetClient(connection).UpsertTriggerAsync(collection.SelfLink, item);
+            if (!string.IsNullOrEmpty(altLink))
+            {
+                await GetClient(connection).DeleteTriggerAsync(altLink).ConfigureAwait(false);
+            }
+
+            var response = await GetClient(connection).CreateTriggerAsync(collection.SelfLink, item).ConfigureAwait(false);
             return response.Resource;
         }
 
-        public async Task DeleteTrigger(Connection connection, string triggerLink)
+        public Task DeleteTrigger(Connection connection, string triggerLink)
         {
-            await GetClient(connection).DeleteTriggerAsync(triggerLink);
+            return GetClient(connection).DeleteTriggerAsync(triggerLink);
         }
 
         public async Task<int> GetThroughput(Connection connection, DocumentCollection collection)
@@ -403,9 +418,8 @@ namespace DocumentDbExplorer.Services
 
         public async Task UpdateCollectionSettings(Connection connection, DocumentCollection collection, int throughput)
         {
-            await UpdateOfferThroughput(connection, collection, throughput);
-            var client = GetClient(connection);
-            await client.ReplaceDocumentCollectionAsync(collection);
+            await UpdateOfferThroughput(connection, collection, throughput).ConfigureAwait(false);
+            await GetClient(connection).ReplaceDocumentCollectionAsync(collection).ConfigureAwait(false);
         }
 
         private async Task UpdateOfferThroughput(Connection connection, DocumentCollection collection, int throughtput)

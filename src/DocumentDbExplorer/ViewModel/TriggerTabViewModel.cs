@@ -1,9 +1,11 @@
 ﻿using System;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 
@@ -20,6 +22,7 @@ namespace DocumentDbExplorer.ViewModel
         private TriggerType _triggerType;
         private TriggerOperation _triggerOperation;
         private DocumentCollection _collection;
+        private string _altLink;
 
         public TriggerTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
         {
@@ -41,6 +44,7 @@ namespace DocumentDbExplorer.ViewModel
                     _node = value;
                     Header = value.Name;
                     AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+                    _altLink = _node.Trigger.AltLink;
 
                     SetInformation();
                 }
@@ -78,14 +82,17 @@ namespace DocumentDbExplorer.ViewModel
         {
             get
             {
-                return Node?.Trigger?.SelfLink == null;
+                return _altLink == null;
             }
         }
 
         protected void SetText(string content)
         {
-            Content = new TextDocument(content);
-            IsDirty = false;
+            DispatcherHelper.RunAsync(() =>
+            {
+                Content = new TextDocument(content);
+                IsDirty = false;
+            });
         }
 
         public TriggerType TriggerType
@@ -126,7 +133,7 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             if (Node?.Trigger == null)
                             {
-                                SetText(Constants.Default.StoredProcedure);
+                                SetText(Constants.Default.Trigger);
                             }
                             else
                             {
@@ -145,7 +152,8 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async x =>
                         {
-                            var proc = await _dbService.CreateTrigger(Connection, Collection, Id, Content.Text, TriggerType, TriggerOperation);
+                            var proc = await _dbService.SaveTrigger(Connection, Collection, Id, Content.Text, TriggerType, TriggerOperation, _altLink);
+                            _altLink = proc.AltLink;
                             Id = proc.Id;
                             SetText(proc.Body);
                         },
@@ -165,9 +173,11 @@ namespace DocumentDbExplorer.ViewModel
                             {
                                 if (confirm)
                                 {
-                                    await _dbService.DeleteTrigger(Connection, Node.Trigger.SelfLink);
+                                    await _dbService.DeleteTrigger(Connection, _altLink).ConfigureAwait(false);
+                                    MessengerInstance.Send(new RemoveNodeMessage(_node));
+                                    MessengerInstance.Send(new CloseDocumentMessage(this));
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
                         x => !IsNewDocument));
             }

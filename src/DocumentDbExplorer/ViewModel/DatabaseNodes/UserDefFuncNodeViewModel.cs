@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -10,30 +11,19 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserDefFuncRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
+    public class UserDefFuncRootNodeViewModel : AssetRootNodeViewModelBase<UserDefinedFunction>
     {
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _refreshCommand;
-
         public UserDefFuncRootNodeViewModel(CollectionNodeViewModel parent)
-            : base(parent, parent.MessengerInstance, true)
+            : base(parent)
         {
             Name = "User Defined Functions";
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-        }
-
-        public string Name { get; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var _function = await _dbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection);
+            var _function = await DbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var func in _function)
             {
@@ -43,21 +33,23 @@ namespace DocumentDbExplorer.ViewModel
             IsLoading = false;
         }
 
-        public RelayCommand RefreshCommand
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<UserDefinedFunction> message)
         {
-            get
+            if (message.IsNewResource)
             {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async () =>
-                        {
-                            Children.Clear();
-                            await LoadChildren().ConfigureAwait(false);
-                        }));
+                var item = new UserDefFuncNodeViewModel(this, message.Resource);
+                DispatcherHelper.RunAsync(() => Children.Add(item));
+            }
+            else
+            {
+                var item = Children.Cast<UserDefFuncNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
             }
         }
-
-        public CollectionNodeViewModel CollectionNode => Parent;
     }
 
     public class UserDefFuncNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<UserDefinedFunction>
@@ -86,7 +78,7 @@ namespace DocumentDbExplorer.ViewModel
             get { return base.Parent as UserDefFuncRootNodeViewModel; }
         }
 
-        public UserDefinedFunction Resource { get; }
+        public UserDefinedFunction Resource { get; set; }
 
         public RelayCommand DeleteCommand
         {

@@ -12,32 +12,19 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class TriggerRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
+    public class TriggerRootNodeViewModel : AssetRootNodeViewModelBase<Trigger>
     {
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _refreshCommand;
-
         public TriggerRootNodeViewModel(CollectionNodeViewModel parent)
-            : base(parent, parent.MessengerInstance, true)
+            : base(parent)
         {
             Name = "Triggers";
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-
-            MessengerInstance.Register<UpdateOrCreateNodeMessage<Trigger>>(this, OnUpdateOrCreateNodeMessage);
-        }
-
-        public string Name { get; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var _triggers = await _dbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var _triggers = await DbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var trigger in _triggers)
             {
@@ -47,23 +34,7 @@ namespace DocumentDbExplorer.ViewModel
             IsLoading = false;
         }
 
-        public RelayCommand RefreshCommand
-        {
-            get
-            {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async () =>
-                        {
-                            Children.Clear();
-                            await LoadChildren().ConfigureAwait(false);
-                        }));
-            }
-        }
-
-        public CollectionNodeViewModel CollectionNode => Parent;
-
-        private void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<Trigger> message)
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<Trigger> message)
         {
             if (message.IsNewResource)
             {

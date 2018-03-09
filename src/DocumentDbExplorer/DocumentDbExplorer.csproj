@@ -216,6 +216,7 @@
     <Compile Include="Infrastructure\Models\Connection.cs" />
     <Compile Include="ViewModel\AddCollectionViewModel.cs" />
     <Compile Include="ViewModel\Assets\AssetTabViewModelBase.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\AssetRootNodeViewModelBase.cs" />
     <Compile Include="ViewModel\DatabaseNodes\CollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ConnectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DatabaseNodeViewModel.cs" />

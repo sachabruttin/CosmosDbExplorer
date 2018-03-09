@@ -8,6 +8,6 @@ namespace DocumentDbExplorer.ViewModel
         where T: Resource
     {
         Color? AccentColor { get; }
-        T Resource { get; }
+        T Resource { get; set; }
     }
 }

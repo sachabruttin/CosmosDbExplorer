@@ -37,7 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _triggers = await _dbService.GetTriggers(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var _triggers = await _dbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var trigger in _triggers)
             {
@@ -123,7 +123,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                                        await _dbService.DeleteTriggerAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

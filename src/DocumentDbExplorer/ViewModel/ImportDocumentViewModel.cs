@@ -87,7 +87,7 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var count = await _dbService.ImportDocument(Connection, Node.Collection, Content.Text, this, _cancellationToken.Token);
+                                var count = await _dbService.ImportDocumentAsync(Connection, Node.Collection, Content.Text, this, _cancellationToken.Token);
                                 await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import");
                             }
                             catch (OperationCanceledException)

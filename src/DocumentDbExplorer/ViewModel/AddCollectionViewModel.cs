@@ -91,7 +91,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
 
                             var db = Databases.FirstOrDefault(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
-                            await _dbService.CreateCollection(Connection, db, collection, Throughput);
+                            await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput);
 
                             Close();
                         },

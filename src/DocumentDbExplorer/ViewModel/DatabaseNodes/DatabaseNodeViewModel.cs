@@ -28,7 +28,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var collections = await DbService.GetCollections(Parent.Connection, _database);
+            var collections = await DbService.GetCollectionsAsync(Parent.Connection, _database);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -81,7 +81,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await DbService.DeleteDatabase(Parent.Connection, _database);
+                                        await DbService.DeleteDatabaseAsync(Parent.Connection, _database);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

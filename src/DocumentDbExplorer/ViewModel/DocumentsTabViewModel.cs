@@ -91,7 +91,7 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     try
                     {
-                        _currentDocument = await _dbService.GetDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                        _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument);
                     }
                     catch (DocumentClientException clientEx)
                     {
@@ -156,7 +156,7 @@ namespace DocumentDbExplorer.ViewModel
                     ContinuationToken = null;
                 }
 
-                var list = await _dbService.GetDocuments(Node.Parent.Parent.Parent.Connection,
+                var list = await _dbService.GetDocumentsAsync(Node.Parent.Parent.Parent.Connection,
                                        Node.Parent.Collection,
                                        Filter,
                                        Settings.Default.MaxDocumentToRetrieve,
@@ -265,7 +265,7 @@ namespace DocumentDbExplorer.ViewModel
                             IsRunning = true;
                             try
                             {
-                                var response = await _dbService.UpdateDocument(Connection, Collection.AltLink, EditorViewModel.Content.Text, this);
+                                var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this);
                                 var document = response.Resource;
 
                                 SetStatusBar(response);
@@ -309,7 +309,7 @@ namespace DocumentDbExplorer.ViewModel
                                 if (confirm)
                                 {
                                     IsRunning = true;
-                                    var response = await _dbService.DeleteDocument(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                                    var response = await _dbService.DeleteDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument);
                                     IsRunning = false;
                                     SetStatusBar(response);
 

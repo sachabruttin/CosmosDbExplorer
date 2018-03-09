@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _storedProcedure = await _dbService.GetStoredProcedures(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var _storedProcedure = await _dbService.GetStoredProceduresAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var sp in _storedProcedure)
             {
@@ -101,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                                        await _dbService.DeleteStoredProcedureAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 }).ConfigureAwait(false);

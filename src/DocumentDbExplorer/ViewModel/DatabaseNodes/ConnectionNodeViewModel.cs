@@ -41,7 +41,7 @@ namespace DocumentDbExplorer.ViewModel
             try
             {
                 IsLoading = true;
-                Databases = await _dbService.GetDatabases(Connection);
+                Databases = await _dbService.GetDatabasesAsync(Connection);
 
                 foreach (var db in Databases)
                 {

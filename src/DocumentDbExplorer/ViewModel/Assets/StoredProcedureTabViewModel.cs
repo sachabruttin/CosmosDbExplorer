@@ -25,12 +25,12 @@ namespace DocumentDbExplorer.ViewModel.Assets
 
         protected override Task<StoredProcedure> SaveAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.SaveStoredProcedure(Connection, Collection, Id, Content.Text, AltLink);
+            return dbService.SaveStoredProcedureAsync(Connection, Collection, Id, Content.Text, AltLink);
         }
 
         protected override Task DeleteAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.DeleteStoredProcedure(Connection, AltLink);
+            return dbService.DeleteStoredProcedureAsync(Connection, AltLink);
         }
     }
 }

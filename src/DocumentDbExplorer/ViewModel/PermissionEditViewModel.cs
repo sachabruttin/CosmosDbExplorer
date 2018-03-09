@@ -158,7 +158,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             try
                             {
-                                permission = await _dbService.SavePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
+                                permission = await _dbService.SavePermissionAsync(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
 
                                 Header = permission.Id;
                                 Node.Permission = permission;
@@ -192,7 +192,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     try
                                     {
-                                        await _dbService.DeletePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission);
+                                        await _dbService.DeletePermissionAsync(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission);
                                     }
                                     catch (DocumentClientException ex)
                                     {

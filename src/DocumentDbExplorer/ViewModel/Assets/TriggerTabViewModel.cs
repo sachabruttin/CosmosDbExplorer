@@ -57,12 +57,12 @@ namespace DocumentDbExplorer.ViewModel.Assets
 
         protected override Task<Trigger> SaveAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.SaveTrigger(Connection, Collection, Id, Content.Text, TriggerType, TriggerOperation, AltLink);
+            return dbService.SaveTriggerAsync(Connection, Collection, Id, Content.Text, TriggerType, TriggerOperation, AltLink);
         }
 
         protected override Task DeleteAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.DeleteTrigger(Connection, AltLink);
+            return dbService.DeleteTriggerAsync(Connection, AltLink);
         }
     }
 }

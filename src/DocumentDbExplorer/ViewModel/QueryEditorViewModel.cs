@@ -151,7 +151,7 @@ namespace DocumentDbExplorer.ViewModel
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                _queryResult = await _dbService.ExecuteQuery(Connection, Node.Collection, query, this, token, _cancellationToken.Token);
+                _queryResult = await _dbService.ExecuteQueryAsync(Connection, Node.Collection, query, this, token, _cancellationToken.Token);
 
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 

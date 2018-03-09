@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _function = await _dbService.GetUdfs(Parent.Parent.Parent.Connection, Parent.Collection);
+            var _function = await _dbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection);
 
             foreach (var func in _function)
             {
@@ -101,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Resource.AltLink);
+                                        await _dbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

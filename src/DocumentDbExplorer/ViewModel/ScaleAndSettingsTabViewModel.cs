@@ -151,8 +151,8 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var throughputTask = _dbService.GetThroughput(Connection, Collection);
-            var partitionTask = _dbService.GetPartitionKeyRangeCount(Connection, Collection);
+            var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
+            var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
 
             var result = await Task.WhenAll(throughputTask, partitionTask);
 
@@ -189,7 +189,7 @@ namespace DocumentDbExplorer.ViewModel
                             Collection.DefaultTimeToLive = GetTimeToLive();
                             Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
-                            await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
+                            await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput);
                             IsDirty = false;
                         },
                         () => !((INotifyDataErrorInfo)this).HasErrors));

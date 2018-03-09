@@ -68,7 +68,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var users = await _dbService.GetUsers(Parent.Parent.Connection, _database).ConfigureAwait(false);
+            var users = await _dbService.GetUsersAsync(Parent.Parent.Connection, _database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {

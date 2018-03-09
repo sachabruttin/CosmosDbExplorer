@@ -24,12 +24,12 @@ namespace DocumentDbExplorer.ViewModel.Assets
 
         protected override Task<UserDefinedFunction> SaveAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.SaveUdf(Connection, Collection, Id, Content.Text, AltLink);
+            return dbService.SaveUdfAsync(Connection, Collection, Id, Content.Text, AltLink);
         }
 
         protected override Task DeleteAsyncImpl(IDocumentDbService dbService)
         {
-            return dbService.DeleteUdf(Connection, AltLink);
+            return dbService.DeleteUdfAsync(Connection, AltLink);
         }
     }
 }

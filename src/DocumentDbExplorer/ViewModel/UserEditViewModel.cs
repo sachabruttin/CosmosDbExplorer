@@ -109,7 +109,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             try
                             {
-                                user = await _dbService.SaveUser(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
+                                user = await _dbService.SaveUserAsync(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
 
                                 Header = user.Id;
                                 Node.User = user;
@@ -143,7 +143,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     try
                                     {
-                                        await _dbService.DeleteUser(Node.Parent.Parent.Parent.Connection, Node.User);
+                                        await _dbService.DeleteUserAsync(Node.Parent.Parent.Parent.Connection, Node.User);
                                     }
                                     catch (DocumentClientException ex)
                                     {

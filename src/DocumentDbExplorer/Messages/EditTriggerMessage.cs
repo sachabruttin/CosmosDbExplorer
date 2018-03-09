@@ -4,42 +4,43 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {
-    public class EditTriggerMessage
+    public abstract class OpenTabMessageBase<TNodeViewModel>
     {
-        public EditTriggerMessage(CollectionNodeViewModel collectionNode, TriggerNodeViewModel node)
+        protected OpenTabMessageBase(TNodeViewModel node, Connection connection, DocumentCollection collection)
         {
             Node = node;
-            Connection = collectionNode.Parent.Parent.Connection;
-            Collection = collectionNode.Collection;
+            Connection = connection;
+            Collection = collection;
         }
 
-        public TriggerNodeViewModel Node { get; }
+        public TNodeViewModel Node { get; }
 
         public Connection Connection { get; }
 
-        public DocumentCollection Collection { get; set; }
+        public DocumentCollection Collection { get; }
     }
 
-    public class EditUserMessage
+    public class EditTriggerMessage : OpenTabMessageBase<TriggerNodeViewModel>
     {
-        public EditUserMessage(UserNodeViewModel node)
+        public EditTriggerMessage(TriggerNodeViewModel node, Connection connection, DocumentCollection collection)
+            : base(node, connection, collection)
         {
-            Node = node;
-            Connection = node.Parent.Parent.Parent.Connection;
         }
-
-        public UserNodeViewModel Node { get; }
-
-        public Connection Connection { get; }
     }
 
-    public class EditPermissionMessage
+    public class EditUserMessage : OpenTabMessageBase<UserNodeViewModel>
     {
-        public EditPermissionMessage(PermissionNodeViewModel node)
+        public EditUserMessage(UserNodeViewModel node, Connection connection, DocumentCollection collection)
+            : base(node, connection, collection)
         {
-            Node = node;
         }
+    }
 
-        public PermissionNodeViewModel Node { get; }
+    public class EditPermissionMessage : OpenTabMessageBase<PermissionNodeViewModel>
+    {
+        public EditPermissionMessage(PermissionNodeViewModel node, Connection connection, DocumentCollection collection)
+            : base(node, connection, collection)
+        {
+        }
     }
 }

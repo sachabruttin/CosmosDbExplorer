@@ -166,6 +166,7 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
             protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)
             {
                 base.OnRender(drawingContext);
+#pragma warning disable CS0618 // Type or member is obsolete
                 var text = new FormattedText(
                         _text,
                         System.Globalization.CultureInfo.CurrentCulture,
@@ -173,6 +174,7 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
                         new Typeface(_fontFamily),
                         _fontSize,
                         _foreground);
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 drawingContext.DrawText(text, new Point(3, 3));
             }

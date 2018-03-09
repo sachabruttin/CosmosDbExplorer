@@ -1,18 +1,20 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
-    public class PaneViewModel : ViewModelBase
+    public abstract class PaneViewModelBase: ViewModelBase
     {
         private RelayCommand _closeCommand;
         private readonly StatusBarItem _pathStatusBarItem;
 
-        public PaneViewModel(IMessenger messenger) : base(messenger)
+        public PaneViewModelBase(IMessenger messenger) : base(messenger)
         {
             _pathStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = ToolTip, IsVisible = true }, StatusBarItemType.SimpleText, "Path", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_pathStatusBarItem);
@@ -29,7 +31,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         public string Header { get; set; }
 
-        public string ContentId { get; set; }
+        public string ContentId { get; protected set; }
 
         public bool IsSelected { get; set; }
 
@@ -66,9 +68,22 @@ namespace DocumentDbExplorer.Infrastructure.Models
         }
     }
 
-    public class PaneWithZoomViewModel : PaneViewModel
+    public abstract class PaneViewModel<TNodeViewModel> : PaneViewModelBase
+        where TNodeViewModel : TreeViewItemViewModel
     {
-        public PaneWithZoomViewModel(IMessenger messenger) : base(messenger)
+        protected PaneViewModel(IMessenger messenger)
+            : base(messenger)
+        {
+
+        }
+
+        public abstract void Load(string contentId, TNodeViewModel node, Connection connection, DocumentCollection collection);
+    }
+
+    public abstract class PaneWithZoomViewModel<TNodeViewModel> : PaneViewModel<TNodeViewModel>
+        where TNodeViewModel : TreeViewItemViewModel
+    {
+        protected PaneWithZoomViewModel(IMessenger messenger) : base(messenger)
         {
             StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, "Zoom", System.Windows.Controls.Dock.Right));
         }
@@ -76,9 +91,9 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public double Zoom { get; set; } = 0.5;
     }
 
-    public class ToolViewModel : PaneViewModel
+    public abstract class ToolViewModel : PaneViewModelBase
     {
-        public ToolViewModel(IMessenger messenger) : base(messenger)
+        protected ToolViewModel(IMessenger messenger) : base(messenger)
         {
         }
 

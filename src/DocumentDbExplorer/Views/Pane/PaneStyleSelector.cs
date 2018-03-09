@@ -16,7 +16,7 @@ namespace DocumentDbExplorer.Views.Pane
                 return ToolStyle;
             }
 
-            if (item is PaneViewModel)
+            if (item is PaneViewModelBase)
             {
                 return DocumentStyle;
             }

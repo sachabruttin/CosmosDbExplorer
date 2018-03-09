@@ -13,14 +13,13 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel.Assets
 {
-    public abstract class AssetTabViewModelBase<TNode, TResource> : PaneWithZoomViewModel, IAssetTabCommand
+    public abstract class AssetTabViewModelBase<TNode, TResource> : PaneWithZoomViewModel<TNode>, IAssetTabCommand
         where TNode : TreeViewItemViewModel, IAssetNode<TResource>
         where TResource : Resource
     {
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
 
-        private TNode _node;
         private DocumentCollection _collection;
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
@@ -47,29 +46,28 @@ namespace DocumentDbExplorer.ViewModel.Assets
 
         public TextDocument Content { get; set; }
 
-        public TNode Node
+        public override void Load(string contentId, TNode node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-
-                    AccentColor = _node.AccentColor;
-                    SetInformation(_node.Resource);
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Connection = connection;
+            Collection = collection;
+            AccentColor = connection.AccentColor;
+            SetInformation(Node?.Resource);
         }
+
+        public TNode Node { get; protected set; }
 
         protected void SetInformation(TResource resource)
         {
-            Id = resource.Id;
-            AltLink = resource.AltLink;
-            ContentId = AltLink;
-            Header = resource.Id;
-
-            SetInformationImpl(resource);
+            if (resource != null)
+            {
+                Id = resource.Id;
+                AltLink = resource.AltLink;
+                ContentId = AltLink;
+                Header = resource.Id;
+                SetInformationImpl(resource);
+            }
         }
 
         public Connection Connection { get; set; }
@@ -161,7 +159,7 @@ namespace DocumentDbExplorer.ViewModel.Assets
                                 if (confirm)
                                 {
                                     await DeleteAsyncImpl(_dbService).ConfigureAwait(false);
-                                    MessengerInstance.Send(new RemoveNodeMessage(_node));
+                                    MessengerInstance.Send(new RemoveNodeMessage(AltLink));
                                     MessengerInstance.Send(new CloseDocumentMessage(this));
                                 }
                             }).ConfigureAwait(false);

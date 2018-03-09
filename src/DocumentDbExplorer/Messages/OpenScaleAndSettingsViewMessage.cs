@@ -1,14 +1,14 @@
-﻿using DocumentDbExplorer.ViewModel;
+﻿using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.ViewModel;
+using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {
-    public class OpenScaleAndSettingsViewMessage
+    public class OpenScaleAndSettingsViewMessage : OpenTabMessageBase<ScaleSettingsNodeViewModel>
     {
-        public OpenScaleAndSettingsViewMessage(ScaleSettingsNodeViewModel node)
+        public OpenScaleAndSettingsViewMessage(ScaleSettingsNodeViewModel node, Connection connection, DocumentCollection collection) 
+            : base(node, connection, collection)
         {
-            Node = node;
         }
-
-        public ScaleSettingsNodeViewModel Node { get; }
     }
 }

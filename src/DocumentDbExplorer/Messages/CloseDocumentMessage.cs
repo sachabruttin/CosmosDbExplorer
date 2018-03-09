@@ -4,11 +4,11 @@ namespace DocumentDbExplorer.Messages
 {
     public class CloseDocumentMessage
     {
-        public CloseDocumentMessage(PaneViewModel paneViewModel)
+        public CloseDocumentMessage(PaneViewModelBase paneViewModel)
         {
-            Paneviewmodel = paneViewModel;
+            PaneViewModel = paneViewModel;
         }
 
-        public PaneViewModel Paneviewmodel { get; }
+        public PaneViewModelBase PaneViewModel { get; }
     }
 }

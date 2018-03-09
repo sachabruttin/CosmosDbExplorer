@@ -40,16 +40,17 @@ namespace DocumentDbExplorer.Services
             return Task.Run(() => afterHideCallback);
         }
 
-        public Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
+        public async Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
         {
             var confirmed = false;
-            DispatcherHelper.RunAsync(() =>
+            await DispatcherHelper.RunAsync(() =>
             {
                 var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
                 confirmed = result == MessageBoxResult.Yes;
             });
 
-            return Task.Run(() => { afterHideCallback(confirmed); return confirmed; });
+            afterHideCallback(confirmed);
+            return confirmed;
         }
 
         public Task ShowMessageBox(string message, string title)

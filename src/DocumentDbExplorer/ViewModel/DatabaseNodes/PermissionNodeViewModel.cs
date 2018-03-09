@@ -5,7 +5,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class PermissionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class PermissionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IContent
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _openCommand;
@@ -46,7 +46,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _openCommand ?? (_openCommand = new RelayCommand(
-                    () => MessengerInstance.Send(new EditPermissionMessage(this))));
+                    () => MessengerInstance.Send(new EditPermissionMessage(this, Parent.Parent.Parent.Parent.Connection, null))));
             }
         }
     }

@@ -19,7 +19,7 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneWithZoomViewModel, IHaveQuerySettings, IHaveRequestOptions
+    public class DocumentsTabViewModel : PaneWithZoomViewModel<DocumentNodeViewModel>, IHaveQuerySettings, IHaveRequestOptions
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
@@ -35,7 +35,6 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _applyFilterCommand;
         private RelayCommand _closeFilterCommand;
         private RelayCommand _saveLocalCommand;
-        private DocumentNodeViewModel _node;
         private ResourceResponse<Document> _currentDocument;
         private RelayCommand _resetRequestOptionsCommand;
 
@@ -58,22 +57,21 @@ namespace DocumentDbExplorer.ViewModel
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-        public DocumentNodeViewModel Node
+        public override async void Load(string contentId, DocumentNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
+            ContentId = contentId;
+            Node = node;
+            Connection = connection;
+            Collection = collection;
+            PartitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
+            var split = Node.Parent.Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
+            AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
 
-                    PartitionKey = Node.Parent.Collection.PartitionKey?.Paths.FirstOrDefault();
-                    var split = Node.Parent.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
-                    AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
-                }
-            }
+            await LoadDocuments(true).ConfigureAwait(false);
         }
+
+        public DocumentNodeViewModel Node { get; protected set; }
 
         public string PartitionKey { get; set; }
 
@@ -144,7 +142,7 @@ namespace DocumentDbExplorer.ViewModel
             HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
         }
 
-        public async Task LoadDocuments(bool cleanContent = false)
+        private async Task LoadDocuments(bool cleanContent = false)
         {
             try
             {
@@ -156,11 +154,11 @@ namespace DocumentDbExplorer.ViewModel
                     ContinuationToken = null;
                 }
 
-                var list = await _dbService.GetDocumentsAsync(Node.Parent.Parent.Parent.Connection,
-                                       Node.Parent.Collection,
-                                       Filter,
-                                       Settings.Default.MaxDocumentToRetrieve,
-                                       ContinuationToken);
+                var list = await _dbService.GetDocumentsAsync(Connection,
+                                                               Collection,
+                                                               Filter,
+                                                               Settings.Default.MaxDocumentToRetrieve,
+                                                               ContinuationToken);
 
                 HasMore = list.HasMore;
                 ContinuationToken = list.ContinuationToken;
@@ -195,9 +193,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
 
-        protected Connection Connection => Node.Parent.Parent.Parent.Connection;
+        protected Connection Connection { get; set; }
 
-        protected DocumentCollection Collection => Node.Parent.Collection;
+        protected DocumentCollection Collection { get; set; }
 
         public RelayCommand LoadMoreCommand
         {
@@ -433,7 +431,6 @@ namespace DocumentDbExplorer.ViewModel
             ContinuationToken = null;
             Documents.Clear();
         }
-
 
         public RelayCommand ResetRequestOptionsCommand
         {

@@ -17,7 +17,7 @@ namespace DocumentDbExplorer.Views
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as PaneViewModel;
+            var vm = DataContext as PaneViewModelBase;
             vm.IconSource = FindResource("UserIcon") as ImageSource;
         }
     }

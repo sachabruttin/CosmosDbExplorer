@@ -6,11 +6,11 @@ namespace DocumentDbExplorer.Messages
 
     public class RemoveNodeMessage
     {
-        public RemoveNodeMessage(TreeViewItemViewModel node)
+        public RemoveNodeMessage(string altLink)
         {
-            Node = node;
+            AltLink = altLink;
         }
 
-        public TreeViewItemViewModel Node { get; }
+        public string AltLink { get; }
     }
 }

@@ -1,14 +1,14 @@
-﻿using DocumentDbExplorer.ViewModel;
+﻿using DocumentDbExplorer.Infrastructure.Models;
+using DocumentDbExplorer.ViewModel;
+using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {
-    public class OpenDocumentsViewMessage
+    public class OpenDocumentsViewMessage : OpenTabMessageBase<DocumentNodeViewModel>
     {
-        public OpenDocumentsViewMessage(DocumentNodeViewModel node)
+        public OpenDocumentsViewMessage(DocumentNodeViewModel node, Connection connection, DocumentCollection collection) 
+            : base(node, connection, collection)
         {
-            Node = node;
         }
-
-        public DocumentNodeViewModel Node { get; }
     }
 }

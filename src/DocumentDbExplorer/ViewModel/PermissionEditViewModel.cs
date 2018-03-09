@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
@@ -19,11 +14,10 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class PermissionEditViewModel : PaneViewModel, IAssetTabCommand
+    public class PermissionEditViewModel : PaneViewModel<PermissionNodeViewModel>, IAssetTabCommand
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private PermissionNodeViewModel _node;
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _discardCommand;
@@ -43,7 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         public string ResourceLink { get; set; }
         public string ResourcePartitionKey { get; set; }
 
-        public Permission Permission => _node?.Permission;
+        public Permission Permission => Node?.Permission;
 
         public bool IsEntityChanged()
         {
@@ -69,6 +63,7 @@ namespace DocumentDbExplorer.ViewModel
 
             return false;
         }
+
         private void SetInformation()
         {
             PermissionId = Permission?.Id;
@@ -76,7 +71,7 @@ namespace DocumentDbExplorer.ViewModel
             ResourceLink = Permission?.ResourceLink;
             ResourcePartitionKey = Permission?.ResourcePartitionKey?.ToString();
 
-            var split = _node.Parent.User.AltLink.Split(new char[] { '/' });
+            var split = Node.Parent.User.AltLink.Split(new char[] { '/' });
             ToolTip = $"{split[1]}>{split[3]}";
 
             IsDirty = false;
@@ -86,22 +81,17 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
-        public PermissionNodeViewModel Node
+        public override void Load(string contentId, PermissionNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = value.Name ?? "New Permission";
-                    Title = "Permission";
-                    ContentId = value.ContentId;
-                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
-                    SetInformation();
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Header = node.Name ?? "New Permission";
+            Title = "Permission";
+            AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+            SetInformation();
         }
+
+        public PermissionNodeViewModel Node { get; protected set; }
 
         public RelayCommand CopyToClipboardCommand
         {
@@ -146,7 +136,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             else
                             {
-                                permission = _node.Permission;
+                                permission = Node.Permission;
                             }
 
                             permission.Id = PermissionId;

@@ -108,7 +108,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _editCommand
                     ?? (_editCommand = new RelayCommand(
-                        () => MessengerInstance.Send(new EditTriggerMessage(Parent.Parent, this))));
+                        () => MessengerInstance.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection))));
             }
         }
     }

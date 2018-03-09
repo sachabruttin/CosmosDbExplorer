@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class UserNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IContent
     {
         private readonly UsersNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
@@ -74,7 +74,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openCommand
                     ?? (_openCommand = new RelayCommand(
-                        () => MessengerInstance.Send(new EditUserMessage(this))));
+                        () => MessengerInstance.Send(new EditUserMessage(this, Parent.Parent.Parent.Connection, null))));
             }
         }
 
@@ -83,7 +83,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
-                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this))
+                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this), Parent.Parent.Parent.Connection, null)
                     )));
             }
         }

@@ -20,12 +20,11 @@ using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneWithZoomViewModel, IHaveQuerySettings
+    public class QueryEditorViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveQuerySettings
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private CollectionNodeViewModel _node;
         private RelayCommand _saveLocalCommand;
         private FeedResponse<dynamic> _queryResult;
         private RelayCommand _goToNextPageCommand;
@@ -54,26 +53,26 @@ namespace DocumentDbExplorer.ViewModel
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-        public CollectionNodeViewModel Node
+        public override void Load(string contentId, CollectionNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    ContentId = Node.Parent.Name;
-                    Header = $"SQL Query";
-                    Content = new TextDocument($"SELECT * FROM {Node.Collection.Id} AS {Node.Collection.Id.Substring(0, 1).ToLower()}");
+            ContentId = contentId;
+            Node = node;
+            Header = $"SQL Query";
+            Connection = connection;
+            Collection = collection;
 
-                    var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
-                    AccentColor = Node.Parent.Parent.Connection.AccentColor;
-                }
-            }
+            Content = new TextDocument($"SELECT * FROM {Collection.Id} AS {Collection.Id.Substring(0, 1).ToLower()}");
+
+            var split = Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
+            AccentColor = Node.Parent.Parent.Connection.AccentColor;
         }
 
-        protected Connection Connection => Node.Parent.Parent.Connection;
+        public CollectionNodeViewModel Node { get; protected set; }
+       
+        protected Connection Connection { get; set; }
+
+        protected DocumentCollection Collection { get; set; }
 
         public TextDocument Content { get; set; }
 
@@ -151,7 +150,7 @@ namespace DocumentDbExplorer.ViewModel
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                _queryResult = await _dbService.ExecuteQueryAsync(Connection, Node.Collection, query, this, token, _cancellationToken.Token);
+                _queryResult = await _dbService.ExecuteQueryAsync(Connection, Collection, query, this, token, _cancellationToken.Token);
 
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 

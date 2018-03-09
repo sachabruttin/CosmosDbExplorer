@@ -15,9 +15,8 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel
+    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel<ScaleSettingsNodeViewModel>
     {
-        private ScaleSettingsNodeViewModel _node;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
@@ -42,32 +41,28 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsLoading { get; set; }
 
-        public ScaleSettingsNodeViewModel Node
+        public override void Load(string contentId, ScaleSettingsNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                IsLoading = true;
+            IsLoading = true;
 
-                if (_node != value)
-                {
-                    _node = value;
-                    Title = value.Name;
-                    Header = value.Name;
-                    Connection = value.Parent.Parent.Parent.Connection;
-                    Collection = value.Parent.Collection;
+            ContentId = contentId;
+            Node = node;
+            Title = node.Name;
+            Header = node.Name;
+            Connection = connection;
+            Collection = collection;
 
-                    var split = Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
+            var split = Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
 
-                    AccentColor = Connection.AccentColor;
+            AccentColor = Connection.AccentColor;
 
-                    SetInformation();
-                }
+            SetInformation();
 
-                IsLoading = false;
-            }
+            IsLoading = false;
         }
+
+        public ScaleSettingsNodeViewModel Node { get; protected set; }
 
         private void SetInformation()
         {

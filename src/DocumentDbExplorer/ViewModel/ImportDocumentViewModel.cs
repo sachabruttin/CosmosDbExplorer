@@ -15,12 +15,11 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel, IHaveRequestOptions
+    public class ImportDocumentViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveRequestOptions
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
-        private CollectionNodeViewModel _node;
         private RelayCommand _openFileCommand;
         private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
@@ -53,24 +52,24 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public CollectionNodeViewModel Node
+        public override void Load(string contentId, CollectionNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = "Import";
-                    
-                    var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
-                    AccentColor = Connection.AccentColor;
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Header = "Import";
+            Connection = connection;
+            Collection = collection;
+
+            var split = Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
+            AccentColor = Connection.AccentColor;
         }
 
-        protected Connection Connection => Node.Parent.Parent.Connection;
+        public CollectionNodeViewModel Node { get; protected set; }
+
+        protected Connection Connection { get; set; }
+
+        protected DocumentCollection Collection { get; set; }
 
         public TextDocument Content { get; set; }
 
@@ -87,7 +86,7 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var count = await _dbService.ImportDocumentAsync(Connection, Node.Collection, Content.Text, this, _cancellationToken.Token);
+                                var count = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token);
                                 await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import");
                             }
                             catch (OperationCanceledException)

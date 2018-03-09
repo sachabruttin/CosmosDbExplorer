@@ -18,11 +18,10 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class UserEditViewModel : PaneViewModel, IAssetTabCommand
+    public class UserEditViewModel : PaneViewModel<UserNodeViewModel>, IAssetTabCommand
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private UserNodeViewModel _node;
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _discardCommand;
@@ -39,14 +38,14 @@ namespace DocumentDbExplorer.ViewModel
 
         public void OnUserIdChanged()
         {
-            IsDirty = UserId != _node.User.Id;
+            IsDirty = UserId != Node.User.Id;
         }
 
         private void SetInformation()
         {
-            UserId = _node?.User?.Id;
+            UserId = Node?.User?.Id;
 
-            var split = _node.Parent.Database.AltLink.Split(new char[] { '/' });
+            var split = Node.Parent.Database.AltLink.Split(new char[] { '/' });
             ToolTip = $"{split[1]}";
 
             IsDirty = false;
@@ -56,22 +55,20 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
-        public UserNodeViewModel Node
+        public override void Load(string contentId, UserNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = value.Name ?? "New User";
-                    Title = "User";
-                    ContentId = value.ContentId;
-                    AccentColor = value.Parent.Parent.Parent.Connection.AccentColor;
-                    SetInformation();
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Connection = connection;
+            Header = node.Name ?? "New User";
+            Title = "User";
+            AccentColor = node.Parent.Parent.Parent.Connection.AccentColor;
+            SetInformation();
         }
+
+        protected Connection Connection { get; set; }
+
+        public UserNodeViewModel Node { get; protected set; }
 
         public RelayCommand DiscardCommand
         {
@@ -103,13 +100,13 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             else
                             {
-                                user = _node.User;
+                                user = Node.User;
                                 user.Id = UserId;
                             }
 
                             try
                             {
-                                user = await _dbService.SaveUserAsync(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
+                                user = await _dbService.SaveUserAsync(Connection, Node.Parent.Database, user);
 
                                 Header = user.Id;
                                 Node.User = user;

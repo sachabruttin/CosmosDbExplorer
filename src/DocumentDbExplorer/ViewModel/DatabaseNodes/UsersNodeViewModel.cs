@@ -58,7 +58,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addUserCommand ?? (_addUserCommand = new RelayCommand(
-                    () => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this))
+                    () => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this), Parent.Parent.Connection, null)
                     )));
             }
         }

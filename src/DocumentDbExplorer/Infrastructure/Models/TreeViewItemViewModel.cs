@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
 using System;
 using GalaSoft.MvvmLight.Threading;
+using DocumentDbExplorer.ViewModel;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
@@ -44,9 +45,12 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         private void OnRemoveNodeMessage(RemoveNodeMessage msg)
         {
-            if (msg.Node == this && Parent != null)
+            if (Parent != null)
             {
-                DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                if (this is IContent assetNode && assetNode.ContentId == msg.AltLink)
+                {
+                    DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                }
             }
         }
 

@@ -4,19 +4,11 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {
-    public class EditStoredProcedureMessage
+    public class EditStoredProcedureMessage : OpenTabMessageBase<StoredProcedureNodeViewModel>
     {
-        public EditStoredProcedureMessage(CollectionNodeViewModel collectionNode, StoredProcedureNodeViewModel node)
+        public EditStoredProcedureMessage(StoredProcedureNodeViewModel node, Connection connection, DocumentCollection collection) 
+            : base(node, connection, collection)
         {
-            Node = node;
-            Connection = collectionNode.Parent.Parent.Connection;
-            Collection = collectionNode.Collection;
         }
-
-        public StoredProcedureNodeViewModel Node { get; }
-
-        public Connection Connection { get; }
-
-        public DocumentCollection Collection { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
             Parent = parent;
             MessengerInstance = messenger;
             Children = new ObservableCollection<TreeViewItemViewModel>();
+
             messenger.Register<RemoveNodeMessage>(this, OnRemoveNodeMessage);
 
             if (lazyLoadChildren)

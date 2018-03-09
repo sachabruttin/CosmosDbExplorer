@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using DocumentDbExplorer.Services.DialogSettings;
+using GalaSoft.MvvmLight.Threading;
 using Microsoft.Win32;
 
 namespace DocumentDbExplorer.Services
@@ -12,45 +13,48 @@ namespace DocumentDbExplorer.Services
         //Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool> afterHideCallback);
         Task<bool> ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback);
     }
-    
 
     public class DialogService : IDialogService
     {
         public Task ShowError(string message, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error));
             return Task.Run(() => afterHideCallback);
         }
 
         public Task ShowError(Exception error, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(Application.Current.MainWindow, error.GetBaseException().Message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, error.GetBaseException().Message, title, MessageBoxButton.OK, MessageBoxImage.Error));
             return Task.Run(() => afterHideCallback);
         }
 
         public Task ShowMessage(string message, string title)
         {
-            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
             return null;
         }
 
         public Task ShowMessage(string message, string title, string buttonText, Action afterHideCallback)
         {
-            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
             return Task.Run(() => afterHideCallback);
         }
 
         public Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
         {
-            var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            var confirmed = result == MessageBoxResult.Yes;
+            var confirmed = false;
+            DispatcherHelper.RunAsync(() =>
+            {
+                var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                confirmed = result == MessageBoxResult.Yes;
+            });
 
             return Task.Run(() => { afterHideCallback(confirmed); return confirmed; });
         }
 
         public Task ShowMessageBox(string message, string title)
         {
-            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
             return Task.FromResult(0);
         }
 

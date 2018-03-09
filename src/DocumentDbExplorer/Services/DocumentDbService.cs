@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json.Linq;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -15,125 +14,11 @@ using System.Threading;
 
 namespace DocumentDbExplorer.Services
 {
-    public interface IDocumentDbService
-    {
-        Task<List<Database>> GetDatabases(Connection connection);
-
-        Task DeleteDatabase(Connection connection, Database database);
-
-        Task<List<DocumentCollection>> GetCollections(Connection connection, Database database);
-
-        Task<DocumentDescriptionList> GetDocuments(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken);
-
-        Task<ResourceResponse<Document>> GetDocument(Connection connection, DocumentDescription document);
-
-        Task<ResourceResponse<Document>> UpdateDocument(Connection connection, string altLink, string content, IHaveRequestOptions requestOptions);
-
-        Task<FeedResponse<dynamic>> ExecuteQuery(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings,  string continuationToken, CancellationToken cancellationToken);
-
-        Task<ResourceResponse<Document>> DeleteDocument(Connection connection, DocumentDescription document);
-
-        Task CleanCollection(Connection connection, DocumentCollection collection);
-
-        Task<int> ImportDocument(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken);
-
-        Task<IList<StoredProcedure>> GetStoredProcedures(Connection connection, DocumentCollection collection);
-
-        Task<StoredProcedure> SaveStoredProcedure(Connection connection, DocumentCollection collection, string id, string function, string storeProcedureLink);
-
-        Task DeleteStoredProcedure(Connection connection, string storedProcedureLink);
-
-        Task<IList<UserDefinedFunction>> GetUdfs(Connection connection, DocumentCollection collection);
-
-        Task<UserDefinedFunction> SaveUdf(Connection connection, DocumentCollection collection, string id, string function, string altLink);
-
-        Task DeleteUdf(Connection connection, string udfLink);
-
-        Task<IList<Trigger>> GetTriggers(Connection connection, DocumentCollection collection);
-
-        Task<Trigger> SaveTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation, string altLink);
-
-        Task DeleteTrigger(Connection connection, string triggerLink);
-
-        Task<int> GetThroughput(Connection connection, DocumentCollection collection);
-
-        Task UpdateCollectionSettings(Connection connection, DocumentCollection collection, int throughput);
-
-        Task<DocumentCollection> CreateCollection(Connection connection, Database database, DocumentCollection collection, int throughput);
-        Task DeleteCollection(Connection connection, DocumentCollection collection);
-
-        Task<IList<User>> GetUsers(Connection connection, Database database);
-
-        Task<User> SaveUser(Connection connection, Database database, User user);
-
-        Task DeleteUser(Connection connection, User user);
-
-        Task<IList<Permission>> GetPermission(Connection connection, User user);
-
-        Task<Permission> SavePermission(Connection connection, User user, Permission permission);
-
-        Task DeletePermission(Connection connection, Permission permission);
-
-        Task<int> GetPartitionKeyRangeCount(Connection connection, DocumentCollection collection);
-    }
-
-    public class DocumentDescriptionList : List<DocumentDescription>
-    {
-        public DocumentDescriptionList(IEnumerable<DocumentDescription> collection) 
-            : base(collection)
-        {
-
-        }
-
-        public bool HasMore
-        {
-            get { return ContinuationToken != null; }
-        }
-
-        public string ContinuationToken { get; set; }
-
-        public long CollectionSize { get; set; }
-        public double RequestCharge { get; internal set; }
-    }
-
-    public class DocumentDescription
-    {
-        [JsonConstructor]
-        public DocumentDescription(string id, string selfLink, string partitionKey)
-        {
-            Id = id;
-            SelfLink = selfLink;
-            PartitionKey = partitionKey;
-        }
-
-        public DocumentDescription(Document document, DocumentCollection collection)
-        {
-            Id = document.Id;
-            SelfLink = document.SelfLink;
-
-            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
-
-            if (partitionKey != null)
-            {
-                PartitionKey = document.GetPropertyValue<string>(partitionKey.TrimStart('/'));
-            }
-        }
-
-        [JsonProperty(PropertyName ="id")]
-        public string Id  { get; set; }
-
-        [JsonProperty(PropertyName = "_self")]
-        public string SelfLink { get; set; }
-
-        [JsonProperty(PropertyName = "_partitionKey")]
-        public string PartitionKey { get; set; }
-    }
-    
     public class DocumentDbService : IDocumentDbService
     {
         public DocumentDbService(IMessenger messenger)
         {
-            messenger.Register<ConnectionSettingSavedMessage>(this, msg => 
+            messenger.Register<ConnectionSettingSavedMessage>(this, msg =>
             {
                 if (_clientInstances.ContainsKey(msg.Connection))
                 {
@@ -144,7 +29,7 @@ namespace DocumentDbExplorer.Services
 
         public async Task CleanCollection(Connection connection, DocumentCollection collection)
         {
-            var sqlQuery = "SELECT * FROM c";
+            const string sqlQuery = "SELECT * FROM c";
             var client = GetClient(connection);
             var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
             var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery, feedOptions).AsDocumentQuery();
@@ -335,27 +220,50 @@ namespace DocumentDbExplorer.Services
 
         public async Task<StoredProcedure> SaveStoredProcedure(Connection connection, DocumentCollection collection, string id, string function, string storeProcedureLink)
         {
-            var proc = new StoredProcedure { Id = id, Body = function };
+            var item = new StoredProcedure { Id = id, Body = function };
 
             if (!string.IsNullOrEmpty(storeProcedureLink))
             {
+                var oldId = storeProcedureLink.Split('/').Last();
+
+                if (item.Id != oldId)
+                {
+                    var itemList = await GetStoredProcedures(connection, collection).ConfigureAwait(false);
+                    if (itemList.Any(t => t.Id == item.Id))
+                    {
+                        throw new Exception("An item with the same id already exists!");
+                    }
+                }
+
                 await GetClient(connection).DeleteStoredProcedureAsync(storeProcedureLink).ConfigureAwait(false);
             }
 
-            var response = await GetClient(connection).CreateStoredProcedureAsync(collection.SelfLink, proc).ConfigureAwait(false);
+            var response = await GetClient(connection).CreateStoredProcedureAsync(collection.SelfLink, item).ConfigureAwait(false);
             return response.Resource;
         }
 
         public async Task<UserDefinedFunction> SaveUdf(Connection connection, DocumentCollection collection, string id, string function, string altLink)
         {
-            var proc = new UserDefinedFunction { Id = id, Body = function };
+            var item = new UserDefinedFunction { Id = id, Body = function };
+            var client = GetClient(connection);
 
             if (!string.IsNullOrEmpty(altLink))
             {
-                await GetClient(connection).DeleteUserDefinedFunctionAsync(altLink).ConfigureAwait(false);
+                var oldId = altLink.Split('/').Last();
+
+                if (item.Id != oldId)
+                {
+                    var itemList = await GetUdfs(connection, collection).ConfigureAwait(false);
+                    if (itemList.Any(t => t.Id == item.Id))
+                    {
+                        throw new Exception("An item with the same id already exists!");
+                    }
+                }
+
+                await client.DeleteUserDefinedFunctionAsync(altLink).ConfigureAwait(false);
             }
 
-            var response = await GetClient(connection).CreateUserDefinedFunctionAsync(collection.SelfLink, proc).ConfigureAwait(false);
+            var response = await client.CreateUserDefinedFunctionAsync(collection.SelfLink, item).ConfigureAwait(false);
             return response.Resource;
         }
 
@@ -390,13 +298,25 @@ namespace DocumentDbExplorer.Services
         public async Task<Trigger> SaveTrigger(Connection connection, DocumentCollection collection, string id, string trigger, TriggerType triggerType, TriggerOperation triggerOperation, string altLink)
         {
             var item = new Trigger { Id = id, Body = trigger, TriggerType = triggerType, TriggerOperation = triggerOperation };
+            var client = GetClient(connection);
 
             if (!string.IsNullOrEmpty(altLink))
             {
-                await GetClient(connection).DeleteTriggerAsync(altLink).ConfigureAwait(false);
+                var oldId = altLink.Split('/').Last();
+
+                if (item.Id != oldId)
+                {
+                    var itemList = await GetTriggers(connection, collection).ConfigureAwait(false);
+                    if (itemList.Any(t => t.Id == item.Id))
+                    {
+                        throw new Exception("An item with the same id already exists!");
+                    }
+                }
+
+                await client.DeleteTriggerAsync(altLink).ConfigureAwait(false);
             }
 
-            var response = await GetClient(connection).CreateTriggerAsync(collection.SelfLink, item).ConfigureAwait(false);
+            var response = await client.CreateTriggerAsync(collection.SelfLink, item).ConfigureAwait(false);
             return response.Resource;
         }
 

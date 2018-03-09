@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
@@ -20,6 +22,8 @@ namespace DocumentDbExplorer.ViewModel
         {
             Name = "Triggers";
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
+
+            MessengerInstance.Register<UpdateOrCreateNodeMessage<Trigger>>(this, OnUpdateOrCreateNodeMessage);
         }
 
         public string Name { get; }
@@ -33,7 +37,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _triggers = await _dbService.GetTriggers(Parent.Parent.Parent.Connection, Parent.Collection);
+            var _triggers = await _dbService.GetTriggers(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
             foreach (var trigger in _triggers)
             {
@@ -58,6 +62,24 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public CollectionNodeViewModel CollectionNode => Parent;
+
+        private void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<Trigger> message)
+        {
+            if (message.IsNewResource)
+            {
+                var item = new TriggerNodeViewModel(this, message.Resource);
+                DispatcherHelper.RunAsync(() => Children.Add(item));
+            }
+            else
+            {
+                var item = Children.Cast<TriggerNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
+            }
+        }
     }
 
     public class TriggerNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<Trigger>
@@ -81,7 +103,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
 
-        public Trigger Resource { get; }
+        public Trigger Resource { get; set; }
 
         public new TriggerRootNodeViewModel Parent
         {

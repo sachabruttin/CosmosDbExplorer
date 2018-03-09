@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
+using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
@@ -128,8 +129,20 @@ namespace DocumentDbExplorer.ViewModel.Assets
                     ?? (_saveCommand = new RelayCommand(
                         async () =>
                         {
-                            var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
-                            SetInformation(resource);
+                            try
+                            {
+                                var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
+                                MessengerInstance.Send(new UpdateOrCreateNodeMessage<TResource>(resource, AltLink));
+                                SetInformation(resource);
+                            }
+                            catch (DocumentClientException clientEx)
+                            {
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                            }
                         },
                         () => IsDirty));
             }

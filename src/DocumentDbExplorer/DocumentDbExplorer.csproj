@@ -200,6 +200,7 @@
     <Compile Include="Messages\RemoveConnectionMessage.cs" />
     <Compile Include="Messages\RemoveNodeMessage.cs" />
     <Compile Include="Messages\TreeNodeSelectedMessage.cs" />
+    <Compile Include="Messages\UpdateOrCreateNodeMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\DialogSettings\FileDialogResult.cs" />
     <Compile Include="Services\DialogSettings\FileDialogSettings.cs" />
@@ -207,6 +208,8 @@
     <Compile Include="Services\DialogSettings\OpenFileDialogSettings.cs" />
     <Compile Include="Services\DialogSettings\SaveFileDialogSettings.cs" />
     <Compile Include="Services\DocumentDbService.cs" />
+    <Compile Include="Services\DocumentDescription.cs" />
+    <Compile Include="Services\IDocumentDbService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="ViewModel\AboutViewModel.cs" />
     <Compile Include="ViewModel\AccountSettingsViewModel.cs" />

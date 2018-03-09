@@ -1,4 +1,5 @@
 ﻿using DocumentDbExplorer.Infrastructure.Models;
+using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {

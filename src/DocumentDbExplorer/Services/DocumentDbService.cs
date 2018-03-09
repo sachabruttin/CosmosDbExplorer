@@ -143,14 +143,16 @@ namespace DocumentDbExplorer.Services
                 EnableScanInQuery = true
             };
 
-            var query = GetClient(connection).CreateDocumentQuery<DocumentDescription>(collection.DocumentsLink, sql, feedOptions).AsDocumentQuery();
-            var result = await query.ExecuteNextAsync<DocumentDescription>().ConfigureAwait(false);
+            var data = await GetClient(connection)
+                                        .CreateDocumentQuery(collection.AltLink, sql, feedOptions)
+                                        .AsDocumentQuery()
+                                        .ExecuteNextAsync<DocumentDescription>().ConfigureAwait(false);
 
-            return new DocumentDescriptionList(result.Select(doc => doc).ToList())
+            return new DocumentDescriptionList(data.ToList())
             {
-                ContinuationToken = result.ResponseContinuation,
-                CollectionSize = long.Parse(result.CurrentResourceQuotaUsage.Split(new[] { ';' })[2].Split(new[] { '=' })[1]),
-                RequestCharge = result.RequestCharge
+                ContinuationToken = data.ResponseContinuation,
+                CollectionSize = long.Parse(data.CurrentResourceQuotaUsage.Split(new[] { ';' })[2].Split(new[] { '=' })[1]),
+                RequestCharge = data.RequestCharge
             };
         }
 

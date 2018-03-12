@@ -33,7 +33,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var permissions = await _dbService.GetPermissionAsync(Parent.Parent.Parent.Connection, User);
+            var permissions = await _dbService.GetPermissionAsync(Parent.Parent.Parent.Connection, User).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -57,7 +57,7 @@ namespace DocumentDbExplorer.ViewModel
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }

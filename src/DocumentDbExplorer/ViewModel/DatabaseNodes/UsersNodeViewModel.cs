@@ -11,7 +11,6 @@ namespace DocumentDbExplorer.ViewModel
 {
     public class UsersNodeViewModel : TreeViewItemViewModel<DatabaseNodeViewModel>, ICanRefreshNode
     {
-        private readonly Database _database;
         private readonly DatabaseNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
@@ -21,14 +20,14 @@ namespace DocumentDbExplorer.ViewModel
                 : base(parent, parent.MessengerInstance, true)
         {
             Name = "Users";
-            _database = database;
+            Database = database;
             _parent = parent;
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
         public string Name { get; set; }
 
-        public Database Database => _database;
+        public Database Database { get; }
 
         public RelayCommand RefreshCommand
         {
@@ -41,7 +40,7 @@ namespace DocumentDbExplorer.ViewModel
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }
@@ -57,12 +56,11 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var users = await _dbService.GetUsersAsync(Parent.Parent.Connection, _database).ConfigureAwait(false);
+            var users = await _dbService.GetUsersAsync(Parent.Parent.Connection, Database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {

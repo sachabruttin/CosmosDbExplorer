@@ -149,7 +149,7 @@ namespace DocumentDbExplorer.ViewModel
             var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
             var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
 
-            var result = await Task.WhenAll(throughputTask, partitionTask);
+            var result = await Task.WhenAll(throughputTask, partitionTask).ConfigureAwait(false);
 
             PartitionCount = result[1];
             Throughput = result[0];
@@ -166,7 +166,7 @@ namespace DocumentDbExplorer.ViewModel
                         async () =>
                         {
                             SetInformation();
-                            await LoadDataAsync();
+                            await LoadDataAsync().ConfigureAwait(false);
                             IsDirty = false;
                         },
                         () => IsDirty));
@@ -184,7 +184,7 @@ namespace DocumentDbExplorer.ViewModel
                             Collection.DefaultTimeToLive = GetTimeToLive();
                             Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
-                            await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput);
+                            await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
                             IsDirty = false;
                         },
                         () => !((INotifyDataErrorInfo)this).HasErrors));

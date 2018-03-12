@@ -89,15 +89,15 @@ namespace DocumentDbExplorer.ViewModel
                 {
                     try
                     {
-                        _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                        _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
                     }
                     catch (DocumentClientException clientEx)
                     {
-                        await _dialogService.ShowError(clientEx.Parse(), "Error", null, null);
+                        await _dialogService.ShowError(clientEx.Parse(), "Error", null, null).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
-                        await _dialogService.ShowError(ex, "Error", "ok", null);
+                        await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
                     }
                 }
 
@@ -158,7 +158,8 @@ namespace DocumentDbExplorer.ViewModel
                                                                Collection,
                                                                Filter,
                                                                Settings.Default.MaxDocumentToRetrieve,
-                                                               ContinuationToken);
+                                                               ContinuationToken)
+                                                               .ConfigureAwait(true);
 
                 HasMore = list.HasMore;
                 ContinuationToken = list.ContinuationToken;
@@ -174,11 +175,11 @@ namespace DocumentDbExplorer.ViewModel
             }
             catch (DocumentClientException clientEx)
             {
-                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowError(ex, "Error", "ok", null);
+                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
             }
             finally
             {
@@ -203,7 +204,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _loadMoreCommand
                     ?? (_loadMoreCommand = new RelayCommand(
-                        async () => await LoadDocuments(false)));
+                        async () => await LoadDocuments(false).ConfigureAwait(false)));
             }
         }
 
@@ -213,10 +214,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshLoadCommand
                     ?? (_refreshLoadCommand = new RelayCommand(
-                        async () =>
-                        {
-                            await LoadDocuments(true);
-                        },
+                        async () => await LoadDocuments(true).ConfigureAwait(false),
                         () => !IsRunning));
             }
         }
@@ -263,7 +261,7 @@ namespace DocumentDbExplorer.ViewModel
                             IsRunning = true;
                             try
                             {
-                                var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this);
+                                var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(false);
                                 var document = response.Resource;
 
                                 SetStatusBar(response);
@@ -281,7 +279,7 @@ namespace DocumentDbExplorer.ViewModel
                             catch (DocumentClientException ex)
                             {
                                 var message = ex.Parse();
-                                await _dialogService.ShowError(message, "Error", null, null);
+                                await _dialogService.ShowError(message, "Error", null, null).ConfigureAwait(false);
                             }
                             finally
                             {
@@ -307,7 +305,7 @@ namespace DocumentDbExplorer.ViewModel
                                 if (confirm)
                                 {
                                     IsRunning = true;
-                                    var response = await _dbService.DeleteDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument);
+                                    var response = await _dbService.DeleteDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
                                     IsRunning = false;
                                     SetStatusBar(response);
 
@@ -320,7 +318,7 @@ namespace DocumentDbExplorer.ViewModel
                                         EditorViewModel.SetText(new { result = $"Document '{documentId}' deleted" }, HideSystemProperties);
                                     });
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
                         () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
             }
@@ -332,10 +330,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _editFilterCommand
                     ?? (_editFilterCommand = new RelayCommand(
-                        () =>
-                        {
-                            IsEditingFilter = true;
-                        }));
+                        () => IsEditingFilter = true));
             }
         }
 
@@ -348,7 +343,7 @@ namespace DocumentDbExplorer.ViewModel
                         async () =>
                         {
                             IsEditingFilter = false;
-                            await LoadDocuments(true);
+                            await LoadDocuments(true).ConfigureAwait(false);
                         }));
             }
         }
@@ -359,10 +354,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _closeFilterCommand
                     ?? (_closeFilterCommand = new RelayCommand(
-                        () =>
-                        {
-                            IsEditingFilter = false;
-                        }));
+                        () => IsEditingFilter = false));
             }
         }
 
@@ -389,24 +381,21 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             if (confirm)
                             {
-                                await DispatcherHelper.RunAsync(() =>
+                                try
                                 {
-                                    try
-                                    {
-                                        IsRunning = true;
-                                        File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
+                                    IsRunning = true;
+                                    await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
                                     }
-                                    catch
+                                    catch (Exception ex)
                                     {
-                                        // TOOD: 
+                                        await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
                                     }
                                     finally
                                     {
                                         IsRunning = false;
                                     }
-                                });
                             }
-                        });
+                        }).ConfigureAwait(false);
                     },
                     () => !IsRunning && SelectedDocument != null));
             }
@@ -419,18 +408,11 @@ namespace DocumentDbExplorer.ViewModel
             OnSelectedDocumentChanged();
         }
 
-        public bool? EnableScanInQuery { get; set; } = null;
-        public bool? EnableCrossPartitionQuery { get; set; } = null;
-        public int? MaxItemCount { get; set; } = null;
-        public int? MaxDOP { get; set; } = null;
-        public int? MaxBufferItem { get; set; } = null;
-
-        private void ClearDocuments()
-        {
-            HasMore = false;
-            ContinuationToken = null;
-            Documents.Clear();
-        }
+        public bool? EnableScanInQuery { get; set; }
+        public bool? EnableCrossPartitionQuery { get; set; }
+        public int? MaxItemCount { get; set; }
+        public int? MaxDOP { get; set; }
+        public int? MaxBufferItem { get; set; }
 
         public RelayCommand ResetRequestOptionsCommand
         {

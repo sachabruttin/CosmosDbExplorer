@@ -38,7 +38,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public async Task LoadNodesAsync()
         {
-            var connections = await _settingsService.GetConnectionsAsync();
+            var connections = await _settingsService.GetConnectionsAsync().ConfigureAwait(false);
             var nodes = connections.Select(c =>
             {
                 var connection = SimpleIoc.Default.GetInstanceWithoutCaching<ConnectionNodeViewModel>();
@@ -53,7 +53,7 @@ namespace DocumentDbExplorer.ViewModel
         private void OnRemoveConnection(RemoveConnectionMessage msg)
         {
             var node = Nodes.FirstOrDefault(n => n.Connection == msg.Connection);
-            
+
             if (node != null)
             {
                 DispatcherHelper.RunAsync(() => Nodes.Remove(node));
@@ -109,7 +109,7 @@ namespace DocumentDbExplorer.ViewModel
                     }
                     else if (targetIndex != 0)
                     {
-                        targetIndex = targetIndex - 1;
+                        targetIndex--;
                     }
                     break;
                 case RelativeInsertPosition.AfterTargetItem:
@@ -119,7 +119,7 @@ namespace DocumentDbExplorer.ViewModel
                     }
                     else if (targetIndex == Nodes.Count)
                     {
-                        targetIndex = targetIndex - 1;
+                        targetIndex--;
                     }
                     break;
                 case RelativeInsertPosition.TargetItemCenter:
@@ -127,7 +127,7 @@ namespace DocumentDbExplorer.ViewModel
             }
 
             Nodes.Move(sourceIndex, targetIndex);
-            await _settingsService.ReorderConnections(sourceIndex, targetIndex);
+            await _settingsService.ReorderConnections(sourceIndex, targetIndex).ConfigureAwait(false);
         }
     }
 }

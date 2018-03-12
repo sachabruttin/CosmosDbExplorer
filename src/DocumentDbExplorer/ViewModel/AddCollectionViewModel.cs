@@ -63,9 +63,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public string PartitionKey { get; set; }
 
-        public int MaxThroughput => IsFixedStorage ? 10000 : 100000; 
+        public int MaxThroughput => IsFixedStorage ? 10000 : 100000;
 
-        public int MinThroughput => IsFixedStorage ? 400 : 1000; 
+        public int MinThroughput => IsFixedStorage ? 400 : 1000;
 
         public int Throughput { get; set; }
 
@@ -90,8 +90,8 @@ namespace DocumentDbExplorer.ViewModel
                                 collection.PartitionKey.Paths.Add(PartitionKey);
                             }
 
-                            var db = Databases.FirstOrDefault(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
-                            await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput);
+                            var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
+                            await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
 
                             Close();
                         },
@@ -105,11 +105,7 @@ namespace DocumentDbExplorer.ViewModel
             set
             {
                 _databases = value;
-
-                if (_databases != null)
-                {
-                    _databases.ForEach(db => DatabaseNames.Add(db.Id));
-                }
+                _databases?.ForEach(db => DatabaseNames.Add(db.Id));
             }
         }
 

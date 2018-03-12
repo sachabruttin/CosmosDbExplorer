@@ -86,26 +86,25 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var count = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token);
-                                await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import");
+                                var count = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token).ConfigureAwait(false);
+                                await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
                             {
-                                await _dialogService.ShowMessage("Operation cancelled by user...", "Cancel");
+                                await _dialogService.ShowMessage("Operation cancelled by user...", "Cancel").ConfigureAwait(false);
                             }
                             catch (DocumentClientException clientEx)
                             {
-                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
-                                await _dialogService.ShowError(ex, "Error", "ok", null);
+                                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
                             }
                             finally
                             {
                                 IsRunning = false;
                             }
-
                         },
                         () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
             }
@@ -149,11 +148,11 @@ namespace DocumentDbExplorer.ViewModel
                                             using (var reader = File.OpenText(result.FileName))
                                             {
                                                 Content.FileName = result.FileName;
-                                                Content.Text = await reader.ReadToEndAsync();
+                                                Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
                                             }
                                         });
                                     }
-                                });
+                                }).ConfigureAwait(false);
                         }
                         ));
             }

@@ -18,9 +18,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public Permission Permission { get; set; }
 
-        public string Name => Permission.Id;
+        public string Name => Permission?.Id;
 
-        public string ContentId => Permission.AltLink ?? "NewPermission";
+        public string ContentId => Permission?.AltLink ?? "NewPermission";
 
         public RelayCommand RefreshCommand
         {
@@ -31,7 +31,7 @@ namespace DocumentDbExplorer.ViewModel
                         async () =>
                         {
                             Children.Clear();
-                            await LoadChildren();
+                            await LoadChildren().ConfigureAwait(false);
                         }));
             }
         }

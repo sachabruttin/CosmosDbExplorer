@@ -46,7 +46,7 @@ namespace DocumentDbExplorer.ViewModel
             UserId = Node?.User?.Id;
 
             var split = Node.Parent.Database.AltLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}";
+            ToolTip = split[1];
 
             IsDirty = false;
         }
@@ -75,12 +75,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _discardCommand
-                    ?? (_discardCommand = new RelayCommand(
-                        () =>
-                        {
-                            SetInformation();
-                        },
-                        () => IsDirty));
+                    ?? (_discardCommand = new RelayCommand(SetInformation, () => IsDirty));
             }
         }
 
@@ -106,7 +101,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             try
                             {
-                                user = await _dbService.SaveUserAsync(Connection, Node.Parent.Database, user);
+                                user = await _dbService.SaveUserAsync(Connection, Node.Parent.Database, user).ConfigureAwait(false);
 
                                 Header = user.Id;
                                 Node.User = user;
@@ -118,8 +113,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             catch (DocumentClientException ex)
                             {
-                                var msg = ex.Parse();
-                                await _dialogService.ShowError(msg, "Error", null, null);
+                                await _dialogService.ShowError(ex.Parse(), "Error", null, null).ConfigureAwait(false);
                             }
                         },
                         () => IsDirty && IsValid));
@@ -140,12 +134,11 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     try
                                     {
-                                        await _dbService.DeleteUserAsync(Node.Parent.Parent.Parent.Connection, Node.User);
+                                        await _dbService.DeleteUserAsync(Node.Parent.Parent.Parent.Connection, Node.User).ConfigureAwait(false);
                                     }
                                     catch (DocumentClientException ex)
                                     {
-                                        var msg = ex.Parse();
-                                        await _dialogService.ShowError(msg, "Error", null, null);
+                                        await _dialogService.ShowError(ex.Parse(), "Error", null, null).ConfigureAwait(false);
                                     }
                                     finally
                                     {
@@ -153,7 +146,7 @@ namespace DocumentDbExplorer.ViewModel
                                         await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
                                     }
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
                         () => !IsNewDocument));
             }

@@ -46,7 +46,10 @@ namespace DocumentDbExplorer.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IDialogService dialogService, IMessenger messenger, ISimpleIoc ioc) 
+        /// <param name="dialogService"></param>
+        /// <param name="messenger"></param>
+        /// <param name="ioc"></param>
+        public MainViewModel(IDialogService dialogService, IMessenger messenger, ISimpleIoc ioc)
             : base(messenger)
         {
             if (IsInDesignMode)
@@ -166,7 +169,6 @@ namespace DocumentDbExplorer.ViewModel
             });
         }
 
-
         public string Title { get; set; }
 
         public long UsedMemory => GC.GetTotalMemory(true) / 1014;
@@ -181,7 +183,6 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _tools
                      ?? (_tools = new ToolViewModel[] { _databaseViewModel });
-
             }
         }
 
@@ -227,10 +228,11 @@ namespace DocumentDbExplorer.ViewModel
                     {
                         var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
                         var name = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute), false))?.Title ?? "Unknown Title";
-                        await _dialogService.ShowMessageBox($"{name}\nVersion {fvi.FileVersion}", "About");
+                        await _dialogService.ShowMessageBox($"{name}\nVersion {fvi.FileVersion}", "About").ConfigureAwait(false);
                     }));
             }
         }
+
         public RelayCommand ShowAccountSettingsCommand
         {
             get
@@ -247,16 +249,13 @@ namespace DocumentDbExplorer.ViewModel
                     }));
             }
         }
+
         public RelayCommand ExitCommand
         {
             get
             {
                 return _exitCommand
-                    ?? (_exitCommand = new RelayCommand(
-                        () =>
-                        {
-                            Close();
-                        }));
+                    ?? (_exitCommand = new RelayCommand(Close));
             }
         }
 
@@ -267,7 +266,7 @@ namespace DocumentDbExplorer.ViewModel
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
                         () => CanRefreshNodeViewModel.RefreshCommand.Execute(null),
-                        () => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(null)
+                        () => CanRefreshNodeViewModel?.RefreshCommand.CanExecute(null) == true
                         ));
             }
         }
@@ -276,6 +275,5 @@ namespace DocumentDbExplorer.ViewModel
         {
             RequestClose?.Invoke();
         }
-
     }
 }

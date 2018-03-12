@@ -10,7 +10,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Validar;
 
 namespace DocumentDbExplorer.ViewModel
-{ 
+{
     [InjectValidation]
     public class AccountSettingsViewModel : WindowViewModelBase
     {
@@ -92,15 +92,15 @@ namespace DocumentDbExplorer.ViewModel
                             try
                             {
                                 var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
-                                await _settingsService.SaveConnectionAsync(connection);
+                                await _settingsService.SaveConnectionAsync(connection).ConfigureAwait(true);
                                 MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
                                 Close();
                             }
                             catch (Exception ex)
                             {
-                                await _dialogService.ShowError(ex, "Error saving connection", null, null);
+                                await _dialogService.ShowError(ex, "Error saving connection", null, null).ConfigureAwait(false);
                             }
-                        },       
+                        },
                         () => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }

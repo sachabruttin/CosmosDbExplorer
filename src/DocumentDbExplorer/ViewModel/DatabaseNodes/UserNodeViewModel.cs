@@ -78,7 +78,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
-                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this), Parent.Parent.Parent.Connection, null)
+                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(null, this), Parent.Parent.Parent.Connection, null)
                     )));
             }
         }

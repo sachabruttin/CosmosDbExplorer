@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using DocumentDbExplorer.Infrastructure.Extensions;
 using DocumentDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
@@ -23,8 +22,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsDirty { get; set; }
 
-        public bool IsReadOnly { get; set; } = false;
-        
+        public bool IsReadOnly { get; set; }
+
         public virtual void SetText(object content, bool removeSystemProperties)
         {
             var text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
@@ -76,7 +75,7 @@ namespace DocumentDbExplorer.ViewModel
     public class DocumentEditorViewModel : JsonViewerViewModel
     {
         private Document _document;
-        
+
         public DocumentEditorViewModel(IMessenger messenger) : base(messenger)
         {
         }
@@ -112,7 +111,6 @@ namespace DocumentDbExplorer.ViewModel
                 return _document != null && _document.SelfLink == null;
             }
         }
-
     }
 
     public class HeaderEditorViewModel : JsonEditorViewModelBase

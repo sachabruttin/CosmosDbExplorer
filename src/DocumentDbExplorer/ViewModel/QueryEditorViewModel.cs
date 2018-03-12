@@ -16,7 +16,6 @@ using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Newtonsoft.Json;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -57,7 +56,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             ContentId = contentId;
             Node = node;
-            Header = $"SQL Query";
+            Header = "SQL Query";
             Connection = connection;
             Collection = collection;
 
@@ -69,7 +68,7 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public CollectionNodeViewModel Node { get; protected set; }
-       
+
         protected Connection Connection { get; set; }
 
         protected DocumentCollection Collection { get; set; }
@@ -126,7 +125,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async () => await ExecuteQueryAsync(null),
+                        async () => await ExecuteQueryAsync(null).ConfigureAwait(false),
                         () => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
             }
         }
@@ -150,7 +149,7 @@ namespace DocumentDbExplorer.ViewModel
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
-                _queryResult = await _dbService.ExecuteQueryAsync(Connection, Collection, query, this, token, _cancellationToken.Token);
+                _queryResult = await _dbService.ExecuteQueryAsync(Connection, Collection, query, this, token, _cancellationToken.Token).ConfigureAwait(false);
 
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 
@@ -189,11 +188,11 @@ namespace DocumentDbExplorer.ViewModel
             }
             catch (DocumentClientException clientEx)
             {
-                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowError(ex, "Error", "ok", null);
+                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
             }
             finally
             {
@@ -207,9 +206,10 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _goToNextPageCommand
                     ?? (_goToNextPageCommand = new RelayCommand(
-                        async () => await ExecuteQueryAsync(ContinuationToken),
-                        () => ContinuationToken != null && !IsRunning && !string.IsNullOrEmpty(Content.Text)));
-
+                        async () => await ExecuteQueryAsync(ContinuationToken).ConfigureAwait(false),
+                        () => ContinuationToken != null
+                            && !IsRunning
+                            && !string.IsNullOrEmpty(Content.Text)));
             }
         }
 
@@ -235,24 +235,22 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             if (confirm)
                             {
-                                await DispatcherHelper.RunAsync(async () =>
+                                try
                                 {
-                                    try
-                                    {
-                                        IsRunning = true;
-                                        File.WriteAllText(result.FileName, EditorViewModel.Content.Text);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        await _dialogService.ShowError(ex, "Error", "ok", null);
-                                    }
-                                    finally
-                                    {
-                                        IsRunning = false;
-                                    }
-                                });
+                                    IsRunning = true;
+
+                                    await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
+                                }
+                                catch (Exception ex)
+                                {
+                                    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                }
+                                finally
+                                {
+                                    IsRunning = false;
+                                }
                             }
-                        });
+                        }).ConfigureAwait(false);
                     },
                     () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
             }

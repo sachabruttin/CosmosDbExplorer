@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
-using System;
 using GalaSoft.MvvmLight.Threading;
 using DocumentDbExplorer.ViewModel;
 

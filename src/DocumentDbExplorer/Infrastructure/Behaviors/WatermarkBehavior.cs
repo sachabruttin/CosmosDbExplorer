@@ -22,7 +22,6 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(WatermarkBehavior), new PropertyMetadata("Watermark"));
 
-
         public double FontSize
         {
             get { return (double)GetValue(FontSizeProperty); }
@@ -32,7 +31,6 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
         // Using a DependencyProperty as the backing store for FontSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FontSizeProperty =
             DependencyProperty.Register("FontSize", typeof(double), typeof(WatermarkBehavior), new PropertyMetadata(12.0));
-
 
         public Brush Foreground
         {
@@ -44,7 +42,6 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
         public static readonly DependencyProperty ForegroundProperty =
             DependencyProperty.Register("Foreground", typeof(Brush), typeof(WatermarkBehavior), new PropertyMetadata(Brushes.Black));
 
-
         public string FontFamily
         {
             get { return (string)GetValue(FontFamilyProperty); }
@@ -54,7 +51,6 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
         // Using a DependencyProperty as the backing store for FontFamily.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FontFamilyProperty =
             DependencyProperty.Register("FontFamily", typeof(string), typeof(WatermarkBehavior), new PropertyMetadata("Segoe UI"));
-
 
         protected override void OnAttached()
         {
@@ -72,10 +68,7 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
             if (AssociatedObject.SelectedItem != null)
             {
                 var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-                if (layer != null)
-                {
-                    layer.Remove(_adorner);
-                }
+                layer?.Remove(_adorner);
             }
             else
             {
@@ -140,17 +133,12 @@ namespace DocumentDbExplorer.Infrastructure.Behaviors
             }
         }
 
-        protected override void OnDetaching()
-        {
-            base.OnDetaching();
-        }
-
         public class WaterMarkAdorner : Adorner
         {
-            private string _text;
-            private double _fontSize;
-            private string _fontFamily;
-            private Brush _foreground;
+            private readonly string _text;
+            private readonly double _fontSize;
+            private readonly string _fontFamily;
+            private readonly Brush _foreground;
 
             public WaterMarkAdorner(UIElement element, string text, double fontsize, string font, Brush foreground)
                 : base(element)

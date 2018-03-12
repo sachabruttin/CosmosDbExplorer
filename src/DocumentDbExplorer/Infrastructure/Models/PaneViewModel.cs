@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight;
@@ -14,7 +13,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         private RelayCommand _closeCommand;
         private readonly StatusBarItem _pathStatusBarItem;
 
-        public PaneViewModelBase(IMessenger messenger) : base(messenger)
+        protected PaneViewModelBase(IMessenger messenger) : base(messenger)
         {
             _pathStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = ToolTip, IsVisible = true }, StatusBarItemType.SimpleText, "Path", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_pathStatusBarItem);

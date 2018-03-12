@@ -7,15 +7,15 @@ namespace DocumentDbExplorer.Infrastructure.Converters
     [ValueConversion(typeof(double), typeof(double))]
     public class LogConverter : IValueConverter
     {
-        private double _a;
-        private double _b;
-        private double _c;
+        private readonly double _a;
+        private readonly double _b;
+        private readonly double _c;
 
         public LogConverter()
         {
-            var x = 0;
-            var y = 100;
-            var z = 400;
+            const int x = 0;
+            const int y = 100;
+            const int z = 400;
 
             _a = GetA(x, y, z);
             _b = GetB(x, y, z);
@@ -37,12 +37,14 @@ namespace DocumentDbExplorer.Infrastructure.Converters
 
         private double GetA(double x, double y, double z)
         {
-            return (x * z - Math.Pow(y, 2)) / (x - 2 * y + z);
+            return ((x * z) - Math.Pow(y, 2)) / (x - (2 * y) + z);
         }
+
         private double GetB(double x, double y, double z)
         {
-            return Math.Pow(y - x, 2) / (x - 2 * y + z);
+            return Math.Pow(y - x, 2) / (x - (2 * y) + z);
         }
+
         private double GetC(double x, double y, double z)
         {
             return 2 * Math.Log((z - y) / (y - x));

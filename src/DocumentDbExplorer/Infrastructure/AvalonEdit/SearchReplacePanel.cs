@@ -26,9 +26,8 @@ namespace RoslynPad.Editor
         private SearchReplacePanelAdorner _adorner;
         private ISearchStrategy _strategy;
 
-        private ToolTip _messageView = new ToolTip { Placement = PlacementMode.Bottom, StaysOpen = true, Focusable = false };
+        private readonly ToolTip _messageView = new ToolTip { Placement = PlacementMode.Bottom, StaysOpen = true, Focusable = false };
 
-        #region DependencyProperties
         /// <summary>
         /// Dependency property for <see cref="UseRegex"/>.
         /// </summary>
@@ -124,9 +123,8 @@ namespace RoslynPad.Editor
             get { return (Localization)GetValue(LocalizationProperty); }
             set { SetValue(LocalizationProperty, value); }
         }
-        #endregion
 
-        static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is SearchReplacePanel panel)
             {
@@ -139,7 +137,7 @@ namespace RoslynPad.Editor
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchReplacePanel), new FrameworkPropertyMetadata(typeof(SearchReplacePanel)));
         }
 
-        static void SearchPatternChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void SearchPatternChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is SearchReplacePanel panel)
             {
@@ -148,12 +146,12 @@ namespace RoslynPad.Editor
             }
         }
 
-        void UpdateSearch()
+        private void UpdateSearch()
         {
             // only reset as long as there are results
             // if no results are found, the "no matches found" message should not flicker.
             // if results are found by the next run, the message will be hidden inside DoSearch ...
-            if (_renderer.CurrentResults.Any())
+            if (_renderer.CurrentResults.Count > 0)
             {
                 _messageView.IsOpen = false;
             }
@@ -166,13 +164,14 @@ namespace RoslynPad.Editor
         /// <summary>
         /// Creates a new SearchReplacePanel.
         /// </summary>
-        SearchReplacePanel()
+        private SearchReplacePanel()
         {
         }
 
         /// <summary>
         /// Adds the commands used by SearchReplacePanel to the given CommandBindingCollection.
         /// </summary>
+        /// <param name="commandBindings"></param>
         public void RegisterCommands(CommandBindingCollection commandBindings)
         {
             _handler.RegisterGlobalCommands(commandBindings);
@@ -187,7 +186,7 @@ namespace RoslynPad.Editor
             _textArea.DefaultInputHandler.NestedInputHandlers.Remove(_handler);
         }
 
-        void AttachInternal(TextArea textArea)
+        private void AttachInternal(TextArea textArea)
         {
             _textArea = textArea;
             _adorner = new SearchReplacePanelAdorner(textArea, this);
@@ -219,7 +218,7 @@ namespace RoslynPad.Editor
             IsClosed = true;
         }
 
-        void TextArea_DocumentChanged(object sender, EventArgs e)
+        private void TextArea_DocumentChanged(object sender, EventArgs e)
         {
             if (_currentDocument != null)
             {
@@ -234,7 +233,7 @@ namespace RoslynPad.Editor
             }
         }
 
-        void TextArea_Document_TextChanged(object sender, EventArgs e)
+        private void TextArea_Document_TextChanged(object sender, EventArgs e)
         {
             DoSearch(false);
         }
@@ -246,7 +245,7 @@ namespace RoslynPad.Editor
             _searchTextBox = Template.FindName("PART_searchTextBox", this) as TextBox;
         }
 
-        void ValidateSearchText()
+        private void ValidateSearchText()
         {
             if (_searchTextBox == null)
             {
@@ -285,11 +284,8 @@ namespace RoslynPad.Editor
         /// </summary>
         public void FindNext()
         {
-            var result = _renderer.CurrentResults.FindFirstSegmentWithStartAfter(_textArea.Caret.Offset + 1);
-            if (result == null)
-            {
-                result = _renderer.CurrentResults.FirstSegment;
-            }
+            var result = _renderer.CurrentResults.FindFirstSegmentWithStartAfter(_textArea.Caret.Offset + 1)
+                ?? _renderer.CurrentResults.FirstSegment;
 
             if (result != null)
             {
@@ -303,6 +299,7 @@ namespace RoslynPad.Editor
         public void FindPrevious()
         {
             var result = _renderer.CurrentResults.FindFirstSegmentWithStartAfter(_textArea.Caret.Offset);
+
             if (result != null)
             {
                 result = _renderer.CurrentResults.GetPreviousSegment(result);
@@ -319,7 +316,7 @@ namespace RoslynPad.Editor
             }
         }
 
-        void DoSearch(bool changeSelection)
+        private void DoSearch(bool changeSelection)
         {
             if (IsClosed)
             {
@@ -335,6 +332,7 @@ namespace RoslynPad.Editor
                 {
                     _textArea.ClearSelection();
                 }
+
                 // We cast from ISearchResult to SearchResult; this is safe because we always use the built-in strategy
                 foreach (var result in _strategy.FindAll(_textArea.Document, 0, _textArea.Document.TextLength).OfType<TextSegment>())
                 {
@@ -345,7 +343,8 @@ namespace RoslynPad.Editor
                     }
                     _renderer.CurrentResults.Add(result);
                 }
-                if (!_renderer.CurrentResults.Any())
+
+                if (_renderer.CurrentResults.Count == 0)
                 {
                     _messageView.IsOpen = true;
                     _messageView.Content = Localization.NoMatchesFoundText;
@@ -359,7 +358,7 @@ namespace RoslynPad.Editor
             _textArea.TextView.InvalidateLayer(KnownLayer.Selection);
         }
 
-        void SelectResult(TextSegment textSement)
+        private void SelectResult(TextSegment textSement)
         {
             _textArea.Caret.Offset = textSement.StartOffset;
             _textArea.Selection = Selection.Create(_textArea, textSement.StartOffset, textSement.EndOffset);
@@ -368,7 +367,7 @@ namespace RoslynPad.Editor
             _textArea.Caret.Show();
         }
 
-        void SearchLayerKeyDown(object sender, KeyEventArgs e)
+        private void SearchLayerKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -414,10 +413,7 @@ namespace RoslynPad.Editor
             var hasFocus = IsKeyboardFocusWithin;
 
             var layer = AdornerLayer.GetAdornerLayer(_textArea);
-            if (layer != null)
-            {
-                layer.Remove(_adorner);
-            }
+            layer?.Remove(_adorner);
 
             _messageView.IsOpen = false;
             _textArea.TextView.BackgroundRenderers.Remove(_renderer);
@@ -456,10 +452,7 @@ namespace RoslynPad.Editor
             }
 
             var layer = AdornerLayer.GetAdornerLayer(_textArea);
-            if (layer != null)
-            {
-                layer.Add(_adorner);
-            }
+            layer?.Add(_adorner);
 
             _textArea.TextView.BackgroundRenderers.Add(_renderer);
             IsClosed = false;
@@ -474,9 +467,10 @@ namespace RoslynPad.Editor
         /// <summary>
         /// Raises the <see cref="SearchReplacePanel.SearchOptionsChanged" /> event.
         /// </summary>
-        protected virtual void OnSearchOptionsChanged(SearchOptionsChangedEventArgs e)
+        /// <param name="searchOptionsChangedEventArgs"></param>
+        protected virtual void OnSearchOptionsChanged(SearchOptionsChangedEventArgs searchOptionsChangedEventArgs)
         {
-            SearchOptionsChanged?.Invoke(this, e);
+            SearchOptionsChanged?.Invoke(this, searchOptionsChangedEventArgs);
         }
 
         public static readonly DependencyProperty IsReplaceModeProperty = DependencyProperty.Register(
@@ -500,6 +494,7 @@ namespace RoslynPad.Editor
         /// <summary>
         /// Creates a SearchReplacePanel and installs it to the TextEditor's TextArea.
         /// </summary>
+        /// <param name="editor"></param>
         public static SearchReplacePanel Install(TextEditor editor)
         {
             if (editor == null)
@@ -513,6 +508,7 @@ namespace RoslynPad.Editor
         /// <summary>
         /// Creates a SearchReplacePanel and installs it to the TextArea.
         /// </summary>
+        /// <param name="textArea"></param>
         public static SearchReplacePanel Install(TextArea textArea)
         {
             if (textArea == null)
@@ -691,26 +687,30 @@ namespace RoslynPad.Editor
         /// <summary>
         /// Gets the search pattern.
         /// </summary>
-        public string SearchPattern { get; private set; }
+        public string SearchPattern { get; }
 
         /// <summary>
         /// Gets whether the search pattern should be interpreted case-sensitive.
         /// </summary>
-        public bool MatchCase { get; private set; }
+        public bool MatchCase { get; }
 
         /// <summary>
         /// Gets whether the search pattern should be interpreted as regular expression.
         /// </summary>
-        public bool UseRegex { get; private set; }
+        public bool UseRegex { get; }
 
         /// <summary>
         /// Gets whether the search pattern should only match whole words.
         /// </summary>
-        public bool WholeWords { get; private set; }
+        public bool WholeWords { get; }
 
         /// <summary>
         /// Creates a new SearchOptionsChangedEventArgs instance.
         /// </summary>
+        /// <param name="searchPattern"></param>
+        /// <param name="matchCase"></param>
+        /// <param name="useRegex"></param>
+        /// <param name="wholeWords"></param>
         public SearchOptionsChangedEventArgs(string searchPattern, bool matchCase, bool useRegex, bool wholeWords)
         {
             SearchPattern = searchPattern;
@@ -720,9 +720,9 @@ namespace RoslynPad.Editor
         }
     }
 
-    class SearchReplacePanelAdorner : Adorner
+    internal class SearchReplacePanelAdorner : Adorner
     {
-        private SearchReplacePanel _panel;
+        private readonly SearchReplacePanel _panel;
 
         public SearchReplacePanelAdorner(TextArea textArea, SearchReplacePanel panel)
             : base(textArea)
@@ -753,7 +753,7 @@ namespace RoslynPad.Editor
         }
     }
 
-    class SearchReplaceResultBackgroundRenderer : IBackgroundRenderer
+    internal class SearchReplaceResultBackgroundRenderer : IBackgroundRenderer
     {
         private Brush _markerBrush;
         private Pen _markerPen;
@@ -789,12 +789,12 @@ namespace RoslynPad.Editor
         {
             if (textView == null)
             {
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
             }
 
             if (drawingContext == null)
             {
-                throw new ArgumentNullException("drawingContext");
+                throw new ArgumentNullException(nameof(drawingContext));
             }
 
             if (CurrentResults == null || !textView.VisualLinesValid)
@@ -808,7 +808,7 @@ namespace RoslynPad.Editor
                 return;
             }
 
-            var viewStart = visualLines.First().FirstDocumentLine.Offset;
+            var viewStart = visualLines[0].FirstDocumentLine.Offset;
             var viewEnd = visualLines.Last().LastDocumentLine.EndOffset;
 
             foreach (var result in CurrentResults.FindOverlappingSegments(viewStart, viewEnd - viewStart))

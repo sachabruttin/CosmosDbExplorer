@@ -17,7 +17,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         public StatusBarItemContext DataContext { get; set; }
         public StatusBarItemType Type { get; set; }
         public string Title { get; set; }
-        public Dock Dock { get; set; } 
+        public Dock Dock { get; set; }
     }
 
     public class StatusBarItemContext : ObservableObject
@@ -39,6 +39,4 @@ namespace DocumentDbExplorer.Infrastructure.Models
         SimpleText,
         ProgessBar
     }
-
-
 }

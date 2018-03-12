@@ -19,7 +19,7 @@ namespace DocumentDbExplorer.Infrastructure.Converters
             }
 
             var color = value;
-            
+
             return !color.Equals(Colors.Transparent) ? new SolidColorBrush((Color)value) : null;
         }
 

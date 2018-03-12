@@ -4,7 +4,6 @@ using System.Windows.Media;
 using DocumentDbExplorer.Infrastructure.MarkupExtensions;
 using Newtonsoft.Json;
 
-
 namespace DocumentDbExplorer.Infrastructure.Models
 {
     public class Connection : IEquatable<Connection>

@@ -12,7 +12,7 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             var index = source.IndexOf(oldValue);
@@ -28,7 +28,7 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             var index = -1;
@@ -41,12 +41,12 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
                 }
             } while (index != -1);
         }
-        
+
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> source, T oldValue, T newValue)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             return source.Select(x => EqualityComparer<T>.Default.Equals(x, oldValue) ? newValue : x);

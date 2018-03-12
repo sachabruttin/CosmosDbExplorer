@@ -3,14 +3,13 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UsersNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class UsersNodeViewModel : TreeViewItemViewModel<DatabaseNodeViewModel>, ICanRefreshNode
     {
         private readonly Database _database;
         private readonly DatabaseNodeViewModel _parent;
@@ -28,13 +27,8 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public string Name { get; set; }
-        
-        public Database Database => _database;
 
-        public new DatabaseNodeViewModel Parent
-        {
-            get { return base.Parent as DatabaseNodeViewModel; }
-        }
+        public Database Database => _database;
 
         public RelayCommand RefreshCommand
         {

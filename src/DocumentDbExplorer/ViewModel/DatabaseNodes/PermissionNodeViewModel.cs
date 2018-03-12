@@ -5,7 +5,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class PermissionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IContent
+    public class PermissionNodeViewModel : TreeViewItemViewModel<UserNodeViewModel>, ICanRefreshNode, IContent
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _openCommand;
@@ -21,11 +21,6 @@ namespace DocumentDbExplorer.ViewModel
         public string Name => Permission.Id;
 
         public string ContentId => Permission.AltLink ?? "NewPermission";
-
-        public new UserNodeViewModel Parent
-        {
-            get { return base.Parent as UserNodeViewModel; }
-        }
 
         public RelayCommand RefreshCommand
         {

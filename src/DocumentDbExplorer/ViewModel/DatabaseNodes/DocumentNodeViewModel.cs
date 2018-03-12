@@ -5,7 +5,7 @@ using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DocumentNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel, IContent
+    public class DocumentNodeViewModel : TreeViewItemViewModel<CollectionNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
         private RelayCommand _openDocumentCommand;
 
@@ -16,11 +16,6 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public string Name { get; set; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
-        }
 
         public RelayCommand OpenDocumentCommand
         {

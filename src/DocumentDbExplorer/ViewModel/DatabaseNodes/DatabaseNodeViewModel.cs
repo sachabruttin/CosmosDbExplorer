@@ -6,7 +6,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DatabaseNodeViewModel : ResourceNodeViewModelBase
+    public class DatabaseNodeViewModel : ResourceNodeViewModelBase<ConnectionNodeViewModel>
     {
         private readonly Database _database;
         private RelayCommand _addNewCollectionCommand;
@@ -17,12 +17,6 @@ namespace DocumentDbExplorer.ViewModel
         {
             _database = database;
         }
-
-        public new ConnectionNodeViewModel Parent
-        {
-            get { return base.Parent as ConnectionNodeViewModel; }
-        }
-
 
         protected override async Task LoadChildren()
         {

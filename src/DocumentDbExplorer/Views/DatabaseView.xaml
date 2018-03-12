@@ -333,7 +333,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open User Defined Function" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete User Defined Function" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
@@ -371,7 +371,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Edit Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
+                            <MenuItem Header="Edit Trigger" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
                             <MenuItem Header="Delete Trigger" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}"/>
                         </ContextMenu>
                     </StackPanel.ContextMenu>

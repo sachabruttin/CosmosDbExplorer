@@ -1,11 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
@@ -23,9 +18,9 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _function = await DbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var function = await DbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
-            foreach (var func in _function)
+            foreach (var func in function)
             {
                 await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
             }
@@ -52,63 +47,30 @@ namespace DocumentDbExplorer.ViewModel
         }
     }
 
-    public class UserDefFuncNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<UserDefinedFunction>
+    public class UserDefFuncNodeViewModel : AssetNodeViewModelBase<UserDefinedFunction, UserDefFuncRootNodeViewModel>
     {
-        private RelayCommand _deleteCommand;
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _editCommand;
-
-        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, UserDefinedFunction function)
-            : base(parent, parent.MessengerInstance, false)
+        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, UserDefinedFunction resource)
+            : base(parent, resource)
         {
-            Resource = function;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Resource?.Id;
-
-        public string ContentId => Resource?.AltLink;
-
-        public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
-
-        public new UserDefFuncRootNodeViewModel Parent
+        protected override Task DeleteCommandImpl()
         {
-            get { return base.Parent as UserDefFuncRootNodeViewModel; }
+            return DialogService.ShowMessage("Are sure you want to delete this User Definied Function?", "Delete", null, null,
+                async confirm =>
+                {
+                    if (confirm)
+                    {
+                        await DbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                    }
+                });
         }
 
-        public UserDefinedFunction Resource { get; set; }
-
-        public RelayCommand DeleteCommand
+        protected override Task EditCommandImpl()
         {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand(
-                        async () =>
-                        {
-                            await _dialogService.ShowMessage("Are sure you want to delete this User Definied Function?", "Delete", null, null,
-                                async confirm =>
-                                {
-                                    if (confirm)
-                                    {
-                                        await _dbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-                                    }
-                                });
-                        }));
-            }
-        }
-
-        public RelayCommand EditCommand
-        {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand(
-                        () => MessengerInstance.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, null))));
-            }
+            MessengerInstance.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, null));
+            return Task.FromResult(0);
         }
     }
 }

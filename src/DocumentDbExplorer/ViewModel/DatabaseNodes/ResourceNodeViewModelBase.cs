@@ -9,14 +9,15 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public abstract class ResourceNodeViewModelBase : TreeViewItemViewModel, ICanRefreshNode
+    public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode
+        where TParent : TreeViewItemViewModel
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _copySelfLinkToClipboardCommand;
         private RelayCommand _copyResourceToClipboardCommand;
         private RelayCommand _copyAltLinkToClipboardCommand;
 
-        protected ResourceNodeViewModelBase(Resource resource, TreeViewItemViewModel parent, bool lazyLoadChildren)
+        protected ResourceNodeViewModelBase(Resource resource, TParent parent, bool lazyLoadChildren)
             : base(parent, parent.MessengerInstance, lazyLoadChildren)
         {
             Resource = resource;

@@ -8,7 +8,7 @@ using Microsoft.Azure.Documents;
 namespace DocumentDbExplorer.ViewModel
 {
 
-    public class CollectionNodeViewModel : ResourceNodeViewModelBase, IHaveCollectionNodeViewModel, IContent
+    public class CollectionNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
         private RelayCommand _openSqlQueryCommand;
         private RelayCommand _openImportDocumentCommand;
@@ -22,11 +22,6 @@ namespace DocumentDbExplorer.ViewModel
             : base(collection, parent, true)
         {
             Collection = collection;
-        }
-
-        public new DatabaseNodeViewModel Parent
-        {
-            get { return base.Parent as DatabaseNodeViewModel; }
         }
 
         protected override async Task LoadChildren()

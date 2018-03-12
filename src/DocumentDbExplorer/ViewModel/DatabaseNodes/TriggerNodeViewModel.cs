@@ -1,12 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
@@ -24,9 +18,9 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var _triggers = await DbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var triggers = await DbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
-            foreach (var trigger in _triggers)
+            foreach (var trigger in triggers)
             {
                 await DispatcherHelper.RunAsync(() => Children.Add(new TriggerNodeViewModel(this, trigger)));
             }
@@ -53,63 +47,30 @@ namespace DocumentDbExplorer.ViewModel
         }
     }
 
-    public class TriggerNodeViewModel : TreeViewItemViewModel, ICanEditDelete, IAssetNode<Trigger>
+    public class TriggerNodeViewModel : AssetNodeViewModelBase<Trigger, TriggerRootNodeViewModel>
     {
-        private RelayCommand _deleteCommand;
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _editCommand;
-
-        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, Trigger trigger)
-            : base(parent, parent.MessengerInstance, false)
+        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, Trigger resource)
+            : base(parent, resource)
         {
-            Resource = trigger;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Resource?.Id;
-
-        public string ContentId => Resource.AltLink;
-
-        public Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
-
-        public Trigger Resource { get; set; }
-
-        public new TriggerRootNodeViewModel Parent
+        protected override Task DeleteCommandImpl()
         {
-            get { return base.Parent as TriggerRootNodeViewModel; }
+            return DialogService.ShowMessage("Are sure you want to delete this Trigger?", "Delete", null, null,
+                async confirm =>
+                {
+                    if (confirm)
+                    {
+                        await DbService.DeleteTriggerAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                    }
+                });
         }
 
-        public RelayCommand DeleteCommand
+        protected override Task EditCommandImpl()
         {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand(
-                        async () =>
-                        {
-                            await _dialogService.ShowMessage("Are sure you want to delete this Trigger?", "Delete", null, null,
-                                async confirm =>
-                                {
-                                    if (confirm)
-                                    {
-                                        await _dbService.DeleteTriggerAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-                                    }
-                                });
-                        }));
-            }
-        }
-
-        public RelayCommand EditCommand
-        {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand(
-                        () => MessengerInstance.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection))));
-            }
+            MessengerInstance.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection));
+            return Task.FromResult(0);
         }
     }
 }

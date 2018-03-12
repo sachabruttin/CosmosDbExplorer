@@ -128,4 +128,15 @@ namespace DocumentDbExplorer.Infrastructure.Models
 
         public IMessenger MessengerInstance { get; }
     }
+
+    public class TreeViewItemViewModel<TParent> : TreeViewItemViewModel
+        where TParent : TreeViewItemViewModel
+    {
+        public TreeViewItemViewModel(TParent parent, IMessenger messenger, bool lazyLoadChildren)
+            : base(parent, messenger, lazyLoadChildren)
+        {
+        }
+
+        public new TParent Parent => base.Parent as TParent;
+    }
 }

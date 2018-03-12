@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IContent
+    public class UserNodeViewModel : TreeViewItemViewModel<UsersNodeViewModel>, ICanRefreshNode, IContent
     {
         private readonly UsersNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
@@ -28,11 +28,6 @@ namespace DocumentDbExplorer.ViewModel
         public string Name => User.Id;
 
         public string ContentId => User.AltLink ?? "NewUser";
-
-        public new UsersNodeViewModel Parent
-        {
-            get { return base.Parent as UsersNodeViewModel; }
-        }
 
         protected override async Task LoadChildren()
         {

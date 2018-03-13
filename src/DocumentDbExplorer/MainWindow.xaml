@@ -152,7 +152,7 @@
                         <fluent:BackstageTabItem Header="About">
                             <views:AboutView />
                         </fluent:BackstageTabItem>
-
+                        
                         <fluent:SeparatorTabItem />
 
                         <fluent:Button Header="Exit" Command="{Binding ExitCommand}"

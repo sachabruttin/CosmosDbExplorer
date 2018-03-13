@@ -97,6 +97,7 @@ namespace DocumentDbExplorer.ViewModel
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
             MessengerInstance.Register<CloseDocumentMessage>(this, CloseDocument);
+            MessengerInstance.Register<IsBusyMessage>(this, msg => IsBusy = msg.IsBusy);
         }
 
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
@@ -172,6 +173,8 @@ namespace DocumentDbExplorer.ViewModel
         public string Title { get; set; }
 
         public long UsedMemory => GC.GetTotalMemory(true) / 1014;
+
+        public bool IsBusy { get; set; }
 
         public double Zoom { get; set; }
 

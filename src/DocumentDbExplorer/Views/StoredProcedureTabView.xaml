@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:controls="clr-namespace:DocumentDbExplorer.Infrastructure.AvalonEdit"
-             xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel"
+             xmlns:vm="clr-namespace:DocumentDbExplorer.ViewModel.Assets"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" Loaded="UserControl_Loaded"

@@ -173,7 +173,9 @@
     <Compile Include="Infrastructure\Converters\IsNotNullToBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\LogConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Infrastructure\MarkupExtensions\CursorExtensionConverter.cs" />
     <Compile Include="Infrastructure\Models\Author.cs" />
+    <Compile Include="Infrastructure\Models\UIViewModelBase.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\Extensions\NameValueCollectionExtensions.cs" />
@@ -192,6 +194,7 @@
     <Compile Include="Messages\ConnectionSettingSavedMessage.cs" />
     <Compile Include="Messages\EditTriggerMessage.cs" />
     <Compile Include="Messages\EditUserDefFuncMessage.cs" />
+    <Compile Include="Messages\IsBusyMessage.cs" />
     <Compile Include="Messages\OpenDocumentsViewMessage.cs" />
     <Compile Include="Messages\OpenImportDocumentViewMessage.cs" />
     <Compile Include="Messages\OpenQueryViewMessage.cs" />
@@ -210,7 +213,9 @@
     <Compile Include="Services\DocumentDbService.cs" />
     <Compile Include="Services\DocumentDescription.cs" />
     <Compile Include="Services\IDocumentDbService.cs" />
+    <Compile Include="Services\IUIServices.cs" />
     <Compile Include="Services\SettingsService.cs" />
+    <Compile Include="Services\UIServices.cs" />
     <Compile Include="ViewModel\AboutViewModel.cs" />
     <Compile Include="ViewModel\AccountSettingsViewModel.cs" />
     <Compile Include="Infrastructure\Models\Connection.cs" />

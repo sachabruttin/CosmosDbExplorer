@@ -25,7 +25,8 @@ namespace DocumentDbExplorer.ViewModel.Assets
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
 
-        protected AssetTabViewModelBase(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
+        protected AssetTabViewModelBase(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Content = new TextDocument(GetDefaultContent());
             _dialogService = dialogService;

@@ -20,7 +20,8 @@ namespace DocumentDbExplorer.ViewModel
         private bool _useLocalEmulator;
         private Connection _connection;
 
-        public AccountSettingsViewModel(IMessenger messenger, IDialogService dialogService, ISettingsService settingsService) : base(messenger)
+        public AccountSettingsViewModel(IMessenger messenger, IDialogService dialogService, ISettingsService settingsService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             _dialogService = dialogService;
             _settingsService = settingsService;
@@ -91,14 +92,20 @@ namespace DocumentDbExplorer.ViewModel
                         {
                             try
                             {
+                                IsBusy = true;
                                 var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
                                 await _settingsService.SaveConnectionAsync(connection).ConfigureAwait(true);
                                 MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
+
                                 Close();
                             }
                             catch (Exception ex)
                             {
                                 await _dialogService.ShowError(ex, "Error saving connection", null, null).ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                IsBusy = false;
                             }
                         },
                         () => !((INotifyDataErrorInfo)this).HasErrors));

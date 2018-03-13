@@ -8,9 +8,8 @@ namespace DocumentDbExplorer.ViewModel.Assets
 {
     public class StoredProcedureTabViewModel : AssetTabViewModelBase<StoredProcedureNodeViewModel, StoredProcedure>
     {
-
-        public StoredProcedureTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService)
-            : base(messenger, dialogService, dbService)
+        public StoredProcedureTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, dialogService, dbService, uiServices)
         {
         }
 

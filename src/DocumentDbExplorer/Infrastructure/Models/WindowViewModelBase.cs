@@ -1,14 +1,15 @@
 ﻿using System;
-using GalaSoft.MvvmLight;
+using DocumentDbExplorer.Services;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
-    public class WindowViewModelBase : ViewModelBase
+    public abstract class WindowViewModelBase : UIViewModelBase
     {
         public event Action RequestClose;
 
-        public WindowViewModelBase(IMessenger messenger) : base(messenger)
+        protected WindowViewModelBase(IMessenger messenger, IUIServices uiServices) 
+            : base(messenger, uiServices)
         {
         }
 

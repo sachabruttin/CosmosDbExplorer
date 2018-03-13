@@ -16,7 +16,8 @@ namespace DocumentDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private readonly ISettingsService _settingsService;
 
-        public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService) : base(messenger)
+        public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Header = "Connections";
             Title = Header;

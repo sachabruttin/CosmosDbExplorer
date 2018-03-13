@@ -26,7 +26,8 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _deleteCommand;
         private RelayCommand _discardCommand;
 
-        public UserEditViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
+        public UserEditViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             _dbService = dbService;
             _dialogService = dialogService;

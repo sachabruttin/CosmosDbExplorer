@@ -20,7 +20,8 @@ namespace DocumentDbExplorer.ViewModel
         private List<Database> _databases;
         private string _selectedDatabase;
 
-        public AddCollectionViewModel(IMessenger messenger, IDocumentDbService dbService) : base(messenger)
+        public AddCollectionViewModel(IMessenger messenger, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             IsFixedStorage = true;
             Throughput = 400;
@@ -83,6 +84,8 @@ namespace DocumentDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async () =>
                         {
+                            IsBusy = true;
+
                             var collection = new DocumentCollection { Id = CollectionId.Trim() };
 
                             if (IsUnlimitedStorage)
@@ -93,6 +96,7 @@ namespace DocumentDbExplorer.ViewModel
                             var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
                             await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
 
+                            IsBusy = false;
                             Close();
                         },
                         () => !((INotifyDataErrorInfo)this).HasErrors));

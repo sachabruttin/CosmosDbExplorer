@@ -45,6 +45,7 @@ namespace DocumentDbExplorer.ViewModel
                 SimpleIoc.Default.Register<IMessenger, Messenger>();
                 SimpleIoc.Default.Register<IDocumentDbService, DocumentDbService>();
                 SimpleIoc.Default.Register<ISettingsService, SettingsService>();
+                SimpleIoc.Default.Register<IUIServices, UIServices>();
                 SimpleIoc.Default.Register<ISimpleIoc>(() => SimpleIoc.Default);
             }
 

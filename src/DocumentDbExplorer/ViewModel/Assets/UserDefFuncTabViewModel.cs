@@ -8,8 +8,8 @@ namespace DocumentDbExplorer.ViewModel.Assets
 {
     public class UserDefFuncTabViewModel : AssetTabViewModelBase<UserDefFuncNodeViewModel, UserDefinedFunction>
     {
-        public UserDefFuncTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService)
-            : base(messenger, dialogService, dbService)
+        public UserDefFuncTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, dialogService, dbService, uiServices)
         {
         }
 

@@ -26,7 +26,8 @@ namespace DocumentDbExplorer.ViewModel
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
 
-        public ImportDocumentViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService) : base(messenger)
+        public ImportDocumentViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Content = new TextDocument();
             _dialogService = dialogService;

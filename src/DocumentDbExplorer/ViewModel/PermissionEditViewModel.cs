@@ -23,7 +23,8 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _discardCommand;
         private RelayCommand _copyToClipboardCommand;
 
-        public PermissionEditViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
+        public PermissionEditViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             _dbService = dbService;
             _dialogService = dialogService;

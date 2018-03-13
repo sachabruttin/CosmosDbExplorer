@@ -33,7 +33,8 @@ namespace DocumentDbExplorer.ViewModel
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
 
-        public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
+        public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
             EditorViewModel.IsReadOnly = true;

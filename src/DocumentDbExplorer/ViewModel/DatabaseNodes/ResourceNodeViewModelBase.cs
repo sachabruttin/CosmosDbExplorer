@@ -88,5 +88,8 @@ namespace DocumentDbExplorer.ViewModel
         protected IDocumentDbService DbService => SimpleIoc.Default.GetInstance<IDocumentDbService>();
 
         protected IDialogService DialogService => SimpleIoc.Default.GetInstance<IDialogService>();
+
+        protected IUIServices UIServices => SimpleIoc.Default.GetInstance<IUIServices>();
+
     }
 }

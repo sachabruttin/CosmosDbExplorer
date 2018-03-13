@@ -22,7 +22,8 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _saveCommand;
         private bool _onTimeToLive;
 
-        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDocumentDbService dbService) : base(messenger)
+        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Content = new TextDocument();
             _dbService = dbService;

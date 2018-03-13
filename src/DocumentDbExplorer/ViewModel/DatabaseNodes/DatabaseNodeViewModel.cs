@@ -75,8 +75,10 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
+                                        UIServices.SetBusyState(true);
                                         await DbService.DeleteDatabaseAsync(Parent.Connection, _database).ConfigureAwait(true);
                                         Parent.Children.Remove(this);
+                                        UIServices.SetBusyState(false);
                                     }
                                 }).ConfigureAwait(true);
                         }));

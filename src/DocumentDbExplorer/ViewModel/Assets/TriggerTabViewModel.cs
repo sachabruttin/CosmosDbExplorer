@@ -11,8 +11,8 @@ namespace DocumentDbExplorer.ViewModel.Assets
         private TriggerType _triggerType;
         private TriggerOperation _triggerOperation;
 
-        public TriggerTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService)
-            : base(messenger, dialogService, dbService)
+        public TriggerTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, dialogService, dbService, uiServices)
         {
         }
 

@@ -38,7 +38,8 @@ namespace DocumentDbExplorer.ViewModel
         private ResourceResponse<Document> _currentDocument;
         private RelayCommand _resetRequestOptionsCommand;
 
-        public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
+        public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Documents = new ObservableCollection<DocumentDescription>();
             _dbService = dbService;

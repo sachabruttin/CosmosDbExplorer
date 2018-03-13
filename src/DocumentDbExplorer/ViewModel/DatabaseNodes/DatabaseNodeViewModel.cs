@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
+using DocumentDbExplorer.Services;
 using DocumentDbExplorer.Views;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
@@ -22,7 +23,7 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var collections = await DbService.GetCollectionsAsync(Parent.Connection, _database);
+            var collections = await DbService.GetCollectionsAsync(Parent.Connection, _database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -51,11 +52,10 @@ namespace DocumentDbExplorer.ViewModel
                             vm.Connection = Parent.Connection;
                             vm.SelectedDatabase = _database.Id;
 
-
                             if (form.ShowDialog().GetValueOrDefault(false))
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             }
                         }));
             }
@@ -75,10 +75,10 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await DbService.DeleteDatabaseAsync(Parent.Connection, _database);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                                        await DbService.DeleteDatabaseAsync(Parent.Connection, _database).ConfigureAwait(true);
+                                        Parent.Children.Remove(this);
                                     }
-                                });
+                                }).ConfigureAwait(true);
                         }));
             }
         }

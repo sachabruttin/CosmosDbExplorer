@@ -36,7 +36,7 @@ namespace DocumentDbExplorer.ViewModel
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }

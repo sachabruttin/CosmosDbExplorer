@@ -12,12 +12,12 @@ namespace DocumentDbExplorer.Infrastructure.AvalonEdit
             DependencyProperty.Register("SelectedText", typeof(string), typeof(SelectedTextBehavior),
                 new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-
         public string SelectedText
         {
             get { return (string)GetValue(SelectedTextProperty); }
             set { SetValue(SelectedTextProperty, value); }
         }
+
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -26,7 +26,7 @@ namespace DocumentDbExplorer.Infrastructure.AvalonEdit
                 AssociatedObject.TextArea.SelectionChanged += SelectionChanged;
             }
         }
-        
+
         protected override void OnDetaching()
         {
             base.OnDetaching();
@@ -43,6 +43,5 @@ namespace DocumentDbExplorer.Infrastructure.AvalonEdit
                 SelectedText = textarea.Selection.GetText();
             }
         }
-
     }
 }

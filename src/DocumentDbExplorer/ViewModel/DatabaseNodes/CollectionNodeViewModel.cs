@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Messages;
 using GalaSoft.MvvmLight.Threading;
@@ -7,7 +8,7 @@ using Microsoft.Azure.Documents;
 namespace DocumentDbExplorer.ViewModel
 {
 
-    public class CollectionNodeViewModel : ResourceNodeViewModelBase, IHaveCollectionNodeViewModel
+    public class CollectionNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
         private RelayCommand _openSqlQueryCommand;
         private RelayCommand _openImportDocumentCommand;
@@ -21,11 +22,6 @@ namespace DocumentDbExplorer.ViewModel
             : base(collection, parent, true)
         {
             Collection = collection;
-        }
-
-        public new DatabaseNodeViewModel Parent
-        {
-            get { return base.Parent as DatabaseNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
@@ -47,11 +43,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _openSqlQueryCommand
-                    ?? (_openSqlQueryCommand = new RelayCommand(
-                        x =>
-                        {
-                            MessengerInstance.Send(new OpenQueryViewMessage(this));
-                        }));
+                    ?? (_openSqlQueryCommand = new RelayCommand(() => MessengerInstance.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Collection))));
             }
         }
 
@@ -61,7 +53,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _clearAllDocumentsCommand
                     ?? (_clearAllDocumentsCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DialogService.ShowMessage($"All documents will be removed from the collection {Parent.Name} .\n\nAre you sure you want to continue?",
                                 "Cleanup collection", null, null,
@@ -70,8 +62,8 @@ namespace DocumentDbExplorer.ViewModel
                                     if (confirm)
                                     {
                                         // TODO: Show Please wait...
-                                        await DbService.CleanCollection(Parent.Parent.Connection, Collection);
-                                        await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection");
+                                        await DbService.CleanCollectionAsync(Parent.Parent.Connection, Collection);
+                                        await DispatcherHelper.RunAsync(async () => await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection"));
                                     }
                                 });
                         }));
@@ -84,7 +76,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openImportDocumentCommand
                     ?? (_openImportDocumentCommand = new RelayCommand(
-                       x => MessengerInstance.Send(new OpenImportDocumentViewMessage(this))));
+                       () => MessengerInstance.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Collection))));
             }
         }
 
@@ -94,7 +86,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newStoredProcedureCommand
                     ?? (_newStoredProcedureCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditStoredProcedureMessage(this, null))
+                        () => MessengerInstance.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Collection))
                         ));
             }
         }
@@ -105,7 +97,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newUdfCommand
                     ?? (_newUdfCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditUserDefFuncMessage(this, null))
+                        () => MessengerInstance.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Collection))
                         ));
             }
         }
@@ -116,7 +108,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _newTriggerCommand
                     ?? (_newTriggerCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditTriggerMessage(this, null))
+                        () => MessengerInstance.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Collection))
                         ));
             }
         }
@@ -127,14 +119,14 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCollectionCommand
                     ?? (_deleteCollectionCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
                                 async confirm =>
                                 {
                                     if (confirm)
                                     {
-                                        await DbService.DeleteCollection(Parent.Parent.Connection, Collection);
+                                        await DbService.DeleteCollectionAsync(Parent.Parent.Connection, Collection);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });
@@ -144,5 +136,7 @@ namespace DocumentDbExplorer.ViewModel
         }
 
         public CollectionNodeViewModel CollectionNode => this;
+
+        public string ContentId => Guid.NewGuid().ToString();
     }
 }

@@ -14,6 +14,7 @@
 
 using CommonServiceLocator;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Assets;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;

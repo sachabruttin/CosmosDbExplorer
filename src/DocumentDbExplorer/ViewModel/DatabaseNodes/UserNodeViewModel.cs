@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class UserNodeViewModel : TreeViewItemViewModel<UsersNodeViewModel>, ICanRefreshNode, IContent
     {
         private readonly UsersNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
@@ -29,16 +29,11 @@ namespace DocumentDbExplorer.ViewModel
 
         public string ContentId => User.AltLink ?? "NewUser";
 
-        public new UsersNodeViewModel Parent
-        {
-            get { return base.Parent as UsersNodeViewModel; }
-        }
-
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var permissions = await _dbService.GetPermission(Parent.Parent.Parent.Connection, User);
+            var permissions = await _dbService.GetPermissionAsync(Parent.Parent.Parent.Connection, User).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -57,12 +52,12 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }
@@ -74,7 +69,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openCommand
                     ?? (_openCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditUserMessage(this))));
+                        () => MessengerInstance.Send(new EditUserMessage(this, Parent.Parent.Parent.Connection, null))));
             }
         }
 
@@ -83,7 +78,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(new Permission(), this))
+                    () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(null, this), Parent.Parent.Parent.Connection, null)
                     )));
             }
         }

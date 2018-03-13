@@ -18,11 +18,10 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class UserEditViewModel : PaneViewModel, IAssetTabCommand
+    public class UserEditViewModel : PaneViewModel<UserNodeViewModel>, IAssetTabCommand
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private UserNodeViewModel _node;
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _discardCommand;
@@ -39,15 +38,15 @@ namespace DocumentDbExplorer.ViewModel
 
         public void OnUserIdChanged()
         {
-            IsDirty = UserId != _node.User.Id;
+            IsDirty = UserId != Node.User.Id;
         }
 
         private void SetInformation()
         {
-            UserId = _node?.User?.Id;
+            UserId = Node?.User?.Id;
 
-            var split = _node.Parent.Database.AltLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}";
+            var split = Node.Parent.Database.AltLink.Split(new char[] { '/' });
+            ToolTip = split[1];
 
             IsDirty = false;
         }
@@ -56,34 +55,27 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
-        public UserNodeViewModel Node
+        public override void Load(string contentId, UserNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = value.Name ?? "New User";
-                    Title = "User";
-                    ContentId = value.ContentId;
-                    AccentColor = value.Parent.Parent.Parent.Connection.AccentColor;
-                    SetInformation();
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Connection = connection;
+            Header = node.Name ?? "New User";
+            Title = "User";
+            AccentColor = node.Parent.Parent.Parent.Connection.AccentColor;
+            SetInformation();
         }
+
+        protected Connection Connection { get; set; }
+
+        public UserNodeViewModel Node { get; protected set; }
 
         public RelayCommand DiscardCommand
         {
             get
             {
                 return _discardCommand
-                    ?? (_discardCommand = new RelayCommand(
-                        x =>
-                        {
-                            SetInformation();
-                        },
-                        x => IsDirty));
+                    ?? (_discardCommand = new RelayCommand(SetInformation, () => IsDirty));
             }
         }
 
@@ -93,7 +85,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             User user = null;
 
@@ -103,13 +95,13 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             else
                             {
-                                user = _node.User;
-                                user.Id = UserId;    
+                                user = Node.User;
+                                user.Id = UserId;
                             }
 
                             try
                             {
-                                user = await _dbService.SaveUser(Node.Parent.Parent.Parent.Connection, Node.Parent.Database, user);
+                                user = await _dbService.SaveUserAsync(Connection, Node.Parent.Database, user).ConfigureAwait(false);
 
                                 Header = user.Id;
                                 Node.User = user;
@@ -121,11 +113,10 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             catch (DocumentClientException ex)
                             {
-                                var msg = ex.Parse();
-                                await _dialogService.ShowError(msg, "Error", null, null);
+                                await _dialogService.ShowError(ex.Parse(), "Error", null, null).ConfigureAwait(false);
                             }
                         },
-                        x => IsDirty && IsValid));
+                        () => IsDirty && IsValid));
             }
         }
 
@@ -135,7 +126,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
                             {
@@ -143,12 +134,11 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     try
                                     {
-                                        await _dbService.DeleteUser(Node.Parent.Parent.Parent.Connection, Node.User);
+                                        await _dbService.DeleteUserAsync(Node.Parent.Parent.Parent.Connection, Node.User).ConfigureAwait(false);
                                     }
                                     catch (DocumentClientException ex)
                                     {
-                                        var msg = ex.Parse();
-                                        await _dialogService.ShowError(msg, "Error", null, null);
+                                        await _dialogService.ShowError(ex.Parse(), "Error", null, null).ConfigureAwait(false);
                                     }
                                     finally
                                     {
@@ -156,9 +146,9 @@ namespace DocumentDbExplorer.ViewModel
                                         await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
                                     }
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
-                        x => !IsNewDocument));
+                        () => !IsNewDocument));
             }
         }
 

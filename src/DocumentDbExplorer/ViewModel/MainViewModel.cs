@@ -9,10 +9,12 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
+using DocumentDbExplorer.ViewModel.Assets;
 using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 
 namespace DocumentDbExplorer.ViewModel
 {
@@ -44,7 +46,10 @@ namespace DocumentDbExplorer.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IDialogService dialogService, IMessenger messenger, ISimpleIoc ioc) 
+        /// <param name="dialogService"></param>
+        /// <param name="messenger"></param>
+        /// <param name="ioc"></param>
+        public MainViewModel(IDialogService dialogService, IMessenger messenger, ISimpleIoc ioc)
             : base(messenger)
         {
             if (IsInDesignMode)
@@ -61,7 +66,7 @@ namespace DocumentDbExplorer.ViewModel
             _dialogService = dialogService;
             _ioc = ioc;
             _databaseViewModel = _ioc.GetInstance<DatabaseViewModel>();
-            Tabs = new ObservableCollection<PaneViewModel>();
+            Tabs = new ObservableCollection<PaneViewModelBase>();
 
             SpyUsedMemory();
 
@@ -78,18 +83,20 @@ namespace DocumentDbExplorer.ViewModel
         private void RegisterMessages()
         {
             MessengerInstance.Register<ActivePaneChangedMessage>(this, OnActivePaneChanged);
-            MessengerInstance.Register<OpenDocumentsViewMessage>(this, OpenDocumentsView);
-            MessengerInstance.Register<OpenQueryViewMessage>(this, OpenQueryView);
-            MessengerInstance.Register<OpenImportDocumentViewMessage>(this, OpenImportDocumentView);
-            MessengerInstance.Register<CloseDocumentMessage>(this, CloseDocument);
-            MessengerInstance.Register<EditStoredProcedureMessage>(this, OpenStoredProcedure);
-            MessengerInstance.Register<EditUserDefFuncMessage>(this, OpenUserDefFunc);
-            MessengerInstance.Register<EditTriggerMessage>(this, OpenTrigger);
-            MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, OpenScaleAndSettings);
-            MessengerInstance.Register<EditUserMessage>(this, OpenEditUser);
-            MessengerInstance.Register<EditPermissionMessage>(this, OpenPermission);
+
+            MessengerInstance.Register<OpenDocumentsViewMessage>(this, msg => OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
+            MessengerInstance.Register<OpenQueryViewMessage>(this, msg => OpenOrSelectTab<QueryEditorViewModel, CollectionNodeViewModel>(msg));
+            MessengerInstance.Register<OpenImportDocumentViewMessage>(this, msg => OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
+            MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, msg => OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
+            MessengerInstance.Register<EditUserMessage>(this, msg => OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
+            MessengerInstance.Register<EditPermissionMessage>(this, msg => OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+
+            MessengerInstance.Register<EditStoredProcedureMessage>(this, msg => OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
+            MessengerInstance.Register<EditUserDefFuncMessage>(this, msg => OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
+            MessengerInstance.Register<EditTriggerMessage>(this, msg => OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
+            MessengerInstance.Register<CloseDocumentMessage>(this, CloseDocument);
         }
 
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
@@ -132,9 +139,11 @@ namespace DocumentDbExplorer.ViewModel
                                     || UserNode != null;
         }
 
-        private void OpenScaleAndSettings(OpenScaleAndSettingsViewMessage message)
+        private void OpenOrSelectTab<TTabViewModel, TNodeViewModel>(OpenTabMessageBase<TNodeViewModel> message)
+            where TTabViewModel : PaneViewModel<TNodeViewModel>
+            where TNodeViewModel : TreeViewItemViewModel, IContent
         {
-            var contentId = message?.Node?.ContentId;
+            var contentId = message.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)
@@ -143,113 +152,8 @@ namespace DocumentDbExplorer.ViewModel
             }
             else
             {
-                var content = _ioc.GetInstance<ScaleAndSettingsTabViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
-        }
-
-        private void OpenTrigger(EditTriggerMessage message)
-        {
-            var contentId = message?.Node?.ContentId;
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<TriggerTabViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-                content.Connection = message.Connection;
-                content.Collection = message.Collection;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
-        }
-
-        private void OpenEditUser(EditUserMessage message)
-        {
-            var contentId = message?.Node?.ContentId;
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<UserEditViewModel>(contentId);
-                content.Node = message.Node;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
-        }
-
-        private void OpenPermission(EditPermissionMessage message)
-        {
-            var contentId = message?.Node?.ContentId;
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<PermissionEditViewModel>(contentId);
-                content.Node = message.Node;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
-        }
-
-        private void OpenUserDefFunc(EditUserDefFuncMessage message)
-        {
-            var contentId = message?.Node?.ContentId;
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<UserDefFuncTabViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-                content.Connection = message.Connection;
-                content.Collection = message.Collection;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
-        }
-
-        private void OpenStoredProcedure(EditStoredProcedureMessage message)
-        {
-            var contentId = message?.Node?.ContentId;
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<StoredProcedureTabViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-                content.Connection = message.Connection;
-                content.Collection = message.Collection;
+                var content = _ioc.GetInstance<TTabViewModel>(contentId);
+                content.Load(contentId, message.Node, message.Connection, message.Collection);
 
                 Tabs.Add(content);
                 SelectedTab = content;
@@ -258,58 +162,11 @@ namespace DocumentDbExplorer.ViewModel
 
         private void CloseDocument(CloseDocumentMessage msg)
         {
-            Tabs.Remove(msg.Paneviewmodel);
-            SelectedTab = Tabs.LastOrDefault();
-        }
-
-        private async void OpenDocumentsView(OpenDocumentsViewMessage message)
-        {
-            var contentId = $"Documents:{message.Node.Parent.Collection.AltLink}";
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is DocumentsTabViewModel);
-
-            if (tab != null)
+            DispatcherHelper.RunAsync(() =>
             {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<DocumentsTabViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-                
-                Tabs.Add(content);
-                SelectedTab = content;
-
-                await content.LoadDocuments(true);
-            }
-        }
-
-        private void OpenQueryView(OpenQueryViewMessage message)
-        {
-            var content = _ioc.GetInstance<QueryEditorViewModel>(Guid.NewGuid().ToString());
-            content.Node = message.Node;
-            Tabs.Add(content);
-            SelectedTab = content;
-        }
-
-        private void OpenImportDocumentView(OpenImportDocumentViewMessage message)
-        {
-            var contentId = $"Import:{message.Node.Collection.AltLink}";
-            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId && t is ImportDocumentViewModel);
-
-            if (tab != null)
-            {
-                SelectedTab = tab;
-            }
-            else
-            {
-                var content = _ioc.GetInstance<ImportDocumentViewModel>(contentId);
-                content.Node = message.Node;
-                content.ContentId = contentId;
-
-                Tabs.Add(content);
-                SelectedTab = content;
-            }
+                Tabs.Remove(msg.PaneViewModel);
+                SelectedTab = Tabs.LastOrDefault();
+            });
         }
 
         public string Title { get; set; }
@@ -318,7 +175,7 @@ namespace DocumentDbExplorer.ViewModel
 
         public double Zoom { get; set; }
 
-        public ObservableCollection<PaneViewModel> Tabs { get; }
+        public ObservableCollection<PaneViewModelBase> Tabs { get; }
 
         public IEnumerable<ToolViewModel> Tools
         {
@@ -326,10 +183,10 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _tools
                      ?? (_tools = new ToolViewModel[] { _databaseViewModel });
-
             }
         }
-        public PaneViewModel SelectedTab { get; set; }
+
+        public PaneViewModelBase SelectedTab { get; set; }
 
         public void OnSelectedTabChanged()
         {
@@ -367,21 +224,22 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _showAboutCommand
                     ?? (_showAboutCommand = new RelayCommand(
-                    async x =>
+                    async () =>
                     {
                         var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
                         var name = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute), false))?.Title ?? "Unknown Title";
-                        await _dialogService.ShowMessageBox($"{name}\nVersion {fvi.FileVersion}", "About");
+                        await _dialogService.ShowMessageBox($"{name}\nVersion {fvi.FileVersion}", "About").ConfigureAwait(false);
                     }));
             }
         }
+
         public RelayCommand ShowAccountSettingsCommand
         {
             get
             {
                 return _showAccountSettingsCommand
                     ?? (_showAccountSettingsCommand = new RelayCommand(
-                    x =>
+                    () =>
                     {
                         var form = new Views.AccountSettingsView();
                         var vm = (AccountSettingsViewModel)form.DataContext;
@@ -391,16 +249,13 @@ namespace DocumentDbExplorer.ViewModel
                     }));
             }
         }
+
         public RelayCommand ExitCommand
         {
             get
             {
                 return _exitCommand
-                    ?? (_exitCommand = new RelayCommand(
-                        x =>
-                        {
-                            Close();
-                        }));
+                    ?? (_exitCommand = new RelayCommand(Close));
             }
         }
 
@@ -410,11 +265,8 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        x =>
-                        {
-                            CanRefreshNodeViewModel.RefreshCommand.Execute(x);
-                        },
-                        x => CanRefreshNodeViewModel != null && CanRefreshNodeViewModel.RefreshCommand.CanExecute(x)                            
+                        () => CanRefreshNodeViewModel.RefreshCommand.Execute(null),
+                        () => CanRefreshNodeViewModel?.RefreshCommand.CanExecute(null) == true
                         ));
             }
         }
@@ -423,6 +275,5 @@ namespace DocumentDbExplorer.ViewModel
         {
             RequestClose?.Invoke();
         }
-
     }
 }

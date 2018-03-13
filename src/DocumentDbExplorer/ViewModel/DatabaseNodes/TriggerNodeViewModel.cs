@@ -1,40 +1,26 @@
-﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class TriggerRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
+    public class TriggerRootNodeViewModel : AssetRootNodeViewModelBase<Trigger>
     {
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _refreshCommand;
-
         public TriggerRootNodeViewModel(CollectionNodeViewModel parent)
-            : base(parent, parent.MessengerInstance, true)
+            : base(parent)
         {
             Name = "Triggers";
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-        }
-
-        public string Name { get; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var _triggers = await _dbService.GetTriggers(Parent.Parent.Parent.Connection, Parent.Collection);
+            var triggers = await DbService.GetTriggersAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
-            foreach (var trigger in _triggers)
+            foreach (var trigger in triggers)
             {
                 await DispatcherHelper.RunAsync(() => Children.Add(new TriggerNodeViewModel(this, trigger)));
             }
@@ -42,78 +28,49 @@ namespace DocumentDbExplorer.ViewModel
             IsLoading = false;
         }
 
-        public RelayCommand RefreshCommand
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<Trigger> message)
         {
-            get
+            if (message.IsNewResource)
             {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async x =>
-                        {
-                            Children.Clear();
-                            await LoadChildren();
-                        }));
+                var item = new TriggerNodeViewModel(this, message.Resource);
+                DispatcherHelper.RunAsync(() => Children.Add(item));
+            }
+            else
+            {
+                var item = Children.Cast<TriggerNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
             }
         }
-
-        public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class TriggerNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class TriggerNodeViewModel : AssetNodeViewModelBase<Trigger, TriggerRootNodeViewModel>
     {
-        private RelayCommand _deleteCommand;
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _editCommand;
-
-        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, Trigger trigger)
-            : base(parent, parent.MessengerInstance, false)
+        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, Trigger resource)
+            : base(parent, resource)
         {
-            Trigger = trigger;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Trigger?.Id;
-
-        public string ContentId => Trigger?.SelfLink;
-
-        public Trigger Trigger { get; }
-
-        public new TriggerRootNodeViewModel Parent
+        protected override Task DeleteCommandImpl()
         {
-            get { return base.Parent as TriggerRootNodeViewModel; }
-        }
-        
-        public RelayCommand DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand(
-                        async x =>
-                        {
-                            await _dialogService.ShowMessage("Are sure you want to delete this Trigger?", "Delete", null, null,
-                                async confirm =>
-                                {
-                                    if (confirm)
-                                    {
-                                        await _dbService.DeleteTrigger(Parent.Parent.Parent.Parent.Connection, Trigger.SelfLink);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-                                    }
-                                });
-                        }));
-            }
+            return DialogService.ShowMessage("Are sure you want to delete this Trigger?", "Delete", null, null,
+                async confirm =>
+                {
+                    if (confirm)
+                    {
+                        await DbService.DeleteTriggerAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                    }
+                });
         }
 
-        public RelayCommand EditCommand
+        protected override Task EditCommandImpl()
         {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditTriggerMessage(Parent.Parent, this))));
-            }
+            MessengerInstance.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection));
+            return Task.FromResult(0);
         }
     }
 }

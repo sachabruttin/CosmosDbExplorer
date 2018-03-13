@@ -1,40 +1,26 @@
-﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UserDefFuncRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
+    public class UserDefFuncRootNodeViewModel : AssetRootNodeViewModelBase<UserDefinedFunction>
     {
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _refreshCommand;
-
         public UserDefFuncRootNodeViewModel(CollectionNodeViewModel parent)
-            : base(parent, parent.MessengerInstance, true)
+            : base(parent)
         {
             Name = "User Defined Functions";
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-        }
-
-        public string Name { get; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var _function = await _dbService.GetUdfs(Parent.Parent.Parent.Connection, Parent.Collection);
+            var function = await DbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
-            foreach (var func in _function)
+            foreach (var func in function)
             {
                 await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
             }
@@ -42,78 +28,49 @@ namespace DocumentDbExplorer.ViewModel
             IsLoading = false;
         }
 
-        public RelayCommand RefreshCommand
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<UserDefinedFunction> message)
         {
-            get
+            if (message.IsNewResource)
             {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async x =>
-                        {
-                            Children.Clear();
-                            await LoadChildren();
-                        }));
+                var item = new UserDefFuncNodeViewModel(this, message.Resource);
+                DispatcherHelper.RunAsync(() => Children.Add(item));
+            }
+            else
+            {
+                var item = Children.Cast<UserDefFuncNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
             }
         }
-
-        public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class UserDefFuncNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class UserDefFuncNodeViewModel : AssetNodeViewModelBase<UserDefinedFunction, UserDefFuncRootNodeViewModel>
     {
-        private RelayCommand _deleteCommand;
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _editCommand;
-
-        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, UserDefinedFunction function)
-            : base(parent, parent.MessengerInstance, false)
+        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, UserDefinedFunction resource)
+            : base(parent, resource)
         {
-            Function = function;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => Function?.Id;
-
-        public string ContentId => Function?.SelfLink;
-
-        public new UserDefFuncRootNodeViewModel Parent
+        protected override Task DeleteCommandImpl()
         {
-            get { return base.Parent as UserDefFuncRootNodeViewModel; }
+            return DialogService.ShowMessage("Are sure you want to delete this User Definied Function?", "Delete", null, null,
+                async confirm =>
+                {
+                    if (confirm)
+                    {
+                        await DbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                    }
+                });
         }
 
-        public UserDefinedFunction Function { get; }
-
-        public RelayCommand DeleteCommand
+        protected override Task EditCommandImpl()
         {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand(
-                        async x =>
-                        {
-                            await _dialogService.ShowMessage("Are sure you want to delete this User Definied Function?", "Delete", null, null,
-                                async confirm =>
-                                {
-                                    if (confirm)
-                                    {
-                                        await _dbService.DeleteUdf(Parent.Parent.Parent.Parent.Connection, Function.SelfLink);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-                                    }
-                                });
-                        }));
-            }
-        }
-
-        public RelayCommand EditCommand
-        {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditUserDefFuncMessage(Parent.Parent, this))));
-            }
+            MessengerInstance.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, null));
+            return Task.FromResult(0);
         }
     }
 }

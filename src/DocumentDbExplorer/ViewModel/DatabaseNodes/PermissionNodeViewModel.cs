@@ -5,7 +5,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class PermissionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class PermissionNodeViewModel : TreeViewItemViewModel<UserNodeViewModel>, ICanRefreshNode, IContent
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _openCommand;
@@ -18,14 +18,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public Permission Permission { get; set; }
 
-        public string Name => Permission.Id;
+        public string Name => Permission?.Id;
 
-        public string ContentId => Permission.AltLink ?? "NewPermission";
-
-        public new UserNodeViewModel Parent
-        {
-            get { return base.Parent as UserNodeViewModel; }
-        }
+        public string ContentId => Permission?.AltLink ?? "NewPermission";
 
         public RelayCommand RefreshCommand
         {
@@ -33,10 +28,10 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Children.Clear();
-                            await LoadChildren();
+                            await LoadChildren().ConfigureAwait(false);
                         }));
             }
         }
@@ -46,7 +41,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _openCommand ?? (_openCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditPermissionMessage(this))));
+                    () => MessengerInstance.Send(new EditPermissionMessage(this, Parent.Parent.Parent.Parent.Connection, null))));
             }
         }
     }

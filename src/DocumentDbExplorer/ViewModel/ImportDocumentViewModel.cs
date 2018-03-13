@@ -15,12 +15,11 @@ using Microsoft.Azure.Documents.Client;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel, IHaveRequestOptions
+    public class ImportDocumentViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveRequestOptions
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
-        private CollectionNodeViewModel _node;
         private RelayCommand _openFileCommand;
         private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
@@ -53,24 +52,24 @@ namespace DocumentDbExplorer.ViewModel
             }
         }
 
-        public CollectionNodeViewModel Node
+        public override void Load(string contentId, CollectionNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = "Import";
-                    
-                    var split = Node.Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
-                    AccentColor = Connection.AccentColor;
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Header = "Import";
+            Connection = connection;
+            Collection = collection;
+
+            var split = Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
+            AccentColor = Connection.AccentColor;
         }
 
-        protected Connection Connection => Node.Parent.Parent.Connection;
+        public CollectionNodeViewModel Node { get; protected set; }
+
+        protected Connection Connection { get; set; }
+
+        protected DocumentCollection Collection { get; set; }
 
         public TextDocument Content { get; set; }
 
@@ -82,33 +81,32 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             try
                             {
                                 IsRunning = true;
-                                var count = await _dbService.ImportDocument(Connection, Node.Collection, Content.Text, this, _cancellationToken.Token);
-                                await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import");
+                                var count = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token).ConfigureAwait(false);
+                                await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
                             {
-                                await _dialogService.ShowMessage("Operation cancelled by user...", "Cancel");
+                                await _dialogService.ShowMessage("Operation cancelled by user...", "Cancel").ConfigureAwait(false);
                             }
                             catch (DocumentClientException clientEx)
                             {
-                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null);
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
-                                await _dialogService.ShowError(ex, "Error", "ok", null);
+                                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
                             }
                             finally
                             {
                                 IsRunning = false;
                             }
-
                         },
-                        x => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+                        () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
             }
         }
 
@@ -117,8 +115,8 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand(
-                    x => _cancellationToken.Cancel(),
-                    x => IsRunning));
+                    () => _cancellationToken.Cancel(),
+                    () => IsRunning));
             }
         }
 
@@ -128,7 +126,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openFileCommand
                     ?? (_openFileCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var settings = new OpenFileDialogSettings
                             {
@@ -150,11 +148,11 @@ namespace DocumentDbExplorer.ViewModel
                                             using (var reader = File.OpenText(result.FileName))
                                             {
                                                 Content.FileName = result.FileName;
-                                                Content.Text = await reader.ReadToEndAsync();
+                                                Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
                                             }
                                         });
                                     }
-                                });
+                                }).ConfigureAwait(false);
                         }
                         ));
             }
@@ -174,7 +172,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _resetRequestOptionsCommand
                     ?? (_resetRequestOptionsCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             IndexingDirective = null;
                             ConsistencyLevel = null;

@@ -47,7 +47,7 @@ namespace DocumentDbExplorer.Views
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (DataContext is PaneViewModel datacontext)
+            if (DataContext is PaneViewModelBase datacontext)
             {
                 datacontext.IconSource = FindResource("UdfIcon") as ImageSource;
             }

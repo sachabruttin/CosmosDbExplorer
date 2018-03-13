@@ -14,7 +14,7 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
             var message = exception.Message;
             if (exception.Message.StartsWith("Message: {"))
             {
-                message = ParseSyntaxException(exception).ToString();
+                message = ParseSyntaxException(exception);
             }
 
             return message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
@@ -37,7 +37,7 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
                 {
                     var obj = JsonConvert.DeserializeObject<dynamic>(message);
                     List<string> res = obj.Errors.ToObject<List<string>>();
-                    return string.Join(string.Empty, res);
+                    return string.Concat(res);
                 }
                 catch
                 {
@@ -49,7 +49,6 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
 
     public class Location
     {
-
         [JsonProperty("start")]
         public int Start { get; set; }
 
@@ -59,7 +58,6 @@ namespace DocumentDbExplorer.Infrastructure.Extensions
 
     public class Error
     {
-
         [JsonProperty("severity")]
         public string Severity { get; set; }
 

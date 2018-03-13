@@ -6,7 +6,7 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class DatabaseNodeViewModel : ResourceNodeViewModelBase
+    public class DatabaseNodeViewModel : ResourceNodeViewModelBase<ConnectionNodeViewModel>
     {
         private readonly Database _database;
         private RelayCommand _addNewCollectionCommand;
@@ -18,17 +18,11 @@ namespace DocumentDbExplorer.ViewModel
             _database = database;
         }
 
-        public new ConnectionNodeViewModel Parent
-        {
-            get { return base.Parent as ConnectionNodeViewModel; }
-        }
-
-
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var collections = await DbService.GetCollections(Parent.Connection, _database);
+            var collections = await DbService.GetCollectionsAsync(Parent.Connection, _database);
 
             await DispatcherHelper.RunAsync(() =>
             {
@@ -48,7 +42,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _addNewCollectionCommand
                     ?? (_addNewCollectionCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var form = new AddCollectionView();
                             var vm = (AddCollectionViewModel)form.DataContext;
@@ -73,7 +67,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteDatabaseCommand
                     ?? (_deleteDatabaseCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             var msg = $"Are you sure you want to delete the database '{Name}' and all his content?";
                             await DialogService.ShowMessage(msg, "Delete", null, null,
@@ -81,7 +75,7 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await DbService.DeleteDatabase(Parent.Connection, _database);
+                                        await DbService.DeleteDatabaseAsync(Parent.Connection, _database);
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
                                 });

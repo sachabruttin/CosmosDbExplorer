@@ -4,22 +4,17 @@ using DocumentDbExplorer.Messages;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel, IHaveCollectionNodeViewModel
+    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel<CollectionNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
         private RelayCommand _openCommand;
 
-        public ScaleSettingsNodeViewModel(TreeViewItemViewModel parent)
+        public ScaleSettingsNodeViewModel(CollectionNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
             Name = "Scale & Settings";
         }
 
         public string Name { get; set; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
-        }
 
         public string ContentId => Parent.Collection.SelfLink + "/ScaleSettings";
 
@@ -29,7 +24,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _openCommand
                     ?? (_openCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new OpenScaleAndSettingsViewMessage(this))));
+                        () => MessengerInstance.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Collection))));
             }
         }
 

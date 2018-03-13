@@ -105,7 +105,7 @@
                         <ContextMenu>
                             <MenuItem Header="Refresh Users" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New User" Command="{Binding AddNewCollectionCommand}" />
+                            <MenuItem Header="New User" Command="{Binding AddUserCommand}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
                     <Image  Width="16" Height="16" Margin="3,0" 
@@ -125,10 +125,14 @@
                     <StackPanel.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Edit User" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
-                            <MenuItem Header="Add Permission" Command="{Binding AddPermissionCommand}" Icon="{StaticResource PermissionIcon}" />
+                            <MenuItem Header="Add Permission" Command="{Binding AddPermissionCommand}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource PermissionIcon}" />
+                                </MenuItem.Icon>
+                            </MenuItem> 
                             <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
-                            <Separator />
-                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />
+                            <!--<Separator />
+                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />-->
                         </ContextMenu>
                     </StackPanel.ContextMenu>
                     <i:Interaction.Triggers>
@@ -155,8 +159,8 @@
                         <ContextMenu>
                             <MenuItem Header="Edit Permission" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
-                            <Separator />
-                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />
+                            <!--<Separator />
+                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />-->
                         </ContextMenu>
                     </StackPanel.ContextMenu>
                     <i:Interaction.Triggers>
@@ -333,7 +337,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open User Defined Function" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete User Defined Function" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
@@ -371,7 +375,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Edit Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
+                            <MenuItem Header="Edit Trigger" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
                             <MenuItem Header="Delete Trigger" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}"/>
                         </ContextMenu>
                     </StackPanel.ContextMenu>

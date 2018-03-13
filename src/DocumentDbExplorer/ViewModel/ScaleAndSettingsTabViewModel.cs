@@ -15,9 +15,8 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel
+    public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel<ScaleSettingsNodeViewModel>
     {
-        private ScaleSettingsNodeViewModel _node;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
@@ -42,32 +41,28 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsLoading { get; set; }
 
-        public ScaleSettingsNodeViewModel Node
+        public override void Load(string contentId, ScaleSettingsNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                IsLoading = true;
+            IsLoading = true;
 
-                if (_node != value)
-                {
-                    _node = value;
-                    Title = value.Name;
-                    Header = value.Name;
-                    Connection = value.Parent.Parent.Parent.Connection;
-                    Collection = value.Parent.Collection;
+            ContentId = contentId;
+            Node = node;
+            Title = node.Name;
+            Header = node.Name;
+            Connection = connection;
+            Collection = collection;
 
-                    var split = Collection.AltLink.Split(new char[] { '/' });
-                    ToolTip = $"{split[1]}>{split[3]}";
+            var split = Collection.AltLink.Split(new char[] { '/' });
+            ToolTip = $"{split[1]}>{split[3]}";
 
-                    AccentColor = Connection.AccentColor;
+            AccentColor = Connection.AccentColor;
 
-                    SetInformation();
-                }
+            SetInformation();
 
-                IsLoading = false;
-            }
+            IsLoading = false;
         }
+
+        public ScaleSettingsNodeViewModel Node { get; protected set; }
 
         private void SetInformation()
         {
@@ -151,10 +146,10 @@ namespace DocumentDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var throughputTask = _dbService.GetThroughput(Connection, Collection);
-            var partitionTask = _dbService.GetPartitionKeyRangeCount(Connection, Collection);
+            var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
+            var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
 
-            var result = await Task.WhenAll(throughputTask, partitionTask);
+            var result = await Task.WhenAll(throughputTask, partitionTask).ConfigureAwait(false);
 
             PartitionCount = result[1];
             Throughput = result[0];
@@ -168,13 +163,13 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _discardCommand
                     ?? (_discardCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             SetInformation();
-                            await LoadDataAsync();
+                            await LoadDataAsync().ConfigureAwait(false);
                             IsDirty = false;
                         },
-                        x => IsDirty));
+                        () => IsDirty));
             }
         }
 
@@ -184,14 +179,15 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Collection.DefaultTimeToLive = GetTimeToLive();
+                            Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
-                            await _dbService.UpdateCollectionSettings(Connection, Collection, Throughput);
+                            await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
                             IsDirty = false;
                         },
-                        x => !((INotifyDataErrorInfo)this).HasErrors));
+                        () => !((INotifyDataErrorInfo)this).HasErrors));
             }
         }
 

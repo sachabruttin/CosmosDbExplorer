@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Extensions;
@@ -19,11 +14,10 @@ using Validar;
 namespace DocumentDbExplorer.ViewModel
 {
     [InjectValidation]
-    public class PermissionEditViewModel : PaneViewModel, IAssetTabCommand
+    public class PermissionEditViewModel : PaneViewModel<PermissionNodeViewModel>, IAssetTabCommand
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
-        private PermissionNodeViewModel _node;
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _discardCommand;
@@ -43,32 +37,36 @@ namespace DocumentDbExplorer.ViewModel
         public string ResourceLink { get; set; }
         public string ResourcePartitionKey { get; set; }
 
-        public Permission Permission => _node?.Permission;
+        public Permission Permission { get; protected set; }
 
         public bool IsEntityChanged()
         {
-            if (PermissionId != Permission.Id)
+            if (Permission != null)
             {
-                return true;
-            }
+                if (PermissionId != Permission.Id)
+                {
+                    return true;
+                }
 
-            if (PermissionMode != Permission.PermissionMode)
-            {
-                return true;
-            }
+                if (PermissionMode != Permission.PermissionMode)
+                {
+                    return true;
+                }
 
-            if (ResourceLink != Permission.ResourceLink)
-            {
-                return true;
-            }
+                if (ResourceLink != Permission.ResourceLink)
+                {
+                    return true;
+                }
 
-            if (ResourcePartitionKey != Permission.ResourcePartitionKey?.ToString())
-            {
-                return true;
+                if (ResourcePartitionKey != Permission.ResourcePartitionKey?.ToString())
+                {
+                    return true;
+                }
             }
 
             return false;
         }
+
         private void SetInformation()
         {
             PermissionId = Permission?.Id;
@@ -76,7 +74,7 @@ namespace DocumentDbExplorer.ViewModel
             ResourceLink = Permission?.ResourceLink;
             ResourcePartitionKey = Permission?.ResourcePartitionKey?.ToString();
 
-            var split = _node.Parent.User.AltLink.Split(new char[] { '/' });
+            var split = Node.Parent.User.AltLink.Split(new char[] { '/' });
             ToolTip = $"{split[1]}>{split[3]}";
 
             IsDirty = false;
@@ -86,22 +84,18 @@ namespace DocumentDbExplorer.ViewModel
 
         public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
-        public PermissionNodeViewModel Node
+        public override void Load(string contentId, PermissionNodeViewModel node, Connection connection, DocumentCollection collection)
         {
-            get { return _node; }
-            set
-            {
-                if (_node != value)
-                {
-                    _node = value;
-                    Header = value.Name ?? "New Permission";
-                    Title = "Permission";
-                    ContentId = value.ContentId;
-                    AccentColor = _node.Parent.Parent.Parent.Parent.Connection.AccentColor;
-                    SetInformation();
-                }
-            }
+            ContentId = contentId;
+            Node = node;
+            Permission = node?.Permission ?? new Permission();
+            Header = node.Name ?? "New Permission";
+            Title = "Permission";
+            AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+            SetInformation();
         }
+
+        public PermissionNodeViewModel Node { get; protected set; }
 
         public RelayCommand CopyToClipboardCommand
         {
@@ -109,7 +103,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyToClipboardCommand
                     ?? (_copyToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Permission?.Token))); 
+                        () => Clipboard.SetText(Permission?.Token)));
             }
         }
 
@@ -118,12 +112,7 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _discardCommand
-                    ?? (_discardCommand = new RelayCommand(
-                        x =>
-                        {
-                            SetInformation();
-                        },
-                        x => IsDirty));
+                    ?? (_discardCommand = new RelayCommand(SetInformation, () => IsDirty));
             }
         }
 
@@ -133,7 +122,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _saveCommand
                     ?? (_saveCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             Permission permission = null;
 
@@ -146,7 +135,7 @@ namespace DocumentDbExplorer.ViewModel
                             }
                             else
                             {
-                                permission = _node.Permission;
+                                permission = Node.Permission;
                             }
 
                             permission.Id = PermissionId;
@@ -158,7 +147,7 @@ namespace DocumentDbExplorer.ViewModel
 
                             try
                             {
-                                permission = await _dbService.SavePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission);
+                                permission = await _dbService.SavePermissionAsync(Node.Parent.Parent.Parent.Parent.Connection, Node.Parent.User, permission).ConfigureAwait(false);
 
                                 Header = permission.Id;
                                 Node.Permission = permission;
@@ -171,10 +160,10 @@ namespace DocumentDbExplorer.ViewModel
                             catch (DocumentClientException ex)
                             {
                                 var msg = ex.Parse();
-                                await _dialogService.ShowError(msg, "Error", null, null);
+                                await _dialogService.ShowError(msg, "Error", null, null).ConfigureAwait(false);
                             }
                         },
-                        x => IsDirty && IsValid));
+                        () => IsDirty && IsValid));
             }
         }
 
@@ -184,7 +173,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _deleteCommand
                     ?? (_deleteCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
                             {
@@ -192,12 +181,11 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     try
                                     {
-                                        await _dbService.DeletePermission(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission);
+                                        await _dbService.DeletePermissionAsync(Node.Parent.Parent.Parent.Parent.Connection, Node.Permission).ConfigureAwait(false);
                                     }
                                     catch (DocumentClientException ex)
                                     {
-                                        var msg = ex.Parse();
-                                        await _dialogService.ShowError(msg, "Error", null, null);
+                                        await _dialogService.ShowError(ex.Parse(), "Error", null, null).ConfigureAwait(false);
                                     }
                                     finally
                                     {
@@ -205,9 +193,9 @@ namespace DocumentDbExplorer.ViewModel
                                         await DispatcherHelper.RunAsync(() => CloseCommand.Execute(null));
                                     }
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         },
-                        x => !IsNewDocument));
+                        () => !IsNewDocument));
             }
         }
 

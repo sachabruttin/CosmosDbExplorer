@@ -3,16 +3,14 @@ using DocumentDbExplorer.Infrastructure;
 using DocumentDbExplorer.Infrastructure.Models;
 using DocumentDbExplorer.Messages;
 using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class UsersNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
+    public class UsersNodeViewModel : TreeViewItemViewModel<DatabaseNodeViewModel>, ICanRefreshNode
     {
-        private readonly Database _database;
         private readonly DatabaseNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
@@ -22,19 +20,14 @@ namespace DocumentDbExplorer.ViewModel
                 : base(parent, parent.MessengerInstance, true)
         {
             Name = "Users";
-            _database = database;
+            Database = database;
             _parent = parent;
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
         public string Name { get; set; }
-        
-        public Database Database => _database;
 
-        public new DatabaseNodeViewModel Parent
-        {
-            get { return base.Parent as DatabaseNodeViewModel; }
-        }
+        public Database Database { get; }
 
         public RelayCommand RefreshCommand
         {
@@ -42,12 +35,12 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }
@@ -58,17 +51,16 @@ namespace DocumentDbExplorer.ViewModel
             get
             {
                 return _addUserCommand ?? (_addUserCommand = new RelayCommand(
-                    x => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this))
+                    () => MessengerInstance.Send(new EditUserMessage(new UserNodeViewModel(new User(), this), Parent.Parent.Connection, null)
                     )));
             }
         }
-
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var users = await _dbService.GetUsers(Parent.Parent.Connection, _database).ConfigureAwait(false);
+            var users = await _dbService.GetUsersAsync(Parent.Parent.Connection, Database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {

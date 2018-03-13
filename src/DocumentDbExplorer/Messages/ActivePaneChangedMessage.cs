@@ -1,14 +1,14 @@
-﻿using DocumentDbExplorer.Infrastructure.Models;
+﻿using GalaSoft.MvvmLight;
 
 namespace DocumentDbExplorer.Messages
 {
     public class ActivePaneChangedMessage
     {
-        public ActivePaneChangedMessage(PaneViewModel paneViewModel)
+        public ActivePaneChangedMessage(ViewModelBase paneViewModel)
         {
             PaneViewModel = paneViewModel;
         }
 
-        public PaneViewModel PaneViewModel { get; }
+        public ViewModelBase PaneViewModel { get; }
     }
 }

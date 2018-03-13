@@ -198,7 +198,9 @@
     <Compile Include="Messages\EditStoredProcedureMessage.cs" />
     <Compile Include="Messages\OpenScaleAndSettingsViewMessage.cs" />
     <Compile Include="Messages\RemoveConnectionMessage.cs" />
+    <Compile Include="Messages\RemoveNodeMessage.cs" />
     <Compile Include="Messages\TreeNodeSelectedMessage.cs" />
+    <Compile Include="Messages\UpdateOrCreateNodeMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\DialogSettings\FileDialogResult.cs" />
     <Compile Include="Services\DialogSettings\FileDialogSettings.cs" />
@@ -206,14 +208,19 @@
     <Compile Include="Services\DialogSettings\OpenFileDialogSettings.cs" />
     <Compile Include="Services\DialogSettings\SaveFileDialogSettings.cs" />
     <Compile Include="Services\DocumentDbService.cs" />
+    <Compile Include="Services\DocumentDescription.cs" />
+    <Compile Include="Services\IDocumentDbService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="ViewModel\AboutViewModel.cs" />
     <Compile Include="ViewModel\AccountSettingsViewModel.cs" />
     <Compile Include="Infrastructure\Models\Connection.cs" />
     <Compile Include="ViewModel\AddCollectionViewModel.cs" />
+    <Compile Include="ViewModel\Assets\AssetTabViewModelBase.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\AssetRootNodeViewModelBase.cs" />
     <Compile Include="ViewModel\DatabaseNodes\CollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ConnectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DatabaseNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\IAssetNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanEditDelete.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\IHaveCollectionNodeViewModel.cs" />
@@ -237,9 +244,9 @@
     <Compile Include="Infrastructure\Models\TreeViewItemViewModel.cs" />
     <Compile Include="ViewModel\QueryEditorViewModel.cs" />
     <Compile Include="ViewModel\ScaleAndSettingsTabViewModel.cs" />
-    <Compile Include="ViewModel\StoredProcedureTabViewModel.cs" />
-    <Compile Include="ViewModel\TriggerTabViewModel.cs" />
-    <Compile Include="ViewModel\UserDefFuncTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\StoredProcedureTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\TriggerTabViewModel.cs" />
+    <Compile Include="ViewModel\Assets\UserDefFuncTabViewModel.cs" />
     <Compile Include="ViewModel\PermissionEditViewModel.cs" />
     <Compile Include="ViewModel\UserEditViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -414,6 +421,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

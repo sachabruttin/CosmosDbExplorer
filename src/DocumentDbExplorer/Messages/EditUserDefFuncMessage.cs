@@ -4,19 +4,11 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.Messages
 {
-    public class EditUserDefFuncMessage
+    public class EditUserDefFuncMessage : OpenTabMessageBase<UserDefFuncNodeViewModel>
     {
-        public EditUserDefFuncMessage(CollectionNodeViewModel collectionNode, UserDefFuncNodeViewModel node)
+        public EditUserDefFuncMessage(UserDefFuncNodeViewModel node, Connection connection, DocumentCollection collection) 
+            : base(node, connection, collection)
         {
-            Node = node;
-            Connection = collectionNode.Parent.Parent.Connection;
-            Collection = collectionNode.Collection;
         }
-
-        public UserDefFuncNodeViewModel Node { get; }
-
-        public Connection Connection { get; }
-
-        public DocumentCollection Collection { get; set; }
     }
 }

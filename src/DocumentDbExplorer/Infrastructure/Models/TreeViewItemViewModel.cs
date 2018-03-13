@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
+using GalaSoft.MvvmLight.Threading;
+using DocumentDbExplorer.ViewModel;
 
 namespace DocumentDbExplorer.Infrastructure.Models
 {
@@ -32,9 +34,22 @@ namespace DocumentDbExplorer.Infrastructure.Models
             MessengerInstance = messenger;
             Children = new ObservableCollection<TreeViewItemViewModel>();
 
+            messenger.Register<RemoveNodeMessage>(this, OnRemoveNodeMessage);
+
             if (lazyLoadChildren)
             {
                 Children.Add(DummyChild);
+            }
+        }
+
+        private void OnRemoveNodeMessage(RemoveNodeMessage msg)
+        {
+            if (Parent != null)
+            {
+                if (this is IContent assetNode && assetNode.ContentId == msg.AltLink)
+                {
+                    DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                }
             }
         }
 
@@ -46,7 +61,7 @@ namespace DocumentDbExplorer.Infrastructure.Models
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children { get; private set; }
+        public ObservableCollection<TreeViewItemViewModel> Children { get; }
 
         /// <summary>
         /// Returns true if this object's Children have not yet been populated.
@@ -108,11 +123,19 @@ namespace DocumentDbExplorer.Infrastructure.Models
             return Task.FromResult<object>(null);
         }
 
-        public TreeViewItemViewModel Parent
-        {
-            get; private set;
-        }
+        public TreeViewItemViewModel Parent { get; }
 
         public IMessenger MessengerInstance { get; }
+    }
+
+    public class TreeViewItemViewModel<TParent> : TreeViewItemViewModel
+        where TParent : TreeViewItemViewModel
+    {
+        public TreeViewItemViewModel(TParent parent, IMessenger messenger, bool lazyLoadChildren)
+            : base(parent, messenger, lazyLoadChildren)
+        {
+        }
+
+        public new TParent Parent => base.Parent as TParent;
     }
 }

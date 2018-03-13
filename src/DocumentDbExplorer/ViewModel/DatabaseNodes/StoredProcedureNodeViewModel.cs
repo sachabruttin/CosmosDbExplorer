@@ -1,40 +1,26 @@
-﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public class StoredProcedureRootNodeViewModel : TreeViewItemViewModel, ICanRefreshNode, IHaveCollectionNodeViewModel
+    public class StoredProcedureRootNodeViewModel : AssetRootNodeViewModelBase<StoredProcedure>
     {
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _refreshCommand;
-
         public StoredProcedureRootNodeViewModel(CollectionNodeViewModel parent)
-            : base(parent, parent.MessengerInstance, true)
+            : base(parent)
         {
             Name = "Stored Procedures";
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-        }
-
-        public string Name { get; set; }
-
-        public new CollectionNodeViewModel Parent
-        {
-            get { return base.Parent as CollectionNodeViewModel; }
         }
 
         protected override async Task LoadChildren()
         {
             IsLoading = true;
 
-            var _storedProcedure = await _dbService.GetStoredProcedures(Parent.Parent.Parent.Connection, Parent.Collection);
+            var storedProcedure = await DbService.GetStoredProceduresAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
 
-            foreach (var sp in _storedProcedure)
+            foreach (var sp in storedProcedure)
             {
                 await DispatcherHelper.RunAsync(() => Children.Add(new StoredProcedureNodeViewModel(this, sp)));
             }
@@ -42,78 +28,49 @@ namespace DocumentDbExplorer.ViewModel
             IsLoading = false;
         }
 
-        public RelayCommand RefreshCommand
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<StoredProcedure> message)
         {
-            get
+            if (message.IsNewResource)
             {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async x =>
-                        {
-                            Children.Clear();
-                            await LoadChildren();
-                        }));
+                var item = new StoredProcedureNodeViewModel(this, message.Resource);
+                DispatcherHelper.RunAsync(() => Children.Add(item));
+            }
+            else
+            {
+                var item = Children.Cast<StoredProcedureNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
             }
         }
-
-        public CollectionNodeViewModel CollectionNode => Parent;
     }
 
-    public class StoredProcedureNodeViewModel : TreeViewItemViewModel, ICanEditDelete
+    public class StoredProcedureNodeViewModel : AssetNodeViewModelBase<StoredProcedure, StoredProcedureRootNodeViewModel>
     {
-        private RelayCommand _deleteCommand;
-        private readonly IDialogService _dialogService;
-        private readonly IDocumentDbService _dbService;
-        private RelayCommand _editCommand;
-
-        public StoredProcedureNodeViewModel(StoredProcedureRootNodeViewModel parent, StoredProcedure storedProcedure)
-            : base(parent, parent.MessengerInstance, false)
+        public StoredProcedureNodeViewModel(StoredProcedureRootNodeViewModel parent, StoredProcedure resource)
+            : base(parent, resource)
         {
-            StoredProcedure = storedProcedure;
-            _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
-            _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => StoredProcedure.Id;
-        
-        public string ContentId => StoredProcedure.SelfLink;
-
-        public new StoredProcedureRootNodeViewModel Parent
+        protected override Task DeleteCommandImpl()
         {
-            get { return base.Parent as StoredProcedureRootNodeViewModel; }
-        }
-        
-        public StoredProcedure StoredProcedure { get; }
-
-        public RelayCommand DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand(
-                        async x =>
-                        {
-                            await _dialogService.ShowMessage("Are sure you want to delete this Stored Procedure?", "Delete", null, null,
-                                async confirm =>
-                                {
-                                    if (confirm)
-                                    {
-                                        await _dbService.DeleteStoredProcedure(Parent.Parent.Parent.Parent.Connection, StoredProcedure.SelfLink);
-                                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-                                    }
-                                });
-                        }));
-            }
+            return DialogService.ShowMessage("Are sure you want to delete this Stored Procedure?", "Delete", null, null,
+                async confirm =>
+                {
+                    if (confirm)
+                    {
+                        await DbService.DeleteStoredProcedureAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
+                        await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                    }
+                });
         }
 
-        public RelayCommand EditCommand
+        protected override Task EditCommandImpl()
         {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand(
-                        x => MessengerInstance.Send(new EditStoredProcedureMessage(Parent.Parent, this))));
-            }
+            MessengerInstance.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection));
+            return Task.FromResult(0);
         }
     }
 }

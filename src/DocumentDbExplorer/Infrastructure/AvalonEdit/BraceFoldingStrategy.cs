@@ -1,7 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Folding;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DocumentDbExplorer.Infrastructure.AvalonEdit
 {
@@ -38,6 +37,8 @@ namespace DocumentDbExplorer.Infrastructure.AvalonEdit
         /// <summary>
         /// Create <see cref="NewFolding"/>s for the specified document.
         /// </summary>
+        /// <param name="document"></param>
+        /// <param name="firstErrorOffset"></param>
         public IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
         {
             firstErrorOffset = -1;
@@ -47,6 +48,7 @@ namespace DocumentDbExplorer.Infrastructure.AvalonEdit
         /// <summary>
         /// Create <see cref="NewFolding"/>s for the specified document.
         /// </summary>
+        /// <param name="document"></param>
         public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
         {
             var newFoldings = new List<NewFolding>();

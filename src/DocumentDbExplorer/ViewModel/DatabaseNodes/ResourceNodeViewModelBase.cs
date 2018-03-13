@@ -9,14 +9,15 @@ using Microsoft.Azure.Documents;
 
 namespace DocumentDbExplorer.ViewModel
 {
-    public abstract class ResourceNodeViewModelBase : TreeViewItemViewModel, ICanRefreshNode
+    public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode
+        where TParent : TreeViewItemViewModel
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _copySelfLinkToClipboardCommand;
         private RelayCommand _copyResourceToClipboardCommand;
         private RelayCommand _copyAltLinkToClipboardCommand;
 
-        protected ResourceNodeViewModelBase(Resource resource, TreeViewItemViewModel parent, bool lazyLoadChildren)
+        protected ResourceNodeViewModelBase(Resource resource, TParent parent, bool lazyLoadChildren)
             : base(parent, parent.MessengerInstance, lazyLoadChildren)
         {
             Resource = resource;
@@ -30,7 +31,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _refreshCommand
                     ?? (_refreshCommand = new RelayCommand(
-                        async x =>
+                        async () =>
                         {
                             await DispatcherHelper.RunAsync(async () =>
                             {
@@ -47,7 +48,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copySelfLinkToClipboardCommand
                     ?? (_copySelfLinkToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Resource.SelfLink)
+                        () => Clipboard.SetText(Resource.SelfLink)
                         ));
             }
         }
@@ -58,7 +59,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyAltLinkToClipboardCommand
                     ?? (_copyAltLinkToClipboardCommand = new RelayCommand(
-                        x => Clipboard.SetText(Resource.AltLink)
+                        () => Clipboard.SetText(Resource.AltLink)
                         ));
             }
         }
@@ -69,7 +70,7 @@ namespace DocumentDbExplorer.ViewModel
             {
                 return _copyResourceToClipboardCommand
                     ?? (_copyResourceToClipboardCommand = new RelayCommand(
-                        x =>
+                        () =>
                         {
                             using (var stream = new MemoryStream())
                             {

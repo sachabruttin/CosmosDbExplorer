@@ -17,7 +17,7 @@ namespace DocumentDbExplorer.Views
 
         private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DataContext is PaneViewModel datacontext)
+            if (DataContext is PaneViewModelBase datacontext)
             {
                 datacontext.IconSource = FindResource("DocumentIcon") as ImageSource;
             }

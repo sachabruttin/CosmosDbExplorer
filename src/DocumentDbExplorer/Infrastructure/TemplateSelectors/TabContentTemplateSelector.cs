@@ -16,8 +16,8 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
         public DataTemplate TriggerViewTemplate { get; set; }
         public DataTemplate ScaleAndSettingsTemplate { get; set; }
         public DataTemplate UserEditTempalate { get; set; }
-
         public DataTemplate PermissionEditTemplate { get; set; }
+        public DataTemplate CollectionMetricsTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -69,6 +69,11 @@ namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
             if (item is PermissionEditViewModel)
             {
                 return PermissionEditTemplate;
+            }
+
+            if (item is CollectionMetricsTabViewModel)
+            {
+                return CollectionMetricsTemplate;
             }
 
             return base.SelectTemplate(item, container);

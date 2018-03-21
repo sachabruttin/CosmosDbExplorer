@@ -70,6 +70,11 @@
                     <views:PermissionEditView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.PermissionEditTemplate>
+            <selector:TabContentTemplateSelector.CollectionMetricsTemplate>
+                <DataTemplate>
+                    <views:CollectionMetricsTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.CollectionMetricsTemplate>
         </selector:TabContentTemplateSelector>
 
         <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">
@@ -242,7 +247,20 @@
 
                 </fluent:RibbonGroupBox>
 
-
+                <fluent:RibbonGroupBox KeyTip="R" x:Name="Refresh"
+                                       Header="Refresh" TabIndex="1"
+                                       Visibility="{Binding IsRefreshTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                    <fluent:Button Command="{Binding SelectedTab.RefreshCommand}"
+                                   Header="Refresh">
+                        <fluent:Button.Icon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" />
+                        </fluent:Button.Icon>
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+                </fluent:RibbonGroupBox>
+                
                 <fluent:RibbonGroupBox KeyTip="D" x:Name="Documents" Header="Documents"
                                        Visibility="{Binding IsTabDocumentsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 

@@ -103,6 +103,12 @@
     <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.5.0.4\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Documents.Client, Version=1.21.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.DocumentDB.1.21.1\lib\net45\Microsoft.Azure.Documents.Client.dll</HintPath>
     </Reference>
@@ -174,6 +180,7 @@
     <Compile Include="Infrastructure\Behaviors\DoubleClickTrigger.cs" />
     <Compile Include="Infrastructure\Behaviors\WatermarkBehavior.cs" />
     <Compile Include="Infrastructure\Constants.cs" />
+    <Compile Include="Infrastructure\Converters\BytesToGigaBytesConverter.cs" />
     <Compile Include="Infrastructure\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
     <Compile Include="Infrastructure\Extensions\ListExtensions.cs" />
@@ -186,6 +193,7 @@
     <Compile Include="Infrastructure\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Infrastructure\MarkupExtensions\CursorExtensionConverter.cs" />
     <Compile Include="Infrastructure\Models\Author.cs" />
+    <Compile Include="Infrastructure\Models\CollectionMetrics.cs" />
     <Compile Include="Infrastructure\Models\UIViewModelBase.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
@@ -206,6 +214,7 @@
     <Compile Include="Messages\EditTriggerMessage.cs" />
     <Compile Include="Messages\EditUserDefFuncMessage.cs" />
     <Compile Include="Messages\IsBusyMessage.cs" />
+    <Compile Include="Messages\OpenCollectionMetricsViewMessage.cs" />
     <Compile Include="Messages\OpenDocumentsViewMessage.cs" />
     <Compile Include="Messages\OpenImportDocumentViewMessage.cs" />
     <Compile Include="Messages\OpenQueryViewMessage.cs" />
@@ -240,6 +249,7 @@
     <Compile Include="ViewModel\DatabaseNodes\ICanEditDelete.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\IHaveCollectionNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\CollectionMetricsNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\PermissionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ResourceNodeViewModelBase.cs" />
     <Compile Include="ViewModel\DatabaseNodes\TriggerNodeViewModel.cs" />
@@ -251,6 +261,7 @@
     <Compile Include="ViewModel\DatabaseNodes\DocumentNodeViewModel.cs" />
     <Compile Include="ViewModel\DocumentsTabViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IAssetTabCommand.cs" />
+    <Compile Include="ViewModel\Interfaces\ICanRefreshTab.cs" />
     <Compile Include="ViewModel\Interfaces\IHaveQuerySettings.cs" />
     <Compile Include="ViewModel\ImportDocumentViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IHaveRequestOptions.cs" />
@@ -258,6 +269,7 @@
     <Compile Include="ViewModel\DatabaseNodes\ScaleSettingsNodeViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="Infrastructure\Models\TreeViewItemViewModel.cs" />
+    <Compile Include="ViewModel\CollectionMetricsTabViewModel.cs" />
     <Compile Include="ViewModel\QueryEditorViewModel.cs" />
     <Compile Include="ViewModel\ScaleAndSettingsTabViewModel.cs" />
     <Compile Include="ViewModel\Assets\StoredProcedureTabViewModel.cs" />
@@ -275,6 +287,9 @@
     <Compile Include="Views\AddCollectionView.xaml.cs">
       <DependentUpon>AddCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CollectionMetricsTabView.xaml.cs">
+      <DependentUpon>CollectionMetricsTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DatabaseView.xaml.cs">
       <DependentUpon>DatabaseView.xaml</DependentUpon>
     </Compile>
@@ -288,6 +303,9 @@
       <DependentUpon>JsonEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pane\PaneStyleSelector.cs" />
+    <Compile Include="Views\PartitionMetricChartTooltip.xaml.cs">
+      <DependentUpon>PartitionMetricChartTooltip.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PermissionEditView.xaml.cs">
       <DependentUpon>PermissionEditView.xaml</DependentUpon>
     </Compile>
@@ -338,6 +356,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\CollectionMetricsTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DatabaseView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -351,6 +373,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\JsonEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PartitionMetricChartTooltip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

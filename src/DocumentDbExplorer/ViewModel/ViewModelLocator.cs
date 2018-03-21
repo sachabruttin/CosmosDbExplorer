@@ -67,6 +67,7 @@ namespace DocumentDbExplorer.ViewModel
             SimpleIoc.Default.Register<ScaleAndSettingsTabViewModel>();
             SimpleIoc.Default.Register<UserEditViewModel>();
             SimpleIoc.Default.Register<PermissionEditViewModel>();
+            SimpleIoc.Default.Register<CollectionMetricsTabViewModel>();
 
             SimpleIoc.Default.Register<AddCollectionViewModel>();
         }

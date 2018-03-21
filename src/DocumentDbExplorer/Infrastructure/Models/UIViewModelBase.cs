@@ -16,9 +16,11 @@ namespace DocumentDbExplorer.Infrastructure.Models
             _uiServices = uiServices;
         }
 
-        public bool IsBusy
+        public bool IsBusy { get; set; }
+
+        protected void OnIsBusyChanged()
         {
-            set { _uiServices.SetBusyState(value); }
+            _uiServices.SetBusyState(IsBusy);
         }
     }
 }

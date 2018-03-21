@@ -14,7 +14,7 @@ namespace DocumentDbExplorer.ViewModel
             Name = "Scale & Settings";
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         public string ContentId => Parent.Collection.SelfLink + "/ScaleSettings";
 

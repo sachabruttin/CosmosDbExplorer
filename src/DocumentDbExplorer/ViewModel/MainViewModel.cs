@@ -90,6 +90,7 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, msg => OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
             MessengerInstance.Register<EditUserMessage>(this, msg => OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
             MessengerInstance.Register<EditPermissionMessage>(this, msg => OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+            MessengerInstance.Register<OpenCollectionMetricsViewMessage>(this, msg => OpenOrSelectTab<CollectionMetricsTabViewModel, CollectionMetricsNodeViewModel>(msg));
 
             MessengerInstance.Register<EditStoredProcedureMessage>(this, msg => OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
             MessengerInstance.Register<EditUserDefFuncMessage>(this, msg => OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
@@ -201,6 +202,7 @@ namespace DocumentDbExplorer.ViewModel
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
             IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;
             IsConnectionOptionsVisible = false; // Only visible when selecting a tab
+            IsRefreshTabVisible = SelectedTab is ICanRefreshTab;
         }
 
         public int SelectedRibbonTab { get; set; }
@@ -212,6 +214,7 @@ namespace DocumentDbExplorer.ViewModel
         public bool IsImportTabVisible { get; set; }
         public bool IsQuerySettingsVisible { get; set; }
         public bool IsRequestOptionsVisible { get; set; }
+        public bool IsRefreshTabVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

@@ -69,5 +69,7 @@ namespace DocumentDbExplorer.Services
         Task DeletePermissionAsync(Connection connection, Permission permission);
 
         Task<int> GetPartitionKeyRangeCountAsync(Connection connection, DocumentCollection collection);
+
+        Task<CollectionMetric> GetPartitionMetricsAsync(Connection connection, DocumentCollection collection);
     }
 }

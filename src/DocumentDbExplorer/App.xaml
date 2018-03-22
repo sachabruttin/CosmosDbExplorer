@@ -26,11 +26,11 @@
                 <!--Material design colors-->
                 <!--<ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/material.xaml" />-->
                 <!--Metro colors-->
-                <!--<ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/metro.xaml" />-->
+                <ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/metro.xaml" />
                 <!--Blue gradient-->
                 <!--<ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/blue.xaml" />-->
                 <!--white gradient-->
-                <ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/white.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/white.xaml" />-->
                 <!--black gradient-->
                 <!--<ResourceDictionary Source="pack://application:,,,/LiveCharts.Wpf;component/Themes/Colors/black.xaml" />-->
 

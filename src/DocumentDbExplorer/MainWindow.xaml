@@ -17,7 +17,7 @@
                       WindowState="Normal"
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
                       Cursor="{Binding IsBusy, Converter={markup:CursorExtensionConverter}}"                      
-                      Title="{Binding Title}">
+                      Title="{Binding Title}" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <selector:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
             <selector:TabContentTemplateSelector.DocumentsTemplate>

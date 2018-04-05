@@ -1,12 +1,12 @@
-repository: sachabruttin/DocumentDbExplorer
+repository: sachabruttin/CosmostDbExplorer
 theme: jekyll-theme-cayman
 
-title: DocumentDb Explorer
+title: Cosmos DB Explorer
 
 show_downloads: "false"
 github:
-  tar_url: http://github.com/sachabruttin/DocumentDbExplorer/tarball/master
-  zip_url: http://github.com/sachabruttin/DocumentDbExplorer/zipball/master
+  tar_url: http://github.com/sachabruttin/CosmosDbExplorer/tarball/master
+  zip_url: http://github.com/sachabruttin/CosmosDbExplorer/zipball/master
 
 google_analytics: UA-45847559-1
 

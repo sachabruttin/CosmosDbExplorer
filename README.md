@@ -1,4 +1,4 @@
-# CosmosDBS Explorer
+# Cosmos DB Explorer
 
 A nice client explorer for Microsoft Cosmos DB.
 It mimics the Data Explorer available on the Azure Portal on the desktop.

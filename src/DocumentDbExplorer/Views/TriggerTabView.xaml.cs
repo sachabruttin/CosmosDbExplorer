@@ -3,11 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using DocumentDbExplorer.Infrastructure.AvalonEdit;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.AvalonEdit;
+using CosmosDbExplorer.Infrastructure.Models;
 using ICSharpCode.AvalonEdit.Folding;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for TriggerTabView.xaml

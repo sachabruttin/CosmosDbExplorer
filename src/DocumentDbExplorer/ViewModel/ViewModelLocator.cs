@@ -1,7 +1,7 @@
 ﻿/*
   In App.xaml:
   <Application.Resources>
-      <vm:ViewModelLocator xmlns:vm="clr-namespace:DocumentDbExplorer"
+      <vm:ViewModelLocator xmlns:vm="clr-namespace:CosmosDbExplorer"
                            x:Key="Locator" />
   </Application.Resources>
   
@@ -13,13 +13,13 @@
 */
 
 using CommonServiceLocator;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Assets;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Assets;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     /// <summary>
     /// This class contains static references to all the view models in the
@@ -45,6 +45,7 @@ namespace DocumentDbExplorer.ViewModel
                 SimpleIoc.Default.Register<IMessenger, Messenger>();
                 SimpleIoc.Default.Register<IDocumentDbService, DocumentDbService>();
                 SimpleIoc.Default.Register<ISettingsService, SettingsService>();
+                SimpleIoc.Default.Register<IUIServices, UIServices>();
                 SimpleIoc.Default.Register<ISimpleIoc>(() => SimpleIoc.Default);
             }
 
@@ -66,6 +67,7 @@ namespace DocumentDbExplorer.ViewModel
             SimpleIoc.Default.Register<ScaleAndSettingsTabViewModel>();
             SimpleIoc.Default.Register<UserEditViewModel>();
             SimpleIoc.Default.Register<PermissionEditViewModel>();
+            SimpleIoc.Default.Register<CollectionMetricsTabViewModel>();
 
             SimpleIoc.Default.Register<AddCollectionViewModel>();
         }

@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using DocumentDbExplorer.ViewModel;
+using CosmosDbExplorer.ViewModel;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for DatabaseView.xaml

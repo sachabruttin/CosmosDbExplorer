@@ -1,6 +1,6 @@
-﻿using DocumentDbExplorer.Infrastructure;
+﻿using CosmosDbExplorer.Infrastructure;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public interface ICanRefreshNode
     {

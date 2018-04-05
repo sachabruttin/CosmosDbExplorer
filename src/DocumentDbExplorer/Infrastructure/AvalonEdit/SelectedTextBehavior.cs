@@ -4,7 +4,7 @@ using System.Windows.Interactivity;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 
-namespace DocumentDbExplorer.Infrastructure.AvalonEdit
+namespace CosmosDbExplorer.Infrastructure.AvalonEdit
 {
     public sealed class SelectedTextBehavior : Behavior<TextEditor>
     {

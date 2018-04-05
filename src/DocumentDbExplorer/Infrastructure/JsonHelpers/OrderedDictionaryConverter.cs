@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace DocumentDbExplorer.Infrastructure.JsonHelpers
+namespace CosmosDbExplorer.Infrastructure.JsonHelpers
 {
     public class OrderedDictionaryConverter : JsonConverter
     {

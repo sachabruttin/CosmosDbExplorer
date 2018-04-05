@@ -2,7 +2,7 @@
 using ICSharpCode.AvalonEdit.Folding;
 using System.Collections.Generic;
 
-namespace DocumentDbExplorer.Infrastructure.AvalonEdit
+namespace CosmosDbExplorer.Infrastructure.AvalonEdit
 {
     /// <summary>
     /// Allows producing foldings from a document based on braces.

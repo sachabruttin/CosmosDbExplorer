@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for AboutView.xaml

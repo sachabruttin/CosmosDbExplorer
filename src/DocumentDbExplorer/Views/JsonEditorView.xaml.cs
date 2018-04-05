@@ -4,11 +4,11 @@ using System;
 using System.Windows.Controls;
 using System.Xml;
 using ICSharpCode.AvalonEdit.Folding;
-using DocumentDbExplorer.Infrastructure.AvalonEdit;
+using CosmosDbExplorer.Infrastructure.AvalonEdit;
 using System.Windows.Threading;
 using System.Windows;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for JsonEditor.xaml
@@ -38,7 +38,7 @@ namespace DocumentDbExplorer.Views
         {
             // Load our custom highlighting definition
             IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"DocumentDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
+            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
             {
                 if (stream == null)
                 {

@@ -1,6 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 
-namespace DocumentDbExplorer.Messages
+namespace CosmosDbExplorer.Messages
 {
     public class ActivePaneChangedMessage
     {

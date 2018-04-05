@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Interactivity;
 
-namespace DocumentDbExplorer.Infrastructure.Behaviors
+namespace CosmosDbExplorer.Infrastructure.Behaviors
 {
     public class DoubleClickTrigger : TriggerBase<UIElement>
     {

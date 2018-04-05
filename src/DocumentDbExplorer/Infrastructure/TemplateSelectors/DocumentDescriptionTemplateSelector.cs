@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Services;
 
-namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
+namespace CosmosDbExplorer.Infrastructure.TemplateSelectors
 {
     public class DocumentDescriptionTemplateSelector : DataTemplateSelector
     {

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Markup;
 
-namespace DocumentDbExplorer.Infrastructure.MarkupExtensions
+namespace CosmosDbExplorer.Infrastructure.MarkupExtensions
 {
     public class EnumBindingSourceExtension : MarkupExtension
     {

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Messages;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Messages;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
-
     public class CollectionNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
         private RelayCommand _openSqlQueryCommand;
@@ -18,7 +17,7 @@ namespace DocumentDbExplorer.ViewModel
         private RelayCommand _newTriggerCommand;
         private RelayCommand _deleteCollectionCommand;
 
-        public CollectionNodeViewModel(DocumentCollection collection, DatabaseNodeViewModel parent) 
+        public CollectionNodeViewModel(DocumentCollection collection, DatabaseNodeViewModel parent)
             : base(collection, parent, true)
         {
             Collection = collection;
@@ -29,10 +28,11 @@ namespace DocumentDbExplorer.ViewModel
             await DispatcherHelper.RunAsync(() =>
             {
                 Children.Add(new DocumentNodeViewModel(this));
-                Children.Add(new ScaleSettingsNodeViewModel(this) { Name = "Scale & Settings" });
+                Children.Add(new ScaleSettingsNodeViewModel(this));
                 Children.Add(new StoredProcedureRootNodeViewModel(this));
                 Children.Add(new UserDefFuncRootNodeViewModel(this));
                 Children.Add(new TriggerRootNodeViewModel(this));
+                Children.Add(new CollectionMetricsNodeViewModel(this));
             });
         }
 
@@ -61,11 +61,12 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        // TODO: Show Please wait...
-                                        await DbService.CleanCollectionAsync(Parent.Parent.Connection, Collection);
-                                        await DispatcherHelper.RunAsync(async () => await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection"));
+                                        MessengerInstance.Send(new IsBusyMessage(true));
+                                        await DbService.CleanCollectionAsync(Parent.Parent.Connection, Collection).ConfigureAwait(false);
+                                        MessengerInstance.Send(new IsBusyMessage(false));
+                                        await DispatcherHelper.RunAsync(async () => await DialogService.ShowMessageBox($"Collection {Parent.Name} is now empty.", "Cleanup collection").ConfigureAwait(false));
                                     }
-                                });
+                                }).ConfigureAwait(false);
                         }));
             }
         }
@@ -126,10 +127,12 @@ namespace DocumentDbExplorer.ViewModel
                                 {
                                     if (confirm)
                                     {
-                                        await DbService.DeleteCollectionAsync(Parent.Parent.Connection, Collection);
+                                        MessengerInstance.Send(new IsBusyMessage(true));
+                                        await DbService.DeleteCollectionAsync(Parent.Parent.Connection, Collection).ConfigureAwait(false);
+                                        MessengerInstance.Send(new IsBusyMessage(false));
                                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                                     }
-                                });
+                                }).ConfigureAwait(false);
                         }
                         ));
             }

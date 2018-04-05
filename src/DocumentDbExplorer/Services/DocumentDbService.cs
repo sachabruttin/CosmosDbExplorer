@@ -6,13 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json.Linq;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
-using DocumentDbExplorer.Messages;
+using CosmosDbExplorer.Messages;
 using System.Threading;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public class DocumentDbService : IDocumentDbService
     {
@@ -418,21 +418,52 @@ namespace DocumentDbExplorer.Services
 
         public async Task<int> GetPartitionKeyRangeCountAsync(Connection connection, DocumentCollection collection)
         {
-            FeedResponse<PartitionKeyRange> response;
-            var result = 0;
+            var partitionKeyRanges = await GetPartitionKeyRanges(connection, collection).ConfigureAwait(false);
+            return partitionKeyRanges.Count;
+        }
+
+        public async Task<CollectionMetric> GetPartitionMetricsAsync(Connection connection, DocumentCollection collection)
+        {
+            //var partitionKeyRanges = await GetPartitionKeyRanges(connection, collection).ConfigureAwait(false);
+            var documentCollection = await GetClient(connection).ReadDocumentCollectionAsync(collection.AltLink,
+                new RequestOptions
+                {
+                    PopulateQuotaInfo = true,
+                    PopulatePartitionKeyRangeStatistics = true
+                }).ConfigureAwait(false);
+
+            var quotaUsage = documentCollection.CurrentResourceQuotaUsage
+                                    .Split(';')
+                                    .Select(item => new { Key = item.Split('=')[0], Value = item.Split('=')[1] })
+                                    .ToDictionary(d => d.Key, d => d.Value);
+
+            var result = new CollectionMetric
+            {
+                PartitionCount = documentCollection.Resource.PartitionKeyRangeStatistics.Count,
+                DocumentSize = long.Parse(quotaUsage["documentsSize"]),
+                DocumentCount = long.Parse(quotaUsage["documentsCount"]),
+                PartitionMetrics = documentCollection.Resource.PartitionKeyRangeStatistics.ToList()
+            };
+
+            return result;
+        }
+
+        private async Task<List<PartitionKeyRange>> GetPartitionKeyRanges(Connection connection, DocumentCollection collection)
+        {
+            string pkRangesResponseContinuation = null;
+            var partitionKeyRanges = new List<PartitionKeyRange>();
+            var client = GetClient(connection);
 
             do
             {
-                response = await GetClient(connection).ReadPartitionKeyRangeFeedAsync(collection.SelfLink, new FeedOptions { MaxItemCount = 1000 }).ConfigureAwait(false);
+                var pkRangesResponse = await client.ReadPartitionKeyRangeFeedAsync(collection.AltLink, new FeedOptions { RequestContinuation = pkRangesResponseContinuation }).ConfigureAwait(false);
 
-                foreach (var item in response)
-                {
-                    result++;
-                }
+                partitionKeyRanges.AddRange(pkRangesResponse);
+                pkRangesResponseContinuation = pkRangesResponse.ResponseContinuation;
             }
-            while (!string.IsNullOrEmpty(response.ResponseContinuation));
+            while (pkRangesResponseContinuation != null);
 
-            return result;
+            return partitionKeyRanges;
         }
     }
 }

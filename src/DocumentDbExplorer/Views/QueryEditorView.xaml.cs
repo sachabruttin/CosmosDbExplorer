@@ -3,11 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for QueryEditorView.xaml
@@ -27,7 +27,7 @@ namespace DocumentDbExplorer.Views
         {
             // Load our custom highlighting definition
             IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"DocumentDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
+            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
             {
                 if (stream == null)
                 {

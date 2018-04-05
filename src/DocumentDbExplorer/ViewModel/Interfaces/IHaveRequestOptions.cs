@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 
-namespace DocumentDbExplorer.ViewModel.Interfaces
+namespace CosmosDbExplorer.ViewModel.Interfaces
 {
     public interface IHaveRequestOptions
     {

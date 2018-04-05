@@ -1,15 +1,15 @@
 ﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel.Assets
+namespace CosmosDbExplorer.ViewModel.Assets
 {
     public class UserDefFuncTabViewModel : AssetTabViewModelBase<UserDefFuncNodeViewModel, UserDefinedFunction>
     {
-        public UserDefFuncTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService)
-            : base(messenger, dialogService, dbService)
+        public UserDefFuncTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+            : base(messenger, dialogService, dbService, uiServices)
         {
         }
 

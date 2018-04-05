@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
-using DocumentDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public interface ICanEditDelete
     {

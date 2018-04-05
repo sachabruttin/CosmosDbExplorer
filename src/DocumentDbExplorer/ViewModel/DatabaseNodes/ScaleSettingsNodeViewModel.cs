@@ -1,8 +1,8 @@
-﻿using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
+﻿using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class ScaleSettingsNodeViewModel : TreeViewItemViewModel<CollectionNodeViewModel>, IHaveCollectionNodeViewModel, IContent
     {
@@ -14,7 +14,7 @@ namespace DocumentDbExplorer.ViewModel
             Name = "Scale & Settings";
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         public string ContentId => Parent.Collection.SelfLink + "/ScaleSettings";
 

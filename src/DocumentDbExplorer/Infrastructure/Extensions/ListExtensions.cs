@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DocumentDbExplorer.Infrastructure.Extensions
+namespace CosmosDbExplorer.Infrastructure.Extensions
 {
     public static class ListExtensions
     {

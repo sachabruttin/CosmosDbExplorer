@@ -3,7 +3,7 @@ using System.Windows.Interactivity;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
 
-namespace DocumentDbExplorer.Infrastructure.AvalonEdit
+namespace CosmosDbExplorer.Infrastructure.AvalonEdit
 {
     public class TextAreaZoomBehavior : Behavior<TextEditor>
     {

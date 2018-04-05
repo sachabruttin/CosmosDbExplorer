@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using GalaSoft.MvvmLight.Threading;
 
-namespace DocumentDbExplorer
+namespace CosmosDbExplorer
 {
     /// <summary>
     /// Interaction logic for App.xaml

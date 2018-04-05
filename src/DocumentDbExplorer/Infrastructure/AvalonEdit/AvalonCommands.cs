@@ -1,6 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit;
 
-namespace DocumentDbExplorer.Infrastructure.AvalonEdit
+namespace CosmosDbExplorer.Infrastructure.AvalonEdit
 {
     public static class AvalonCommands
     {

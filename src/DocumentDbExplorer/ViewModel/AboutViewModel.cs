@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 using GalaSoft.MvvmLight;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class AboutViewModel : ViewModelBase
     {
@@ -29,7 +29,9 @@ namespace DocumentDbExplorer.ViewModel
                 new ExternalComponent { Name = "PropertyChanged.Fody", LicenseUrl = "http://www.opensource.org/licenses/mit-license.php", ProjectUrl = "http://github.com/Fody/PropertyChanged"},
                 new ExternalComponent { Name = "Validar.Fody", LicenseUrl = "http://www.opensource.org/licenses/mit-license.php", ProjectUrl = "http://github.com/Fody/Validar"},
                 new ExternalComponent { Name = "WpfAnimatedGif", LicenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt", ProjectUrl = "https://github.com/XamlAnimatedGif/WpfAnimatedGif"},
-                new ExternalComponent { Name = "GongSolutions.WPF.DragDrop", LicenseUrl = "https://github.com/punker76/gong-wpf-dragdrop#license", ProjectUrl = "https://github.com/punker76/gong-wpf-dragdrop"}
+                new ExternalComponent { Name = "GongSolutions.WPF.DragDrop", LicenseUrl = "https://github.com/punker76/gong-wpf-dragdrop#license", ProjectUrl = "https://github.com/punker76/gong-wpf-dragdrop"},
+                new ExternalComponent { Name = "Autoupdater.NET.Official",  LicenseUrl = "https://github.com/ravibpatel/AutoUpdater.NET/blob/master/LICENSE", ProjectUrl = "https://github.com/ravibpatel/AutoUpdater.NET"},
+                new ExternalComponent { Name = "LiveCharts",  LicenseUrl = "https://github.com/Live-Charts/Live-Charts/blob/master/LICENSE.TXT", ProjectUrl = "https://lvcharts.net/"},
             }.OrderBy(ec => ec.Name).ToList();
         }
 
@@ -39,9 +41,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public List<Author> Authors => new List<Author> { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace")};
 
-        public string LicenseUrl => "https://github.com/sachabruttin/DocumentDbExplorer/blob/master/LICENSE";
+        public string LicenseUrl => "https://github.com/sachabruttin/CosmosDbExplorer/blob/master/LICENSE";
 
-        public string ProjectUrl => "https://www.bruttin.com/DocumentDbExplorer";
+        public string ProjectUrl => "https://www.bruttin.com/CosmosDbExplorer";
 
         public List<ExternalComponent> ExternalComponents { get; }
     }

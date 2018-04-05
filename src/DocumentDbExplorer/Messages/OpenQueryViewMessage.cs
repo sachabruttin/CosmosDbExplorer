@@ -1,8 +1,8 @@
-﻿using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.ViewModel;
+﻿using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.ViewModel;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.Messages
+namespace CosmosDbExplorer.Messages
 {
     public class OpenQueryViewMessage : OpenTabMessageBase<CollectionNodeViewModel>
     {

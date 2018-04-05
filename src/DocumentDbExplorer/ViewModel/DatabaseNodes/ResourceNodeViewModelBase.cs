@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Windows;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode
         where TParent : TreeViewItemViewModel
@@ -36,7 +36,7 @@ namespace DocumentDbExplorer.ViewModel
                             await DispatcherHelper.RunAsync(async () =>
                             {
                                 Children.Clear();
-                                await LoadChildren();
+                                await LoadChildren().ConfigureAwait(false);
                             });
                         }));
             }
@@ -88,5 +88,8 @@ namespace DocumentDbExplorer.ViewModel
         protected IDocumentDbService DbService => SimpleIoc.Default.GetInstance<IDocumentDbService>();
 
         protected IDialogService DialogService => SimpleIoc.Default.GetInstance<IDialogService>();
+
+        protected IUIServices UIServices => SimpleIoc.Default.GetInstance<IUIServices>();
+
     }
 }

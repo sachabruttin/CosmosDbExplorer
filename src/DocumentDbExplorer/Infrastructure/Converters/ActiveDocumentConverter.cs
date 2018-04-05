@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Data;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 
-namespace DocumentDbExplorer.Infrastructure.Converters
+namespace CosmosDbExplorer.Infrastructure.Converters
 {
     public class ActiveDocumentConverter : IValueConverter
     {

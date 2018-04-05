@@ -4,20 +4,20 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Extensions;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Properties;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.Services.DialogSettings;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Properties;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.Services.DialogSettings;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class DocumentsTabViewModel : PaneWithZoomViewModel<DocumentNodeViewModel>, IHaveQuerySettings, IHaveRequestOptions
     {
@@ -38,7 +38,8 @@ namespace DocumentDbExplorer.ViewModel
         private ResourceResponse<Document> _currentDocument;
         private RelayCommand _resetRequestOptionsCommand;
 
-        public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService) : base(messenger)
+        public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Documents = new ObservableCollection<DocumentDescription>();
             _dbService = dbService;

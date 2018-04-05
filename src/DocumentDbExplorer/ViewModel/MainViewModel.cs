@@ -5,18 +5,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Timers;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Assets;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Assets;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -60,7 +60,8 @@ namespace DocumentDbExplorer.ViewModel
             else
             {
                 // Code runs "for real"
-                Title = "DocumentDB Explorer";
+                var assembly = Assembly.GetEntryAssembly();
+                Title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retriving assembly title";
             }
 
             _dialogService = dialogService;
@@ -90,6 +91,7 @@ namespace DocumentDbExplorer.ViewModel
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, msg => OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
             MessengerInstance.Register<EditUserMessage>(this, msg => OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
             MessengerInstance.Register<EditPermissionMessage>(this, msg => OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+            MessengerInstance.Register<OpenCollectionMetricsViewMessage>(this, msg => OpenOrSelectTab<CollectionMetricsTabViewModel, CollectionMetricsNodeViewModel>(msg));
 
             MessengerInstance.Register<EditStoredProcedureMessage>(this, msg => OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
             MessengerInstance.Register<EditUserDefFuncMessage>(this, msg => OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
@@ -97,6 +99,7 @@ namespace DocumentDbExplorer.ViewModel
 
             MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
             MessengerInstance.Register<CloseDocumentMessage>(this, CloseDocument);
+            MessengerInstance.Register<IsBusyMessage>(this, msg => IsBusy = msg.IsBusy);
         }
 
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
@@ -173,6 +176,8 @@ namespace DocumentDbExplorer.ViewModel
 
         public long UsedMemory => GC.GetTotalMemory(true) / 1014;
 
+        public bool IsBusy { get; set; }
+
         public double Zoom { get; set; }
 
         public ObservableCollection<PaneViewModelBase> Tabs { get; }
@@ -198,6 +203,7 @@ namespace DocumentDbExplorer.ViewModel
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
             IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;
             IsConnectionOptionsVisible = false; // Only visible when selecting a tab
+            IsRefreshTabVisible = SelectedTab is ICanRefreshTab;
         }
 
         public int SelectedRibbonTab { get; set; }
@@ -209,6 +215,7 @@ namespace DocumentDbExplorer.ViewModel
         public bool IsImportTabVisible { get; set; }
         public bool IsQuerySettingsVisible { get; set; }
         public bool IsRequestOptionsVisible { get; set; }
+        public bool IsRefreshTabVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

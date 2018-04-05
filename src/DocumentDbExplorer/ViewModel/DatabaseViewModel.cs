@@ -1,22 +1,23 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using GongSolutions.Wpf.DragDrop;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {
         private readonly IDocumentDbService _dbService;
         private readonly ISettingsService _settingsService;
 
-        public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService) : base(messenger)
+        public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService, IUIServices uiServices)
+            : base(messenger, uiServices)
         {
             Header = "Connections";
             Title = Header;

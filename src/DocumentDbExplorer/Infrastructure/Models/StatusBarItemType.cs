@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using GalaSoft.MvvmLight;
 
-namespace DocumentDbExplorer.Infrastructure.Models
+namespace CosmosDbExplorer.Infrastructure.Models
 {
     public class StatusBarItem : ObservableObject
     {

@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Media;
 
-namespace DocumentDbExplorer.Infrastructure.Behaviors
+namespace CosmosDbExplorer.Infrastructure.Behaviors
 {
     public class WatermarkBehavior : Behavior<ComboBox>
     {

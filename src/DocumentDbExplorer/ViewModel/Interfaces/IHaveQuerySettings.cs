@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.ViewModel.Interfaces
+﻿namespace CosmosDbExplorer.ViewModel.Interfaces
 {
     public interface IHaveQuerySettings
     {

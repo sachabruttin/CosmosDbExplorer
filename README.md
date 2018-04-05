@@ -1,12 +1,12 @@
-# DocumentDb Explorer
+# CosmosDBS Explorer
 
-A nice client explorer for Microsoft DocumentDB.
+A nice client explorer for Microsoft Cosmos DB.
 It mimics the Data Explorer available on the Azure Portal on the desktop.
 
 ## Features
 
 - Named connection: give meaningfull name to your connection (DEV, QA, PROD)
-- Create/Read/Update/Delete for every DocumentDB resources
+- Create/Read/Update/Delete for every Cosmos DB resources
 - Execute SQL Query on a Collection
 - Import document(s) in JSON format
 - Colored JSON Editor for documents, stored procedures, user defined functions and triggers
@@ -14,7 +14,7 @@ It mimics the Data Explorer available on the Azure Portal on the desktop.
 
 ## Installation
 
-Download the lastest version from [releases](https://github.com/sachabruttin/DocumentDbExplorer/releases) and unzip it. Run `DocumentDbExplorer.exe`.
+Download the lastest version from [releases](https://github.com/sachabruttin/CosmosDbExplorer/releases) and unzip it. Run `CosmosDbExplorer.exe`.
 
 ## How to Start
 

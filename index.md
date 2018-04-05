@@ -2,14 +2,14 @@
 image: /assets/documentDbColor.png
 ---
 
-# DocumentDb Explorer
+# Cosmos DB Explorer
 
-A nice client explorer for Microsoft DocumentDB.
+A nice client explorer for Microsoft Cosmos DB.
 It mimics the Data Explorer available on the Azure Portal on the desktop.
 
 ## [](#installation)Installation
 
-Download the lastest version from [releases]({{ site.github.repository_url }}/releases) and unzip it. Run `DocumentDbExplorer.exe`.
+Download the lastest version from [releases]({{ site.github.repository_url }}/releases) and unzip it. Run `CosmosDbExplorer.exe`.
 
 ## [](#how-to-start)How to Start
 
@@ -30,7 +30,7 @@ Give a meaningfull name to your account connection (e.g. DEV, QA, PROD). Assign 
 
 ![Account Settings](/assets/connection_editor.PNG)
 
-### Create/Read/Update/Delete for every DocumentDB resources
+### Create/Read/Update/Delete for every Cosmos DB resources
 
 Manage all your resources from the application. 
 

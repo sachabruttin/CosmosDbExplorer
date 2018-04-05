@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.Services.DialogSettings
+﻿namespace CosmosDbExplorer.Services.DialogSettings
 {
     public class OpenFileDialogSettings : FileDialogSettings
     {

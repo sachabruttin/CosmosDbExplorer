@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.Messages
+﻿namespace CosmosDbExplorer.Messages
 {
     public class IsBusyMessage
     {

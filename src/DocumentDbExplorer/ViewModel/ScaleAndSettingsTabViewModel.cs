@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
 using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using ICSharpCode.AvalonEdit.Document;
@@ -12,7 +12,7 @@ using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
 using Validar;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     [InjectValidation]
     public class ScaleAndSettingsTabViewModel : PaneWithZoomViewModel<ScaleSettingsNodeViewModel>

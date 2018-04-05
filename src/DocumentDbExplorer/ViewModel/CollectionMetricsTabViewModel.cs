@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using LiveCharts;
@@ -14,7 +14,7 @@ using LiveCharts.Configurations;
 using LiveCharts.Wpf;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class CollectionMetricsTabViewModel : PaneViewModel<CollectionMetricsNodeViewModel>, ICanRefreshTab
     {

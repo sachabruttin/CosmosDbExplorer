@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
 
-namespace DocumentDbExplorer.Infrastructure.Extensions
+namespace CosmosDbExplorer.Infrastructure.Extensions
 {
     public static class DocumentClientExceptionExtension
     {

@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel.Assets
+namespace CosmosDbExplorer.ViewModel.Assets
 {
     public class StoredProcedureTabViewModel : AssetTabViewModelBase<StoredProcedureNodeViewModel, StoredProcedure>
     {

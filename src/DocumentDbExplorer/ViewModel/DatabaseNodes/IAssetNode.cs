@@ -1,8 +1,8 @@
 ﻿using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public interface IContent
     {

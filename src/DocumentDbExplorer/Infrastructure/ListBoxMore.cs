@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace CosmosDbExplorer.Infrastructure
 {
     [TemplatePart(Name=PartMoreButtonName, Type = typeof(Button))]
     public class ListBoxMore : ListBox

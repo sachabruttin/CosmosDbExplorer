@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace DocumentDbExplorer.Infrastructure.Extensions
+namespace CosmosDbExplorer.Infrastructure.Extensions
 {
     public static class NameValueCollectionExtensions
     {

@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.Views;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.Views;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class DatabaseNodeViewModel : ResourceNodeViewModelBase<ConnectionNodeViewModel>
     {

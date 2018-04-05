@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.Infrastructure.Models
+﻿namespace CosmosDbExplorer.Infrastructure.Models
 {
     public class ExternalComponent
     {

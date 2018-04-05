@@ -1,6 +1,6 @@
-﻿using DocumentDbExplorer.Infrastructure.Models;
+﻿using CosmosDbExplorer.Infrastructure.Models;
 
-namespace DocumentDbExplorer.Messages
+namespace CosmosDbExplorer.Messages
 {
     public class CloseDocumentMessage
     {

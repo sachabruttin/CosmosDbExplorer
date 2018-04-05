@@ -2,11 +2,11 @@
 using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Messages;
+using CosmosDbExplorer.Messages;
 using GalaSoft.MvvmLight.Threading;
-using DocumentDbExplorer.ViewModel;
+using CosmosDbExplorer.ViewModel;
 
-namespace DocumentDbExplorer.Infrastructure.Models
+namespace CosmosDbExplorer.Infrastructure.Models
 {
     public interface ITreeViewItemViewModel
     {

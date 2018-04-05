@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Messages;
+using CosmosDbExplorer.Messages;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class StoredProcedureRootNodeViewModel : AssetRootNodeViewModelBase<StoredProcedure>
     {

@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace DocumentDbExplorer.Infrastructure.Converters
+namespace CosmosDbExplorer.Infrastructure.Converters
 {
     public class ColorToBrushConverter : IValueConverter
     {

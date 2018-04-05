@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DocumentDbExplorer.Properties {
+namespace CosmosDbExplorer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -37,7 +37,7 @@ namespace DocumentDbExplorer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bruttin.com/DocumentDbExplorer/autoupdate.json")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bruttin.com/CosmosDbExplorer/autoupdate.json")]
         public string AutoUpdaterUrl {
             get {
                 return ((string)(this["AutoUpdaterUrl"]));

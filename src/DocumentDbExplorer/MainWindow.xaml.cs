@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Threading;
 using AutoUpdaterDotNET;
-using DocumentDbExplorer.Properties;
-using DocumentDbExplorer.ViewModel;
+using CosmosDbExplorer.Properties;
+using CosmosDbExplorer.ViewModel;
 using Newtonsoft.Json;
 
-namespace DocumentDbExplorer
+namespace CosmosDbExplorer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -3,7 +3,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DocumentDbExplorer.Infrastructure.JsonHelpers
+namespace CosmosDbExplorer.Infrastructure.JsonHelpers
 {
     public class DocumentDbWithoutSystemPropertyResolver : DefaultContractResolver
     {

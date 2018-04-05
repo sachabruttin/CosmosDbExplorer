@@ -4,18 +4,18 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Extensions;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 using Validar;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     [InjectValidation]
     public class UserEditViewModel : PaneViewModel<UserNodeViewModel>, IAssetTabCommand

@@ -1,6 +1,6 @@
-﻿using DocumentDbExplorer.Infrastructure;
+﻿using CosmosDbExplorer.Infrastructure;
 
-namespace DocumentDbExplorer.ViewModel.Interfaces
+namespace CosmosDbExplorer.ViewModel.Interfaces
 {
     public interface ICanRefreshTab
     {

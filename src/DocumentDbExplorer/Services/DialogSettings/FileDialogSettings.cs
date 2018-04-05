@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DocumentDbExplorer.Services.DialogSettings
+namespace CosmosDbExplorer.Services.DialogSettings
 {
     /// <summary>
     /// Settings for <see cref="FileDialog"/>.

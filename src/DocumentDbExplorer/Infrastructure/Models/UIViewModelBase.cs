@@ -1,9 +1,9 @@
 ﻿using System;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace DocumentDbExplorer.Infrastructure.Models
+namespace CosmosDbExplorer.Infrastructure.Models
 {
 
     public abstract class UIViewModelBase : ViewModelBase

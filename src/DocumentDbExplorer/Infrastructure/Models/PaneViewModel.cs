@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Media;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.Infrastructure.Models
+namespace CosmosDbExplorer.Infrastructure.Models
 {
     public abstract class PaneViewModelBase: UIViewModelBase
     {

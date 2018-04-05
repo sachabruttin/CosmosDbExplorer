@@ -5,18 +5,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Timers;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Assets;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Assets;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to.
@@ -60,7 +60,8 @@ namespace DocumentDbExplorer.ViewModel
             else
             {
                 // Code runs "for real"
-                Title = "DocumentDB Explorer";
+                var assembly = Assembly.GetEntryAssembly();
+                Title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retriving assembly title";
             }
 
             _dialogService = dialogService;

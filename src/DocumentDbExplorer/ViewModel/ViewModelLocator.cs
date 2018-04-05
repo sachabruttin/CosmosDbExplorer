@@ -1,7 +1,7 @@
 ﻿/*
   In App.xaml:
   <Application.Resources>
-      <vm:ViewModelLocator xmlns:vm="clr-namespace:DocumentDbExplorer"
+      <vm:ViewModelLocator xmlns:vm="clr-namespace:CosmosDbExplorer"
                            x:Key="Locator" />
   </Application.Resources>
   
@@ -13,13 +13,13 @@
 */
 
 using CommonServiceLocator;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.ViewModel.Assets;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Assets;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     /// <summary>
     /// This class contains static references to all the view models in the

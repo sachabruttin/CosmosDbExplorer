@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 
-namespace DocumentDbExplorer.Views.Pane
+namespace CosmosDbExplorer.Views.Pane
 {
     public class PaneStyleSelector : StyleSelector
     {

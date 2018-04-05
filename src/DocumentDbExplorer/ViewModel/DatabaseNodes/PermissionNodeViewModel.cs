@@ -1,9 +1,9 @@
-﻿using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
+﻿using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class PermissionNodeViewModel : TreeViewItemViewModel<UserNodeViewModel>, ICanRefreshNode, IContent
     {

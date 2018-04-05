@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DocumentDbExplorer.ViewModel;
-using DocumentDbExplorer.ViewModel.Assets;
+using CosmosDbExplorer.ViewModel;
+using CosmosDbExplorer.ViewModel.Assets;
 
-namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
+namespace CosmosDbExplorer.Infrastructure.TemplateSelectors
 {
     public class TabContentTemplateSelector : DataTemplateSelector
     {

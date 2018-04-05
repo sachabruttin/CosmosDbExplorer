@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 using GalaSoft.MvvmLight;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class AboutViewModel : ViewModelBase
     {
@@ -41,9 +41,9 @@ namespace DocumentDbExplorer.ViewModel
 
         public List<Author> Authors => new List<Author> { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace")};
 
-        public string LicenseUrl => "https://github.com/sachabruttin/DocumentDbExplorer/blob/master/LICENSE";
+        public string LicenseUrl => "https://github.com/sachabruttin/CosmosDbExplorer/blob/master/LICENSE";
 
-        public string ProjectUrl => "https://www.bruttin.com/DocumentDbExplorer";
+        public string ProjectUrl => "https://www.bruttin.com/CosmosDbExplorer";
 
         public List<ExternalComponent> ExternalComponents { get; }
     }

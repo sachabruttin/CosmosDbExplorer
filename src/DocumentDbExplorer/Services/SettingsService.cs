@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure.Extensions;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Extensions;
+using CosmosDbExplorer.Infrastructure.Models;
 using Newtonsoft.Json;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public interface ISettingsService
     {
@@ -22,7 +22,7 @@ namespace DocumentDbExplorer.Services
     {
         private const string _configurationFileName = "connection-settings.json";
         public static readonly string _configurationFilePath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DocumentDbExplorer" , _configurationFileName);
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CosmosDbExplorer" , _configurationFileName);
 
         public static Dictionary<Guid, Connection> _connections;
 
@@ -31,6 +31,13 @@ namespace DocumentDbExplorer.Services
             if (!Directory.Exists(Path.GetDirectoryName(_configurationFilePath)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_configurationFilePath));
+
+                // Use old config file if exists...
+                var oldConfigurationFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DocumentDbExplorer", _configurationFileName);
+                if (File.Exists(oldConfigurationFilePath))
+                {
+                    File.Copy(oldConfigurationFilePath, _configurationFilePath);
+                }
             }
         }
 

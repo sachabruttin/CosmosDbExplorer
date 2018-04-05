@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer
+﻿namespace CosmosDbExplorer
 {
     internal class DialogResult
     {

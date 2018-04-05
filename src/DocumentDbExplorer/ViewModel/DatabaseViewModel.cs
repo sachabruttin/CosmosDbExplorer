@@ -1,15 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using GongSolutions.Wpf.DragDrop;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Extensions;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
-using DocumentDbExplorer.Services.DialogSettings;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.Services.DialogSettings;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public class ImportDocumentViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveRequestOptions
     {

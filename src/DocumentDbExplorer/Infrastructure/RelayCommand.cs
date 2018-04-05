@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace CosmosDbExplorer.Infrastructure
 {
     public class RelayCommand : ICommand
     {

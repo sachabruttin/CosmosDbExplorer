@@ -1,15 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
 using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using Validar;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     [InjectValidation]
     public class AccountSettingsViewModel : WindowViewModelBase

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using DocumentDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Models;
 
-namespace DocumentDbExplorer.Infrastructure.TemplateSelectors
+namespace CosmosDbExplorer.Infrastructure.TemplateSelectors
 {
     public class StatusBarItemTemplateSelector : DataTemplateSelector
     {

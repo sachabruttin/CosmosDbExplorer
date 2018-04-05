@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.ViewModel
+﻿namespace CosmosDbExplorer.ViewModel
 {
     public interface IHaveCollectionNodeViewModel
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure.MarkupExtensions;
+using CosmosDbExplorer.Infrastructure.MarkupExtensions;
 using Newtonsoft.Json;
 
-namespace DocumentDbExplorer.Infrastructure.Models
+namespace CosmosDbExplorer.Infrastructure.Models
 {
     public class Connection : IEquatable<Connection>
     {

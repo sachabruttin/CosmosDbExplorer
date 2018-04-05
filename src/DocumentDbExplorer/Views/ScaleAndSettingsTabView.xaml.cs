@@ -3,13 +3,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
-using DocumentDbExplorer.Infrastructure.AvalonEdit;
-using DocumentDbExplorer.ViewModel;
+using CosmosDbExplorer.Infrastructure.AvalonEdit;
+using CosmosDbExplorer.ViewModel;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for ScaleAndSettingsTabView.xaml
@@ -40,7 +40,7 @@ namespace DocumentDbExplorer.Views
         {
             // Load our custom highlighting definition
             IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"DocumentDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
+            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
             {
                 if (stream == null)
                 {

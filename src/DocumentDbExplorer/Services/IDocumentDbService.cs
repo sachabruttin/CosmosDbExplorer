@@ -2,11 +2,11 @@
 using Microsoft.Azure.Documents.Client;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using System.Threading;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public interface IDocumentDbService
     {

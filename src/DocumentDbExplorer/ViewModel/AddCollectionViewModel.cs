@@ -2,15 +2,15 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Services;
 using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Azure.Documents;
 using Validar;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     [InjectValidation]
     public class AddCollectionViewModel : WindowViewModelBase

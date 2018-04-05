@@ -6,13 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json.Linq;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.ViewModel.Interfaces;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
-using DocumentDbExplorer.Messages;
+using CosmosDbExplorer.Messages;
 using System.Threading;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public class DocumentDbService : IDocumentDbService
     {

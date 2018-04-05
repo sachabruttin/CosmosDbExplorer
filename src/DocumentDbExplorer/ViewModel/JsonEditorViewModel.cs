@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
-using DocumentDbExplorer.Infrastructure.Extensions;
-using DocumentDbExplorer.Infrastructure.JsonHelpers;
+using CosmosDbExplorer.Infrastructure.Extensions;
+using CosmosDbExplorer.Infrastructure.JsonHelpers;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public abstract class JsonEditorViewModelBase : ViewModelBase
     {

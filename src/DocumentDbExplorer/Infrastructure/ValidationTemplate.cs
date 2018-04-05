@@ -6,7 +6,7 @@ using System.Linq;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace CosmosDbExplorer.Infrastructure
 {
     public class ValidationTemplate : IDataErrorInfo, INotifyDataErrorInfo
     {

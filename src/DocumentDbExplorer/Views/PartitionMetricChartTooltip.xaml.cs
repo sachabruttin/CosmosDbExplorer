@@ -2,7 +2,7 @@
 using LiveCharts;
 using LiveCharts.Wpf;
 
-namespace DocumentDbExplorer.Views
+namespace CosmosDbExplorer.Views
 {
     /// <summary>
     /// Interaction logic for PartitionMetricChartTooltip.xaml

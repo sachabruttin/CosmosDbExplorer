@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using DocumentDbExplorer.Services.DialogSettings;
+using CosmosDbExplorer.Services.DialogSettings;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Win32;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public interface IDialogService : GalaSoft.MvvmLight.Views.IDialogService
     {

@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 
-namespace DocumentDbExplorer.Infrastructure.MarkupExtensions
+namespace CosmosDbExplorer.Infrastructure.MarkupExtensions
 {
     public class CursorExtensionConverter : MarkupExtension, IValueConverter
     {

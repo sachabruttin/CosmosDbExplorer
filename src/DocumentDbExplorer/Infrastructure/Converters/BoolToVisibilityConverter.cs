@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace DocumentDbExplorer.Infrastructure.Converters
+namespace CosmosDbExplorer.Infrastructure.Converters
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

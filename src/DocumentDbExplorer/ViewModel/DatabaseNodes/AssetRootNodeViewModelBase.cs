@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using DocumentDbExplorer.Infrastructure;
-using DocumentDbExplorer.Infrastructure.Models;
-using DocumentDbExplorer.Messages;
-using DocumentDbExplorer.Services;
+using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
-namespace DocumentDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModel
 {
     public abstract class AssetRootNodeViewModelBase<TResource> : TreeViewItemViewModel<CollectionNodeViewModel>, ICanRefreshNode, IHaveCollectionNodeViewModel
         where TResource : Resource

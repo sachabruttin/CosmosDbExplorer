@@ -1,7 +1,7 @@
-﻿using DocumentDbExplorer.Messages;
+﻿using CosmosDbExplorer.Messages;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace DocumentDbExplorer.Services
+namespace CosmosDbExplorer.Services
 {
     public class UIServices : IUIServices
     {

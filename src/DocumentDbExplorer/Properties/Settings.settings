@@ -1,12 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DocumentDbExplorer.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CosmosDbExplorer.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="MaxDocumentToRetrieve" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="AutoUpdaterUrl" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://www.bruttin.com/DocumentDbExplorer/autoupdate.json</Value>
+      <Value Profile="(Default)">https://www.bruttin.com/CosmosDbExplorer/autoupdate.json</Value>
     </Setting>
     <Setting Name="AutoUpdaterIntervalInSeconds" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">300</Value>

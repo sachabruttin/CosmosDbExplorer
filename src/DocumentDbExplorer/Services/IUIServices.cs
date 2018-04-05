@@ -1,4 +1,4 @@
-﻿namespace DocumentDbExplorer.Services
+﻿namespace CosmosDbExplorer.Services
 {
     public interface IUIServices
     {

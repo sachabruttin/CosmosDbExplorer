@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DocumentDbExplorer.Infrastructure
+namespace CosmosDbExplorer.Infrastructure
 {
     public static class Constants
     {

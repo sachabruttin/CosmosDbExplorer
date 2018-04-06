@@ -106,15 +106,35 @@
                         <xcad:LayoutAnchorablePane>
 
                             <xcad:LayoutAnchorable Title="Query Metrics" CanClose="False" CanHide="False" AutoHideMinHeight="400" IconSource="{StaticResource StatisticsIcon}">
-                                <DataGrid ItemsSource="{Binding QueryMetrics}" AutoGenerateColumns="False" 
-                                          SelectionUnit="FullRow" AlternationCount="1" AlternatingRowBackground="AliceBlue"
-                                          ClipboardCopyMode="IncludeHeader" ContextMenu="{StaticResource JsonEditorContextMenu}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Property" Binding="{Binding Key}" IsReadOnly="True" Width="0.5*" ClipboardContentBinding="{Binding Key}" />
-                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" IsReadOnly="True" Width="0.5*" ClipboardContentBinding="{Binding Value}" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                <Grid Visibility="{Binding QueryMetrics, Converter={StaticResource nullToVisibilityConverter}}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
 
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <Label Content="Partition:" VerticalAlignment="Center" />
+                                        <ComboBox ItemsSource="{Binding QueryMetrics}" 
+                                                  DisplayMemberPath="Key" SelectedValuePath="Value"
+                                                  x:Name="metrics" IsSynchronizedWithCurrentItem="True"
+                                                  Width="80" VerticalAlignment="Center" />
+
+                                    </StackPanel>
+
+                                    <avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
+                                                           Grid.Row="1" FontSize="10pt" FontFamily="Consolas"
+                                                           IsReadOnly="True" 
+                                                           ShowLineNumbers="True"
+                                                           Document="{Binding ElementName=metrics, Path=SelectedValue, Mode=OneWay, Converter={StaticResource queryMetricsToDocumentConverter}}" HorizontalScrollBarVisibility="Auto" >
+
+                                        <i:Interaction.Behaviors>
+                                            <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                                            <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                        </i:Interaction.Behaviors>
+
+                                    </avalonEdit:TextEditor>
+
+                                </Grid>
                             </xcad:LayoutAnchorable>
 
                             <xcad:LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">

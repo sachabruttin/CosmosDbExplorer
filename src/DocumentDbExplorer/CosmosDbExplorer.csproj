@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -183,6 +184,8 @@
     <Compile Include="Infrastructure\Converters\BytesToGigaBytesConverter.cs" />
     <Compile Include="Infrastructure\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
+    <Compile Include="Infrastructure\Converters\QueryMetricsToDocumentConverter.cs" />
+    <Compile Include="Infrastructure\Converters\QueryMetricsToStringConverter.cs" />
     <Compile Include="Infrastructure\Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\JsonHelpers\DocumentDbWithoutSystemPropertyResolver.cs" />
     <Compile Include="Infrastructure\JsonHelpers\OrderedDictionaryConverter.cs" />

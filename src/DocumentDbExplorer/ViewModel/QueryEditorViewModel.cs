@@ -118,7 +118,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public string ContinuationToken { get; set; }
 
-        public Dictionary<string, string> QueryMetrics { get; set; }
+        public Dictionary<string, QueryMetrics> QueryMetrics { get; set; }
 
         public RelayCommand ExecuteCommand
         {
@@ -147,6 +147,8 @@ namespace CosmosDbExplorer.ViewModel
             {
                 IsRunning = true;
 
+                Clean();
+
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 var query = string.IsNullOrEmpty(SelectedText) ? Content.Text : SelectedText;
@@ -162,17 +164,21 @@ namespace CosmosDbExplorer.ViewModel
                                                 ? " (more results available)"
                                                 : string.Empty);
 
-                if (_queryResult.ResponseHeaders.AllKeys.Contains("x-ms-documentdb-query-metrics"))
+                if (_queryResult.QueryMetrics != null)
                 {
-                    QueryMetrics = _queryResult.ResponseHeaders.GetValues("x-ms-documentdb-query-metrics")
-                                                             .First()
-                                                             .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                                             .Select(part => part.Split('='))
-                                                             .ToDictionary(split => split[0], split => split[1]);
+                    QueryMetrics = new Dictionary<string, QueryMetrics>
+                    {
+                        { "All", _queryResult.QueryMetrics.Select(q => q.Value).Aggregate((i, next) => i + next) }
+                    };
+
+                    foreach (var metric in _queryResult.QueryMetrics.OrderBy(q => int.Parse(q.Key)))
+                    {
+                        QueryMetrics.Add(metric.Key, metric.Value);
+                    }
                 }
                 else
                 {
-                    QueryMetrics = new Dictionary<string, string>();
+                    QueryMetrics = null;
                 }
 
                 EditorViewModel.SetText(_queryResult, HideSystemProperties);
@@ -180,25 +186,32 @@ namespace CosmosDbExplorer.ViewModel
             }
             catch (OperationCanceledException)
             {
-                ContinuationToken = null;
-                RequestCharge = null;
-                QueryInformation = null;
-                QueryMetrics = new Dictionary<string, string>();
-                EditorViewModel.SetText(null, HideSystemProperties);
-                HeaderViewModel.SetText(null, HideSystemProperties);
+                Clean();
             }
             catch (DocumentClientException clientEx)
             {
+                Clean();
                 await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
+                Clean();
                 await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
             }
             finally
             {
                 IsRunning = false;
             }
+        }
+
+        private void Clean()
+        {
+            ContinuationToken = null;
+            RequestCharge = null;
+            QueryInformation = null;
+            QueryMetrics = null;
+            EditorViewModel.SetText(null, HideSystemProperties);
+            HeaderViewModel.SetText(null, HideSystemProperties);
         }
 
         public RelayCommand GoToNextPageCommand
@@ -273,4 +286,34 @@ namespace CosmosDbExplorer.ViewModel
         public int? MaxDOP { get; set; } = -1;
         public int? MaxBufferItem { get; set; } = -1;
     }
+
+    //public class QueryMetricTreeViewItem : TreeViewItemViewModel
+    //{
+    //    private readonly QueryMetrics _queryMetrics;
+
+    //    public QueryMetricTreeViewItem(string name, QueryMetrics queryMetrics, IMessenger messenger)
+    //        : base(null, messenger, false)
+    //    {
+    //        _queryMetrics = queryMetrics;
+    //        Name = name;
+    //    }
+
+    //    public string Name { get; }
+
+    //    protected override Task LoadChildren()
+    //    {
+    //        Children.Add(new SimpleTreeViewItem())
+    //    }
+    //}
+
+    //public class SimpleTreeViewItem : TreeViewItemViewModel
+    //{
+    //    public SimpleTreeViewItem(string name, TreeViewItemViewModel parent, IMessenger messenger) 
+    //        : base(parent, messenger, false)
+    //    {
+    //        Name = name;
+    //    }
+
+    //    public string Name { get; }
+    //}
 }

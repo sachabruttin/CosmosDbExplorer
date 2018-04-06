@@ -16,7 +16,7 @@
                            ShowLineNumbers="True"
                            Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           ContextMenu="{StaticResource JsonEditorContextMenu}" >
+                           ContextMenu="{StaticResource JsonEditorContextMenu}" HorizontalScrollBarVisibility="Auto" >
 
         <i:Interaction.Behaviors>
             <controls:TextAreaZoomBehavior x:Name="zoomBehavior"/>

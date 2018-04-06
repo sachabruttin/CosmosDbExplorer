@@ -67,6 +67,8 @@
             <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />
             <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
             <converters:BytesToGigaBytesConverter x:Key="BytesToGigaBytesConverter" />
+            <converters:QueryMetricsToStringConverter x:Key="queryMetricsToStringConverter"/>
+            <converters:QueryMetricsToDocumentConverter x:Key="queryMetricsToDocumentConverter" />
 
             <ControlTemplate x:Key="ValidationTemplate">
                 <StackPanel Orientation="Horizontal">

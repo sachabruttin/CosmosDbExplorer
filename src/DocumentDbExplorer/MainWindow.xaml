@@ -14,7 +14,7 @@
                       mc:Ignorable="d"
                       Loaded="Window_Loaded"
                       Height="850" Width="1000"
-                      WindowState="Normal"
+                      WindowState="Maximized"
                       DataContext="{Binding Main, Source={StaticResource Locator}}"
                       Cursor="{Binding IsBusy, Converter={markup:CursorExtensionConverter}}"                      
                       Title="{Binding Title}" WindowStartupLocation="CenterScreen">

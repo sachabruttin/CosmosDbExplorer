@@ -87,13 +87,14 @@ namespace CosmosDbExplorer.ViewModel
 
             await DispatcherHelper.RunAsync(() =>
             {
-                Labels = metrics.PartitionMetrics.OrderBy(pm => pm.PartitionKeyRangeId).Select(pm => pm.PartitionKeyRangeId).ToArray();
+                var sorted = metrics.PartitionMetrics.OrderBy(pm => int.Parse(pm.PartitionKeyRangeId)).ToArray();
+                Labels = sorted.Select(pm => pm.PartitionKeyRangeId).ToArray();
                 PartitionSizeSeries = new SeriesCollection
                 {
                     new ColumnSeries
                     {
                         Title = "Size",
-                        Values = new ChartValues<PartitionKeyRangeStatistics>(metrics.PartitionMetrics.OrderBy(pm => pm.PartitionKeyRangeId))
+                        Values = new ChartValues<PartitionKeyRangeStatistics>(sorted)
                     }
                 };
             });

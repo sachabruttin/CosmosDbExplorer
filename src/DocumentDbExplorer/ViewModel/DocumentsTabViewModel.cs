@@ -72,6 +72,14 @@ namespace CosmosDbExplorer.ViewModel
             await LoadDocuments(true).ConfigureAwait(false);
         }
 
+        public override void Cleanup()
+        {
+            SimpleIoc.Default.Unregister(EditorViewModel);
+            SimpleIoc.Default.Unregister(HeaderViewModel);
+
+            base.Cleanup();
+        }
+
         public DocumentNodeViewModel Node { get; protected set; }
 
         public string PartitionKey { get; set; }

@@ -168,6 +168,7 @@ namespace CosmosDbExplorer.ViewModel
             DispatcherHelper.RunAsync(() =>
             {
                 Tabs.Remove(msg.PaneViewModel);
+                _ioc.Unregister(msg.PaneViewModel);
                 SelectedTab = Tabs.LastOrDefault();
             });
         }

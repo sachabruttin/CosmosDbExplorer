@@ -1,14 +1,17 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.Windows.Media;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Services;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace CosmosDbExplorer.Infrastructure.Models
 {
-    public abstract class PaneViewModelBase: UIViewModelBase
+    public abstract class PaneViewModelBase : UIViewModelBase
     {
         private RelayCommand _closeCommand;
         private readonly StatusBarItem _pathStatusBarItem;
@@ -39,6 +42,8 @@ namespace CosmosDbExplorer.Infrastructure.Models
 
         public bool IsActive { get; set; }
 
+        public bool IsClosed { get; set; }
+
         public virtual void OnIsActiveChanged()
         {
             DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
@@ -61,12 +66,14 @@ namespace CosmosDbExplorer.Infrastructure.Models
 
         protected virtual bool CanClose()
         {
-            return true;
+            return !IsClosed;
         }
 
         protected virtual void OnClose()
         {
             MessengerInstance.Send(new CloseDocumentMessage(this));
+            Cleanup();
+            IsClosed = true;
         }
     }
 

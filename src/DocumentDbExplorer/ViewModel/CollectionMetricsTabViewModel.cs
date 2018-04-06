@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Models;
@@ -19,7 +17,6 @@ namespace CosmosDbExplorer.ViewModel
     public class CollectionMetricsTabViewModel : PaneViewModel<CollectionMetricsNodeViewModel>, ICanRefreshTab
     {
         private readonly IDocumentDbService _dbService;
-        private CollectionMetricsNodeViewModel _node;
         private DocumentCollection _collection;
         private string _partitionKey;
         private Connection _connection;
@@ -45,7 +42,6 @@ namespace CosmosDbExplorer.ViewModel
         public override async void Load(string contentId, CollectionMetricsNodeViewModel node, Connection connection, DocumentCollection collection)
         {
             ContentId = contentId;
-            _node = node;
             _connection = connection;
             _collection = collection;
             _partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();

@@ -212,6 +212,8 @@ namespace CosmosDbExplorer.ViewModel
             QueryMetrics = null;
             EditorViewModel.SetText(null, HideSystemProperties);
             HeaderViewModel.SetText(null, HideSystemProperties);
+
+            GC.Collect();
         }
 
         public RelayCommand GoToNextPageCommand
@@ -280,40 +282,24 @@ namespace CosmosDbExplorer.ViewModel
             }
         }
 
+        protected override void OnClose()
+        {
+            Clean();
+            base.OnClose();
+        }
+
+        public override void Cleanup()
+        {
+            SimpleIoc.Default.Unregister(EditorViewModel);
+            SimpleIoc.Default.Unregister(HeaderViewModel);
+
+            base.Cleanup();
+        }
+
         public bool? EnableScanInQuery { get; set; } = false;
         public bool? EnableCrossPartitionQuery { get; set; } = false;
         public int? MaxItemCount { get; set; } = 100;
         public int? MaxDOP { get; set; } = -1;
         public int? MaxBufferItem { get; set; } = -1;
     }
-
-    //public class QueryMetricTreeViewItem : TreeViewItemViewModel
-    //{
-    //    private readonly QueryMetrics _queryMetrics;
-
-    //    public QueryMetricTreeViewItem(string name, QueryMetrics queryMetrics, IMessenger messenger)
-    //        : base(null, messenger, false)
-    //    {
-    //        _queryMetrics = queryMetrics;
-    //        Name = name;
-    //    }
-
-    //    public string Name { get; }
-
-    //    protected override Task LoadChildren()
-    //    {
-    //        Children.Add(new SimpleTreeViewItem())
-    //    }
-    //}
-
-    //public class SimpleTreeViewItem : TreeViewItemViewModel
-    //{
-    //    public SimpleTreeViewItem(string name, TreeViewItemViewModel parent, IMessenger messenger) 
-    //        : base(parent, messenger, false)
-    //    {
-    //        Name = name;
-    //    }
-
-    //    public string Name { get; }
-    //}
 }

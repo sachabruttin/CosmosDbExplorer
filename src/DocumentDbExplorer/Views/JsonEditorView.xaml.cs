@@ -7,6 +7,7 @@ using ICSharpCode.AvalonEdit.Folding;
 using CosmosDbExplorer.Infrastructure.AvalonEdit;
 using System.Windows.Threading;
 using System.Windows;
+using System.Linq;
 
 namespace CosmosDbExplorer.Views
 {
@@ -32,27 +33,39 @@ namespace CosmosDbExplorer.Views
 
             foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
             foldingUpdateTimer.Start();
+
+            Unloaded += (s, e) =>
+            {
+                if (foldingUpdateTimer?.IsEnabled == true)
+                {
+                    foldingUpdateTimer.Stop();
+                    foldingUpdateTimer = null;
+                }
+            };
         }
 
         private void RegisterCustomHighlighting(string name)
         {
-            // Load our custom highlighting definition
-            IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
+            if (!HighlightingManager.Instance.HighlightingDefinitions.Any(d => string.Equals(d.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
-                if (stream == null)
+                // Load our custom highlighting definition
+                IHighlightingDefinition customHightlighting;
+                using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
                 {
-                    throw new InvalidOperationException("Could not find embedded resource");
+                    if (stream == null)
+                    {
+                        throw new InvalidOperationException("Could not find embedded resource");
+                    }
+
+                    using (var reader = new XmlTextReader(stream))
+                    {
+                        customHightlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                    }
                 }
 
-                using (var reader = new XmlTextReader(stream))
-                {
-                    customHightlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                }
+                // and register it in the HighlightingManager
+                HighlightingManager.Instance.RegisterHighlighting(name, new string[] { $".{name.ToLower()}" }, customHightlighting);
             }
-
-            // and register it in the HighlightingManager
-            HighlightingManager.Instance.RegisterHighlighting(name, new string[] { $".{name.ToLower()}" }, customHightlighting);
         }
 
         private void FoldingUpdateTimer_Tick(object sender, EventArgs e)

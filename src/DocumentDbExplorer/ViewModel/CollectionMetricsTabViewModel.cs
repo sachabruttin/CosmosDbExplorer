@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModel.Interfaces;
@@ -21,14 +22,24 @@ namespace CosmosDbExplorer.ViewModel
         private string _partitionKey;
         private Connection _connection;
         private RelayCommand _refreshCommand;
+        private readonly IDialogService _dialogService;
 
-        public CollectionMetricsTabViewModel(IMessenger messenger, IUIServices uiServices, IDocumentDbService dbService)
+        public CollectionMetricsTabViewModel(IMessenger messenger, IUIServices uiServices, 
+            IDialogService dialogService,
+            IDocumentDbService dbService)
             : base(messenger, uiServices)
         {
             _dbService = dbService;
+            _dialogService = dialogService;
+
             Title = "Collection Metrics";
             Header = Title;
 
+            ChartConfiguration();
+        }
+
+        private void ChartConfiguration()
+        {
             // Chart configuratin
             var wrapper = Mappers.Xy<PartitionKeyRangeStatistics>()
                 .X((value, index) => index)
@@ -79,27 +90,40 @@ namespace CosmosDbExplorer.ViewModel
         {
             IsBusy = true;
 
-            var metrics = await _dbService.GetPartitionMetricsAsync(_connection, _collection).ConfigureAwait(false);
-
-            PartitionCount = metrics.PartitionCount;
-            DocumentSize = metrics.DocumentSize;
-            DocumentCount = metrics.DocumentCount;
-
-            await DispatcherHelper.RunAsync(() =>
+            try
             {
-                var sorted = metrics.PartitionMetrics.OrderBy(pm => int.Parse(pm.PartitionKeyRangeId)).ToArray();
-                Labels = sorted.Select(pm => pm.PartitionKeyRangeId).ToArray();
-                PartitionSizeSeries = new SeriesCollection
+                var metrics = await _dbService.GetPartitionMetricsAsync(_connection, _collection).ConfigureAwait(false);
+
+                PartitionCount = metrics.PartitionCount;
+                DocumentSize = metrics.DocumentSize;
+                DocumentCount = metrics.DocumentCount;
+
+                await DispatcherHelper.RunAsync(() =>
                 {
+                    var sorted = metrics.PartitionMetrics.OrderBy(pm => int.Parse(pm.PartitionKeyRangeId)).ToArray();
+                    Labels = sorted.Select(pm => pm.PartitionKeyRangeId).ToArray();
+                    PartitionSizeSeries = new SeriesCollection
+                    {
                     new ColumnSeries
                     {
                         Title = "Size",
                         Values = new ChartValues<PartitionKeyRangeStatistics>(sorted)
                     }
-                };
-            });
-
-            IsBusy = false;
+                    };
+                });
+            }
+            catch (DocumentClientException clientEx)
+            {
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

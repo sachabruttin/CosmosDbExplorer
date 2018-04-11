@@ -4,6 +4,7 @@ using CosmosDbExplorer.Infrastructure;
 using FluentValidation;
 using GalaSoft.MvvmLight;
 using Microsoft.Azure.Documents;
+using PropertyChanged;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModel.Indexes
@@ -58,11 +59,19 @@ namespace CosmosDbExplorer.ViewModel.Indexes
             {
                 Policy.IndexingMode = value;
                 RaisePropertyChanged(nameof(Mode));
+
+                if (Mode == IndexingMode.None)
+                {
+                    Policy.IncludedPaths.Clear();
+                    IncludedPaths.Clear();
+                }
             }
         }
 
+        [DependsOn(nameof(Mode))]
         public BindingList<IncludedPathViewModel> IncludedPaths { get; }
 
+        [DependsOn(nameof(Mode))]
         public BindingList<ExcludedPathViewModel> ExcludedPaths { get; }
 
         public RelayCommand<IncludedPathViewModel> RemoveIncludedPathCommand
@@ -101,6 +110,10 @@ namespace CosmosDbExplorer.ViewModel.Indexes
             RuleFor(x => x.IncludedPaths)
                 .Must(coll => coll.Distinct().Count() == coll.Count)
                 .WithMessage("Only one entry per path!");
+
+            RuleFor(x => x.IncludedPaths)
+                .NotEmpty()
+                .When(x => x.Mode != IndexingMode.None);
 
             RuleFor(x => x.ExcludedPaths)
                 .Must(coll => coll.Distinct().Count() == coll.Count)

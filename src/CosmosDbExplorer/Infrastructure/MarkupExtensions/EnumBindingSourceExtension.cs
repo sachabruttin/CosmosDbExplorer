@@ -37,9 +37,13 @@ namespace CosmosDbExplorer.Infrastructure.MarkupExtensions
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            //if (_enumType == null)
+            //{
+            //    throw new InvalidOperationException("The EnumType must be specified.");
+            //}
             if (_enumType == null)
             {
-                throw new InvalidOperationException("The EnumType must be specified.");
+                return null;
             }
 
             var actualEnumType = Nullable.GetUnderlyingType(_enumType) ?? _enumType;

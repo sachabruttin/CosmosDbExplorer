@@ -76,5 +76,10 @@ namespace CosmosDbExplorer.Views
             vm.IconSource = FindResource("ScaleSettingsIcon") as ImageSource;
             await vm.LoadDataAsync();
         }
+
+        private void Expander_Expanded(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }

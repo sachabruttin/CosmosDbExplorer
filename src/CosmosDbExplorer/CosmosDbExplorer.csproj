@@ -198,6 +198,7 @@
     <Compile Include="Infrastructure\Models\Author.cs" />
     <Compile Include="Infrastructure\Models\CollectionMetrics.cs" />
     <Compile Include="Infrastructure\Models\UIViewModelBase.cs" />
+    <Compile Include="Infrastructure\RadioButtonEx.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\Extensions\NameValueCollectionExtensions.cs" />
@@ -207,7 +208,8 @@
     <Compile Include="Infrastructure\Models\PaneViewModel.cs" />
     <Compile Include="Infrastructure\Models\StatusBarItemType.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\StatusBarItemTemplateSelector.cs" />
-    <Compile Include="Infrastructure\ValidationTemplate.cs" />
+    <Compile Include="Infrastructure\Validar\ValidationFactory.cs" />
+    <Compile Include="Infrastructure\Validar\ValidationTemplate.cs" />
     <Compile Include="Infrastructure\Models\WindowViewModelBase.cs" />
     <Compile Include="Infrastructure\RelayCommand.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\TabContentTemplateSelector.cs" />
@@ -263,6 +265,10 @@
     <Compile Include="ViewModel\DatabaseViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DocumentNodeViewModel.cs" />
     <Compile Include="ViewModel\DocumentsTabViewModel.cs" />
+    <Compile Include="ViewModel\Indexes\ExcludedPathViewModel.cs" />
+    <Compile Include="ViewModel\Indexes\IncludedPathViewModel.cs" />
+    <Compile Include="ViewModel\Indexes\IndexingPolicyViewModel.cs" />
+    <Compile Include="ViewModel\Indexes\IndexViewModel.cs" />
     <Compile Include="ViewModel\Interfaces\IAssetTabCommand.cs" />
     <Compile Include="ViewModel\Interfaces\ICanRefreshTab.cs" />
     <Compile Include="ViewModel\Interfaces\IHaveQuerySettings.cs" />

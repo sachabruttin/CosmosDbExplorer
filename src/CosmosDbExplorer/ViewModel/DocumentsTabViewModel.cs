@@ -270,7 +270,7 @@ namespace CosmosDbExplorer.ViewModel
                             IsRunning = true;
                             try
                             {
-                                var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(false);
+                                var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(true);
                                 var document = response.Resource;
 
                                 SetStatusBar(response);

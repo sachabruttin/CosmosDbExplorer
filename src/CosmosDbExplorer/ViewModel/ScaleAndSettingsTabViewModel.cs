@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel.Indexes;
 using FluentValidation;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using PropertyChanged;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModel
@@ -74,8 +79,13 @@ namespace CosmosDbExplorer.ViewModel
             PartitionKey = Collection.PartitionKey?.Paths.FirstOrDefault();
             IsFixedStorage = PartitionKey == null;
 
-            Content = new TextDocument(JsonConvert.SerializeObject(Collection.IndexingPolicy, Formatting.Indented));
+            Content = new TextDocument(Collection.IndexingPolicy.ToString());
+            PolicyViewModel = new IndexingPolicyViewModel(Collection.IndexingPolicy.Clone() as IndexingPolicy);
+
+            PolicyViewModel.PropertyChanged += (s, e) => Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
         }
+
+        public IndexingPolicyViewModel PolicyViewModel { get; protected set; }
 
         public Connection Connection { get; protected set; }
 
@@ -218,4 +228,8 @@ namespace CosmosDbExplorer.ViewModel
                                       .WithMessage("Throughput must be a multiple of 100");
         }
     }
+
+    
+
+
 }

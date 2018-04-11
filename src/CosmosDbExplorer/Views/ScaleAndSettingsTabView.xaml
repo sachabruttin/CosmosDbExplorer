@@ -89,169 +89,177 @@
                                             <infrastructure:RadioButtonEx Content="None" RadioValue="None" RadioBinding="{Binding PolicyViewModel.Mode}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
                                         </StackPanel>
 
-                                        <Expander Header="Included Paths" IsExpanded="True">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <ItemsControl ItemsSource="{Binding PolicyViewModel.IncludedPaths, ValidatesOnDataErrors=True}" AlternationCount="2">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Border x:Name="_rootPaths" BorderThickness="0.5" 
-                                                                         Margin="2" Padding="5" BorderBrush="DarkGray">
-                                                                <Grid>
-                                                                    <Grid.RowDefinitions>
-                                                                        <RowDefinition Height="Auto" />
-                                                                        <RowDefinition Height="Auto" />
-                                                                        <RowDefinition Height="Auto" />
-                                                                    </Grid.RowDefinitions>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
+                                        <GroupBox BorderThickness="0" Padding="10,5">
+                                            <GroupBox.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Included Paths" />
+                                                    <TextBlock Margin="10,0">
+                                                        <Hyperlink Command="{Binding PolicyViewModel.AddIncludedPathCommand}" CommandParameter="{Binding}">
+                                                            <StackPanel Orientation="Horizontal" Margin="5,0">
+                                                                <TextBlock Style="{StaticResource AddIcon}" FontSize="8pt" VerticalAlignment="Center" />
+                                                                <TextBlock Text="Add" Margin="5,0,0,0" />
+                                                            </StackPanel>
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </GroupBox.Header>
 
-                                                                    <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
-                                                                    <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
-                                                                    <Button Command="{Binding DataContext.PolicyViewModel.RemoveIncludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
-                                                                                CommandParameter="{Binding}"
-                                                                                Grid.Row="0" Grid.Column="2"
-                                                                                Background="Transparent" BorderThickness="0" Margin="2">
-                                                                        <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
-                                                                    </Button>
+                                            <ItemsControl ItemsSource="{Binding PolicyViewModel.IncludedPaths, ValidatesOnDataErrors=True}" AlternationCount="2">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border x:Name="_rootPaths" BorderThickness="0.5" 
+                                                                        Margin="2" Padding="5" BorderBrush="DarkGray">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
 
-                                                                    <Label Content="Indexes:" Grid.Row="1" Grid.Column="0" />
-                                                                    <ItemsControl ItemsSource="{Binding Indexes, ValidatesOnDataErrors=True}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
-                                                                        <ItemsControl.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <Grid Margin="2">
+                                                                <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
+                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
+                                                                <Button Command="{Binding DataContext.PolicyViewModel.RemoveIncludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Grid.Row="0" Grid.Column="2"
+                                                                            Background="Transparent" BorderThickness="0" Margin="2">
+                                                                    <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
+                                                                </Button>
+
+                                                                <Label Content="Indexes:" Grid.Row="1" Grid.Column="0" />
+                                                                <ItemsControl ItemsSource="{Binding Indexes, ValidatesOnDataErrors=True}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Grid Margin="2">
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="Auto" />
+                                                                                    <ColumnDefinition Width="120" />
+                                                                                    <ColumnDefinition Width="120" />
+                                                                                    <ColumnDefinition Width="150" />
+                                                                                </Grid.ColumnDefinitions>
+
+                                                                                <Button Command="{Binding DataContext.RemoveIndexCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}}"
+                                                                                            CommandParameter="{Binding}"
+                                                                                            Background="Transparent" BorderThickness="0" Margin="2">
+                                                                                    <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
+                                                                                </Button>
+
+                                                                                <ComboBox Grid.Column="1" SelectedValue="{Binding Kind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
+                                                                                                ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexKind}}}"/>
+                                                                                <ComboBox Grid.Column="2" SelectedValue="{Binding DataType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
+                                                                                                ItemsSource="{Binding AvailableDataTypes}" />
+
+                                                                                <Grid Grid.Column="3" Margin="2,2,7,2" HorizontalAlignment="Stretch">
                                                                                     <Grid.ColumnDefinitions>
                                                                                         <ColumnDefinition Width="Auto" />
-                                                                                        <ColumnDefinition Width="120" />
-                                                                                        <ColumnDefinition Width="120" />
-                                                                                        <ColumnDefinition Width="150" />
+                                                                                        <ColumnDefinition Width="*" />
                                                                                     </Grid.ColumnDefinitions>
 
-                                                                                    <Button Command="{Binding DataContext.RemoveIndexCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl}}"
-                                                                                                CommandParameter="{Binding}"
-                                                                                                Background="Transparent" BorderThickness="0" Margin="2">
-                                                                                        <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
-                                                                                    </Button>
+                                                                                    <CheckBox Content="Max" IsChecked="{Binding IsMaxPrecision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                                    VerticalAlignment="Center" Margin="2,0" Grid.Column="0"
+                                                                                                    Visibility="{Binding CanSetMaxPrecision, Converter={StaticResource boolToVisibilityConverter}}"
+                                                                                                    ToolTip="Maximum index precision (-1)"/>
 
-                                                                                    <ComboBox Grid.Column="1" SelectedValue="{Binding Kind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
-                                                                                                   ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexKind}}}"/>
-                                                                                    <ComboBox Grid.Column="2" SelectedValue="{Binding DataType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
-                                                                                                   ItemsSource="{Binding AvailableDataTypes}" />
-
-                                                                                    <Grid Grid.Column="3" Margin="2,2,7,2" HorizontalAlignment="Stretch">
-                                                                                        <Grid.ColumnDefinitions>
-                                                                                            <ColumnDefinition Width="Auto" />
-                                                                                            <ColumnDefinition Width="*" />
-                                                                                        </Grid.ColumnDefinitions>
-
-                                                                                        <CheckBox Content="Max" IsChecked="{Binding IsMaxPrecision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                                                      VerticalAlignment="Center" Margin="2,0" Grid.Column="0"
-                                                                                                      Visibility="{Binding CanSetMaxPrecision, Converter={StaticResource boolToVisibilityConverter}}"
-                                                                                                      ToolTip="Maximum index precision (-1)"/>
-
-                                                                                        <xctk:ShortUpDown  Minimum="{Binding MinPrecision}" Maximum="{Binding MaxPrecision}" 
-                                                                                                               Margin="2,0" Grid.Column="1" 
-                                                                                                               Value="{Binding Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                                                                                                               Visibility="{Binding CanSetPrecision, Converter={StaticResource boolToVisibilityConverter}}"
-                                                                                                               Watermark="default is 3"/>
-                                                                                    </Grid>
-
+                                                                                    <xctk:ShortUpDown  Minimum="{Binding MinPrecision}" Maximum="{Binding MaxPrecision}" 
+                                                                                                            Margin="2,0" Grid.Column="1" 
+                                                                                                            Value="{Binding Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                                                                                                            Visibility="{Binding CanSetPrecision, Converter={StaticResource boolToVisibilityConverter}}"
+                                                                                                            Watermark="default is 3"/>
                                                                                 </Grid>
-                                                                            </DataTemplate>
-                                                                        </ItemsControl.ItemTemplate>
-                                                                    </ItemsControl>
 
-                                                                    <Button Command="{Binding AddIndexCommand}"
-                                                                                Background="Transparent" BorderThickness="0"
-                                                                                Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Left">
-                                                                        <StackPanel Orientation="Horizontal">
-                                                                            <TextBlock Style="{StaticResource AddIcon}" />
+                                                                            </Grid>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+
+                                                                <TextBlock Grid.Row="2" Grid.Column="1">
+                                                                    <Hyperlink Command="{Binding AddIndexCommand}">
+                                                                        <StackPanel Orientation="Horizontal" Margin="5,0">
+                                                                            <TextBlock Style="{StaticResource AddIcon}" FontSize="8pt" VerticalAlignment="Center" />
                                                                             <TextBlock Text="Add Index" Margin="5,0,0,0" />
                                                                         </StackPanel>
-                                                                    </Button>
-                                                                </Grid>
-                                                            </Border>
-                                                            <DataTemplate.Triggers>
-                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                                                                    <Setter Property="Background" Value="Transparent" TargetName="_rootPaths"/>
-                                                                </Trigger>
-                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                                                    <Setter Property="Background" Value="WhiteSmoke" TargetName="_rootPaths"/>
-                                                                </Trigger>
-                                                            </DataTemplate.Triggers>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
+                                                                    </Hyperlink>
+                                                                </TextBlock>
 
-                                                <Button Command="{Binding PolicyViewModel.AddIncludedPathCommand}" Background="Transparent" BorderThickness="0"
-                                                             Grid.Row="1" HorizontalAlignment="Left">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Style="{StaticResource AddIcon}" />
-                                                        <TextBlock Text="Add Included Path" Margin="5,0,0,0" />
-                                                    </StackPanel>
-                                                </Button>
+                                                                <!--<Button Command="{Binding AddIndexCommand}"
+                                                                            Background="Transparent" BorderThickness="0"
+                                                                            Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Style="{StaticResource AddIcon}" />
+                                                                        <TextBlock Text="Add Index" Margin="5,0,0,0" />
+                                                                    </StackPanel>
+                                                                </Button>-->
+                                                            </Grid>
+                                                        </Border>
+                                                        <DataTemplate.Triggers>
+                                                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                                                <Setter Property="Background" Value="Transparent" TargetName="_rootPaths"/>
+                                                            </Trigger>
+                                                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                                                <Setter Property="Background" Value="WhiteSmoke" TargetName="_rootPaths"/>
+                                                            </Trigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
 
-                                            </Grid>
-                                        </Expander>
+                                        </GroupBox>
 
-                                        <Expander Header="Excluded Paths" IsExpanded="True">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
+                                        <GroupBox BorderThickness="0" Padding="10,5">
+                                            <GroupBox.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Excluded Paths" />
+                                                    <TextBlock Margin="10,0">
+                                                        <Hyperlink Command="{Binding PolicyViewModel.AddExcludedPathCommand}" CommandParameter="{Binding}">
+                                                            <StackPanel Orientation="Horizontal" Margin="5,0">
+                                                                <TextBlock Style="{StaticResource AddIcon}" FontSize="8pt" VerticalAlignment="Center" />
+                                                                <TextBlock Text="Add" Margin="5,0,0,0" />
+                                                            </StackPanel>
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </GroupBox.Header>
 
-                                                <ItemsControl ItemsSource="{Binding PolicyViewModel.ExcludedPaths, ValidatesOnDataErrors=True}" AlternationCount="2">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Border x:Name="_rootPaths" BorderThickness="0.5" 
+                                            <ItemsControl ItemsSource="{Binding PolicyViewModel.ExcludedPaths, ValidatesOnDataErrors=True}" AlternationCount="2">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border x:Name="_rootPaths" BorderThickness="0.5" 
                                                                         Margin="2" Padding="5" BorderBrush="DarkGray">
-                                                                <Grid>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
 
-                                                                    <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
-                                                                    <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
-                                                                    <Button Command="{Binding DataContext.PolicyViewModel.RemoveExcludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
+                                                                <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
+                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
+                                                                <Button Command="{Binding DataContext.PolicyViewModel.RemoveExcludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
                                                                                 CommandParameter="{Binding}"
                                                                                 Grid.Row="0" Grid.Column="2"
                                                                                 Background="Transparent" BorderThickness="0" Margin="2">
-                                                                        <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
-                                                                    </Button>
-                                                                </Grid>
-                                                            </Border>
+                                                                    <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </Border>
 
-                                                            <DataTemplate.Triggers>
-                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                                                                    <Setter Property="Background" Value="Transparent" TargetName="_rootPaths"/>
-                                                                </Trigger>
-                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                                                    <Setter Property="Background" Value="WhiteSmoke" TargetName="_rootPaths"/>
-                                                                </Trigger>
-                                                            </DataTemplate.Triggers>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
+                                                        <DataTemplate.Triggers>
+                                                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                                                <Setter Property="Background" Value="Transparent" TargetName="_rootPaths"/>
+                                                            </Trigger>
+                                                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                                                <Setter Property="Background" Value="WhiteSmoke" TargetName="_rootPaths"/>
+                                                            </Trigger>
+                                                        </DataTemplate.Triggers>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
 
-                                                <Button Command="{Binding PolicyViewModel.AddExcludedPathCommand}" Background="Transparent" BorderThickness="0"
-                                                            Grid.Row="1" HorizontalAlignment="Left">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Style="{StaticResource AddIcon}" />
-                                                        <TextBlock Text="Add Excluded Path" Margin="5,0,0,0" />
-                                                    </StackPanel>
-                                                </Button>
-
-                                            </Grid>
-                                        </Expander>
+                                        </GroupBox>
                                     </StackPanel>
                                 </ScrollViewer>
                             </xcad:LayoutAnchorable>

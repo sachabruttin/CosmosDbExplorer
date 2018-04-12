@@ -1,9 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using CosmosDbExplorer.Infrastructure;
 using FluentValidation;
 using GalaSoft.MvvmLight;
 using Microsoft.Azure.Documents;
+using Newtonsoft.Json;
 using PropertyChanged;
 using Validar;
 
@@ -18,10 +20,18 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         private RelayCommand<ExcludedPathViewModel> _removeExcludedPathCommand;
         private RelayCommand _addExcludedPathCommand;
 
+        private bool _isCreating;
+
         public IndexingPolicyViewModel(IndexingPolicy policy)
         {
-            Policy = policy;
-            IncludedPaths = new BindingList<IncludedPathViewModel>(Policy.IncludedPaths.Select(ip => new IncludedPathViewModel(ip)).ToList());
+            _isCreating = true;
+
+            // deep clon the indexing policy
+            var json = JsonConvert.SerializeObject(policy);
+            Policy = JsonConvert.DeserializeObject<IndexingPolicy>(json);
+
+            _isCreating = false;
+
             IncludedPaths.ListChanged += (s, e) =>
             {
                 if (IncludedPaths.All(ip => !ip.HasErrors))
@@ -30,7 +40,6 @@ namespace CosmosDbExplorer.ViewModel.Indexes
                 }
             };
 
-            ExcludedPaths = new BindingList<ExcludedPathViewModel>(Policy.ExcludedPaths.Select(ep => new ExcludedPathViewModel(ep)).ToList());
             ExcludedPaths.ListChanged += (s, e) =>
             {
                 if (ExcludedPaths.All(ep => !ep.HasErrors))
@@ -48,7 +57,27 @@ namespace CosmosDbExplorer.ViewModel.Indexes
             };
         }
 
-        public IndexingPolicy Policy { get; }
+        public IndexingPolicy Policy { get; set; }
+
+        protected void OnPolicyChanged()
+        {
+            IncludedPaths.Clear();
+            foreach (var vm in Policy.IncludedPaths.Select(ip => new IncludedPathViewModel(ip)))
+            {
+                IncludedPaths.Add(vm);
+            }
+
+            ExcludedPaths.Clear();
+            foreach (var vm in Policy.ExcludedPaths.Select(ep => new ExcludedPathViewModel(ep)))
+            {
+                ExcludedPaths.Add(vm);
+            }
+
+            if (_isCreating)
+            {
+                IsChanged = false;
+            }
+        }
 
         public bool IsValid
         {
@@ -59,6 +88,8 @@ namespace CosmosDbExplorer.ViewModel.Indexes
                     && ExcludedPaths.All(ep => !ep.HasErrors);
             }
         }
+
+        public bool IsChanged { get; set; }
 
         public bool IsAutomatic
         {
@@ -87,10 +118,10 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         }
 
         [DependsOn(nameof(Mode))]
-        public BindingList<IncludedPathViewModel> IncludedPaths { get; }
+        public BindingList<IncludedPathViewModel> IncludedPaths { get; } = new BindingList<IncludedPathViewModel>();
 
         [DependsOn(nameof(Mode))]
-        public BindingList<ExcludedPathViewModel> ExcludedPaths { get; }
+        public BindingList<ExcludedPathViewModel> ExcludedPaths { get; } = new BindingList<ExcludedPathViewModel>();
 
         public RelayCommand<IncludedPathViewModel> RemoveIncludedPathCommand
         {
@@ -104,7 +135,22 @@ namespace CosmosDbExplorer.ViewModel.Indexes
             }
         }
 
-        public RelayCommand AddIncludedPathCommand => _addIncludedPathCommand ?? (_addIncludedPathCommand = new RelayCommand(() => IncludedPaths.Add(new IncludedPathViewModel())));
+        public RelayCommand AddIncludedPathCommand
+        {
+            get
+            {
+                return _addIncludedPathCommand ?? (_addIncludedPathCommand = new RelayCommand(() =>
+                {
+                    var path = new IncludedPath
+                    {
+                        Indexes = new Collection<Index>() { new HashIndex(DataType.String, 3) }
+                    };
+
+                    Policy.IncludedPaths.Add(path);
+                    IncludedPaths.Add(new IncludedPathViewModel(path));
+                }));
+            }
+        }
 
         public RelayCommand<ExcludedPathViewModel> RemoveExcludedPathCommand
         {
@@ -118,7 +164,18 @@ namespace CosmosDbExplorer.ViewModel.Indexes
             }
         }
 
-        public RelayCommand AddExcludedPathCommand => _addExcludedPathCommand ?? (_addExcludedPathCommand = new RelayCommand(() => ExcludedPaths.Add(new ExcludedPathViewModel())));
+        public RelayCommand AddExcludedPathCommand
+        {
+            get
+            {
+                return _addExcludedPathCommand ?? (_addExcludedPathCommand = new RelayCommand(() =>
+                {
+                    var path = new ExcludedPath();
+                    Policy.ExcludedPaths.Add(path);
+                    ExcludedPaths.Add(new ExcludedPathViewModel(path));
+                }));
+            }
+        }
     }
 
     public class IndexingPolicyViewModelValidator : AbstractValidator<IndexingPolicyViewModel>

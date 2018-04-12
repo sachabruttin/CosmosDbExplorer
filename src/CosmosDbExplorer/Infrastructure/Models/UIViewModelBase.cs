@@ -2,6 +2,7 @@
 using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
+using PropertyChanged;
 
 namespace CosmosDbExplorer.Infrastructure.Models
 {
@@ -10,12 +11,13 @@ namespace CosmosDbExplorer.Infrastructure.Models
     {
         private readonly IUIServices _uiServices;
 
-        protected UIViewModelBase(IMessenger messenger, IUIServices uiServices) 
+        protected UIViewModelBase(IMessenger messenger, IUIServices uiServices)
             : base(messenger)
         {
             _uiServices = uiServices;
         }
 
+        [DoNotSetChanged]
         public bool IsBusy { get; set; }
 
         protected void OnIsBusyChanged()

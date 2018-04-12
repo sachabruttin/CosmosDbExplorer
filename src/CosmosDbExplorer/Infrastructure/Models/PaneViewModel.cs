@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Media;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Services;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
+using PropertyChanged;
 
 namespace CosmosDbExplorer.Infrastructure.Models
 {
@@ -25,8 +23,10 @@ namespace CosmosDbExplorer.Infrastructure.Models
             _uiServices = uiServices;
         }
 
+        [DoNotSetChanged]
         public string Title { get; set; }
 
+        [DoNotSetChanged]
         public string ToolTip { get; set; }
 
         public virtual void OnToolTipChanged()
@@ -34,14 +34,19 @@ namespace CosmosDbExplorer.Infrastructure.Models
             _pathStatusBarItem.DataContext.Value = ToolTip;
         }
 
+        [DoNotSetChanged]
         public string Header { get; set; }
 
+        [DoNotSetChanged]
         public string ContentId { get; protected set; }
 
+        [DoNotSetChanged]
         public bool IsSelected { get; set; }
 
+        [DoNotSetChanged]
         public bool IsActive { get; set; }
 
+        [DoNotSetChanged]
         public bool IsClosed { get; set; }
 
         public virtual void OnIsActiveChanged()
@@ -49,10 +54,13 @@ namespace CosmosDbExplorer.Infrastructure.Models
             DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
         }
 
+        [DoNotSetChanged]
         public ObservableCollection<StatusBarItem> StatusBarItems { get; protected set; } = new ObservableCollection<StatusBarItem>();
 
+        [DoNotSetChanged]
         public object IconSource { get; set; }
 
+        [DoNotSetChanged]
         public Color? AccentColor { get; set; }
 
         public RelayCommand CloseCommand
@@ -98,6 +106,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
             StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, "Zoom", System.Windows.Controls.Dock.Right));
         }
 
+        [DoNotSetChanged]
         public double Zoom { get; set; } = 0.5;
     }
 
@@ -108,6 +117,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
         {
         }
 
+        [DoNotSetChanged]
         public bool IsVisible { get; set; }
     }
 }

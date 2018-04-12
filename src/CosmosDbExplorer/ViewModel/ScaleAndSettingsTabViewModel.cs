@@ -1,16 +1,20 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModel.Indexes;
 using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using PropertyChanged;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModel
@@ -22,25 +26,55 @@ namespace CosmosDbExplorer.ViewModel
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
         private bool _onTimeToLive;
+        private const decimal HourlyPrice = 0.00008m;
+        private readonly IDialogService _dialogService;
+        private IDisposable _textChangedObservable;
 
-        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IUIServices uiServices)
+        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
             : base(messenger, uiServices)
         {
             Content = new TextDocument();
+
+            _textChangedObservable = Observable.FromEventPattern<EventArgs>(Content, "TextChanged")
+                                                  .ObserveOnDispatcher()
+                                                  .Select(evt => ((TextDocument)evt.Sender).Text)
+                                                  .Throttle(TimeSpan.FromMilliseconds(600))
+                                                  .Where(text => !string.IsNullOrEmpty(text))
+                                                  .DistinctUntilChanged()
+                                                  .SubscribeOnDispatcher()
+                                                  .Subscribe(OnContentTextChanged);
+
             _dbService = dbService;
-            PropertyChanged += OnPropetyChanged;
+            _dialogService = dialogService;
         }
 
-        private void OnPropetyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnContentTextChanged(string text)
         {
-            var names = new[] { nameof(Throughput), nameof(TimeToLiveInSecond), nameof(OffTimeToLive), nameof(NoDefaultTimeToLive), nameof(OnTimeToLive) };
-
-            if (!IsLoading && names.Contains(e.PropertyName))
+            DispatcherHelper.RunAsync(() =>
             {
-                IsDirty = true;
-            }
+                try
+                {
+                    IsLoading = true;
+                    PolicyViewModel.Policy = JsonConvert.DeserializeObject<IndexingPolicy>(text);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"TextChanged => {ex.Message}");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            });
         }
 
+        public override void Cleanup()
+        {
+            _textChangedObservable.Dispose();
+            base.Cleanup();
+        }
+
+        [DoNotSetChanged]
         public bool IsLoading { get; set; }
 
         public override void Load(string contentId, ScaleSettingsNodeViewModel node, Connection connection, DocumentCollection collection)
@@ -75,10 +109,23 @@ namespace CosmosDbExplorer.ViewModel
             PartitionKey = Collection.PartitionKey?.Paths.FirstOrDefault();
             IsFixedStorage = PartitionKey == null;
 
-            Content = new TextDocument(Collection.IndexingPolicy.ToString());
-            PolicyViewModel = new IndexingPolicyViewModel(Collection.IndexingPolicy.Clone() as IndexingPolicy);
+            PolicyViewModel = new IndexingPolicyViewModel(Collection.IndexingPolicy);
+            PolicyViewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(PolicyViewModel.IsValid))
+                {
+                    return;
+                }
 
-            PolicyViewModel.PropertyChanged += (s, e) => Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
+                if (!IsLoading && PolicyViewModel.IsValid)
+                {
+                    Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
+                }
+            };
+
+            Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
+
+            IsChanged = false;
         }
 
         public IndexingPolicyViewModel PolicyViewModel { get; protected set; }
@@ -89,47 +136,23 @@ namespace CosmosDbExplorer.ViewModel
 
         public int Throughput { get; set; }
 
-        public void OnThroughputChanged()
-        {
-            const decimal hourly = 0.00008m;
-            EstimatedPrice = $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
-        }
-
         public string PartitionKey { get; set; }
 
         public bool IsFixedStorage { get; set; }
 
         public int PartitionCount { get; set; }
 
-        public void OnPartitionCountChanged()
-        {
-            RaisePropertyChanged(() => MaxThroughput);
-            RaisePropertyChanged(() => MinThroughput);
-        }
+        public int MaxThroughput => PartitionCount * 10000;
 
-        public int MaxThroughput
-        {
-            get
-            {
-                return PartitionCount * 10000;
-            }
-        }
+        public int MinThroughput => IsFixedStorage ? 400 : Math.Max(1000, PartitionCount * 100);
 
-        public int MinThroughput
-        {
-            get
-            {
-                return IsFixedStorage ? 400 : Math.Max(1000, PartitionCount * 100);
-            }
-        }
-
-        public string EstimatedPrice { get; set; }
+        public string EstimatedPrice => $"${HourlyPrice * Throughput:N3} hourly / {HourlyPrice * Throughput * 24:N2} daily.";
 
         public int? TimeToLiveInSecond { get; set; }
 
         public TextDocument Content { get; set; }
 
-        public bool IsDirty { get; set; }
+        public bool IsChanged { get; set; }
 
         public bool OffTimeToLive { get; set; }
 
@@ -162,6 +185,7 @@ namespace CosmosDbExplorer.ViewModel
             Throughput = result[0];
 
             IsLoading = false;
+            IsChanged = false;
         }
 
         public RelayCommand DiscardCommand
@@ -174,7 +198,7 @@ namespace CosmosDbExplorer.ViewModel
                         {
                             SetInformation();
                             await LoadDataAsync().ConfigureAwait(false);
-                            IsDirty = false;
+                            IsChanged = false;
                         },
                         () => IsDirty));
             }
@@ -188,13 +212,36 @@ namespace CosmosDbExplorer.ViewModel
                     ?? (_saveCommand = new RelayCommand(
                         async () =>
                         {
-                            Collection.DefaultTimeToLive = GetTimeToLive();
-                            Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
+                            try
+                            {
+                                Collection.DefaultTimeToLive = GetTimeToLive();
+                                Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
-                            await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
-                            IsDirty = false;
+                                await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
+                                IsChanged = false;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                await _dialogService.ShowMessage("Operation cancelled by user...", "Cancel").ConfigureAwait(false);
+                            }
+                            catch (DocumentClientException clientEx)
+                            {
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                            }
                         },
-                        () => IsValid));
+                        () => IsDirty && IsValid));
+            }
+        }
+
+        public bool IsDirty
+        {
+            get
+            {
+                return IsChanged || PolicyViewModel?.IsChanged == true;
             }
         }
 
@@ -230,6 +277,22 @@ namespace CosmosDbExplorer.ViewModel
             RuleFor(x => x.Throughput).NotEmpty()
                                       .Must(throughput => throughput % 100 == 0)
                                       .WithMessage("Throughput must be a multiple of 100");
+
+            RuleFor(x => x.Content)
+                .Custom((content, ctx) =>
+                {
+                    DispatcherHelper.RunAsync(() =>
+                    {
+                        try
+                        {
+                            JsonConvert.DeserializeObject<IndexingPolicy>(content.Text);
+                        }
+                        catch (Exception ex)
+                        {
+                            ctx.AddFailure(ex.Message);
+                        }
+                    });
+                });
         }
     }
 }

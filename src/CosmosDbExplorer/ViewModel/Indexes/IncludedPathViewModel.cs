@@ -16,14 +16,6 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         private RelayCommand<IndexViewModel> _removeIndexCommand;
         private RelayCommand _addIndexCommand;
 
-        public IncludedPathViewModel()
-            : this(new IncludedPath
-            {
-                Indexes = new Collection<Index>() { new HashIndex(DataType.String, 3) }
-            })
-        {
-        }
-
         public IncludedPathViewModel(IncludedPath includedPath)
         {
             IncludedPath = includedPath;

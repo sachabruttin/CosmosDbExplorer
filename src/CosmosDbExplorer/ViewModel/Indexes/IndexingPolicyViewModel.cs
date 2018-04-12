@@ -38,9 +38,27 @@ namespace CosmosDbExplorer.ViewModel.Indexes
                     RaisePropertyChanged(nameof(ExcludedPaths));
                 }
             };
+
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName != nameof(IsValid))
+                {
+                    RaisePropertyChanged(nameof(IsValid));
+                }
+            };
         }
 
         public IndexingPolicy Policy { get; }
+
+        public bool IsValid
+        {
+            get
+            {
+                return !((INotifyDataErrorInfo)this).HasErrors
+                    && IncludedPaths.All(ip => !ip.HasErrors)
+                    && ExcludedPaths.All(ep => !ep.HasErrors);
+            }
+        }
 
         public bool IsAutomatic
         {

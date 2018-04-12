@@ -198,7 +198,15 @@ namespace CosmosDbExplorer.ViewModel
                             await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
                             IsDirty = false;
                         },
-                        () => !((INotifyDataErrorInfo)this).HasErrors));
+                        () => IsValid));
+            }
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return !((INotifyDataErrorInfo)this).HasErrors && (PolicyViewModel != null && PolicyViewModel.IsValid);
             }
         }
 

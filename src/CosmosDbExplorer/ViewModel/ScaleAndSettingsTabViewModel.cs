@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,12 +7,10 @@ using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModel.Indexes;
 using FluentValidation;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
-using PropertyChanged;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModel
@@ -37,7 +33,7 @@ namespace CosmosDbExplorer.ViewModel
 
         private void OnPropetyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var names = new[] { "Throughput", "TimeToLiveInSecond", "OffTimeToLive", "NoDefaultTimeToLive", "OnTimeToLive" };
+            var names = new[] { nameof(Throughput), nameof(TimeToLiveInSecond), nameof(OffTimeToLive), nameof(NoDefaultTimeToLive), nameof(OnTimeToLive) };
 
             if (!IsLoading && names.Contains(e.PropertyName))
             {
@@ -206,7 +202,7 @@ namespace CosmosDbExplorer.ViewModel
         {
             get
             {
-                return !((INotifyDataErrorInfo)this).HasErrors && (PolicyViewModel != null && PolicyViewModel.IsValid);
+                return !((INotifyDataErrorInfo)this).HasErrors && (PolicyViewModel?.IsValid == true);
             }
         }
 
@@ -236,8 +232,4 @@ namespace CosmosDbExplorer.ViewModel
                                       .WithMessage("Throughput must be a multiple of 100");
         }
     }
-
-    
-
-
 }

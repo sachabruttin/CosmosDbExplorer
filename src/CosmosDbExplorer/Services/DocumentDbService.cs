@@ -329,8 +329,13 @@ namespace CosmosDbExplorer.Services
 
         public async Task UpdateCollectionSettingsAsync(Connection connection, DocumentCollection collection, int throughput)
         {
-            await UpdateOfferThroughput(connection, collection, throughput).ConfigureAwait(false);
-            await GetClient(connection).ReplaceDocumentCollectionAsync(collection).ConfigureAwait(false);
+            var tasks = new[]
+            {
+                GetClient(connection).ReplaceDocumentCollectionAsync(collection),
+                UpdateOfferThroughput(connection, collection, throughput)
+            };
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         private async Task UpdateOfferThroughput(Connection connection, DocumentCollection collection, int throughtput)

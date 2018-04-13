@@ -155,7 +155,7 @@ namespace CosmosDbExplorer.ViewModel
             }
             else
             {
-                var content = _ioc.GetInstance<TTabViewModel>(contentId);
+                var content = SimpleIoc.Default.GetInstanceWithoutCaching<TTabViewModel>(contentId); //_ioc.GetInstance<TTabViewModel>(contentId);
                 content.Load(contentId, message.Node, message.Connection, message.Collection);
 
                 Tabs.Add(content);

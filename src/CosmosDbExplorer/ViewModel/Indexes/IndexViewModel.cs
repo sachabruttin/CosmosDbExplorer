@@ -29,6 +29,7 @@ namespace CosmosDbExplorer.ViewModel.Indexes
                 case HashIndex hashIndex:
                     DataType = hashIndex.DataType;
                     Precision = hashIndex.Precision;
+                    IsMaxPrecision = hashIndex.Precision == -1;
                     Kind = hashIndex.Kind;
                     break;
                 case SpatialIndex spatialIndex:
@@ -142,7 +143,7 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         public bool CanSetPrecision => !IsMaxPrecision && Kind != IndexKind.Spatial;
 
         [DependsOn(nameof(Kind))]
-        public bool CanSetMaxPrecision => Kind == IndexKind.Range;
+        public bool CanSetMaxPrecision => Kind != IndexKind.Spatial;
     }
 
     public class IndexViewModelValidator : AbstractValidator<IndexViewModel>

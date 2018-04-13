@@ -28,7 +28,7 @@ namespace CosmosDbExplorer.ViewModel
         private bool _onTimeToLive;
         private const decimal HourlyPrice = 0.00008m;
         private readonly IDialogService _dialogService;
-        private IDisposable _textChangedObservable;
+        private readonly IDisposable _textChangedObservable;
 
         public ScaleAndSettingsTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
             : base(messenger, uiServices)

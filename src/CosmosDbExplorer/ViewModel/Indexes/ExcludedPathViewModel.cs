@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using CosmosDbExplorer.Infrastructure;
 using FluentValidation;
 using GalaSoft.MvvmLight;
 using Microsoft.Azure.Documents;
@@ -52,7 +53,7 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         {
             RuleFor(x => x.Path)
                 .NotEmpty()
-                .Matches(@"^\/(\w*\/|\[\]\/)*[\*\?]$");
+                .Matches(Constants.Validation.PathRegex);
         }
     }
 }

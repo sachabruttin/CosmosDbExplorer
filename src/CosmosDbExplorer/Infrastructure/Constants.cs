@@ -16,5 +16,10 @@ namespace CosmosDbExplorer.Infrastructure
             public const string Trigger = "function trigger(){}";
             public const string UserDefiniedFunction = "function userDefinedFunction(){}";
         }
+
+        public static class Validation
+        {
+            public const string PathRegex = @"^\/[\*]?$|^\/(\w*\/|\[\]\/)+[\*\?]$";
+        }
     }
 }

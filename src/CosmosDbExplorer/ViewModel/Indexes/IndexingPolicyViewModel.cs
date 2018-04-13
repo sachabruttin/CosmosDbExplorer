@@ -20,7 +20,7 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         private RelayCommand<ExcludedPathViewModel> _removeExcludedPathCommand;
         private RelayCommand _addExcludedPathCommand;
 
-        private bool _isCreating;
+        private readonly bool _isCreating;
 
         public IndexingPolicyViewModel(IndexingPolicy policy)
         {
@@ -184,15 +184,34 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         {
             RuleFor(x => x.IncludedPaths)
                 .Must(coll => coll.Distinct().Count() == coll.Count)
-                .WithMessage("Only one entry per path!");
-
-            RuleFor(x => x.IncludedPaths)
-                .NotEmpty()
-                .When(x => x.Mode != IndexingMode.None);
+                .WithMessage((vm, coll) => $"Path(s) '{string.Join("' and '", coll.GroupBy(g => g.Path).Where(g => g.Skip(1).Any()).Select(g => g.Key))}' are duplicated.")
+                .Must((vm, coll) =>
+                {
+                    var joined = coll.Select(c => c.Path).Concat(vm.ExcludedPaths.Select(ep => ep.Path)).ToList();
+                    return joined.Distinct().Count() == joined.Count;
+                })
+                .WithMessage((vm, coll) =>
+                {
+                    var joined = coll.Select(c => c.Path).Concat(vm.ExcludedPaths.Select(ep => ep.Path)).ToList();
+                    var duplicated = joined.GroupBy(p => p).Where(g => g.Skip(1).Any()).Select(g => g.Key);
+                    return $"Path(s) '{string.Join("' and '", duplicated)}' already present in Excluded Paths.";
+                })
+                .NotEmpty().When(x => x.Mode != IndexingMode.None);
 
             RuleFor(x => x.ExcludedPaths)
                 .Must(coll => coll.Distinct().Count() == coll.Count)
-                .WithMessage("Only one entry per path!");
+                .WithMessage((vm, coll) => $"Path(s) '{string.Join("' and '", coll.GroupBy(g => g.Path).Where(g => g.Skip(1).Any()).Select(g => g.Key))}' are duplicated.")
+                .Must((vm, coll) =>
+                {
+                    var joined = coll.Select(c => c.Path).Concat(vm.IncludedPaths.Select(ep => ep.Path)).ToList();
+                    return joined.Distinct().Count() == joined.Count;
+                })
+                .WithMessage((vm, coll) =>
+                {
+                    var joined = coll.Select(c => c.Path).Concat(vm.IncludedPaths.Select(ep => ep.Path)).ToList();
+                    var duplicated = joined.GroupBy(p => p).Where(g => g.Skip(1).Any()).Select(g => g.Key);
+                    return $"Path(s) '{string.Join("' and '", duplicated)}' already present in Included Paths.";
+                });
         }
     }
 }

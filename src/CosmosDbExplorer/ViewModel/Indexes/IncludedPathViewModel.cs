@@ -81,11 +81,11 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         {
             RuleFor(x => x.Path)
                 .NotEmpty()
-                .Matches(@"^\/(\w*\/|\[\]\/)*[\*\?]$");
+                .Matches(Constants.Validation.PathRegex);
 
             RuleFor(x => x.Indexes)
                 .Must(coll => coll.Distinct().Count() == coll.Count)
-                .WithMessage("Only one entry per data type per path!");
+                .WithMessage((vm, coll) => $"Duplicate indexes specified for the path '{vm.Path}' and data type '{string.Join("' and '", coll.GroupBy(g => g.DataType).Where(g => g.Skip(1).Any()).Select(g => g.Key.Value.ToString()))}'.");
 
             RuleFor(x => x.Indexes)
                 .NotEmpty();

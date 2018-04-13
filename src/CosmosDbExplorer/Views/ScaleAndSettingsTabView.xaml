@@ -125,7 +125,7 @@
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
-                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
+                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=500}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
                                                                 <Button Command="{Binding DataContext.PolicyViewModel.RemoveIncludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
                                                                             CommandParameter="{Binding}"
                                                                             Grid.Row="0" Grid.Column="2"
@@ -242,7 +242,7 @@
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <Label Content="Path:" Grid.Row="0" Grid.Column="0" />
-                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
+                                                                <xctk:WatermarkTextBox Watermark="" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=500}" Grid.Row="0" Grid.Column="1" Margin="2,2,7,2" />
                                                                 <Button Command="{Binding DataContext.PolicyViewModel.RemoveExcludedPathCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Control}}"
                                                                                 CommandParameter="{Binding}"
                                                                                 Grid.Row="0" Grid.Column="2"

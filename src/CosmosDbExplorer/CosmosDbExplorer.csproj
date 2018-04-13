@@ -53,7 +53,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>cosmos-db.ico</ApplicationIcon>
+    <ApplicationIcon>astronaut.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>9F62A3926A5B227285B516DBEC4075DCACB56EC9</ManifestCertificateThumbprint>
@@ -476,9 +476,6 @@
     <Resource Include="Images\loading.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="DocumentDB.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.7 %28x86 and x64%29</ProductName>
@@ -491,7 +488,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cosmos-db.ico" />
+    <Resource Include="astronaut.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -29,64 +29,50 @@
                              DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}">
 
             <xcad:LayoutRoot x:Name="_layoutRoot">
-                
+
                 <xcad:LayoutPanel Orientation="Vertical">
 
-                    <xcad:LayoutAnchorablePaneGroup Orientation="Horizontal">
-
-                        <xcad:LayoutAnchorablePaneGroup>
-                            <xcad:LayoutAnchorablePane>
-                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="False">
-                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                    <xcad:LayoutDocumentPane DockHeight="500">
+                        <xcad:LayoutDocument Title="Stored Procedure" CanClose="False">
+                            <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
                                            FontSize="10pt" FontFamily="Consolas"
                                            IsReadOnly="False" VerticalScrollBarVisibility="Auto"
                                            ShowLineNumbers="True"
                                            Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            ContextMenu="{StaticResource JsonEditorContextMenu}">
-                                        <i:Interaction.Behaviors>
-                                            <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
-                                        </i:Interaction.Behaviors>
-                                    </avalonedit:TextEditor>
-                                </xcad:LayoutAnchorable>
+                                <i:Interaction.Behaviors>
+                                    <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                                </i:Interaction.Behaviors>
+                            </avalonedit:TextEditor>
+                        </xcad:LayoutDocument>
+                    </xcad:LayoutDocumentPane>
 
-                            </xcad:LayoutAnchorablePane>
-                        </xcad:LayoutAnchorablePaneGroup>
+                    <xcad:LayoutAnchorablePaneGroup DockHeight="200">
 
-                        <xcad:LayoutAnchorablePaneGroup>
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="True" />
+                        </xcad:LayoutAnchorablePane>
 
-                            <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
-                                <xcad:LayoutAnchorablePane>
-                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="False" />
-                                </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutAnchorablePane>
 
-                                <xcad:LayoutAnchorablePane>
-
-                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="False"
+                            <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource ResultPaneIcon}">
-                                        <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
+                                <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
-                                    </xcad:LayoutAnchorable>
+                            </xcad:LayoutAnchorable>
 
-                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="False"
+                            <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="False"
                                                            IconSource="{StaticResource HttpIcon}">
-                                        <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
 
-                                    </xcad:LayoutAnchorable>
+                            </xcad:LayoutAnchorable>
 
-                                </xcad:LayoutAnchorablePane>
+                        </xcad:LayoutAnchorablePane>
 
-
-                            </xcad:LayoutAnchorablePaneGroup>
-
-
-                        </xcad:LayoutAnchorablePaneGroup>
 
                     </xcad:LayoutAnchorablePaneGroup>
-
-
-                    
                 </xcad:LayoutPanel>
 
                 <xcad:LayoutRoot.BottomSide>

@@ -36,7 +36,7 @@
 
                         <xcad:LayoutAnchorablePaneGroup>
                             <xcad:LayoutAnchorablePane>
-                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="False">
+                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
                                     <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
                                            FontSize="10pt" FontFamily="Consolas"
                                            IsReadOnly="False" VerticalScrollBarVisibility="Auto"
@@ -57,22 +57,28 @@
 
                             <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
                                 <xcad:LayoutAnchorablePane>
-                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="False" />
+                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource ParameterIcon}"/>
                                 </xcad:LayoutAnchorablePane>
 
                                 <xcad:LayoutAnchorablePane>
 
-                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="False"
+                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource ResultPaneIcon}">
                                         <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
                                     </xcad:LayoutAnchorable>
 
-                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="False"
+                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource HttpIcon}">
                                         <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
 
+                                    </xcad:LayoutAnchorable>
+
+                                    <xcad:LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource EventLogIcon}">
+                                        <TextBox IsReadOnly="True" AcceptsReturn="True" Text="{Binding Log, Mode=OneWay}" />
                                     </xcad:LayoutAnchorable>
 
                                 </xcad:LayoutAnchorablePane>
@@ -84,20 +90,9 @@
                         </xcad:LayoutAnchorablePaneGroup>
 
                     </xcad:LayoutAnchorablePaneGroup>
-
-
                     
                 </xcad:LayoutPanel>
 
-                <xcad:LayoutRoot.BottomSide>
-                    <xcad:LayoutAnchorSide>
-                        <xcad:LayoutAnchorGroup>
-                                <xcad:LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True">
-                                    <TextBox IsReadOnly="True" AcceptsReturn="True" Text="{Binding Log, Mode=OneWay}" />
-                                </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorGroup>
-                    </xcad:LayoutAnchorSide>
-                </xcad:LayoutRoot.BottomSide>
                 
             </xcad:LayoutRoot>
             

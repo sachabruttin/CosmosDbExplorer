@@ -8,9 +8,11 @@
              xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel.Assets"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:views="clr-namespace:CosmosDbExplorer.Views"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
-             d:DesignHeight="300" d:DesignWidth="300"  d:DataContext="{x:Type vm:StoredProcedureTabViewModel}">
-    <DockPanel>
+             d:DesignHeight="600" d:DesignWidth="800"  d:DataContext="{x:Type vm:StoredProcedureTabViewModel}">
+    <DockPanel LastChildFill="True">
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
             <Label Content="Stored Procedure Id"/>
@@ -23,16 +25,86 @@
 
         </StackPanel>
 
-        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
-                               FontSize="10pt" FontFamily="Consolas"
-                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
-                               ShowLineNumbers="True"
-                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               ContextMenu="{StaticResource JsonEditorContextMenu}">
-            <i:Interaction.Behaviors>
-                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
-            </i:Interaction.Behaviors>
-        </avalonedit:TextEditor>
+        <xcad:DockingManager AllowMixedOrientation="True"
+                             DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}">
+
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                
+                <xcad:LayoutPanel Orientation="Vertical">
+
+                    <xcad:LayoutAnchorablePaneGroup Orientation="Horizontal">
+
+                        <xcad:LayoutAnchorablePaneGroup>
+                            <xcad:LayoutAnchorablePane>
+                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="False">
+                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                           FontSize="10pt" FontFamily="Consolas"
+                                           IsReadOnly="False" VerticalScrollBarVisibility="Auto"
+                                           ShowLineNumbers="True"
+                                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                                        <i:Interaction.Behaviors>
+                                            <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                                        </i:Interaction.Behaviors>
+                                    </avalonedit:TextEditor>
+                                </xcad:LayoutAnchorable>
+
+                            </xcad:LayoutAnchorablePane>
+                        </xcad:LayoutAnchorablePaneGroup>
+
+                        <xcad:LayoutAnchorablePaneGroup>
+
+                            <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
+                                <xcad:LayoutAnchorablePane>
+                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="False" />
+                                </xcad:LayoutAnchorablePane>
+
+                                <xcad:LayoutAnchorablePane>
+
+                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="False"
+                                                           IconSource="{StaticResource ResultPaneIcon}">
+                                        <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                    </xcad:LayoutAnchorable>
+
+                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="False"
+                                                           IconSource="{StaticResource HttpIcon}">
+                                        <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+
+                                    </xcad:LayoutAnchorable>
+
+                                </xcad:LayoutAnchorablePane>
+
+
+                            </xcad:LayoutAnchorablePaneGroup>
+
+
+                        </xcad:LayoutAnchorablePaneGroup>
+
+                    </xcad:LayoutAnchorablePaneGroup>
+
+
+                    
+                </xcad:LayoutPanel>
+
+                <xcad:LayoutRoot.BottomSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                                <xcad:LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True">
+                                    <TextBox IsReadOnly="True" AcceptsReturn="True" Text="{Binding Log, Mode=OneWay}" />
+                                </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.BottomSide>
+                
+            </xcad:LayoutRoot>
+            
+        </xcad:DockingManager>
+
+
+
+
     </DockPanel>
 </UserControl>

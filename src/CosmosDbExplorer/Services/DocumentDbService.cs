@@ -470,5 +470,15 @@ namespace CosmosDbExplorer.Services
 
             return partitionKeyRanges;
         }
+
+        public Task<StoredProcedureResponse<dynamic>> ExecuteStoreProcedureAsync(Connection connection, string altLink, IList<dynamic> parameters)
+        {
+            var options = new RequestOptions
+            {
+                EnableScriptLogging = true
+            };
+
+            return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters);
+        }
     }
 }

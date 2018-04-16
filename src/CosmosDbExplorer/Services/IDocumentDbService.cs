@@ -36,6 +36,8 @@ namespace CosmosDbExplorer.Services
 
         Task DeleteStoredProcedureAsync(Connection connection, string storedProcedureLink);
 
+        Task<StoredProcedureResponse<dynamic>> ExecuteStoreProcedureAsync(Connection connection, string altLink, IList<dynamic> parameters);
+
         Task<IList<UserDefinedFunction>> GetUdfsAsync(Connection connection, DocumentCollection collection);
 
         Task<UserDefinedFunction> SaveUdfAsync(Connection connection, DocumentCollection collection, string id, string function, string altLink);

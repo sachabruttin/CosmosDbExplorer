@@ -333,6 +333,15 @@
                             <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
                         </fluent:Button.LargeIcon>
                     </fluent:Button>
+
+                    <fluent:Button Header="Run"
+                                   Command="{Binding SelectedTab.ExecuteCommand}"
+                                   SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
                 </fluent:RibbonGroupBox>
 
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Query"

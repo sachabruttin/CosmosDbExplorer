@@ -20,7 +20,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
         [DoNotSetChanged]
         public bool IsBusy { get; set; }
 
-        protected void OnIsBusyChanged()
+        protected virtual void OnIsBusyChanged()
         {
             _uiServices.SetBusyState(IsBusy);
         }

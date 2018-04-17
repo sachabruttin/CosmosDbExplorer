@@ -1,19 +1,29 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
+using CosmosDbExplorer.Services.DialogSettings;
+using FluentValidation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Azure.Documents;
+using Validar;
 
 namespace CosmosDbExplorer.ViewModel.Assets
 {
+    [InjectValidation]
     public class StoredProcedureTabViewModel : AssetTabViewModelBase<StoredProcedureNodeViewModel, StoredProcedure>
     {
         private RelayCommand _executeCommand;
+        private RelayCommand<StoredProcParameterViewModel> _removeParameterCommand;
+        private RelayCommand _addParameterCommand;
+        private RelayCommand<object> _browseParameterCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
@@ -37,6 +47,13 @@ namespace CosmosDbExplorer.ViewModel.Assets
         protected override string GetDefaultHeader() { return "New Stored Procedure"; }
         protected override string GetDefaultTitle() { return "Stored Procedure"; }
         protected override string GetDefaultContent() { return Constants.Default.StoredProcedure; }
+
+        public override void Load(string contentId, StoredProcedureNodeViewModel node, Connection connection, DocumentCollection collection)
+        {
+            IsCollectionPartitioned = collection.PartitionKey.Paths.Count > 0;
+
+            base.Load(contentId, node, connection, collection);
+        }
 
         protected override void SetInformationImpl(StoredProcedure resource)
         {
@@ -73,6 +90,69 @@ namespace CosmosDbExplorer.ViewModel.Assets
             base.OnIsBusyChanged();
         }
 
+        public string PartitionKey { get; set; }
+
+        public bool IsCollectionPartitioned { get; protected set; }
+
+        public ObservableCollection<StoredProcParameterViewModel> Parameters { get; } = new ObservableCollection<StoredProcParameterViewModel>();
+
+        public RelayCommand AddParameterCommand
+        {
+            get
+            {
+                return _addParameterCommand ?? (_addParameterCommand = new RelayCommand(
+                    () => Parameters.Add(new StoredProcParameterViewModel()),
+                    () => !IsBusy && !IsDirty));
+            }
+        }
+
+        public RelayCommand<StoredProcParameterViewModel> RemoveParameterCommand
+        {
+            get
+            {
+                return _removeParameterCommand ?? (_removeParameterCommand = new RelayCommand<StoredProcParameterViewModel>(
+                    item =>
+                    {
+                        try
+                        {
+                            Parameters.Remove(item);
+                            item.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    },
+                    item => !IsBusy & !IsDirty));
+            }
+        }
+
+        public RelayCommand<object> BrowseParameterCommand
+        {
+            get
+            {
+                return _browseParameterCommand ?? (_browseParameterCommand = new RelayCommand<object>(
+                    async item =>
+                    {
+                        var options = new OpenFileDialogSettings
+                        {
+                            Title = "Select file...",
+                            DefaultExt = "json",
+                            Multiselect = false, Filter = "JSON|*.json"
+                        };
+
+                        await _dialogService.ShowOpenFileDialog(options, (confirm, result) =>
+                        {
+                            if (confirm && item is StoredProcParameterViewModel vm)
+                            {
+                                vm.FileName = result.FileName;
+                            }
+                        }).ConfigureAwait(false);
+                    },
+                    item => !IsBusy & !IsDirty));
+            }
+        }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -83,7 +163,7 @@ namespace CosmosDbExplorer.ViewModel.Assets
                         try
                         {
                             IsBusy = true;
-                            var result = await _dbService.ExecuteStoreProcedureAsync(Connection, AltLink, null).ConfigureAwait(false);
+                            var result = await _dbService.ExecuteStoreProcedureAsync(Connection, AltLink, Parameters.Select(p => p.GetValue()).ToArray(), PartitionKey).ConfigureAwait(false);
                             RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
 
                             Log += $"{DateTime.Now:T} : {WebUtility.UrlDecode(result.ScriptLog)}{Environment.NewLine}";
@@ -104,9 +184,20 @@ namespace CosmosDbExplorer.ViewModel.Assets
                             IsBusy = false;
                         }
                     },
-                    () => !IsBusy && !IsDirty));
-
+                    () => !IsBusy && !IsDirty && IsValid));
             }
+        }
+
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+    }
+
+    public class StoredProcedureTabViewModelValidator : AbstractValidator<StoredProcedureTabViewModel>
+    {
+        public StoredProcedureTabViewModelValidator()
+        {
+            RuleFor(x => x.PartitionKey)
+                .NotEmpty()
+                .When(x => x.IsCollectionPartitioned);
         }
     }
 }

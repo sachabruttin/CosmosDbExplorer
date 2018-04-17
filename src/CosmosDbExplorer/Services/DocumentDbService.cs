@@ -471,14 +471,15 @@ namespace CosmosDbExplorer.Services
             return partitionKeyRanges;
         }
 
-        public Task<StoredProcedureResponse<dynamic>> ExecuteStoreProcedureAsync(Connection connection, string altLink, IList<dynamic> parameters)
+        public Task<StoredProcedureResponse<dynamic>> ExecuteStoreProcedureAsync(Connection connection, string altLink, IList<dynamic> parameters, string partitionKey)
         {
             var options = new RequestOptions
             {
-                EnableScriptLogging = true
+                EnableScriptLogging = true,
+                PartitionKey = partitionKey != null ? new PartitionKey(partitionKey) : null
             };
 
-            return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters);
+            return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters.ToArray());
         }
     }
 }

@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:CosmosDbExplorer.Infrastructure.Converters"
              xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              d1p1:Ignorable="d" 
              xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006">
     <Application.Resources>
@@ -77,10 +78,9 @@
                         
                     </Border>
                     <TextBlock Foreground="DarkRed" FontFamily="Segoe MDL2 Assets" Text="&#xE8C9;"
-                               VerticalAlignment="Center" Margin="-2,0,0,0" />
+                               VerticalAlignment="Top" Margin="-2,4,0,0" />
                 </StackPanel>
             </ControlTemplate>
-
 
             <DataTemplate x:Key="AvalonDockHeaderTemplate">
                 <StackPanel Orientation="Horizontal" Margin="0,3" VerticalAlignment="Center">
@@ -91,7 +91,6 @@
                     <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
                 </StackPanel>
             </DataTemplate>
-
 
             <Style TargetType="{x:Type TextBox}">
                 <Style.Triggers>
@@ -162,6 +161,19 @@
                     </Trigger>
                 </Style.Triggers>
                 <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationTemplate}" />
+            </Style>
+
+            <Style TargetType="{x:Type avalonedit:TextEditor}">
+                <Setter Property="FontSize" Value="10pt" />
+                <Setter Property="FontFamily" Value="Consolas,Courrier New" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationTemplate}" />
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="true">
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <Style TargetType="{x:Type RadioButton}" x:Key="SquareRadioButtonStyle">

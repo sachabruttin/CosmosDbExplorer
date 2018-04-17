@@ -35,13 +35,11 @@ namespace CosmosDbExplorer.ViewModel
         {
             Content = new TextDocument();
 
-            _textChangedObservable = Observable.FromEventPattern<EventArgs>(Content, "TextChanged")
-                                                  .ObserveOnDispatcher()
+            _textChangedObservable = Observable.FromEventPattern<EventArgs>(Content, nameof(Content.TextChanged))
                                                   .Select(evt => ((TextDocument)evt.Sender).Text)
                                                   .Throttle(TimeSpan.FromMilliseconds(600))
                                                   .Where(text => !string.IsNullOrEmpty(text))
                                                   .DistinctUntilChanged()
-                                                  .SubscribeOnDispatcher()
                                                   .Subscribe(OnContentTextChanged);
 
             _dbService = dbService;

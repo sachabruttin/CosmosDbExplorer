@@ -224,6 +224,7 @@
     <Compile Include="Infrastructure\Models\PaneViewModel.cs" />
     <Compile Include="Infrastructure\Models\StatusBarItemType.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\StatusBarItemTemplateSelector.cs" />
+    <Compile Include="Infrastructure\TemplateSelectors\StoredProcParameterTemplateSelector.cs" />
     <Compile Include="Infrastructure\Validar\ValidationFactory.cs" />
     <Compile Include="Infrastructure\Validar\ValidationTemplate.cs" />
     <Compile Include="Infrastructure\Models\WindowViewModelBase.cs" />
@@ -301,6 +302,7 @@
     <Compile Include="ViewModel\Assets\TriggerTabViewModel.cs" />
     <Compile Include="ViewModel\Assets\UserDefFuncTabViewModel.cs" />
     <Compile Include="ViewModel\PermissionEditViewModel.cs" />
+    <Compile Include="ViewModel\Assets\StoredProcParameterViewModel.cs" />
     <Compile Include="ViewModel\UserEditViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\AboutView.xaml.cs">

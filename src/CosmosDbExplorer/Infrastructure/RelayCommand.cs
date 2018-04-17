@@ -40,17 +40,17 @@ namespace CosmosDbExplorer.Infrastructure
 
     public class RelayCommand<T> : ICommand
     {
-        readonly Action<T> _execute;
-        readonly Predicate<T> _canExecute;
+        private readonly Action<T> _execute;
+        private readonly Predicate<T> _canExecute;
 
         public RelayCommand(Action<T> execute)
-        : this(execute, null)
+            : this(execute, null)
         {
         }
 
         public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {
-            _execute = execute ?? throw new ArgumentNullException("execute");
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 

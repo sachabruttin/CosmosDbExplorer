@@ -8,9 +8,13 @@
              xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel.Assets"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:views="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:markup="clr-namespace:CosmosDbExplorer.Infrastructure.MarkupExtensions"
+             xmlns:templateselectors="clr-namespace:CosmosDbExplorer.Infrastructure.TemplateSelectors"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
-             d:DesignHeight="300" d:DesignWidth="300"  d:DataContext="{x:Type vm:StoredProcedureTabViewModel}">
-    <DockPanel>
+             d:DesignHeight="600" d:DesignWidth="800"  d:DataContext="{x:Type vm:StoredProcedureTabViewModel}">
+    <DockPanel LastChildFill="True">
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
             <Label Content="Stored Procedure Id"/>
@@ -19,20 +23,234 @@
                      Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Watermark="Enter the stored procedure id" KeepWatermarkOnGotFocus="True"/>
 
-            <Label Content="Stored Procedure Body"/>
-
         </StackPanel>
 
-        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
-                               FontSize="10pt" FontFamily="Consolas"
-                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
-                               ShowLineNumbers="True"
-                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               ContextMenu="{StaticResource JsonEditorContextMenu}">
-            <i:Interaction.Behaviors>
-                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
-            </i:Interaction.Behaviors>
-        </avalonedit:TextEditor>
+        <xcad:DockingManager AllowMixedOrientation="True"
+                             DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}">
+
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                
+                <xcad:LayoutPanel Orientation="Vertical">
+
+                    <xcad:LayoutAnchorablePaneGroup Orientation="Horizontal">
+
+                        <xcad:LayoutAnchorablePaneGroup>
+                            <xcad:LayoutAnchorablePane>
+                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
+                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                           ShowLineNumbers="True"
+                                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                                        <i:Interaction.Behaviors>
+                                            <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                                        </i:Interaction.Behaviors>
+                                    </avalonedit:TextEditor>
+                                </xcad:LayoutAnchorable>
+                            </xcad:LayoutAnchorablePane>
+                        </xcad:LayoutAnchorablePaneGroup>
+
+                        <xcad:LayoutAnchorablePaneGroup>
+
+                            <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
+                                <xcad:LayoutAnchorablePane>
+                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource ParameterIcon}">
+
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+
+                                            <StackPanel Orientation="Vertical" Grid.Row="0" Margin="5,10"
+                                                        Visibility="{Binding IsCollectionPartitioned, Converter={StaticResource boolToVisibilityConverter}}">
+                                                <Label Content="Partition Key"/>
+
+                                                <xctk:WatermarkTextBox MinWidth="250" Margin="10,0" 
+                                                        Text="{Binding PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                        Watermark="Enter the partition key value" KeepWatermarkOnGotFocus="True"/>
+
+                                            </StackPanel>
+
+                                            
+                                            <TextBlock Grid.Row="1" >
+                                                <Hyperlink Command="{Binding AddParameterCommand}">
+                                                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                                                        <TextBlock Style="{StaticResource AddIcon}" FontSize="8pt" VerticalAlignment="Center" />
+                                                        <TextBlock Text="Add Parameter" Margin="5,0,0,0" />
+                                                    </StackPanel>
+                                                </Hyperlink>
+                                            </TextBlock>
+
+                                            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2">
+                                                <ItemsControl ItemsSource="{Binding Parameters, ValidatesOnDataErrors=True}" AlternationCount="2"
+                                                              Margin="0,5,0,0">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border x:Name="_root" BorderThickness="0.5" Margin="2" Padding="5" BorderBrush="DarkGray">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="90" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <ComboBox SelectedItem="{Binding Kind, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
+                                                                              ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type vm:StoredProcParameterKind}}}"
+                                                                              x:Name="_item"
+                                                                              Grid.Column="0" VerticalAlignment="Top"/>
+
+                                                                    <ContentControl Grid.Column="1" Content="{Binding Kind}" Margin="2,2,7,2" >
+                                                                        <ContentControl.ContentTemplateSelector>
+                                                                            <templateselectors:StoredProcParameterTemplateSelector>
+                                                                                <templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                                                                                               BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                                                                                                               ShowLineNumbers="True" Padding="2"
+                                                                                                               Document="{Binding Path=DataContext.Document, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}"
+                                                                                                               ContextMenu="{StaticResource JsonEditorContextMenu}">
+                                                                                            <i:Interaction.Behaviors>
+                                                                                                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                                                                            </i:Interaction.Behaviors>
+                                                                                        </avalonedit:TextEditor>
+
+                                                                                    </DataTemplate>
+                                                                                </templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
+                                                                                <templateselectors:StoredProcParameterTemplateSelector.FileDataTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBox Text="{Binding Path=DataContext.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item, Delay=500}">
+                                                                                            <TextBox.Style>
+                                                                                                <Style TargetType="{x:Type TextBoxBase}">
+                                                                                                    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationTemplate}" />
+                                                                                                    <Setter Property="Template">
+                                                                                                        <Setter.Value>
+                                                                                                            <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                                                                                                                <Border Name="Border" Padding="2"
+                                                                                                                      Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                                                                                                                      BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                                                                                                                      BorderThickness="1" >
+                                                                                                                    <Grid>
+                                                                                                                        <Grid.ColumnDefinitions>
+                                                                                                                            <ColumnDefinition Width="*" />
+                                                                                                                            <ColumnDefinition Width="Auto" />
+                                                                                                                        </Grid.ColumnDefinitions>
+                                                                                                                        <ScrollViewer Margin="0" x:Name="PART_ContentHost" Grid.Column="0"/>
+                                                                                                                        <Button DockPanel.Dock="Right" Grid.Column="1"
+                                                                                                                                Command="{Binding DataContext.BrowseParameterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                                                                                                CommandParameter="{Binding Path=DataContext, ElementName=_item}" 
+                                                                                                                                BorderThickness="0" Margin="-2">
+                                                                                                                            <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="10pt" Margin="2,0" ToolTip="Select file..."/>
+                                                                                                                        </Button>
+                                                                                                                    </Grid>
+                                                                                                                </Border>
+                                                                                                                <ControlTemplate.Triggers>
+                                                                                                                    <Trigger Property="IsFocused" Value="True">
+                                                                                                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
+                                                                                                                    </Trigger>
+                                                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
+                                                                                                                    </Trigger>
+                                                                                                                </ControlTemplate.Triggers>
+
+                                                                                                            </ControlTemplate>
+                                                                                                        </Setter.Value>
+                                                                                                    </Setter>
+                                                                                                    <Style.Triggers>
+                                                                                                        <Trigger Property="Validation.HasError" Value="true">
+                                                                                                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                                                                                                        </Trigger>
+                                                                                                    </Style.Triggers>
+                                                                                                </Style>
+                                                                                            </TextBox.Style>
+                                                                                        </TextBox>
+                                                                                        
+                                                                                        <!--<DockPanel LastChildFill="True">
+                                                                                            <Button DockPanel.Dock="Right"
+                                                                                                    Command="{Binding DataContext.BrowseParameterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                                                                    CommandParameter="{Binding Path=DataContext, ElementName=_item}"
+                                                                                                    BorderThickness="0,1,1,1">
+                                                                                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="10pt" Margin="2,0"
+                                                                                                           ToolTip="Select file..."/>
+                                                                                            </Button>
+                                                                                            <TextBox Text="{Binding Path=DataContext.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item, Delay=500}"
+                                                                                                     VerticalContentAlignment="Center"/>
+                                                                                        </DockPanel>-->
+                                                                                    </DataTemplate>
+                                                                                </templateselectors:StoredProcParameterTemplateSelector.FileDataTemplate>
+                                                                            </templateselectors:StoredProcParameterTemplateSelector>
+                                                                        </ContentControl.ContentTemplateSelector>
+                                                                    </ContentControl>
+
+                                                                    <Button Command="{Binding DataContext.RemoveParameterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                                        Grid.Column="2" VerticalAlignment="Top"
+                                                                        CommandParameter="{Binding}"
+                                                                        Background="Transparent" BorderThickness="0" Margin="2,4,0,0"
+                                                                        ToolTip="Remove Parameter">
+                                                                        <TextBlock Style="{StaticResource DeleteIcon}" Height="16" Width="16" />
+                                                                    </Button>
+                                                                </Grid>
+                                                            </Border>
+
+                                                            <DataTemplate.Triggers>
+                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                                                    <Setter Property="Background" Value="Transparent" TargetName="_root"/>
+                                                                </Trigger>
+                                                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                                                    <Setter Property="Background" Value="WhiteSmoke" TargetName="_root"/>
+                                                                </Trigger>
+                                                            </DataTemplate.Triggers>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+                                        </Grid>
+
+
+                                    </xcad:LayoutAnchorable>
+                                </xcad:LayoutAnchorablePane>
+
+                                <xcad:LayoutAnchorablePane>
+
+                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource ResultPaneIcon}">
+                                        <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                    </xcad:LayoutAnchorable>
+
+                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource HttpIcon}">
+                                        <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+
+                                    </xcad:LayoutAnchorable>
+
+                                    <xcad:LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True"
+                                                           IconSource="{StaticResource EventLogIcon}">
+                                        <TextBox IsReadOnly="True" AcceptsReturn="True" Text="{Binding Log, Mode=OneWay}" />
+                                    </xcad:LayoutAnchorable>
+
+                                </xcad:LayoutAnchorablePane>
+
+
+                            </xcad:LayoutAnchorablePaneGroup>
+
+
+                        </xcad:LayoutAnchorablePaneGroup>
+
+                    </xcad:LayoutAnchorablePaneGroup>
+                    
+                </xcad:LayoutPanel>
+
+                
+            </xcad:LayoutRoot>
+            
+        </xcad:DockingManager>
+
+
+
+
     </DockPanel>
 </UserControl>

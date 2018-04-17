@@ -11,13 +11,9 @@
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:ImportDocumentViewModel}">
 
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
-                           FontSize="10pt"
-                           FontFamily="Consolas"
-                           IsReadOnly="False" VerticalScrollBarVisibility="Auto"
                            ShowLineNumbers="True"
                            Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-        
         <i:Interaction.Behaviors>
             <infra:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/> 
         </i:Interaction.Behaviors>

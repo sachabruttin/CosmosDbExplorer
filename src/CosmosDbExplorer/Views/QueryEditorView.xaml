@@ -23,9 +23,6 @@
                         <xcad:LayoutDocumentPane ShowHeader="True">
                             <xcad:LayoutDocument CanClose="False" Title="Query" IconSource="{StaticResource SqlQueryIcon}">
                                 <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
-                                               FontSize="10pt"
-                                               FontFamily="Consolas"
-                                               IsReadOnly="False" VerticalScrollBarVisibility="Auto"
                                                ShowLineNumbers="True"
                                                Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -122,8 +119,7 @@
                                     </StackPanel>
 
                                     <avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
-                                                           Grid.Row="1" FontSize="10pt" FontFamily="Consolas"
-                                                           IsReadOnly="True" 
+                                                           Grid.Row="1" IsReadOnly="True" 
                                                            ShowLineNumbers="True"
                                                            Document="{Binding ElementName=metrics, Path=SelectedValue, Mode=OneWay, Converter={StaticResource queryMetricsToDocumentConverter}}" HorizontalScrollBarVisibility="Auto" >
 

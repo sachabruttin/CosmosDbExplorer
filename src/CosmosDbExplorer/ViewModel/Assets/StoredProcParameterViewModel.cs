@@ -19,11 +19,9 @@ namespace CosmosDbExplorer.ViewModel.Assets
         public StoredProcParameterViewModel()
         {
             Document = new TextDocument();
-            //Document.TextChanged += (s, e) => RaisePropertyChanged(nameof(Document));
-
             Kind = StoredProcParameterKind.Json;
 
-            _textChangedObservable = Observable.FromEventPattern<EventArgs>(Document, "TextChanged")
+            _textChangedObservable = Observable.FromEventPattern<EventArgs>(Document, nameof(Document.TextChanged))
                                       .Select(evt => ((TextDocument)evt.Sender).Text)
                                       .Throttle(TimeSpan.FromMilliseconds(600))
                                       .Where(text => !string.IsNullOrEmpty(text))

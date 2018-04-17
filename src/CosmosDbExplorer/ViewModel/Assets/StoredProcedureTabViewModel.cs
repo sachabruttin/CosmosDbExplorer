@@ -113,17 +113,12 @@ namespace CosmosDbExplorer.ViewModel.Assets
                 return _removeParameterCommand ?? (_removeParameterCommand = new RelayCommand<StoredProcParameterViewModel>(
                     item =>
                     {
-                        try
-                        {
-                            Parameters.Remove(item);
-                            item.Dispose();
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
+                        Parameters.Remove(item);
+                        item.Dispose();
                     },
+#pragma warning disable RCS1163 // Unused parameter.
                     item => !IsBusy & !IsDirty));
+#pragma warning restore RCS1163 // Unused parameter.
             }
         }
 
@@ -149,7 +144,9 @@ namespace CosmosDbExplorer.ViewModel.Assets
                             }
                         }).ConfigureAwait(false);
                     },
+#pragma warning disable RCS1163 // Unused parameter.
                     item => !IsBusy & !IsDirty));
+#pragma warning restore RCS1163 // Unused parameter.
             }
         }
 

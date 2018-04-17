@@ -199,7 +199,7 @@ namespace CosmosDbExplorer.ViewModel
             IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
             IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
-            IsQueryTabVisible = SelectedTab is QueryEditorViewModel;
+            IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel ;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
             IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;

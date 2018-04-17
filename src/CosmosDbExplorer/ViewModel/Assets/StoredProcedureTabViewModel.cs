@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using CosmosDbExplorer.Services.DialogSettings;
 using FluentValidation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 using Validar;
 
@@ -24,6 +26,8 @@ namespace CosmosDbExplorer.ViewModel.Assets
         private RelayCommand<StoredProcParameterViewModel> _removeParameterCommand;
         private RelayCommand _addParameterCommand;
         private RelayCommand<object> _browseParameterCommand;
+        private RelayCommand _saveLocalCommand;
+        private RelayCommand _goToNextPageCommand;
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
@@ -182,6 +186,58 @@ namespace CosmosDbExplorer.ViewModel.Assets
                         }
                     },
                     () => !IsBusy && !IsDirty && IsValid));
+            }
+        }
+
+        public RelayCommand SaveLocalCommand
+        {
+            get
+            {
+                return _saveLocalCommand ?? (_saveLocalCommand = new RelayCommand(
+                    async () =>
+                    {
+                        var settings = new SaveFileDialogSettings
+                        {
+                            DefaultExt = "json",
+                            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                            AddExtension = true,
+                            OverwritePrompt = true,
+                            CheckFileExists = false,
+                            Title = "Save document locally"
+                        };
+
+                        await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                        {
+                            if (confirm)
+                            {
+                                try
+                                {
+                                    IsBusy = true;
+
+                                    await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, ResultViewModel.Content.Text));
+                                }
+                                catch (Exception ex)
+                                {
+                                    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                }
+                                finally
+                                {
+                                    IsBusy = false;
+                                }
+                            }
+                        }).ConfigureAwait(false);
+                    },
+                    () => !IsBusy && !string.IsNullOrEmpty(ResultViewModel.Content?.Text)));
+            }
+        }
+
+        public RelayCommand GoToNextPageCommand
+        {
+            get
+            {
+                return _goToNextPageCommand ?? (_goToNextPageCommand = new RelayCommand(
+                    () => throw new NotImplementedException(),
+                    () => false));
             }
         }
 

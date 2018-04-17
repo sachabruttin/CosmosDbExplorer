@@ -131,7 +131,7 @@ namespace CosmosDbExplorer.ViewModel.Assets
                             try
                             {
                                 var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
-                                MessengerInstance.Send(new UpdateOrCreateNodeMessage<TResource>(resource, AltLink));
+                                MessengerInstance.Send(new UpdateOrCreateNodeMessage<TResource>(resource, Collection, AltLink));
                                 SetInformation(resource);
                             }
                             catch (DocumentClientException clientEx)

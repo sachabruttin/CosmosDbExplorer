@@ -22,14 +22,14 @@ namespace CosmosDbExplorer.ViewModel
             : base(parent, parent.MessengerInstance, true)
         {
             DbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
-            MessengerInstance.Register<UpdateOrCreateNodeMessage<TResource>>(this, OnUpdateOrCreateNodeMessage);
+            MessengerInstance.Register<UpdateOrCreateNodeMessage<TResource>>(this, InnerOnUpdateOrCreateNodeMessage);
         }
 
         public string Name { get; protected set; }
 
         public new CollectionNodeViewModel Parent
         {
-            get { return base.Parent as CollectionNodeViewModel; }
+            get { return base.Parent; }
         }
 
         public RelayCommand RefreshCommand
@@ -49,6 +49,14 @@ namespace CosmosDbExplorer.ViewModel
         public CollectionNodeViewModel CollectionNode => Parent;
 
         protected IDocumentDbService DbService { get; }
+
+        private void InnerOnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource> message)
+        {
+            if (message.Collection == CollectionNode.Collection)
+            {
+                OnUpdateOrCreateNodeMessage(message);
+            }
+        }
 
         protected abstract void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource> message);
     }

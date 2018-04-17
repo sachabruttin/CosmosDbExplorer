@@ -176,17 +176,15 @@ namespace CosmosDbExplorer.Services
 
         private static RequestOptions GetRequestOptions(IHaveRequestOptions request)
         {
-            var options = new RequestOptions
+            return new RequestOptions
             {
                 ConsistencyLevel = request.ConsistencyLevel,
                 IndexingDirective = request.IndexingDirective,
                 PreTriggerInclude = request.PreTrigger != null ? new List<string> { request.PreTrigger } : null,
                 PostTriggerInclude = request.PreTrigger != null ? new List<string> { request.PostTrigger } : null,
-                PartitionKey = request.PartitionKey != null ? new PartitionKey(request.PartitionKey) : null,
+                PartitionKey = request.PartitionKeyValue != null ? new PartitionKey(request.PartitionKeyValue) : null,
                 AccessCondition = request.AccessConditionType != null ? new AccessCondition { Condition = request.AccessCondition, Type = request.AccessConditionType.Value } : null,
             };
-
-            return options;
         }
 
         private IEnumerable<Document> GetDocuments(string content)

@@ -588,7 +588,7 @@
                                      IsEditable="False"/>
 
                     <fluent:TextBox Header="Partition Key" Width="220" Margin="1"
-                                    Text="{Binding SelectedTab.PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                 </fluent:RibbonGroupBox>
 

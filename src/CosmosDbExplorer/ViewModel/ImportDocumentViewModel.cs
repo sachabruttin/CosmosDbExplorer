@@ -161,7 +161,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public IndexingDirective? IndexingDirective { get; set; }
         public ConsistencyLevel? ConsistencyLevel { get; set; }
-        public string PartitionKey { get; set; }
+        public string PartitionKeyValue { get; set; }
         public AccessConditionType? AccessConditionType { get; set; }
         public string AccessCondition { get; set; }
         public string PreTrigger { get; set; }
@@ -177,7 +177,7 @@ namespace CosmosDbExplorer.ViewModel
                         {
                             IndexingDirective = null;
                             ConsistencyLevel = null;
-                            PartitionKey = null;
+                            PartitionKeyValue = null;
                             AccessConditionType = null;
                             AccessCondition = null;
                             PreTrigger = null;

@@ -431,24 +431,23 @@ namespace CosmosDbExplorer.ViewModel
                     ?? (_resetRequestOptionsCommand = new RelayCommand(
                         () =>
                         {
-                            var instance = ((IHaveRequestOptions)this);
-                            instance.IndexingDirective = null;
-                            instance.ConsistencyLevel = null;
-                            instance.PartitionKey = null;
-                            instance.AccessConditionType = null;
-                            instance.AccessCondition = null;
-                            instance.PreTrigger = null;
-                            instance.PostTrigger = null;
+                            IndexingDirective = null;
+                            ConsistencyLevel = null;
+                            PartitionKeyValue = null;
+                            AccessConditionType = null;
+                            AccessCondition = null;
+                            PreTrigger = null;
+                            PostTrigger = null;
                         }));
             }
         }
 
-        IndexingDirective? IHaveRequestOptions.IndexingDirective { get; set; }
-        ConsistencyLevel? IHaveRequestOptions.ConsistencyLevel { get; set; }
-        string IHaveRequestOptions.PartitionKey { get; set; }
-        AccessConditionType? IHaveRequestOptions.AccessConditionType { get; set; }
-        string IHaveRequestOptions.AccessCondition { get; set; }
-        string IHaveRequestOptions.PreTrigger { get; set; }
-        string IHaveRequestOptions.PostTrigger { get; set; }
+        public IndexingDirective? IndexingDirective { get; set; }
+        public ConsistencyLevel? ConsistencyLevel { get; set; }
+        public string PartitionKeyValue { get; set; }
+        public AccessConditionType? AccessConditionType { get; set; }
+        public string AccessCondition { get; set; }
+        public string PreTrigger { get; set; }
+        public string PostTrigger { get; set; }
     }
 }

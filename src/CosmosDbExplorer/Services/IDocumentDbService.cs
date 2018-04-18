@@ -72,6 +72,8 @@ namespace CosmosDbExplorer.Services
 
         Task<int> GetPartitionKeyRangeCountAsync(Connection connection, DocumentCollection collection);
 
+        Task<Dictionary<string, int>> GetTopPartitionKeys(Connection connection, DocumentCollection collection, string partitionKeyRangeId, int sampleCount = 100);
+
         Task<CollectionMetric> GetPartitionMetricsAsync(Connection connection, DocumentCollection collection);
     }
 }

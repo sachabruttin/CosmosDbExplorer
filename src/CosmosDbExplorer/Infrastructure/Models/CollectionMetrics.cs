@@ -17,6 +17,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
                         .Select(item => new { Key = item.Split('=')[0], Value = item.Split('=')[1] })
                         .ToDictionary(d => d.Key, d => d.Value);
 
+            RequestCharge = documentCollection.RequestCharge;
             PartitionCount = documentCollection.Resource.PartitionKeyRangeStatistics.Count;
             DocumentSize = long.Parse(quotaUsage["documentsSize"]);
             DocumentCount = long.Parse(quotaUsage["documentsCount"]);
@@ -31,6 +32,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
             UserDefinedFunctionsUsage = documentCollection.UserDefinedFunctionsUsage;
         }
 
+        public double RequestCharge { get; }
         public int PartitionCount { get; }
         public long DocumentCount { get; }
         public long DocumentSize { get; }

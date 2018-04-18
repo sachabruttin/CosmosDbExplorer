@@ -23,6 +23,7 @@ namespace CosmosDbExplorer.ViewModel
         private Connection _connection;
         private RelayCommand _refreshCommand;
         private readonly IDialogService _dialogService;
+        private readonly StatusBarItem _requestChargeStatusBarItem;
 
         public CollectionMetricsTabViewModel(IMessenger messenger, IUIServices uiServices, 
             IDialogService dialogService,
@@ -34,6 +35,9 @@ namespace CosmosDbExplorer.ViewModel
 
             Title = "Collection Metrics";
             Header = Title;
+
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
 
             ChartConfiguration();
         }
@@ -63,6 +67,20 @@ namespace CosmosDbExplorer.ViewModel
             await LoadMetrics().ConfigureAwait(false);
         }
 
+        public string RequestCharge { get; set; }
+
+        public void OnRequestChargeChanged()
+        {
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
+        }
+
+        protected override void OnIsBusyChanged()
+        {
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsBusy;
+
+            base.OnIsBusyChanged();
+        }
+
         public CollectionMetric Metrics { get; set; }
 
         public SeriesCollection PartitionSizeSeries { get; set; }
@@ -89,6 +107,7 @@ namespace CosmosDbExplorer.ViewModel
             try
             {
                 Metrics = await _dbService.GetPartitionMetricsAsync(_connection, _collection).ConfigureAwait(false);
+                RequestCharge = $"Request Charge: {Metrics.RequestCharge:N2}";
 
                 await DispatcherHelper.RunAsync(() =>
                 {
@@ -96,11 +115,11 @@ namespace CosmosDbExplorer.ViewModel
                     Labels = sorted.Select(pm => pm.PartitionKeyRangeId).ToArray();
                     PartitionSizeSeries = new SeriesCollection
                     {
-                    new ColumnSeries
-                    {
-                        Title = "Size",
-                        Values = new ChartValues<PartitionKeyRangeStatistics>(sorted)
-                    }
+                        new ColumnSeries
+                        {
+                            Title = "Size",
+                            Values = new ChartValues<PartitionKeyRangeStatistics>(sorted)
+                        }
                     };
                 });
             }

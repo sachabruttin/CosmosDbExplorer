@@ -354,13 +354,14 @@ namespace CosmosDbExplorer.Services
         public async Task<DocumentCollection> CreateCollectionAsync(Connection connection, Database database, DocumentCollection collection, int throughput)
         {
             var client = GetClient(connection);
+            var options = new RequestOptions { OfferThroughput = throughput };
 
             if (database.SelfLink == null)
             {
                 database = await client.CreateDatabaseIfNotExistsAsync(database).ConfigureAwait(false);
             }
 
-            return await client.CreateDocumentCollectionAsync(database.SelfLink, collection, new RequestOptions { OfferThroughput = throughput }).ConfigureAwait(false);
+            return await client.CreateDocumentCollectionAsync(database.SelfLink, collection, options).ConfigureAwait(false);
         }
 
         public Task DeleteCollectionAsync(Connection connection, DocumentCollection collection)
@@ -421,8 +422,8 @@ namespace CosmosDbExplorer.Services
 
         public async Task<int> GetPartitionKeyRangeCountAsync(Connection connection, DocumentCollection collection)
         {
-            var partitionKeyRanges = await GetPartitionKeyRanges(connection, collection).ConfigureAwait(false);
-            return partitionKeyRanges.Count;
+            var metrics = await GetPartitionMetricsAsync(connection, collection).ConfigureAwait(false);
+            return metrics.PartitionCount;
         }
 
         public async Task<CollectionMetric> GetPartitionMetricsAsync(Connection connection, DocumentCollection collection)
@@ -431,28 +432,48 @@ namespace CosmosDbExplorer.Services
                 new RequestOptions
                 {
                     PopulateQuotaInfo = true,
-                    PopulatePartitionKeyRangeStatistics = true
+                    PopulatePartitionKeyRangeStatistics = true,
                 }).ConfigureAwait(false);
 
             return new CollectionMetric(documentCollection);
         }
 
-        private async Task<List<PartitionKeyRange>> GetPartitionKeyRanges(Connection connection, DocumentCollection collection)
+        public async Task<Dictionary<string, int>> GetTopPartitionKeys(Connection connection, DocumentCollection collection, string partitionKeyRangeId, int sampleCount = 100)
         {
-            string pkRangesResponseContinuation = null;
-            var partitionKeyRanges = new List<PartitionKeyRange>();
+            var stats = new Dictionary<string, int>();
+            var partitionKey = collection.PartitionKey.Paths[0].TrimStart('/');
+            var readCount = 0;
             var client = GetClient(connection);
+            var options = new ChangeFeedOptions { StartFromBeginning = true, MaxItemCount = -1, PartitionKeyRangeId = partitionKeyRangeId };
 
-            do
+            while (readCount < sampleCount)
             {
-                var pkRangesResponse = await client.ReadPartitionKeyRangeFeedAsync(collection.AltLink, new FeedOptions { RequestContinuation = pkRangesResponseContinuation }).ConfigureAwait(false);
+                var results = await client.CreateDocumentChangeFeedQuery(collection.AltLink, options)
+                                          .ExecuteNextAsync<Document>().ConfigureAwait(false);
 
-                partitionKeyRanges.AddRange(pkRangesResponse);
-                pkRangesResponseContinuation = pkRangesResponse.ResponseContinuation;
+                if (results.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (var document in results)
+                {
+                    var key = document.GetPropertyValue<string>(partitionKey) ?? "N/A";
+
+                    if (stats.ContainsKey(key))
+                    {
+                        stats[key]++;
+                    }
+                    else
+                    {
+                        stats.Add(key, 1);
+                    }
+                }
+
+                readCount += results.Count;
             }
-            while (pkRangesResponseContinuation != null);
 
-            return partitionKeyRanges;
+            return stats;
         }
 
         public Task<StoredProcedureResponse<dynamic>> ExecuteStoreProcedureAsync(Connection connection, string altLink, IList<dynamic> parameters, string partitionKey)

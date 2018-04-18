@@ -74,12 +74,7 @@ namespace CosmosDbExplorer.Views
         {
             var vm = DataContext as ScaleAndSettingsTabViewModel;
             vm.IconSource = FindResource("ScaleSettingsIcon") as ImageSource;
-            await vm.LoadDataAsync();
-        }
-
-        private void Expander_Expanded(object sender, System.Windows.RoutedEventArgs e)
-        {
-
+            await vm.LoadDataAsync().ConfigureAwait(false);
         }
     }
 }

@@ -174,16 +174,29 @@ namespace CosmosDbExplorer.ViewModel
         {
             IsLoading = true;
 
-            var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
-            var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
+            try
+            {
+                var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
+                var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
 
-            var result = await Task.WhenAll(throughputTask, partitionTask).ConfigureAwait(false);
+                var result = await Task.WhenAll(throughputTask, partitionTask).ConfigureAwait(false);
 
-            PartitionCount = result[1];
-            Throughput = result[0];
-
-            IsLoading = false;
-            IsChanged = false;
+                PartitionCount = result[1];
+                Throughput = result[0];
+            }
+            catch (DocumentClientException clientEx)
+            {
+                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+            }
+            finally
+            {
+                IsLoading = false;
+                IsChanged = false;
+            }
         }
 
         public RelayCommand DiscardCommand

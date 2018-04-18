@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using CosmosDbExplorer.Infrastructure;
+using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using FluentValidation;
@@ -19,8 +21,9 @@ namespace CosmosDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private List<Database> _databases;
         private string _selectedDatabase;
+        private readonly IDialogService _dialogService;
 
-        public AddCollectionViewModel(IMessenger messenger, IDocumentDbService dbService, IUIServices uiServices)
+        public AddCollectionViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
             : base(messenger, uiServices)
         {
             IsFixedStorage = true;
@@ -28,6 +31,7 @@ namespace CosmosDbExplorer.ViewModel
             Title = "New Collection";
             _dbService = dbService;
             DatabaseNames = new ObservableCollection<string>();
+            _dialogService = dialogService;
         }
 
         public string Title { get; }
@@ -93,11 +97,21 @@ namespace CosmosDbExplorer.ViewModel
                                 collection.PartitionKey.Paths.Add(PartitionKey);
                             }
 
-                            var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
-                            await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
-
-                            IsBusy = false;
-                            Close();
+                            try
+                            {
+                                var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
+                                await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
+                                IsBusy = false;
+                                Close();
+                            }
+                            catch (DocumentClientException clientEx)
+                            {
+                                await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                            }
                         },
                         () => !((INotifyDataErrorInfo)this).HasErrors));
             }

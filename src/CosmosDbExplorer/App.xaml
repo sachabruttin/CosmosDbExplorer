@@ -179,13 +179,12 @@
             <Style TargetType="{x:Type RadioButton}" x:Key="SquareRadioButtonStyle">
                 <Setter Property="SnapsToDevicePixels" Value="true"/>
                 <Setter Property="OverridesDefaultStyle" Value="true"/>
-                <Setter Property="Background" Value="#F2F2F2" />
-                <Setter Property="BorderBrush" Value="#D1D1D1" />
-                <Setter Property="Foreground" Value="Black" />
-                <Setter Property="Padding" Value="5,6" />
-                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrush}}" />
+                <Setter Property="Padding" Value="0,2" />
                 <Setter Property="MinHeight" Value="25" />
-                <Setter Property="MinWidth" Value="35" />
+                <Setter Property="MinWidth" Value="25" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -194,19 +193,16 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}">
 
-                                <ContentPresenter Margin="2" 
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" 
-                                 RecognizesAccessKey="True"/>
+                                <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsKeyboardFocused" Value="true">
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="#202020" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="true">
-                                    <Setter TargetName="Border" Property="BorderBrush" Value="#202020" />
-                                    <Setter TargetName="Border" Property="Background" Value="#3555A8" />
-                                    <Setter Property="Foreground" Value="White" />
+                                    <!--<Setter TargetName="Border" Property="BorderBrush" Value="#202020" />-->
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="true">
                                     <Setter TargetName="Border" Property="Background" Value="#808080" />

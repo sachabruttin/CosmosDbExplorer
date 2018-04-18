@@ -60,8 +60,9 @@
 
                 <StackPanel Visibility="{Binding PartitionKey, Converter={StaticResource nullToVisibilityConverter}}">
                     <Label Content="Partition Key" />
-                    <TextBox Margin="20,5" IsReadOnly="True" Text="{Binding PartitionKey}" 
-                                Background="{x:Static SystemColors.ControlLightBrush}"/>
+                    <TextBox Margin="20,5" Height="22" VerticalContentAlignment="Center"
+                             IsReadOnly="True" Text="{Binding PartitionKey}" 
+                             Background="{x:Static SystemColors.ControlLightBrush}"/>
                 </StackPanel>
                    
 

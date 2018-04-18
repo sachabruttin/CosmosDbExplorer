@@ -427,7 +427,6 @@ namespace CosmosDbExplorer.Services
 
         public async Task<CollectionMetric> GetPartitionMetricsAsync(Connection connection, DocumentCollection collection)
         {
-            //var partitionKeyRanges = await GetPartitionKeyRanges(connection, collection).ConfigureAwait(false);
             var documentCollection = await GetClient(connection).ReadDocumentCollectionAsync(collection.AltLink,
                 new RequestOptions
                 {
@@ -435,20 +434,7 @@ namespace CosmosDbExplorer.Services
                     PopulatePartitionKeyRangeStatistics = true
                 }).ConfigureAwait(false);
 
-            var quotaUsage = documentCollection.CurrentResourceQuotaUsage
-                                    .Split(';')
-                                    .Select(item => new { Key = item.Split('=')[0], Value = item.Split('=')[1] })
-                                    .ToDictionary(d => d.Key, d => d.Value);
-
-            var result = new CollectionMetric
-            {
-                PartitionCount = documentCollection.Resource.PartitionKeyRangeStatistics.Count,
-                DocumentSize = long.Parse(quotaUsage["documentsSize"]),
-                DocumentCount = long.Parse(quotaUsage["documentsCount"]),
-                PartitionMetrics = documentCollection.Resource.PartitionKeyRangeStatistics.ToList()
-            };
-
-            return result;
+            return new CollectionMetric(documentCollection);
         }
 
         private async Task<List<PartitionKeyRange>> GetPartitionKeyRanges(Connection connection, DocumentCollection collection)

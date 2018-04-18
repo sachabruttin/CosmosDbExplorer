@@ -12,6 +12,7 @@
              xmlns:sdk="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              mc:Ignorable="d" 
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              Loaded="UserControl_Loaded">
     <DockPanel LastChildFill="True">
         

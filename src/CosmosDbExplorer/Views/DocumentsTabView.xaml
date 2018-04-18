@@ -11,6 +11,7 @@
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              mc:Ignorable="d" 
              DataContextChanged="UserControl_DataContextChanged"
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="300" d:DesignWidth="600" d:DataContext="{x:Type vm:DocumentsTabViewModel}">
     <DockPanel>
 

@@ -8,6 +8,7 @@
              xmlns:infra="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:ImportDocumentViewModel}">
 
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  

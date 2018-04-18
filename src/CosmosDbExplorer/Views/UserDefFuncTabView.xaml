@@ -9,6 +9,7 @@
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:UserDefFuncTabViewModel}">
     <DockPanel>
 

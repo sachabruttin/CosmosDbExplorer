@@ -11,6 +11,7 @@
              xmlns:controls="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:TriggerTabViewModel}">
     <DockPanel>
 

@@ -10,6 +10,7 @@
              xmlns:controls="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              mc:Ignorable="d" 
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="600" d:DesignWidth="900" Loaded="UserControl_Loaded"
              d:DataContext="{x:Type vm:QueryEditorViewModel}">
     

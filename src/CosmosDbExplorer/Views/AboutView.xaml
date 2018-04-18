@@ -8,7 +8,7 @@
              d:DesignHeight="600" d:DesignWidth="600"
              Padding="20,50,0,0"
              DataContext="{Binding About, Source={StaticResource Locator}}"
-             Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}">
     <UserControl.Resources>
         <Style x:Key="valueText" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="Black" />

@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CosmosDbExplorer.Views"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:behaviors="clr-namespace:CosmosDbExplorer.Infrastructure.Behaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -11,6 +10,7 @@
         Title="{Binding Title}" Width="600"
         SizeToContent="Height"
         DataContext="{Binding AddCollection, Source={StaticResource Locator}}"
+        Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
         Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>

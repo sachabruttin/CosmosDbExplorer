@@ -63,11 +63,7 @@ namespace CosmosDbExplorer.ViewModel
             await LoadMetrics().ConfigureAwait(false);
         }
 
-        public int PartitionCount { get; set; }
-
-        public long DocumentSize { get; set; }
-
-        public long DocumentCount { get; set; }
+        public CollectionMetric Metrics { get; set; }
 
         public SeriesCollection PartitionSizeSeries { get; set; }
 
@@ -92,15 +88,11 @@ namespace CosmosDbExplorer.ViewModel
 
             try
             {
-                var metrics = await _dbService.GetPartitionMetricsAsync(_connection, _collection).ConfigureAwait(false);
-
-                PartitionCount = metrics.PartitionCount;
-                DocumentSize = metrics.DocumentSize;
-                DocumentCount = metrics.DocumentCount;
+                Metrics = await _dbService.GetPartitionMetricsAsync(_connection, _collection).ConfigureAwait(false);
 
                 await DispatcherHelper.RunAsync(() =>
                 {
-                    var sorted = metrics.PartitionMetrics.OrderBy(pm => int.Parse(pm.PartitionKeyRangeId)).ToArray();
+                    var sorted = Metrics.PartitionMetrics.OrderBy(pm => int.Parse(pm.PartitionKeyRangeId)).ToArray();
                     Labels = sorted.Select(pm => pm.PartitionKeyRangeId).ToArray();
                     PartitionSizeSeries = new SeriesCollection
                     {

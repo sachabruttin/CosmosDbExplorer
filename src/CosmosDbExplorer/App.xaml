@@ -70,7 +70,6 @@
             <converters:BytesToGigaBytesConverter x:Key="BytesToGigaBytesConverter" />
             <converters:QueryMetricsToStringConverter x:Key="queryMetricsToStringConverter"/>
             <converters:QueryMetricsToDocumentConverter x:Key="queryMetricsToDocumentConverter" />
-            <converters:EnumBooleanConverter x:Key="enumBooleanConverter" />
 
             <ControlTemplate x:Key="ValidationTemplate">
                 <StackPanel Orientation="Horizontal">

@@ -25,7 +25,6 @@ namespace CosmosDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
-        private bool _onTimeToLive;
         private const decimal HourlyPrice = 0.00008m;
         private readonly IDialogService _dialogService;
         private readonly IDisposable _textChangedObservable;

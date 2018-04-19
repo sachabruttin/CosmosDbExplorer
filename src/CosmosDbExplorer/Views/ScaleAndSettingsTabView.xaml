@@ -43,18 +43,15 @@
             <StackPanel Margin="10,5">
                 <Label Content="Time to live" />
                 <StackPanel Orientation="Horizontal" Margin="20,5">
-                    <RadioButton Content="Off" Style="{StaticResource SquareRadioButtonStyle}" Width="70" 
-                                    IsChecked="{Binding OffTimeToLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <RadioButton Content="On (no default)" Style="{StaticResource SquareRadioButtonStyle}" Width="130"
-                                    IsChecked="{Binding NoDefaultTimeToLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <RadioButton Content="On" Style="{StaticResource SquareRadioButtonStyle}" Width="70"
-                                    IsChecked="{Binding OnTimeToLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <infrastructure:RadioButtonEx Content="Off" RadioValue="Off" RadioBinding="{Binding TimeToLive}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
+                    <infrastructure:RadioButtonEx Content="On (no default)" RadioValue="Default" RadioBinding="{Binding TimeToLive}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
+                    <infrastructure:RadioButtonEx Content="On" RadioValue="On" RadioBinding="{Binding TimeToLive}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="20,5" Visibility="{Binding OnTimeToLive, Converter={StaticResource boolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" Margin="20,5" Visibility="{Binding IsTimeLiveInSecondVisible, Converter={StaticResource boolToVisibilityConverter}}">
                     <xctk:IntegerUpDown Value="{Binding TimeToLiveInSecond}" 
                                         Width="150" Height="22" VerticalContentAlignment="Center"
-                                        Minimum="1" Increment="100" />
+                                        Minimum="1" Increment="1" />
                     <TextBlock Text="second(s)" Margin="3,0" VerticalAlignment="Center" />
                 </StackPanel>
 

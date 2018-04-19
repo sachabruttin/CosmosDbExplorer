@@ -101,9 +101,10 @@ namespace CosmosDbExplorer.ViewModel
         private void SetInformation()
         {
             TimeToLiveInSecond = Collection.DefaultTimeToLive;
-            OffTimeToLive = Collection.DefaultTimeToLive == null;
-            NoDefaultTimeToLive = Collection.DefaultTimeToLive == -1;
-            OnTimeToLive = Collection.DefaultTimeToLive >= 0;
+            TimeToLive = Collection.DefaultTimeToLive == null
+                                ? TimeToLive.Off
+                                : Collection.DefaultTimeToLive == -1 ? TimeToLive.Default : TimeToLive.On;
+
             PartitionKey = Collection.PartitionKey?.Paths.FirstOrDefault();
             IsFixedStorage = PartitionKey == null;
 
@@ -152,23 +153,28 @@ namespace CosmosDbExplorer.ViewModel
 
         public bool IsChanged { get; set; }
 
-        public bool OffTimeToLive { get; set; }
+        public TimeToLive TimeToLive { get; set; }
 
-        public bool NoDefaultTimeToLive { get; set; }
-
-        public bool OnTimeToLive
+        public void OnTimeToLiveChanged()
         {
-            get { return _onTimeToLive; }
-            set
+            switch (TimeToLive)
             {
-                _onTimeToLive = value;
-                if (_onTimeToLive && TimeToLiveInSecond.GetValueOrDefault(-1) == -1)
-                {
-                    TimeToLiveInSecond = 1;
-                    RaisePropertyChanged(() => OnTimeToLive);
-                }
+                case TimeToLive.Off:
+                    TimeToLiveInSecond = null;
+                    IsTimeLiveInSecondVisible = false;
+                    break;
+                case TimeToLive.On:
+                    TimeToLiveInSecond = TimeToLiveInSecond.GetValueOrDefault(-1) == -1 ? 1 : TimeToLiveInSecond;
+                    IsTimeLiveInSecondVisible = true;
+                    break;
+                case TimeToLive.Default:
+                    TimeToLiveInSecond = -1;
+                    IsTimeLiveInSecondVisible = false;
+                    break;
             }
         }
+
+        public bool IsTimeLiveInSecondVisible { get; set; }
 
         public async Task LoadDataAsync()
         {
@@ -225,7 +231,7 @@ namespace CosmosDbExplorer.ViewModel
                         {
                             try
                             {
-                                Collection.DefaultTimeToLive = GetTimeToLive();
+                                Collection.DefaultTimeToLive = TimeToLiveInSecond;
                                 Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
                                 await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
@@ -263,22 +269,13 @@ namespace CosmosDbExplorer.ViewModel
                 return !((INotifyDataErrorInfo)this).HasErrors && (PolicyViewModel?.IsValid == true);
             }
         }
+    }
 
-        private int? GetTimeToLive()
-        {
-            if (OffTimeToLive)
-            {
-                return null;
-            }
-            else if (OnTimeToLive)
-            {
-                return TimeToLiveInSecond;
-            }
-            else
-            {
-                return -1;
-            }
-        }
+    public enum TimeToLive
+    {
+        Off,
+        On,
+        Default
     }
 
     public class ScaleAndSettingsTabViewModelValidator : AbstractValidator<ScaleAndSettingsTabViewModel>

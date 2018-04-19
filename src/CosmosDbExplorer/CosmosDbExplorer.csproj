@@ -199,7 +199,6 @@
     <Compile Include="Infrastructure\Constants.cs" />
     <Compile Include="Infrastructure\Converters\BytesToGigaBytesConverter.cs" />
     <Compile Include="Infrastructure\Converters\ColorToBrushConverter.cs" />
-    <Compile Include="Infrastructure\Converters\EnumBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
     <Compile Include="Infrastructure\Converters\QueryMetricsToDocumentConverter.cs" />
     <Compile Include="Infrastructure\Converters\QueryMetricsToStringConverter.cs" />

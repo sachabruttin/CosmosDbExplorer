@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="CosmosDbExplorer.Views.UserEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+    <StackPanel Margin="10">
+
+        <Label Content="User Id:" />
+        <xctk:WatermarkTextBox Text="{Binding UserId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                               Watermark="Unique permission identifier" KeepWatermarkOnGotFocus="True"
+                               Margin="20,0" VerticalContentAlignment="Center" />
+    </StackPanel>
+</UserControl>

@@ -4,11 +4,16 @@ namespace CosmosDbExplorer.Messages
 {
     public class CloseDocumentMessage
     {
-        public CloseDocumentMessage(PaneViewModelBase paneViewModel)
+        public CloseDocumentMessage(string contentId)
         {
-            PaneViewModel = paneViewModel;
+            ContentId = contentId;
         }
 
-        public PaneViewModelBase PaneViewModel { get; }
+        public CloseDocumentMessage(PaneViewModelBase paneViewModel)
+            : this(paneViewModel.ContentId)
+        {
+        }
+
+        public string ContentId { get; set; }
     }
 }

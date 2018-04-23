@@ -63,6 +63,7 @@ namespace CosmosDbExplorer.ViewModel
                     {
                         await DbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
                         await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
+                        MessengerInstance.Send(new CloseDocumentMessage(ContentId));
                     }
                 });
         }

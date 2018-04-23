@@ -84,7 +84,13 @@ namespace CosmosDbExplorer.ViewModel
 
         protected abstract Task EditCommandImpl();
 
-        public RelayCommand DeleteCommand => new RelayCommand(async () => await DeleteCommandImpl().ConfigureAwait(false));
+        public RelayCommand DeleteCommand
+        {
+            get
+            {
+                return new RelayCommand(async () => await DeleteCommandImpl().ConfigureAwait(false));
+            }
+        }
 
         protected abstract Task DeleteCommandImpl();
 

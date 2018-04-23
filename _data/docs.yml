@@ -1,0 +1,18 @@
+- title: Getting Started
+  docs:
+  - home
+  - installation
+  - add-account
+
+- title: Features
+  docs:
+  - documents
+  - scale-settings
+  - sql-query
+  - collection-metrics
+  - stored-procedures
+  - udf
+  - triggers
+
+- title: How-To(s)
+  docs:

@@ -1,12 +1,19 @@
-repository: sachabruttin/CosmosDbExplorer
-theme: jekyll-theme-cayman
-
+# Site settings
 title: Cosmos DB Explorer
+email: sacha@bruttin.com
+repository: sachabruttin/CosmosDbExplorer
+description: >
+  Cosmos DB Explorer Websites
+  providing documentation and blog post pages.
 
-show_downloads: "false"
-github:
-  tar_url: http://github.com/sachabruttin/CosmosDbExplorer/tarball/master
-  zip_url: http://github.com/sachabruttin/CosmosDbExplorer/zipball/master
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: https://github.com/sachabruttin/CosmosDbExplorer # the base hostname & protocol for your site
+git_address: https://github.com/sachabruttin/CosmosDbExplorer
+git_edit_address: https://github.com/sachabruttin/CosmosDbExplorer/blob/gh-pages
+
+# theme options from https://bootswatch.com/
+# comment out this to use default Bootstrap
+bootwatch: Yeti  #paper
 
 google_analytics: UA-45847559-1
 
@@ -16,4 +23,34 @@ plugins:
   - jekyll-seo-tag
 
 # seo-tag plugin
-logo: /assets/documentDbColor.png
+logo: /img/logonav.png
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+timezone: Europe/Berlin
+defaults:
+- scope:
+    path: _posts
+    type: posts
+  values:
+    layout: post
+    sectionid: blog
+
+- scope:
+    path: _docs
+    type: docs
+  values:
+    layout: docs
+    sectionid: docs
+    seo:
+      type: "WebPage"
+
+collections:
+  docs:
+    permalink: /:collection/:path/
+    output: true
+  posts:
+    permalink: /blog/:year/:month/:day/:title/
+    output: true

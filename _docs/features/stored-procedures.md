@@ -17,4 +17,4 @@ Cosmos DB Explorer supports two kind of parameters: JSON or File. With JSON you 
 - Export results to file
 - Supports Partitioned Collections
 
-![Stored Procedure]({{ base_url }}/img/stored_procedure.PNG){:class="img-responsive center-block" height="80%" width="80%"}
+![Stored Procedure]({{ site.baseurl }}/img/stored_procedure.PNG){:class="img-responsive center-block" height="80%" width="80%"}

@@ -19,4 +19,4 @@ Define your query settings:
 Get the query metrics, response headers and request charge (RU) automatically for each query.
 Pagged results is supported!
 
-![Query Editor]({{ base_url }}/img/query_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}
+![Query Editor]({{ site.baseurl }}/img/query_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}

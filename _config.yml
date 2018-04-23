@@ -6,7 +6,7 @@ description: >
   Cosmos DB Explorer Websites
   providing documentation and blog post pages.
 
-baseurl: "/CosmosDbExplorer/" # the subpath of your site, e.g. /blog/
+baseurl: "/CosmosDbExplorer" # the subpath of your site, e.g. /blog/
 url: https://github.com/sachabruttin/CosmosDbExplorer # the base hostname & protocol for your site
 git_address: https://github.com/sachabruttin/CosmosDbExplorer
 git_edit_address: https://github.com/sachabruttin/CosmosDbExplorer/blob/gh-pages

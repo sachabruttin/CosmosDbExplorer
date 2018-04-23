@@ -16,4 +16,4 @@ Welcome to the Cosmos DB Explorer documentation.
 - Colored Editor (JSON, SQL, Javascript)
 - Customizable layout
 
-![Cosmos DB Explorer]({{ base_url }}/img/query_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}
+![Cosmos DB Explorer]({{ site.baseurl }}/img/query_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}

@@ -7,7 +7,7 @@ permalink: /docs/add-account/
 
 To connect to a Cosmos DB account, you need to add an account in the application. Open the `File` menu and click `Add Account`
 
-![Add Account]({{ base_url }}/img/connection_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}
+![Add Account]({{ site.baseurl }}/img/connection_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}
 
 ### Label
 

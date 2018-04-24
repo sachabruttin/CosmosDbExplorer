@@ -23,7 +23,19 @@ plugins:
   - jekyll-seo-tag
 
 # seo-tag plugin
-logo: /img/logonav.png
+logo: /CosmosDbExplorer/img/logonav.png
+author:
+  name: Sacha Bruttin
+  twitter: sachabruttin
+  picture: /public/me.jpg
+social:
+  name: Sacha Bruttin
+  links:
+    - https://twitter.com/sachabruttin
+    - https://www.linkedin.com/in/sachabruttin
+    - https://github.com/sachabruttin  
+twitter:
+  username: sachabruttin
 
 # Build settings
 markdown: kramdown

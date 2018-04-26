@@ -11,6 +11,7 @@ using CosmosDbExplorer.ViewModel.Interfaces;
 using GalaSoft.MvvmLight.Messaging;
 using CosmosDbExplorer.Messages;
 using System.Threading;
+using CosmosDbExplorer.Infrastructure.Extensions;
 
 namespace CosmosDbExplorer.Services
 {
@@ -54,7 +55,7 @@ namespace CosmosDbExplorer.Services
             var client = GetClient(connection);
             var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
             var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery, feedOptions).AsDocumentQuery();
-            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault()?.TrimStart('/');
+            var partitionKeyPath = collection.PartitionKey.GetSelectToken();
 
             //While there are more results
             while (results.HasMoreResults)
@@ -63,9 +64,9 @@ namespace CosmosDbExplorer.Services
                 foreach (Document doc in await results.ExecuteNextAsync().ConfigureAwait(false))
                 {
                     var requestOptions = new RequestOptions();
-                    if (partitionKey != null)
+                    if (partitionKeyPath != null)
                     {
-                        requestOptions.PartitionKey = new PartitionKey(doc.GetPropertyValue<string>(partitionKey));
+                        requestOptions.PartitionKey = new PartitionKey(doc.GetPartitionKeyValue(partitionKeyPath));
                     }
 
                     await client.DeleteDocumentAsync(doc.SelfLink, requestOptions).ConfigureAwait(false);
@@ -128,13 +129,13 @@ namespace CosmosDbExplorer.Services
 
         public async Task<DocumentDescriptionList> GetDocumentsAsync(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
         {
-            var partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
-            if (partitionKey != null)
+            var token = collection.PartitionKey.GetQueryToken();
+            if (token != null)
             {
-                partitionKey = $", c.{partitionKey.TrimStart('/')} as _partitionKey";
+                token = $", c{token} as _partitionKey";
             }
 
-            var sql = $"SELECT c.id, c._self {partitionKey} FROM c {filter}";
+            var sql = $"SELECT c.id, c._self {token} FROM c {filter}";
             var feedOptions = new FeedOptions
             {
                 MaxItemCount = maxItems,

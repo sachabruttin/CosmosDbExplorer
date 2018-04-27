@@ -94,6 +94,7 @@ namespace CosmosDbExplorer.Services
                 MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
                 RequestContinuation = continuationToken,
                 PopulateQueryMetrics = true,
+                PartitionKey = GetPartitionKey(querySettings.PartitionKeyValue)
             };
 
             return GetClient(connection)
@@ -127,7 +128,7 @@ namespace CosmosDbExplorer.Services
             return GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
         }
 
-        public async Task<DocumentDescriptionList> GetDocumentsAsync(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken)
+        public async Task<DocumentDescriptionList> GetDocumentsAsync(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken, IHaveRequestOptions requestOptions)
         {
             var token = collection.PartitionKey.GetQueryToken();
             if (token != null)
@@ -136,12 +137,14 @@ namespace CosmosDbExplorer.Services
             }
 
             var sql = $"SELECT c.id, c._self {token} FROM c {filter}";
+
             var feedOptions = new FeedOptions
             {
                 MaxItemCount = maxItems,
                 RequestContinuation = continuationToken,
                 EnableCrossPartitionQuery = true,
-                EnableScanInQuery = true
+                EnableScanInQuery = true,
+                PartitionKey = GetPartitionKey(requestOptions?.PartitionKeyValue)
             };
 
             var data = await GetClient(connection)
@@ -183,9 +186,20 @@ namespace CosmosDbExplorer.Services
                 IndexingDirective = request.IndexingDirective,
                 PreTriggerInclude = request.PreTrigger != null ? new List<string> { request.PreTrigger } : null,
                 PostTriggerInclude = request.PreTrigger != null ? new List<string> { request.PostTrigger } : null,
-                PartitionKey = request.PartitionKeyValue != null ? new PartitionKey(request.PartitionKeyValue) : null,
+                PartitionKey = GetPartitionKey(request.PartitionKeyValue),
                 AccessCondition = request.AccessConditionType != null ? new AccessCondition { Condition = request.AccessCondition, Type = request.AccessConditionType.Value } : null,
             };
+        }
+
+        private static PartitionKey GetPartitionKey(string partitionKeyValue)
+        {
+            if (string.IsNullOrEmpty(partitionKeyValue?.Trim()))
+            {
+                return null;
+            }
+
+            var value = JToken.Parse(partitionKeyValue).ToObject<object>();
+            return new PartitionKey(value);
         }
 
         private IEnumerable<Document> GetDocuments(string content)
@@ -482,7 +496,7 @@ namespace CosmosDbExplorer.Services
             var options = new RequestOptions
             {
                 EnableScriptLogging = true,
-                PartitionKey = partitionKey != null ? new PartitionKey(partitionKey) : null
+                PartitionKey = GetPartitionKey(partitionKey)
             };
 
             return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters.ToArray());

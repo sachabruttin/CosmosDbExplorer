@@ -208,6 +208,7 @@ namespace CosmosDbExplorer.ViewModel
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel ;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsQuerySettingsVisible = SelectedTab is IHaveQuerySettings;
+            IsSystemPropertiesVisible = SelectedTab is IHaveSystemProperties;
             IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;
             IsConnectionOptionsVisible = false; // Only visible when selecting a tab
             IsRefreshTabVisible = SelectedTab is ICanRefreshTab;
@@ -223,6 +224,7 @@ namespace CosmosDbExplorer.ViewModel
         public bool IsQuerySettingsVisible { get; set; }
         public bool IsRequestOptionsVisible { get; set; }
         public bool IsRefreshTabVisible { get; set; }
+        public bool IsSystemPropertiesVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
         public DatabaseNodeViewModel Database { get; set; }

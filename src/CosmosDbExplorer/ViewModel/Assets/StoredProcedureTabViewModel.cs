@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Validar;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using FluentValidation;
@@ -15,6 +16,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
+using Newtonsoft.Json.Linq;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModel.Assets
@@ -248,9 +250,8 @@ namespace CosmosDbExplorer.ViewModel.Assets
     {
         public StoredProcedureTabViewModelValidator()
         {
-            RuleFor(x => x.PartitionKey)
-                .NotEmpty()
-                .When(x => x.IsCollectionPartitioned);
+            When(x => x.IsCollectionPartitioned, 
+                () => RuleFor(x => x.PartitionKey).NotEmpty().SetValidator(new PartitionKeyValidator()));
         }
     }
 }

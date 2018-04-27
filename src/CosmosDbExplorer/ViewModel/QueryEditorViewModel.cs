@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,19 +8,26 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Validar;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModel.Interfaces;
+using FluentValidation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json.Linq;
+using Validar;
 
 namespace CosmosDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveQuerySettings
+    [InjectValidation]
+    public class QueryEditorViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>
+        , IHaveQuerySettings
+        , IHaveSystemProperties
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
@@ -127,7 +135,9 @@ namespace CosmosDbExplorer.ViewModel
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
                         async () => await ExecuteQueryAsync(null).ConfigureAwait(false),
-                        () => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+                        () => !IsRunning
+                        && !string.IsNullOrEmpty(Content.Text)
+                        && IsValid));
             }
         }
 
@@ -225,7 +235,8 @@ namespace CosmosDbExplorer.ViewModel
                         async () => await ExecuteQueryAsync(ContinuationToken).ConfigureAwait(false),
                         () => ContinuationToken != null
                             && !IsRunning
-                            && !string.IsNullOrEmpty(Content.Text)));
+                            && !string.IsNullOrEmpty(Content.Text)
+                            && IsValid));
             }
         }
 
@@ -301,5 +312,16 @@ namespace CosmosDbExplorer.ViewModel
         public int? MaxItemCount { get; set; } = 100;
         public int? MaxDOP { get; set; } = -1;
         public int? MaxBufferItem { get; set; } = -1;
+        public string PartitionKeyValue { get; set; }
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+    }
+
+    public class QueryEditorViewModelValidator : AbstractValidator<QueryEditorViewModel>
+    {
+        public QueryEditorViewModelValidator()
+        {
+            When(x => !string.IsNullOrEmpty(x.PartitionKeyValue?.Trim()),
+                () => RuleFor(x => x.PartitionKeyValue).SetValidator(new PartitionKeyValidator()));
+        }
     }
 }

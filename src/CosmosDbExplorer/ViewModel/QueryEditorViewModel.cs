@@ -40,6 +40,8 @@ namespace CosmosDbExplorer.ViewModel
         private readonly StatusBarItem _progessBarStatusBarItem;
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
+        private RelayCommand<string> _saveQueryCommand;
+        private RelayCommand _openQueryCommand;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
             : base(messenger, uiServices)
@@ -280,6 +282,102 @@ namespace CosmosDbExplorer.ViewModel
                         }).ConfigureAwait(false);
                     },
                     () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Content?.Text)));
+            }
+        }
+
+        public string FileName { get; set; }
+
+        public RelayCommand<string> SaveQueryCommand
+        {
+            get
+            {
+                return _saveQueryCommand ??
+                    (_saveQueryCommand = new RelayCommand<string>(
+                     async param =>
+                     {
+                         if (FileName == null || param ==  "SaveAs")
+                         {
+                             var settings = new SaveFileDialogSettings
+                             {
+                                 DefaultExt = "sql",
+                                 Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                                 AddExtension = true,
+                                 OverwritePrompt = true,
+                                 CheckFileExists = false,
+                                 Title = "Save Query"
+                             };
+
+                             await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                             {
+                                 if (confirm)
+                                 {
+                                     try
+                                     {
+                                         IsRunning = true;
+                                         FileName = result.FileName;
+
+                                         await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, Content.Text));
+                                     }
+                                     catch (Exception ex)
+                                     {
+                                         await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                     }
+                                     finally
+                                     {
+                                         IsRunning = false;
+                                     }
+                                 }
+                             }).ConfigureAwait(false);
+                         }
+                         else
+                         {
+                             await DispatcherHelper.RunAsync(() => File.WriteAllText(FileName, Content.Text));
+                         }
+                     },
+                     param => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+            }
+        }
+
+        public RelayCommand OpenQueryCommand
+        {
+            get
+            {
+                return _openQueryCommand ??
+                    (_openQueryCommand = new RelayCommand(
+                     async () =>
+                     {
+                         var settings = new OpenFileDialogSettings
+                         {
+                             DefaultExt = "sql",
+                             Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                             AddExtension = true,
+                             CheckFileExists = false,
+                             Title = "Save Query"
+                         };
+
+                         await _dialogService.ShowOpenFileDialog(settings, async (confirm, result) =>
+                         {
+                             if (confirm)
+                             {
+                                 try
+                                 {
+                                     IsRunning = true;
+                                     FileName = result.FileName;
+                                     var txt = File.ReadAllText(result.FileName);
+                                     await DispatcherHelper.RunAsync(() => Content.Text = txt);
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                 }
+                                 finally
+                                 {
+                                     IsRunning = false;
+                                 }
+                             }
+                         }).ConfigureAwait(false);
+                     },
+                     () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
             }
         }
 

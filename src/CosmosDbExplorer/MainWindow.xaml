@@ -336,6 +336,28 @@
 
                 </fluent:RibbonGroupBox>
 
+
+                <fluent:RibbonGroupBox KeyTip="S" Header="File"
+                                       Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                    <fluent:Button Header="Open"
+                        Command="{Binding SelectedTab.OpenQueryCommand}"
+                        SizeDefinition="Large">
+                        <fluent:Button.LargeIcon>
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                        </fluent:Button.LargeIcon>
+                    </fluent:Button>
+
+                    <fluent:SplitButton Header="Save"                       
+                                        SizeDefinition="Large"
+                                        Command="{Binding SelectedTab.SaveQueryCommand}"
+                                        LargeIcon="{StaticResource SaveDocumentIcon}">
+                        <fluent:SplitButton.Items>
+                            <MenuItem Header="Save As..." Command="{Binding SelectedTab.SaveQueryCommand}" CommandParameter="SaveAs"/>
+                        </fluent:SplitButton.Items>
+                    </fluent:SplitButton>
+                </fluent:RibbonGroupBox>
+
                 <fluent:RibbonGroupBox KeyTip="Q" Header="Query"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.ViewModel.Interfaces;
 using System.Threading;
+using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
 
 namespace CosmosDbExplorer.Services
 {
@@ -28,7 +29,7 @@ namespace CosmosDbExplorer.Services
 
         Task CleanCollectionAsync(Connection connection, DocumentCollection collection);
 
-        Task<int> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken);
+        Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken);
 
         Task<IList<StoredProcedure>> GetStoredProceduresAsync(Connection connection, DocumentCollection collection);
 

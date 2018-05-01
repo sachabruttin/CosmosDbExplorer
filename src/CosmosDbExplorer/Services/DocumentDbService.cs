@@ -12,6 +12,8 @@ using GalaSoft.MvvmLight.Messaging;
 using CosmosDbExplorer.Messages;
 using System.Threading;
 using CosmosDbExplorer.Infrastructure.Extensions;
+using Microsoft.Azure.CosmosDB.BulkExecutor;
+using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
 
 namespace CosmosDbExplorer.Services
 {
@@ -163,22 +165,55 @@ namespace CosmosDbExplorer.Services
             };
         }
 
-        public async Task<int> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken)
+        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken)
         {
-            var documents = GetDocuments(content).ToList();
-            var options = GetRequestOptions(requestOptions);
+            var client = GetClient(connection);
 
-            foreach (var document in documents)
+            // save retry options
+            var maxRetryWaitTimeInSeconds = client.ConnectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds;
+            var maxRetryAttemptsOnThrottledRequests = client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests;
+
+            try
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
+                // Set retry options high during initialization (default values).
+                client.ConnectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds = 30;
+                client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 9;
 
-                await GetClient(connection).UpsertDocumentAsync(collection.SelfLink, document, options, disableAutomaticIdGeneration: true).ConfigureAwait(false);
+                var bulkExecutor = new BulkExecutor(client, collection);
+                await bulkExecutor.InitializeAsync();
+
+                // Set retries to 0 to pass complete control to bulk executor.
+                client.ConnectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds = 0;
+                client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 0;
+
+                return await bulkExecutor.BulkImportAsync(
+                    documents: GetDocuments(content),
+                    enableUpsert: true,
+                    disableAutomaticIdGeneration: false,
+                    maxConcurrencyPerPartitionKeyRange: null,
+                    maxInMemorySortingBatchSize: null,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
             }
+            finally
+            {
+                // Reset retry options.
+                client.ConnectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds = maxRetryWaitTimeInSeconds;
+                client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = maxRetryAttemptsOnThrottledRequests;
+            }
+        }
 
-            return documents.Count;
+        private IEnumerable<Document> GetDocuments(string content)
+        {
+            var token = JToken.Parse(content);
+
+            if (token is JArray)
+            {
+                return token.ToObject<IEnumerable<Document>>();
+            }
+            else
+            {
+                return new[] { token.ToObject<Document>() };
+            }
         }
 
         private static RequestOptions GetRequestOptions(IHaveRequestOptions request)
@@ -203,20 +238,6 @@ namespace CosmosDbExplorer.Services
 
             var value = JToken.Parse(partitionKeyValue).ToObject<object>();
             return new PartitionKey(value);
-        }
-
-        private IEnumerable<Document> GetDocuments(string content)
-        {
-            var token = JToken.Parse(content);
-
-            if (token is JArray)
-            {
-                return token.ToObject<IEnumerable<Document>>();
-            }
-            else
-            {
-                return new[] { token.ToObject<Document>() };
-            }
         }
 
         public Task<ResourceResponse<Document>> UpdateDocumentAsync(Connection connection, string altLink, string content, IHaveRequestOptions requestOptions)

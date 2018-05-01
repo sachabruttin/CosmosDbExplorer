@@ -87,8 +87,8 @@ namespace CosmosDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var count = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token).ConfigureAwait(false);
-                                await _dialogService.ShowMessageBox($"{count} document(s) imported!", "Import").ConfigureAwait(false);
+                                var response = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token).ConfigureAwait(false);
+                                await _dialogService.ShowMessageBox($"{response.NumberOfDocumentsImported} document(s) imported!", "Import").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
                             {

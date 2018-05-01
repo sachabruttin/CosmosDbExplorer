@@ -54,7 +54,6 @@ namespace CosmosDbExplorer.Services
 
         public string ContinuationToken { get; set; }
 
-        public long CollectionSize { get; set; }
         public double RequestCharge { get; internal set; }
     }
 }

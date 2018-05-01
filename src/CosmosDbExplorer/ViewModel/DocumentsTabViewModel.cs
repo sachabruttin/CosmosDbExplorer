@@ -186,7 +186,6 @@ namespace CosmosDbExplorer.ViewModel
                     Documents.Add(document);
                 }
 
-                TotalItemsCount = list.CollectionSize;
                 RaisePropertyChanged(() => ItemsCount);
             }
             catch (DocumentClientException clientEx)

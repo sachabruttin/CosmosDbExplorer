@@ -157,18 +157,9 @@
                                                                     </Grid.RowDefinitions>
                                                                     <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                                                     <Button Grid.Row="1" x:Name="PART_MoreButton" 
-                                                            Visibility="{Binding Path=HasMore, Converter={StaticResource boolToVisibilityConverter}}"
-                                                            Command="{Binding Path=LoadMoreCommand}">
-                                                                        <Button.Content>
-                                                                            <TextBlock>
-                                                                                <TextBlock.Text>
-                                                                                    <MultiBinding StringFormat="Load More ({0}/Max: {1})">
-                                                                                        <Binding Path="ItemsCount" />
-                                                                                        <Binding Path="TotalItemsCount" />
-                                                                                    </MultiBinding>
-                                                                                </TextBlock.Text>
-                                                                            </TextBlock>
-                                                                        </Button.Content>
+                                                                            Visibility="{Binding Path=HasMore, Converter={StaticResource boolToVisibilityConverter}}"
+                                                                            Command="{Binding Path=LoadMoreCommand}"
+                                                                            Content="Load more...">
                                                                     </Button>
                                                                 </Grid>
                                                             </ScrollViewer>

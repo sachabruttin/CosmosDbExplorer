@@ -143,19 +143,22 @@ namespace CosmosDbExplorer.Services
                 MaxItemCount = maxItems,
                 RequestContinuation = continuationToken,
                 EnableCrossPartitionQuery = true,
-                EnableScanInQuery = true,
-                PartitionKey = GetPartitionKey(requestOptions?.PartitionKeyValue)
+                EnableScanInQuery = false,
+                PartitionKey = GetPartitionKey(requestOptions?.PartitionKeyValue),
+
+                MaxDegreeOfParallelism = -1,
+                MaxBufferedItemCount = -1,
+                PopulateQueryMetrics = true,
             };
 
             var data = await GetClient(connection)
-                                        .CreateDocumentQuery(collection.AltLink, sql, feedOptions)
+                                        .CreateDocumentQuery(collection.DocumentsLink, sql, feedOptions)
                                         .AsDocumentQuery()
-                                        .ExecuteNextAsync<DocumentDescription>().ConfigureAwait(false);
+                                        .ExecuteNextAsync<DocumentDescription>().ConfigureAwait(true);
 
             return new DocumentDescriptionList(data.ToList())
             {
                 ContinuationToken = data.ResponseContinuation,
-                CollectionSize = long.Parse(data.CurrentResourceQuotaUsage.Split(new[] { ';' })[2].Split(new[] { '=' })[1]),
                 RequestCharge = data.RequestCharge
             };
         }

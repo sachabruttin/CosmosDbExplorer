@@ -44,6 +44,10 @@ highlighter: rouge
 timezone: Europe/Berlin
 defaults:
 - scope:
+    path: ""
+  values:
+    image: /CosmosDbExplorer/img/logonav.png
+- scope:
     path: _posts
     type: posts
   values:

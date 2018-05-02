@@ -14,6 +14,8 @@ using System.Threading;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using Microsoft.Azure.CosmosDB.BulkExecutor;
 using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace CosmosDbExplorer.Services
 {
@@ -165,7 +167,7 @@ namespace CosmosDbExplorer.Services
             };
         }
 
-        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken)
+        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, bool allowUpsert, bool allowIdGeneration, CancellationToken cancellationToken)
         {
             var client = GetClient(connection);
 
@@ -180,16 +182,18 @@ namespace CosmosDbExplorer.Services
                 client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 9;
 
                 var bulkExecutor = new BulkExecutor(client, collection);
-                await bulkExecutor.InitializeAsync();
+                await bulkExecutor.InitializeAsync().ConfigureAwait(false);
 
                 // Set retries to 0 to pass complete control to bulk executor.
                 client.ConnectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds = 0;
                 client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 0;
 
+                // see https://github.com/Azure/azure-cosmosdb-bulkexecutor-dotnet-getting-started
+
                 return await bulkExecutor.BulkImportAsync(
                     documents: GetDocuments(content),
-                    enableUpsert: true,
-                    disableAutomaticIdGeneration: false,
+                    enableUpsert: allowUpsert,
+                    disableAutomaticIdGeneration: !allowIdGeneration,
                     maxConcurrencyPerPartitionKeyRange: null,
                     maxInMemorySortingBatchSize: null,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -202,17 +206,23 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        private IEnumerable<Document> GetDocuments(string content)
+        private IEnumerable<Document> GetDocuments(string path)
         {
-            var token = JToken.Parse(content);
+            var serializer = new JsonSerializer();
 
-            if (token is JArray)
+            using (var filestream = File.Open(path, FileMode.Open))
+            using (var streamReader = new StreamReader(filestream))
+            using (var reader = new JsonTextReader(streamReader))
             {
-                return token.ToObject<IEnumerable<Document>>();
-            }
-            else
-            {
-                return new[] { token.ToObject<Document>() };
+                while (reader.Read())
+                {
+                    // deserialize only when there's "{" character in the stream
+                    if (reader.TokenType == JsonToken.StartObject)
+                    {
+
+                        yield return serializer.Deserialize<Document>(reader);
+                    }
+                }
             }
         }
 

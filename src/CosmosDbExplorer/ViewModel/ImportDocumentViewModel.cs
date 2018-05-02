@@ -7,15 +7,18 @@ using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModel.Interfaces;
+using FluentValidation;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Validar;
 
 namespace CosmosDbExplorer.ViewModel
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveRequestOptions
+    [InjectValidation]
+    public class ImportDocumentViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>
     {
         private RelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
@@ -29,7 +32,6 @@ namespace CosmosDbExplorer.ViewModel
         public ImportDocumentViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
             : base(messenger, uiServices)
         {
-            Content = new TextDocument();
             _dialogService = dialogService;
             _dbService = dbService;
 
@@ -72,9 +74,11 @@ namespace CosmosDbExplorer.ViewModel
 
         protected DocumentCollection Collection { get; set; }
 
-        public TextDocument Content { get; set; }
+        public string FileName { get; set; }
 
-        public bool IsDirty { get; set; }
+        public bool AllowUpsert { get; set; }
+
+        public bool AllowIdGeneration { get; set; }
 
         public RelayCommand ExecuteCommand
         {
@@ -87,7 +91,7 @@ namespace CosmosDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var response = await _dbService.ImportDocumentAsync(Connection, Collection, Content.Text, this, _cancellationToken.Token).ConfigureAwait(false);
+                                var response = await _dbService.ImportDocumentAsync(Connection, Collection, FileName, AllowUpsert, AllowIdGeneration, _cancellationToken.Token).ConfigureAwait(false);
                                 await _dialogService.ShowMessageBox($"{response.NumberOfDocumentsImported} document(s) imported!", "Import").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
@@ -107,7 +111,7 @@ namespace CosmosDbExplorer.ViewModel
                                 IsRunning = false;
                             }
                         },
-                        () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+                        () => !IsRunning && !string.IsNullOrEmpty(FileName)));
             }
         }
 
@@ -140,50 +144,32 @@ namespace CosmosDbExplorer.ViewModel
                             };
 
                             await _dialogService.ShowOpenFileDialog(settings,
-                                async (confirm, result) =>
+                                (confirm, result) =>
                                 {
                                     if (confirm)
                                     {
-                                        await DispatcherHelper.RunAsync(async () =>
-                                        {
-                                            using (var reader = File.OpenText(result.FileName))
-                                            {
-                                                Content.FileName = result.FileName;
-                                                Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
-                                            }
-                                        });
+                                        FileName = result.FileName;
                                     }
                                 }).ConfigureAwait(false);
                         }
                         ));
             }
         }
+    }
 
-        public IndexingDirective? IndexingDirective { get; set; }
-        public ConsistencyLevel? ConsistencyLevel { get; set; }
-        public string PartitionKeyValue { get; set; }
-        public AccessConditionType? AccessConditionType { get; set; }
-        public string AccessCondition { get; set; }
-        public string PreTrigger { get; set; }
-        public string PostTrigger { get; set; }
-
-        public RelayCommand ResetRequestOptionsCommand
+    public class ImportDocumentViewModelValidator : AbstractValidator<ImportDocumentViewModel>
+    {
+        public ImportDocumentViewModelValidator()
         {
-            get
-            {
-                return _resetRequestOptionsCommand
-                    ?? (_resetRequestOptionsCommand = new RelayCommand(
-                        () =>
-                        {
-                            IndexingDirective = null;
-                            ConsistencyLevel = null;
-                            PartitionKeyValue = null;
-                            AccessConditionType = null;
-                            AccessCondition = null;
-                            PreTrigger = null;
-                            PostTrigger = null;
-                        }));
-            }
+            RuleFor(x => x.FileName)
+                .NotEmpty()
+                .Custom((file, ctx) =>
+                {
+                    if (!File.Exists(file))
+                    {
+                        ctx.AddFailure("File doesn't exists.");
+                    }
+                });
         }
     }
 }

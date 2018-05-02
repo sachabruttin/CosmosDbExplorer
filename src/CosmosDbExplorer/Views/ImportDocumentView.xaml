@@ -7,49 +7,88 @@
              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:infra="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:infrastructure="clr-namespace:CosmosDbExplorer.Infrastructure"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
              Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:ImportDocumentViewModel}">
 
-    <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
-                           ShowLineNumbers="True"
-                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-        <i:Interaction.Behaviors>
-            <infra:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/> 
-        </i:Interaction.Behaviors>
-        
-        <avalonEdit:TextEditor.InputBindings>
-            <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
-        </avalonEdit:TextEditor.InputBindings>
-        <avalonEdit:TextEditor.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Cut"  Command="ApplicationCommands.Cut">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource CutIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource CopyIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource PasteIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator />
-                <MenuItem Header="Import" Command="{Binding ExecuteCommand}" InputGestureText="F5">
-                    <MenuItem.Icon>
-                        <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </ContextMenu>
-        </avalonEdit:TextEditor.ContextMenu>
-        
-        
-    </avalonEdit:TextEditor>
+    <DockPanel LastChildFill="True">
+
+        <GroupBox Header="Options" Margin="10,5" DockPanel.Dock="Top">
+            <StackPanel Margin="10,5">
+                <Label Content="File" />
+                <StackPanel Margin="20,5">
+                    <TextBox Text="{Binding Path=FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=500}">
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBoxBase}">
+                                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationTemplate}" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                                            <Border Name="Border" Padding="2"
+                                                    Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                                                    BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                                                    BorderThickness="1" >
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <ScrollViewer Margin="0" x:Name="PART_ContentHost" Grid.Column="0"/>
+                                                    <Button DockPanel.Dock="Right" Grid.Column="1"
+                                                            Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
+                                                            BorderThickness="0" Margin="-2">
+                                                        <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="10pt" Margin="2,0" ToolTip="Select file..."/>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsFocused" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="Validation.HasError" Value="true">
+                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <!--<TextBlock HorizontalAlignment="Right">
+                            <Hyperlink>
+                                <TextBlock Text="Validate" />
+                            </Hyperlink>
+                        </TextBlock>-->
+                </StackPanel>
+
+                <Label Content="Allow Upsert" />
+                <StackPanel Orientation="Horizontal" Margin="20,5">
+                    <infrastructure:RadioButtonEx Content="Yes" Style="{StaticResource SquareRadioButtonStyle}" Width="70"
+                                                                              RadioValue="True" RadioBinding="{Binding AllowUpsert}"/>
+                    <infrastructure:RadioButtonEx Content="No" Style="{StaticResource SquareRadioButtonStyle}" Width="70"
+                                                                              RadioValue="False" RadioBinding="{Binding AllowUpsert}" />
+                </StackPanel>
+
+                <Label Content="Allow Id Generation" />
+                <StackPanel Orientation="Horizontal" Margin="20,5">
+                    <infrastructure:RadioButtonEx Content="Yes" Style="{StaticResource SquareRadioButtonStyle}" Width="70"
+                                                                              RadioValue="True" RadioBinding="{Binding AllowIdGeneration}"/>
+                    <infrastructure:RadioButtonEx Content="No" Style="{StaticResource SquareRadioButtonStyle}" Width="70"
+                                                                              RadioValue="False" RadioBinding="{Binding AllowIdGeneration}" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Log" Margin="10,5"></GroupBox>
+    </DockPanel>
 
 
 </UserControl>

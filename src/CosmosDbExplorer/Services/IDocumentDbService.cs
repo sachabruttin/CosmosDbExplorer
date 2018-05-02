@@ -16,7 +16,7 @@ namespace CosmosDbExplorer.Services
 
         Task<List<DocumentCollection>> GetCollectionsAsync(Connection connection, Database database);
 
-        Task<DocumentDescriptionList> GetDocumentsAsync(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken);
+        Task<DocumentDescriptionList> GetDocumentsAsync(Connection connection, DocumentCollection collection, string filter, int maxItems, string continuationToken, IHaveRequestOptions requestOptions);
 
         Task<ResourceResponse<Document>> GetDocumentAsync(Connection connection, DocumentDescription document);
 

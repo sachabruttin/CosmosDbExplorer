@@ -227,6 +227,7 @@
     <Compile Include="Infrastructure\Models\StatusBarItemType.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\StatusBarItemTemplateSelector.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\StoredProcParameterTemplateSelector.cs" />
+    <Compile Include="Infrastructure\Validar\PartitionKeyValidator.cs" />
     <Compile Include="Infrastructure\Validar\ValidationFactory.cs" />
     <Compile Include="Infrastructure\Validar\ValidationTemplate.cs" />
     <Compile Include="Infrastructure\Models\WindowViewModelBase.cs" />

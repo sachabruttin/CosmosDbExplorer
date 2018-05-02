@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,19 +8,26 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Validar;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModel.Interfaces;
+using FluentValidation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json.Linq;
+using Validar;
 
 namespace CosmosDbExplorer.ViewModel
 {
-    public class QueryEditorViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>, IHaveQuerySettings
+    [InjectValidation]
+    public class QueryEditorViewModel : PaneWithZoomViewModel<CollectionNodeViewModel>
+        , IHaveQuerySettings
+        , IHaveSystemProperties
     {
         private RelayCommand _executeCommand;
         private readonly IDocumentDbService _dbService;
@@ -32,6 +40,8 @@ namespace CosmosDbExplorer.ViewModel
         private readonly StatusBarItem _progessBarStatusBarItem;
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
+        private RelayCommand<string> _saveQueryCommand;
+        private RelayCommand _openQueryCommand;
 
         public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
             : base(messenger, uiServices)
@@ -127,7 +137,9 @@ namespace CosmosDbExplorer.ViewModel
                 return _executeCommand
                     ?? (_executeCommand = new RelayCommand(
                         async () => await ExecuteQueryAsync(null).ConfigureAwait(false),
-                        () => !IsRunning && !string.IsNullOrEmpty(Content.Text)));
+                        () => !IsRunning
+                        && !string.IsNullOrEmpty(Content.Text)
+                        && IsValid));
             }
         }
 
@@ -225,7 +237,8 @@ namespace CosmosDbExplorer.ViewModel
                         async () => await ExecuteQueryAsync(ContinuationToken).ConfigureAwait(false),
                         () => ContinuationToken != null
                             && !IsRunning
-                            && !string.IsNullOrEmpty(Content.Text)));
+                            && !string.IsNullOrEmpty(Content.Text)
+                            && IsValid));
             }
         }
 
@@ -272,6 +285,102 @@ namespace CosmosDbExplorer.ViewModel
             }
         }
 
+        public string FileName { get; set; }
+
+        public RelayCommand<string> SaveQueryCommand
+        {
+            get
+            {
+                return _saveQueryCommand ??
+                    (_saveQueryCommand = new RelayCommand<string>(
+                     async param =>
+                     {
+                         if (FileName == null || param ==  "SaveAs")
+                         {
+                             var settings = new SaveFileDialogSettings
+                             {
+                                 DefaultExt = "sql",
+                                 Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                                 AddExtension = true,
+                                 OverwritePrompt = true,
+                                 CheckFileExists = false,
+                                 Title = "Save Query"
+                             };
+
+                             await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                             {
+                                 if (confirm)
+                                 {
+                                     try
+                                     {
+                                         IsRunning = true;
+                                         FileName = result.FileName;
+
+                                         await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, Content.Text));
+                                     }
+                                     catch (Exception ex)
+                                     {
+                                         await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                     }
+                                     finally
+                                     {
+                                         IsRunning = false;
+                                     }
+                                 }
+                             }).ConfigureAwait(false);
+                         }
+                         else
+                         {
+                             await DispatcherHelper.RunAsync(() => File.WriteAllText(FileName, Content.Text));
+                         }
+                     },
+                     param => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+            }
+        }
+
+        public RelayCommand OpenQueryCommand
+        {
+            get
+            {
+                return _openQueryCommand ??
+                    (_openQueryCommand = new RelayCommand(
+                     async () =>
+                     {
+                         var settings = new OpenFileDialogSettings
+                         {
+                             DefaultExt = "sql",
+                             Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                             AddExtension = true,
+                             CheckFileExists = false,
+                             Title = "Save Query"
+                         };
+
+                         await _dialogService.ShowOpenFileDialog(settings, async (confirm, result) =>
+                         {
+                             if (confirm)
+                             {
+                                 try
+                                 {
+                                     IsRunning = true;
+                                     FileName = result.FileName;
+                                     var txt = File.ReadAllText(result.FileName);
+                                     await DispatcherHelper.RunAsync(() => Content.Text = txt);
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                                 }
+                                 finally
+                                 {
+                                     IsRunning = false;
+                                 }
+                             }
+                         }).ConfigureAwait(false);
+                     },
+                     () => !IsRunning && !string.IsNullOrEmpty(Content?.Text)));
+            }
+        }
+
         public bool HideSystemProperties { get; set; } = true;
 
         public void OnHideSystemPropertiesChanged()
@@ -301,5 +410,16 @@ namespace CosmosDbExplorer.ViewModel
         public int? MaxItemCount { get; set; } = 100;
         public int? MaxDOP { get; set; } = -1;
         public int? MaxBufferItem { get; set; } = -1;
+        public string PartitionKeyValue { get; set; }
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+    }
+
+    public class QueryEditorViewModelValidator : AbstractValidator<QueryEditorViewModel>
+    {
+        public QueryEditorViewModelValidator()
+        {
+            When(x => !string.IsNullOrEmpty(x.PartitionKeyValue?.Trim()),
+                () => RuleFor(x => x.PartitionKeyValue).SetValidator(new PartitionKeyValidator()));
+        }
     }
 }

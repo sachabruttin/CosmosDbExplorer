@@ -8,5 +8,11 @@
         int? MaxItemCount { get; set; }
         int? MaxDOP { get; set; }
         int? MaxBufferItem { get; set; }
+        string PartitionKeyValue { get; set; }
+    }
+
+    public interface IHaveSystemProperties
+    {
+        bool HideSystemProperties { get; set; }
     }
 }

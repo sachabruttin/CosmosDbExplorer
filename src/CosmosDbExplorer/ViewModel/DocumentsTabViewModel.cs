@@ -1,25 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
+using CosmosDbExplorer.Infrastructure.Validar;
 using CosmosDbExplorer.Properties;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModel.Interfaces;
+using FluentValidation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Validar;
 
 namespace CosmosDbExplorer.ViewModel
 {
-    public class DocumentsTabViewModel : PaneWithZoomViewModel<DocumentNodeViewModel>, IHaveQuerySettings, IHaveRequestOptions
+    [InjectValidation]
+    public class DocumentsTabViewModel : PaneWithZoomViewModel<DocumentNodeViewModel>
+        , IHaveRequestOptions
+        , IHaveSystemProperties
     {
         private readonly IDocumentDbService _dbService;
         private readonly IDialogService _dialogService;
@@ -167,7 +173,8 @@ namespace CosmosDbExplorer.ViewModel
                                                                Collection,
                                                                Filter,
                                                                Settings.Default.MaxDocumentToRetrieve,
-                                                               ContinuationToken)
+                                                               ContinuationToken,
+                                                               this)
                                                                .ConfigureAwait(true);
 
                 HasMore = list.HasMore;
@@ -179,7 +186,6 @@ namespace CosmosDbExplorer.ViewModel
                     Documents.Add(document);
                 }
 
-                TotalItemsCount = list.CollectionSize;
                 RaisePropertyChanged(() => ItemsCount);
             }
             catch (DocumentClientException clientEx)
@@ -224,7 +230,7 @@ namespace CosmosDbExplorer.ViewModel
                 return _refreshLoadCommand
                     ?? (_refreshLoadCommand = new RelayCommand(
                         async () => await LoadDocuments(true).ConfigureAwait(false),
-                        () => !IsRunning));
+                        () => !IsRunning && IsValid));
             }
         }
 
@@ -290,12 +296,16 @@ namespace CosmosDbExplorer.ViewModel
                                 var message = ex.Parse();
                                 await _dialogService.ShowError(message, "Error", null, null).ConfigureAwait(false);
                             }
+                            catch (Exception ex)
+                            {
+                                await _dialogService.ShowError(ex.Message, "Error", null, null).ConfigureAwait(false);
+                            }
                             finally
                             {
                                 IsRunning = false;
                             }
                         },
-                        () => !IsRunning && EditorViewModel.IsDirty));
+                        () => !IsRunning && EditorViewModel.IsDirty && IsValid));
             }
         }
 
@@ -329,7 +339,7 @@ namespace CosmosDbExplorer.ViewModel
                                 }
                             }).ConfigureAwait(false);
                         },
-                        () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument));
+                        () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid));
             }
         }
 
@@ -406,9 +416,11 @@ namespace CosmosDbExplorer.ViewModel
                             }
                         }).ConfigureAwait(false);
                     },
-                    () => !IsRunning && SelectedDocument != null));
+                    () => !IsRunning && SelectedDocument != null && IsValid));
             }
         }
+
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
         public bool HideSystemProperties { get; set; } = true;
 
@@ -449,5 +461,14 @@ namespace CosmosDbExplorer.ViewModel
         public string AccessCondition { get; set; }
         public string PreTrigger { get; set; }
         public string PostTrigger { get; set; }
+    }
+
+    public class DocumentsTabViewModelValidator : AbstractValidator<DocumentsTabViewModel>
+    {
+        public DocumentsTabViewModelValidator()
+        {
+            When(x => !string.IsNullOrEmpty(x.PartitionKeyValue?.Trim()),
+                () => RuleFor(x => x.PartitionKeyValue).SetValidator(new PartitionKeyValidator()));
+        }
     }
 }

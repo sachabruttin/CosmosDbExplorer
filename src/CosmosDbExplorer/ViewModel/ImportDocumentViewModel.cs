@@ -24,7 +24,6 @@ namespace CosmosDbExplorer.ViewModel
         private readonly IDialogService _dialogService;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _openFileCommand;
-        private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
@@ -80,6 +79,10 @@ namespace CosmosDbExplorer.ViewModel
 
         public bool AllowIdGeneration { get; set; }
 
+        public int? MaxConcurrencyPerPartitionKeyRange { get; set; }
+
+        public int? MaxInMemorySortingBatchSize { get; set; }
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -91,7 +94,14 @@ namespace CosmosDbExplorer.ViewModel
                             try
                             {
                                 IsRunning = true;
-                                var response = await _dbService.ImportDocumentAsync(Connection, Collection, FileName, AllowUpsert, AllowIdGeneration, _cancellationToken.Token).ConfigureAwait(false);
+                                var response = await _dbService.ImportDocumentAsync(Connection, Collection, 
+                                                                                    FileName, 
+                                                                                    AllowUpsert, 
+                                                                                    AllowIdGeneration, 
+                                                                                    MaxConcurrencyPerPartitionKeyRange,
+                                                                                    MaxInMemorySortingBatchSize,
+                                                                                    _cancellationToken.Token).ConfigureAwait(false);
+
                                 await _dialogService.ShowMessageBox($"{response.NumberOfDocumentsImported} document(s) imported!", "Import").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)

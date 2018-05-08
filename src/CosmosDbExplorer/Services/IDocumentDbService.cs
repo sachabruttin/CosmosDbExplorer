@@ -29,7 +29,7 @@ namespace CosmosDbExplorer.Services
 
         Task CleanCollectionAsync(Connection connection, DocumentCollection collection);
 
-        Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, bool allowUpsert, bool allowIdGeneration, CancellationToken cancellationToken);
+        Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, bool allowUpsert, bool allowIdGeneration, int? maxConcurrencyPerPartitionKeyRange, int? maxInMemorySortingBatchSize, CancellationToken cancellationToken);
 
         Task<IList<StoredProcedure>> GetStoredProceduresAsync(Connection connection, DocumentCollection collection);
 

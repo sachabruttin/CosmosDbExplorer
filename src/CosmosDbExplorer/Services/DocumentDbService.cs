@@ -167,7 +167,13 @@ namespace CosmosDbExplorer.Services
             };
         }
 
-        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, bool allowUpsert, bool allowIdGeneration, CancellationToken cancellationToken)
+        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, 
+            string content, 
+            bool allowUpsert, 
+            bool allowIdGeneration, 
+            int? maxConcurrencyPerPartitionKeyRange,
+            int? maxInMemorySortingBatchSize,
+            CancellationToken cancellationToken)
         {
             var client = GetClient(connection);
 
@@ -194,8 +200,8 @@ namespace CosmosDbExplorer.Services
                     documents: GetDocuments(content),
                     enableUpsert: allowUpsert,
                     disableAutomaticIdGeneration: !allowIdGeneration,
-                    maxConcurrencyPerPartitionKeyRange: null,
-                    maxInMemorySortingBatchSize: null,
+                    maxConcurrencyPerPartitionKeyRange: maxConcurrencyPerPartitionKeyRange,
+                    maxInMemorySortingBatchSize: maxInMemorySortingBatchSize,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             finally
@@ -219,7 +225,6 @@ namespace CosmosDbExplorer.Services
                     // deserialize only when there's "{" character in the stream
                     if (reader.TokenType == JsonToken.StartObject)
                     {
-
                         yield return serializer.Deserialize<Document>(reader);
                     }
                 }

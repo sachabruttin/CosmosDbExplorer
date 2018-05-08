@@ -106,7 +106,26 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Header="Log" Margin="10,5"></GroupBox>
+        <GroupBox Header="Log" Margin="10,5">
+            <DockPanel LastChildFill="True">
+
+                <Grid DockPanel.Dock="Top" Margin="0,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Bulk executor output:" />
+                    <Button  HorizontalAlignment="Right" Grid.Column="1" Click="OnClearWindowButtonClick"
+                             ToolTip="Clear All">
+                        <Image Source="{StaticResource ClearWindowContent}" />
+                    </Button>
+                </Grid>
+                
+                <TextBox x:Name="log" IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+            </DockPanel>
+
+        </GroupBox>
     </DockPanel>
 
 

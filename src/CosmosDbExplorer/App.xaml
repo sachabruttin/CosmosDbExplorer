@@ -797,6 +797,20 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
+            <DrawingImage x:Key="ClearWindowContent">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,0L16,16 2,16 2,9.322C1.837,9.236 1.683,9.134 1.549,9 1.194,8.647 1,8.179 1,7.68 1,7.181 1.194,6.711 1.547,6.359L1.6,6.306 2,6.01 2,2.807 1.957,2.748C1.443,2.049,1.474,1.127,2,0.479L2,0 2.549,0 4.222,0z" />
+                            <GeometryDrawing Brush="#FF424242" Geometry="F1M4.1631,9.0215C3.8631,9.3205,3.4471,9.5005,3.0001,9.5315L3.0001,11.0005 15.0001,11.0005 15.0001,9.0005 4.1861,9.0005z M10.7981,7.0005L15.0001,7.0005 15.0001,5.0005 8.9681,5.0005z M11.7111,1.0005L9.9681,3.0005 15.0001,3.0005 15.0001,1.0005z M8.5061,1.0005L5.2991,1.0005 6.6361,2.5195z M3.0001,13.0005L15.0001,13.0005 15.0001,15.0005 3.0001,15.0005z" />
+                            <GeometryDrawing Brush="#FFA1260D" Geometry="F1M10.3389,7.9795L9.8729,7.9795 6.5429,5.4245 3.4799,8.2915C3.1419,8.6285 2.5929,8.6285 2.2539,8.2915 1.9149,7.9535 1.9149,7.4045 2.2539,7.0665L5.5929,4.5995 2.7629,2.1555C2.5129,1.8155 2.5249,1.3415 2.8319,1.0365 3.1279,0.7405 3.5779,0.7195 3.9139,0.9405L6.5209,3.9015 9.6969,1.3205 10.1029,1.3225 7.2459,4.5995z" />
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+
             <TextBlock x:Key="ImportIcon" Style="{StaticResource ImportDocumentIcon}" />
             <TextBlock x:Key="DeleteIconText" Style="{StaticResource DeleteIcon}" />
             <TextBlock x:Key="EditIconText" Style="{StaticResource EditIcon}" />

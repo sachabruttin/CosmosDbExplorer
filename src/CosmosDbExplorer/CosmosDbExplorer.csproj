@@ -205,6 +205,7 @@
     <Compile Include="Infrastructure\Converters\NullToEnabledConverter.cs" />
     <Compile Include="Infrastructure\Converters\QueryMetricsToDocumentConverter.cs" />
     <Compile Include="Infrastructure\Converters\QueryMetricsToStringConverter.cs" />
+    <Compile Include="Infrastructure\CustomTraceListener.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentExtensions.cs" />
     <Compile Include="Infrastructure\Extensions\ListExtensions.cs" />
     <Compile Include="Infrastructure\Extensions\PartitionKeyDefinitionExtensions.cs" />

@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Models;
 
 namespace CosmosDbExplorer.Views
@@ -11,6 +12,8 @@ namespace CosmosDbExplorer.Views
         public ImportDocumentView()
         {
             InitializeComponent();
+            var listener = new CustomTraceListener(log);
+            System.Diagnostics.Trace.Listeners.Add(listener);
         }
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
@@ -19,6 +22,11 @@ namespace CosmosDbExplorer.Views
             {
                 datacontext.IconSource = FindResource("ImportIcon") as TextBlock;
             }
+        }
+
+        private void OnClearWindowButtonClick(object sender, System.Windows.RoutedEventArgs e)
+        {
+            log.Clear();
         }
     }
 }

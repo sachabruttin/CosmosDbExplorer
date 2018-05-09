@@ -171,9 +171,10 @@ namespace CosmosDbExplorer.Services
         public async Task<ImportDocumentResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, 
             string content, 
             bool allowUpsert, 
-            bool allowIdGeneration, 
+            bool allowIdGeneration,
             int? maxConcurrencyPerPartitionKeyRange,
             int? maxInMemorySortingBatchSize,
+            int maxItemRead,
             CancellationToken cancellationToken)
         {
             var client = GetClient(connection);
@@ -197,39 +198,38 @@ namespace CosmosDbExplorer.Services
 
                 // see https://github.com/Azure/azure-cosmosdb-bulkexecutor-dotnet-getting-started
                 var postition = 0;
-                var numberOfDocument = 100000;
                 var retrieved = 0;
 
                 var result = new ImportDocumentResponse();
 
                 do
                 {
-                    var documents = await GetDocuments(content, postition, numberOfDocument).ConfigureAwait(false);
+                    var documents = await GetDocuments(content, postition, maxItemRead, cancellationToken).ConfigureAwait(false);
 
-                    //var bulkImportResponse = await bulkExecutor.BulkImportAsync(
-                    //    documents,
-                    //    enableUpsert: allowUpsert,
-                    //    disableAutomaticIdGeneration: !allowIdGeneration,
-                    //    maxConcurrencyPerPartitionKeyRange: maxConcurrencyPerPartitionKeyRange,
-                    //    maxInMemorySortingBatchSize: maxInMemorySortingBatchSize,
-                    //    cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var bulkImportResponse = await bulkExecutor.BulkImportAsync(
+                        documents.Take(maxItemRead),
+                        enableUpsert: allowUpsert,
+                        disableAutomaticIdGeneration: !allowIdGeneration,
+                        maxConcurrencyPerPartitionKeyRange: maxConcurrencyPerPartitionKeyRange,
+                        maxInMemorySortingBatchSize: maxInMemorySortingBatchSize,
+                        cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                    //Trace.WriteLine("--------------------------------------------------------------------- ");
-                    //Trace.WriteLine(string.Format("Inserted {0} docs @ {1} writes/s, {2} RU/s in {3} sec",
-                    //    bulkImportResponse.NumberOfDocumentsImported,
-                    //    Math.Round(bulkImportResponse.NumberOfDocumentsImported / bulkImportResponse.TotalTimeTaken.TotalSeconds),
-                    //    Math.Round(bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.TotalTimeTaken.TotalSeconds),
-                    //    bulkImportResponse.TotalTimeTaken.TotalSeconds));
-                    //Trace.WriteLine(string.Format("Average RU consumption per document: {0}", bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.NumberOfDocumentsImported));
-                    //Trace.WriteLine("---------------------------------------------------------------------\n ");
+                    Trace.WriteLine("--------------------------------------------------------------------- ");
+                    Trace.WriteLine(string.Format("Inserted {0} docs @ {1} writes/s, {2} RU/s in {3} sec",
+                        bulkImportResponse.NumberOfDocumentsImported,
+                        Math.Round(bulkImportResponse.NumberOfDocumentsImported / bulkImportResponse.TotalTimeTaken.TotalSeconds),
+                        Math.Round(bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.TotalTimeTaken.TotalSeconds),
+                        bulkImportResponse.TotalTimeTaken.TotalSeconds));
+                    Trace.WriteLine(string.Format("Average RU consumption per document: {0}", bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.NumberOfDocumentsImported));
+                    Trace.WriteLine("---------------------------------------------------------------------\n ");
 
-                    //result.TotalNumberOfDocumentsInserted += bulkImportResponse.NumberOfDocumentsImported;
-                    //result.TotalRequestUnitsConsumed += bulkImportResponse.TotalRequestUnitsConsumed;
-                    //result.TotalTimeTakenSec += bulkImportResponse.TotalTimeTaken.TotalSeconds;
+                    result.TotalNumberOfDocumentsInserted += bulkImportResponse.NumberOfDocumentsImported;
+                    result.TotalRequestUnitsConsumed += bulkImportResponse.TotalRequestUnitsConsumed;
+                    result.TotalTimeTakenSec += bulkImportResponse.TotalTimeTaken.TotalSeconds;
 
-                    postition += numberOfDocument;
+                    postition += maxItemRead;
                     retrieved = documents.Count;
-                } while (retrieved > numberOfDocument);
+                } while (retrieved > maxItemRead);
 
                 return result;
             }
@@ -241,7 +241,7 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        private async Task<IList<JObject>> GetDocuments(string path, int startPosition, int numberOfDocument)
+        private async Task<IList<JObject>> GetDocuments(string path, int startPosition, int numberOfDocument, CancellationToken cancellationToken)
         {
             var serializer = new JsonSerializer();
             var result = new List<JObject>(numberOfDocument);
@@ -250,7 +250,7 @@ namespace CosmosDbExplorer.Services
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            Trace.WriteLine($"Reading next {numberOfDocument}...");
+            Trace.Write($"Reading next {numberOfDocument}...");
 
             using (var filestream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             using (var streamReader = new StreamReader(filestream))
@@ -258,16 +258,18 @@ namespace CosmosDbExplorer.Services
             {
                 while (reader.Read())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     // deserialize only when there's "{" character in the stream
                     if (reader.TokenType == JsonToken.StartObject)
                     {
                         if (index >= startPosition)
                         {
-                            result.Add(await JObject.LoadAsync(reader).ConfigureAwait(false));
+                            result.Add(await JObject.LoadAsync(reader, cancellationToken).ConfigureAwait(false));
 
                             if (result.Count == numberOfDocument+1)
                             {
-                                Trace.WriteLine($"Read {numberOfDocument} in {stopWatch.ElapsedMilliseconds} ms.");
+                                Trace.WriteLine($" Read {numberOfDocument} in {stopWatch.ElapsedMilliseconds} ms.");
                                 return result;
                             }
                         }

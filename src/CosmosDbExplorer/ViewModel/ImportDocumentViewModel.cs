@@ -83,6 +83,8 @@ namespace CosmosDbExplorer.ViewModel
 
         public int? MaxInMemorySortingBatchSize { get; set; }
 
+        public int MaxItemRead { get; set; } = 1000000;
+
         public RelayCommand ExecuteCommand
         {
             get
@@ -100,6 +102,7 @@ namespace CosmosDbExplorer.ViewModel
                                                                                     AllowIdGeneration, 
                                                                                     MaxConcurrencyPerPartitionKeyRange,
                                                                                     MaxInMemorySortingBatchSize,
+                                                                                    MaxItemRead,
                                                                                     _cancellationToken.Token).ConfigureAwait(false);
 
                                 var writeCount = Math.Round(response.TotalNumberOfDocumentsInserted / response.TotalTimeTakenSec);

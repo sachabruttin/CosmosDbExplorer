@@ -102,6 +102,13 @@
                                         ToolTip="{Binding ElementName=maxInMemoryLabel, Path=ToolTip, Mode=OneWay}"/>
                 </StackPanel>
 
+                <Label Content="Max Item Read from File" x:Name="batchSize"
+                       ToolTip="The maximum number of items read from the source file."/>
+                <StackPanel Orientation="Horizontal" Margin="20,5">
+                    <xctk:IntegerUpDown Minimum="10" Width="140" Watermark="empty for default"
+                                        Value="{Binding MaxItemRead, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                        ToolTip="{Binding ElementName=batchSize, Path=ToolTip, Mode=OneWay}"/>
+                </StackPanel>
 
             </StackPanel>
         </GroupBox>

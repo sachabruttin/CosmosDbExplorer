@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace CosmosDbExplorer.Infrastructure
 {
     public class CustomTraceListener : TraceListener
     {
+        private readonly string _name;
         private readonly TextBox _textBox;
 
         public CustomTraceListener(TextBox textBox)
         {
+            _name = Path.GetFileName(Assembly.GetEntryAssembly().Location);
+
             _textBox = textBox;
             _textBox.TextChanged += (s, e) =>
             {
@@ -31,7 +31,15 @@ namespace CosmosDbExplorer.Infrastructure
 
         public override void Write(string message)
         {
-            _textBox.Dispatcher.Invoke(() => _textBox.AppendText(message));
+            _textBox.Dispatcher.Invoke(() =>
+            {
+                if (message.StartsWith(_name))
+                {
+                    message = message.Remove(0, _name.Length);
+                }
+
+                _textBox.AppendText(message);
+            });
         }
 
         public override void WriteLine(string message)

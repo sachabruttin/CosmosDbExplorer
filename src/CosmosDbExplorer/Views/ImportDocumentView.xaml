@@ -122,6 +122,7 @@
                 </Grid>
                 
                 <TextBox x:Name="log" IsReadOnly="True"
+                         FontFamily="Consolas" FontSize="10pt"
                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
             </DockPanel>
 

@@ -31,7 +31,7 @@ namespace CosmosDbExplorer.Services
         public Task ShowMessage(string message, string title)
         {
             DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
-            return null;
+            return Task.CompletedTask;
         }
 
         public Task ShowMessage(string message, string title, string buttonText, Action afterHideCallback)

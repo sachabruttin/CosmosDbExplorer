@@ -16,6 +16,7 @@ using Microsoft.Azure.CosmosDB.BulkExecutor;
 using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
 using Newtonsoft.Json;
 using System.IO;
+using System.Diagnostics;
 
 namespace CosmosDbExplorer.Services
 {
@@ -167,7 +168,7 @@ namespace CosmosDbExplorer.Services
             };
         }
 
-        public async Task<BulkImportResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, 
+        public async Task<ImportDocumentResponse> ImportDocumentAsync(Connection connection, DocumentCollection collection, 
             string content, 
             bool allowUpsert, 
             bool allowIdGeneration, 
@@ -195,14 +196,42 @@ namespace CosmosDbExplorer.Services
                 client.ConnectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 0;
 
                 // see https://github.com/Azure/azure-cosmosdb-bulkexecutor-dotnet-getting-started
+                var postition = 0;
+                var numberOfDocument = 100000;
+                var retrieved = 0;
 
-                return await bulkExecutor.BulkImportAsync(
-                    documents: GetDocuments(content),
-                    enableUpsert: allowUpsert,
-                    disableAutomaticIdGeneration: !allowIdGeneration,
-                    maxConcurrencyPerPartitionKeyRange: maxConcurrencyPerPartitionKeyRange,
-                    maxInMemorySortingBatchSize: maxInMemorySortingBatchSize,
-                    cancellationToken: cancellationToken).ConfigureAwait(false);
+                var result = new ImportDocumentResponse();
+
+                do
+                {
+                    var documents = await GetDocuments(content, postition, numberOfDocument).ConfigureAwait(false);
+
+                    //var bulkImportResponse = await bulkExecutor.BulkImportAsync(
+                    //    documents,
+                    //    enableUpsert: allowUpsert,
+                    //    disableAutomaticIdGeneration: !allowIdGeneration,
+                    //    maxConcurrencyPerPartitionKeyRange: maxConcurrencyPerPartitionKeyRange,
+                    //    maxInMemorySortingBatchSize: maxInMemorySortingBatchSize,
+                    //    cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    //Trace.WriteLine("--------------------------------------------------------------------- ");
+                    //Trace.WriteLine(string.Format("Inserted {0} docs @ {1} writes/s, {2} RU/s in {3} sec",
+                    //    bulkImportResponse.NumberOfDocumentsImported,
+                    //    Math.Round(bulkImportResponse.NumberOfDocumentsImported / bulkImportResponse.TotalTimeTaken.TotalSeconds),
+                    //    Math.Round(bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.TotalTimeTaken.TotalSeconds),
+                    //    bulkImportResponse.TotalTimeTaken.TotalSeconds));
+                    //Trace.WriteLine(string.Format("Average RU consumption per document: {0}", bulkImportResponse.TotalRequestUnitsConsumed / bulkImportResponse.NumberOfDocumentsImported));
+                    //Trace.WriteLine("---------------------------------------------------------------------\n ");
+
+                    //result.TotalNumberOfDocumentsInserted += bulkImportResponse.NumberOfDocumentsImported;
+                    //result.TotalRequestUnitsConsumed += bulkImportResponse.TotalRequestUnitsConsumed;
+                    //result.TotalTimeTakenSec += bulkImportResponse.TotalTimeTaken.TotalSeconds;
+
+                    postition += numberOfDocument;
+                    retrieved = documents.Count;
+                } while (retrieved > numberOfDocument);
+
+                return result;
             }
             finally
             {
@@ -212,11 +241,18 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        private IEnumerable<Document> GetDocuments(string path)
+        private async Task<IList<JObject>> GetDocuments(string path, int startPosition, int numberOfDocument)
         {
             var serializer = new JsonSerializer();
+            var result = new List<JObject>(numberOfDocument);
+            var index = 0;
 
-            using (var filestream = File.Open(path, FileMode.Open))
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            Trace.WriteLine($"Reading next {numberOfDocument}...");
+
+            using (var filestream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             using (var streamReader = new StreamReader(filestream))
             using (var reader = new JsonTextReader(streamReader))
             {
@@ -225,10 +261,24 @@ namespace CosmosDbExplorer.Services
                     // deserialize only when there's "{" character in the stream
                     if (reader.TokenType == JsonToken.StartObject)
                     {
-                        yield return serializer.Deserialize<Document>(reader);
+                        if (index >= startPosition)
+                        {
+                            result.Add(await JObject.LoadAsync(reader).ConfigureAwait(false));
+
+                            if (result.Count == numberOfDocument+1)
+                            {
+                                Trace.WriteLine($"Read {numberOfDocument} in {stopWatch.ElapsedMilliseconds} ms.");
+                                return result;
+                            }
+                        }
+                        ++index;
                     }
                 }
+
+                Trace.WriteLine($" Read {result.Count} in {stopWatch.ElapsedMilliseconds} ms.");
+                return result;
             }
+
         }
 
         private static RequestOptions GetRequestOptions(IHaveRequestOptions request)

@@ -34,7 +34,7 @@ namespace CosmosDbExplorer.ViewModel
             _dialogService = dialogService;
             _dbService = dbService;
 
-            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
@@ -102,7 +102,12 @@ namespace CosmosDbExplorer.ViewModel
                                                                                     MaxInMemorySortingBatchSize,
                                                                                     _cancellationToken.Token).ConfigureAwait(false);
 
-                                await _dialogService.ShowMessageBox($"{response.NumberOfDocumentsImported} document(s) imported!", "Import").ConfigureAwait(false);
+                                var writeCount = Math.Round(response.TotalNumberOfDocumentsInserted / response.TotalTimeTakenSec);
+                                var ruUsed = Math.Round(response.TotalRequestUnitsConsumed / response.TotalTimeTakenSec);
+
+                                var message = $"Inserted {response.TotalNumberOfDocumentsInserted} documents in {writeCount} writes/s, {ruUsed} RU/s in {response.TotalTimeTakenSec} sec.";
+
+                                await _dialogService.ShowMessageBox(message, "Import Summary").ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
                             {

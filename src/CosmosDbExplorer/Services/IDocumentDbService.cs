@@ -24,7 +24,7 @@ namespace CosmosDbExplorer.Services
 
         Task<FeedResponse<dynamic>> ExecuteQueryAsync(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings,  string continuationToken, CancellationToken cancellationToken);
 
-        Task<ResourceResponse<Document>> DeleteDocumentAsync(Connection connection, DocumentDescription document);
+        Task<IEnumerable<ResourceResponse<Document>>> DeleteDocumentsAsync(Connection connection, IEnumerable<DocumentDescription> documents);
 
         Task CleanCollectionAsync(Connection connection, DocumentCollection collection);
 

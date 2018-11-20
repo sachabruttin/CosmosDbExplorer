@@ -53,13 +53,15 @@ namespace CosmosDbExplorer.Services
         {
             const string sqlQuery = "SELECT * FROM c";
             var client = GetClient(connection);
-            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = 500 };
             var results = client.CreateDocumentQuery<Document>(collection.DocumentsLink, sqlQuery, feedOptions).AsDocumentQuery();
             var partitionKeyPath = collection.PartitionKey.GetSelectToken();
 
             //While there are more results
             while (results.HasMoreResults)
             {
+                var tasks = new List<Task>();
+
                 //enumerate and delete the documents in this batch
                 foreach (Document doc in await results.ExecuteNextAsync().ConfigureAwait(false))
                 {
@@ -69,18 +71,31 @@ namespace CosmosDbExplorer.Services
                         requestOptions.PartitionKey = new PartitionKey(doc.GetPartitionKeyValue(partitionKeyPath));
                     }
 
-                    await client.DeleteDocumentAsync(doc.SelfLink, requestOptions).ConfigureAwait(false);
+                    tasks.Add(client.DeleteDocumentAsync(doc.SelfLink, requestOptions));
+                    //await client.DeleteDocumentAsync(doc.SelfLink, requestOptions).ConfigureAwait(false);
                 }
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
         }
 
-        public Task<ResourceResponse<Document>> DeleteDocumentAsync(Connection connection, DocumentDescription document)
+        public async Task<IEnumerable<ResourceResponse<Document>>> DeleteDocumentsAsync(Connection connection, IEnumerable<DocumentDescription> documents)
+        {
+            var client = GetClient(connection);
+            var tasks = documents.Select(doc => DeleteDocumentAsync(client, doc)).ToList();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            return tasks.Select(t => t.Result);
+        }
+
+        private Task<ResourceResponse<Document>> DeleteDocumentAsync(DocumentClient client, DocumentDescription document)
         {
             var options = document.PartitionKey != null
-                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
-                            : new RequestOptions();
+                ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
+                : new RequestOptions();
 
-            return GetClient(connection).DeleteDocumentAsync(document.SelfLink, options);
+            return client.DeleteDocumentAsync(document.SelfLink, options);
         }
 
         public Task<FeedResponse<dynamic>> ExecuteQueryAsync(Connection connection, DocumentCollection collection, string query, IHaveQuerySettings querySettings, string continuationToken, CancellationToken cancellationToken)

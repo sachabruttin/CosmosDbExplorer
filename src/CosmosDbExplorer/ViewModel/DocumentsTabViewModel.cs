@@ -116,7 +116,7 @@ namespace CosmosDbExplorer.ViewModel
                     }
                 }
 
-                SetStatusBar(_currentDocument);
+                SetStatusBar(new StatusBarInfo(_currentDocument));
                 IsRunning = false;
             }
             else
@@ -147,7 +147,7 @@ namespace CosmosDbExplorer.ViewModel
             _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
 
-        private void SetStatusBar(ResourceResponse<Document> response)
+        private void SetStatusBar(IStatusBarInfo response)
         {
             RequestCharge = response != null
                 ? $"Request Charge: {response.RequestCharge:N2}"
@@ -279,7 +279,7 @@ namespace CosmosDbExplorer.ViewModel
                                 var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(true);
                                 var document = response.Resource;
 
-                                SetStatusBar(response);
+                                SetStatusBar(new StatusBarInfo(response));
 
                                 var description = new DocumentDescription(document, Collection);
 
@@ -317,24 +317,29 @@ namespace CosmosDbExplorer.ViewModel
                     ?? (_deleteDocumentCommand = new RelayCommand(
                         async () =>
                         {
-                            var documentId = SelectedDocument.Id;
+                            var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
+                            var message = selectedDocuments.Count == 1
+                                        ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
+                                        : $"Are you sure taht you want to delete these {selectedDocuments.Count} documents?";
 
-                            await _dialogService.ShowMessage($"Are you sure that you want to delete document '{documentId}'?", "Delete Document", null, null, async confirm =>
+                            await _dialogService.ShowMessage(message, "Delete Document(s)", null, null, async confirm =>
                             {
                                 if (confirm)
                                 {
                                     IsRunning = true;
-                                    var response = await _dbService.DeleteDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
+                                    var response = await _dbService.DeleteDocumentsAsync(Node.Parent.Parent.Parent.Connection, selectedDocuments).ConfigureAwait(false);
                                     IsRunning = false;
-                                    SetStatusBar(response);
+                                    SetStatusBar(new StatusBarInfo(response));
 
                                     await DispatcherHelper.RunAsync(() =>
                                     {
-                                        Documents.Remove(SelectedDocument);
                                         SelectedDocument = null;
+                                        foreach (var item in selectedDocuments)
+                                        {
+                                            Documents.Remove(item);
+                                        }
 
-                                        SetStatusBar(response);
-                                        EditorViewModel.SetText(new { result = $"Document '{documentId}' deleted" }, HideSystemProperties);
+                                        EditorViewModel.SetText(new { result = "Delete operation succeded!" }, HideSystemProperties);
                                     });
                                 }
                             }).ConfigureAwait(false);

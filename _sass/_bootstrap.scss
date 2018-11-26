@@ -54,3 +54,42 @@
 // Utility classes
 @import "bootstrap/utilities";
 @import "bootstrap/responsive-utilities";
+
+
+.nuget-badge {
+    p {
+        code {
+            background-color: #202020;
+            border: 4px solid #c0c0c0;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            box-shadow: 2px 2px 3px #6e6e6e;
+            color: #e2e2e2;
+            display: block;
+            font: 1.5em 'andale mono','lucida console',monospace;
+            line-height: 1.5em;
+            overflow: auto;
+            padding: 15px;
+        }
+
+        span {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    }
+}
+
+.nuget-badge-small {
+    @extend .nuget-badge;
+
+    p {
+        code {
+            font: 1.0em 'andale mono','lucida console',monospace;
+        }
+    }
+}

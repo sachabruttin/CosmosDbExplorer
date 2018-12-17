@@ -114,11 +114,12 @@
                                     </Button>
                                 </Grid>
 
-                                <infra:ListBoxMore Grid.Row="1" 
-                                   ItemsSource="{Binding Documents}"
-                                   SelectedValue="{Binding SelectedDocument}"
-                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                   HorizontalContentAlignment="Stretch">
+                                <infra:ListBoxMore Grid.Row="1"
+                                                   ItemsSource="{Binding Documents}"
+                                                   SelectedValue="{Binding SelectedDocument}"
+                                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                   SelectionMode="Extended"
+                                                   HorizontalContentAlignment="Stretch">
                                     <infra:ListBoxMore.ItemTemplateSelector>
                                         <template:DocumentDescriptionTemplateSelector>
                                             <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
@@ -182,6 +183,12 @@
                                             </Setter>
                                         </Style>
                                     </infra:ListBoxMore.Style>
+
+                                    <infra:ListBoxMore.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                                        </Style>
+                                    </infra:ListBoxMore.ItemContainerStyle>
                                 </infra:ListBoxMore>
 
                             </Grid>

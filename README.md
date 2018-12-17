@@ -14,6 +14,10 @@ It mimics the Data Explorer available on the Azure Portal on the desktop.
 
 ## Installation
 
+choco install cosmosdbexplorer
+
+- or - 
+
 Download the lastest version from [releases](https://github.com/sachabruttin/CosmosDbExplorer/releases) and unzip it. Run `CosmosDbExplorer.exe`.
 
 ## How to Start

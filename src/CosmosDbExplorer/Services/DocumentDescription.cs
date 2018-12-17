@@ -37,6 +37,9 @@ namespace CosmosDbExplorer.Services
 
         [JsonProperty(PropertyName = "_partitionKey")]
         public object PartitionKey { get; set; }
+
+        [JsonIgnore]
+        public bool IsSelected { get; set; }
     }
 
     public class DocumentDescriptionList : List<DocumentDescription>

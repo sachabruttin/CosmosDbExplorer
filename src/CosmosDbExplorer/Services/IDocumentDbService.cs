@@ -28,6 +28,8 @@ namespace CosmosDbExplorer.Services
 
         Task CleanCollectionAsync(Connection connection, DocumentCollection collection);
 
+        Task<DocumentCollection> RecreateCollectionAsync(Connection connection, Database database, DocumentCollection collection);
+
         Task<int> ImportDocumentAsync(Connection connection, DocumentCollection collection, string content, IHaveRequestOptions requestOptions, CancellationToken cancellationToken);
 
         Task<IList<StoredProcedure>> GetStoredProceduresAsync(Connection connection, DocumentCollection collection);

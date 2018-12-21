@@ -557,11 +557,14 @@
                             </fluent:MenuItem.Icon>
                         </fluent:MenuItem>
 
-                        <fluent:MenuItem Header="Remove All Documents" 
+                        <fluent:MenuItem Header="Remove All Documents (Delete)" 
                                    Icon="{StaticResource RemoveAllIcon}" 
                                    Command="{Binding Collection.ClearAllDocumentsCommand}"
                                    />
-
+                        <fluent:MenuItem Header="Remove All Documents (Recreate)" 
+                                   Icon="{StaticResource RemoveAllIcon}" 
+                                   Command="{Binding Collection.RecreateAsEmptyCommand}"
+                                   />
                     </fluent:SplitButton>
 
                 </fluent:RibbonGroupBox>

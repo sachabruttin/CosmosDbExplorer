@@ -79,6 +79,42 @@ namespace CosmosDbExplorer.Services
             }
         }
 
+        public async Task<DocumentCollection> RecreateCollectionAsync(Connection connection, Database database, DocumentCollection collection)
+        {
+            var throughput = await GetThroughputAsync(connection, collection).ConfigureAwait(false);
+            
+            // Copy StoredProcedure, Triggers, UDFs
+            var storeProcedures = await GetStoredProceduresAsync(connection, collection).ConfigureAwait(false);
+            var triggers = await GetTriggersAsync(connection, collection).ConfigureAwait(false);
+            var udfs = await GetUdfsAsync(connection, collection).ConfigureAwait(false);
+
+            // Delete existing collection
+            await DeleteCollectionAsync(connection, collection).ConfigureAwait(false);
+
+            // Create new collection object
+            var duplicate = new DocumentCollection
+            {
+                ConflictResolutionPolicy = collection.ConflictResolutionPolicy,
+                DefaultTimeToLive = collection.DefaultTimeToLive,
+                Id = collection.Id,
+                IndexingPolicy = collection.IndexingPolicy,
+                PartitionKey = collection.PartitionKey,
+                UniqueKeyPolicy = collection.UniqueKeyPolicy
+            };
+
+            var result = await CreateCollectionAsync(connection, database, duplicate, throughput).ConfigureAwait(false);
+
+            // Add StoredProcedure, Triggers, UDFs
+            var tasks = new List<Task>();
+            tasks.AddRange(storeProcedures.Select(sp => SaveStoredProcedureAsync(connection, result, sp.Id, sp.Body, null)));
+            tasks.AddRange(triggers.Select(t => SaveTriggerAsync(connection, result, t.Id, t.Body, t.TriggerType, t.TriggerOperation, null)));
+            tasks.AddRange(udfs.Select(udf => SaveUdfAsync(connection, result, udf.Id, udf.Body, null)));
+
+            await Task.WhenAll(tasks);
+
+            return result;
+        }
+
         public async Task<IEnumerable<ResourceResponse<Document>>> DeleteDocumentsAsync(Connection connection, IEnumerable<DocumentDescription> documents)
         {
             var client = GetClient(connection);

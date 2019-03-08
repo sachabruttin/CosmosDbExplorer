@@ -9,6 +9,7 @@ using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Infrastructure.Validar;
+using CosmosDbExplorer.Properties;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModel.Interfaces;
@@ -257,7 +258,8 @@ namespace CosmosDbExplorer.ViewModel
                             AddExtension = true,
                             OverwritePrompt = true,
                             CheckFileExists = false,
-                            Title = "Save document locally"
+                            Title = "Save document locally",
+                            InitialDirectory = Settings.Default.GetExportFolder()
                         };
 
                         await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
@@ -267,6 +269,9 @@ namespace CosmosDbExplorer.ViewModel
                                 try
                                 {
                                     IsRunning = true;
+
+                                    Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
+                                    Settings.Default.Save();
 
                                     await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
                                 }

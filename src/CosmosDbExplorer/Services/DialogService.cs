@@ -10,7 +10,7 @@ namespace CosmosDbExplorer.Services
     public interface IDialogService : GalaSoft.MvvmLight.Views.IDialogService
     {
         Task<bool> ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback);
-        //Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool> afterHideCallback);
+        Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult> afterHideCallback);
         Task<bool> ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback);
     }
 
@@ -59,10 +59,20 @@ namespace CosmosDbExplorer.Services
             return Task.FromResult(0);
         }
 
-        //public Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool> afterHideCallback)
-        //{
-        //    var dialog = new FolderBrowserDialog()
-        //}
+        public Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult> afterHideCallback)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                SelectedPath = settings.SelectedPath,
+                ShowNewFolderButton = settings.ShowNewFolderButton,
+                Description = settings.Description
+            };
+
+            var result = dialog.ShowDialog(/* TODO: Get Handle */);
+            var confirmed = result == System.Windows.Forms.DialogResult.OK;
+
+            return Task.Run(() => { afterHideCallback(confirmed, new FolderDialogResult(dialog.SelectedPath)); return confirmed; });
+        }
 
         public Task<bool> ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback)
         {

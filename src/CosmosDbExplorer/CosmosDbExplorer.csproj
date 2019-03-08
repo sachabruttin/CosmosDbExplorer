@@ -282,6 +282,7 @@
     <Compile Include="Services\DialogSettings\FileDialogResult.cs" />
     <Compile Include="Services\DialogSettings\FileDialogSettings.cs" />
     <Compile Include="Services\DialogSettings\FolderBrowserDialogSettings.cs" />
+    <Compile Include="Services\DialogSettings\FolderDialogResult.cs" />
     <Compile Include="Services\DialogSettings\OpenFileDialogSettings.cs" />
     <Compile Include="Services\DialogSettings\SaveFileDialogSettings.cs" />
     <Compile Include="Services\DocumentDbService.cs" />
@@ -490,6 +491,7 @@
     <EmbeddedResource Include="Infrastructure\AvalonEdit\DocumentDbSql.xshd" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
+    <Compile Include="Properties\Settings.Extensions.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

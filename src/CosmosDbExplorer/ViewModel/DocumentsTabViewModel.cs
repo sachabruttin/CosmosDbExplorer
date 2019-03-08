@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -390,39 +391,100 @@ namespace CosmosDbExplorer.ViewModel
                 (_saveLocalCommand = new RelayCommand(
                     async () =>
                     {
-                        var settings = new SaveFileDialogSettings
-                        {
-                            DefaultExt = "json",
-                            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                            AddExtension = true,
-                            FileName = $"{SelectedDocument.Id}.json",
-                            OverwritePrompt = true,
-                            CheckFileExists = false,
-                            Title = "Save document locally"
-                        };
+                        var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
 
-                        await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+                        if (selectedDocuments.Count == 1)
                         {
-                            if (confirm)
-                            {
-                                try
-                                {
-                                    IsRunning = true;
-                                    await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
-                                    }
-                                    finally
-                                    {
-                                        IsRunning = false;
-                                    }
-                            }
-                        }).ConfigureAwait(false);
+                            await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
+                        }
+
                     },
                     () => !IsRunning && SelectedDocument != null && IsValid));
             }
+        }
+
+        private Task SaveLocalMultipleDocumentsAsync(List<DocumentDescription> selectedDocuments)
+        {
+            var settings = new FolderBrowserDialogSettings
+            {
+                ShowNewFolderButton = true,
+                Description = "Select output folder...",
+                SelectedPath = Settings.Default.GetExportFolder()
+            };
+
+            return _dialogService.ShowFolderBrowserDialog(settings, async (confirm, result) =>
+            {
+                if (confirm)
+                {
+                    try
+                    {
+                        IsRunning = true;
+
+                        // Save path for future use
+                        Settings.Default.ExportFolder = result.Path;
+                        Settings.Default.Save();
+
+                        var tasks = selectedDocuments.Select(doc => _dbService.GetDocumentAsync(Connection, doc));
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                        foreach (var item in tasks)
+                        {
+                            var document = item.Result;
+                            File.WriteAllText(Path.Combine(result.Path, $"{document.Resource.Id}.json"), document.Resource.ToString());
+                        }
+                   }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        IsRunning = false;
+                    }
+                }
+            });
+        }
+
+        private Task SaveLocalSingleDocumentAsync()
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                DefaultExt = "json",
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                AddExtension = true,
+                FileName = $"{SelectedDocument.Id}.json",
+                OverwritePrompt = true,
+                CheckFileExists = false,
+                Title = "Save document locally"
+            };
+
+            return _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+            {
+                if (confirm)
+                {
+                    try
+                    {
+                        IsRunning = true;
+
+                        Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
+                        Settings.Default.Save();
+
+                        await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        IsRunning = false;
+                    }
+                }
+            });
         }
 
         public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;

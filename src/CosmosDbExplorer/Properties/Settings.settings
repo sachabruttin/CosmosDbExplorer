@@ -11,5 +11,8 @@
     <Setting Name="AutoUpdaterIntervalInSeconds" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">300</Value>
     </Setting>
+    <Setting Name="ExportFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

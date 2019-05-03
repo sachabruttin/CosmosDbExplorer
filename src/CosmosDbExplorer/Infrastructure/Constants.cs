@@ -19,7 +19,7 @@ namespace CosmosDbExplorer.Infrastructure
 
         public static class Validation
         {
-            public const string PathRegex = @"^\/[\*]?$|^\/(\w*\/|\[\]\/)+[\*\?]$";
+            public const string PathRegex = @"^\/[\*]?$|^(\/""|\/)(\w*[""\/]|\[\]\/)+[\*\?]$";
         }
     }
 }

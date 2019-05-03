@@ -10,6 +10,11 @@ namespace CosmosDbExplorer.ViewModel.Indexes
     [InjectValidation]
     public class ExcludedPathViewModel : ObservableObject, System.IEquatable<ExcludedPathViewModel>
     {
+        public ExcludedPathViewModel()
+        {
+            ExcludedPath = new ExcludedPath();
+        }
+
         public ExcludedPathViewModel(ExcludedPath excludedPath)
         {
             ExcludedPath = excludedPath;

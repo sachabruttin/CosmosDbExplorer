@@ -25,11 +25,10 @@ namespace CosmosDbExplorer.ViewModel
         private readonly IDocumentDbService _dbService;
         private RelayCommand _discardCommand;
         private RelayCommand _saveCommand;
-        private const decimal HourlyPrice = 0.00008m;
         private readonly IDialogService _dialogService;
         private readonly IDisposable _textChangedObservable;
 
-        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+        public ScaleAndSettingsTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices, ThroughputViewModel throughput)
             : base(messenger, uiServices)
         {
             Content = new TextDocument();
@@ -43,6 +42,7 @@ namespace CosmosDbExplorer.ViewModel
 
             _dbService = dbService;
             _dialogService = dialogService;
+            Throughput = throughput;
         }
 
         private void OnContentTextChanged(string text)
@@ -84,6 +84,7 @@ namespace CosmosDbExplorer.ViewModel
             Header = node.Name;
             Connection = connection;
             Collection = collection;
+            IsDatabaseLevelThroughput = node.Parent.IsDatabaseLevelThroughput;
 
             var split = Collection.AltLink.Split(new char[] { '/' });
             ToolTip = $"{split[1]}>{split[3]}";
@@ -132,19 +133,13 @@ namespace CosmosDbExplorer.ViewModel
 
         public DocumentCollection Collection { get; protected set; }
 
-        public int Throughput { get; set; }
+        public ThroughputViewModel Throughput { get; private set; }
 
         public string PartitionKey { get; set; }
 
         public bool IsFixedStorage { get; set; }
 
         public int PartitionCount { get; set; }
-
-        public int MaxThroughput => PartitionCount * 10000;
-
-        public int MinThroughput => IsFixedStorage ? 400 : Math.Max(1000, PartitionCount * 100);
-
-        public string EstimatedPrice => $"${HourlyPrice * Throughput:N3} hourly / {HourlyPrice * Throughput * 24:N2} daily.";
 
         public int? TimeToLiveInSecond { get; set; }
 
@@ -175,19 +170,22 @@ namespace CosmosDbExplorer.ViewModel
 
         public bool IsTimeLiveInSecondVisible { get; set; }
 
+        public bool IsDatabaseLevelThroughput { get; private set; }
+
         public async Task LoadDataAsync()
         {
             IsLoading = true;
 
             try
             {
-                var throughputTask = _dbService.GetThroughputAsync(Connection, Collection);
-                var partitionTask = _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
+                if (!IsDatabaseLevelThroughput)
+                {
+                    var throughputTask = await _dbService.GetThroughputAsync(Connection, Collection);
+                    Throughput.Value = throughputTask.Value; // result[0];
+                }
 
-                var result = await Task.WhenAll(throughputTask, partitionTask).ConfigureAwait(false);
-
-                PartitionCount = result[1];
-                Throughput = result[0];
+                var partitionTask = await _dbService.GetPartitionKeyRangeCountAsync(Connection, Collection);
+                PartitionCount = partitionTask;// result[1];
             }
             catch (DocumentClientException clientEx)
             {
@@ -233,7 +231,7 @@ namespace CosmosDbExplorer.ViewModel
                                 Collection.DefaultTimeToLive = TimeToLiveInSecond;
                                 Collection.IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(Content.Text);
 
-                                await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput).ConfigureAwait(false);
+                                await _dbService.UpdateCollectionSettingsAsync(Connection, Collection, Throughput.Value).ConfigureAwait(false);
                                 IsChanged = false;
                             }
                             catch (OperationCanceledException)
@@ -281,9 +279,7 @@ namespace CosmosDbExplorer.ViewModel
     {
         public ScaleAndSettingsTabViewModelValidator()
         {
-            RuleFor(x => x.Throughput).NotEmpty()
-                                      .Must(throughput => throughput % 100 == 0)
-                                      .WithMessage("Throughput must be a multiple of 100");
+            RuleFor(x => x.Throughput).SetValidator(new ThroughputViewModelValidator());
 
             RuleFor(x => x.Content)
                 .Custom((content, ctx) =>

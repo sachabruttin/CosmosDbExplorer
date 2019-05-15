@@ -151,6 +151,7 @@
     <Compile Include="Messages\EditUserDefFuncMessage.cs" />
     <Compile Include="Messages\IsBusyMessage.cs" />
     <Compile Include="Messages\OpenCollectionMetricsViewMessage.cs" />
+    <Compile Include="Messages\OpenDatabaseScaleViewMessage.cs" />
     <Compile Include="Messages\OpenDocumentsViewMessage.cs" />
     <Compile Include="Messages\OpenImportDocumentViewMessage.cs" />
     <Compile Include="Messages\OpenQueryViewMessage.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="ViewModel\DatabaseNodes\CollectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ConnectionNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DatabaseNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseNodes\DatabaseScaleNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\IAssetNode.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanEditDelete.cs" />
     <Compile Include="ViewModel\DatabaseNodes\ICanRefreshNode.cs" />
@@ -194,6 +196,7 @@
     <Compile Include="ViewModel\DatabaseNodes\StoredProcedureNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\UserNodeViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\UsersNodeViewModel.cs" />
+    <Compile Include="ViewModel\DatabaseScaleTabViewModel.cs" />
     <Compile Include="ViewModel\DatabaseViewModel.cs" />
     <Compile Include="ViewModel\DatabaseNodes\DocumentNodeViewModel.cs" />
     <Compile Include="ViewModel\DocumentsTabViewModel.cs" />
@@ -231,6 +234,12 @@
     </Compile>
     <Compile Include="Views\CollectionMetricsTabView.xaml.cs">
       <DependentUpon>CollectionMetricsTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\ThroughputControl.xaml.cs">
+      <DependentUpon>ThroughputControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DatabaseScaleTabView.xaml.cs">
+      <DependentUpon>DatabaseScaleTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DatabaseView.xaml.cs">
       <DependentUpon>DatabaseView.xaml</DependentUpon>
@@ -299,6 +308,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CollectionMetricsTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\ThroughputControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DatabaseScaleTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

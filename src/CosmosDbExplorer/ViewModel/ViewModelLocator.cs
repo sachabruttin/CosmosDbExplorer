@@ -68,10 +68,8 @@ namespace CosmosDbExplorer.ViewModel
             SimpleIoc.Default.Register<UserEditViewModel>();
             SimpleIoc.Default.Register<PermissionEditViewModel>();
             SimpleIoc.Default.Register<CollectionMetricsTabViewModel>();
-            SimpleIoc.Default.Register<ThroughputViewModel>();
 
             SimpleIoc.Default.Register<AddCollectionViewModel>();
-            SimpleIoc.Default.Register<DatabaseScaleTabViewModel>();
         }
 
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();

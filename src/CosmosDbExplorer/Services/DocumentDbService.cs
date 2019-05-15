@@ -81,8 +81,6 @@ namespace CosmosDbExplorer.Services
 
         public async Task<DocumentCollection> RecreateCollectionAsync(Connection connection, Database database, DocumentCollection collection)
         {
-            throw new Exception("Must redo... ");
-
             var throughput = await GetThroughputAsync(connection, collection).ConfigureAwait(false);
             
             // Copy StoredProcedure, Triggers, UDFs
@@ -104,9 +102,7 @@ namespace CosmosDbExplorer.Services
                 UniqueKeyPolicy = collection.UniqueKeyPolicy
             };
 
-            var isDatabaseThroughput = false;
-
-            var result = await CreateCollectionAsync(connection, database, duplicate, throughput.Value, isDatabaseThroughput).ConfigureAwait(false);
+            var result = await CreateCollectionAsync(connection, database, duplicate, throughput).ConfigureAwait(false);
 
             // Add StoredProcedure, Triggers, UDFs
             var tasks = new List<Task>();
@@ -388,40 +384,31 @@ namespace CosmosDbExplorer.Services
             return GetClient(connection).DeleteTriggerAsync(triggerLink);
         }
 
-        public Task UpdateThroughputAsync(Connection connection, Resource resource, int throughput)
+        public async Task<int> GetThroughputAsync(Connection connection, DocumentCollection collection)
         {
-            return UpdateOfferThroughput(connection, resource, throughput);
-        }
-
-        public async Task<int?> GetThroughputAsync(Connection connection, Resource resource)
-        {
-            var query = GetClient(connection).CreateOfferQuery().Where(o => o.ResourceLink == resource.SelfLink).AsDocumentQuery();
+            var query = GetClient(connection).CreateOfferQuery().Where(o => o.ResourceLink == collection.SelfLink).AsDocumentQuery();
 
             var result = await query.ExecuteNextAsync<OfferV2>().ConfigureAwait(false);
-            var offer = result.SingleOrDefault();
+            var offer = result.Single();
 
-            return offer?.Content.OfferThroughput;
+            return offer.Content.OfferThroughput;
         }
 
-        public async Task UpdateCollectionSettingsAsync(Connection connection, DocumentCollection collection, int? throughput)
+        public async Task UpdateCollectionSettingsAsync(Connection connection, DocumentCollection collection, int throughput)
         {
-            var tasks = new List<Task>
+            var tasks = new[]
             {
                 GetClient(connection).ReplaceDocumentCollectionAsync(collection),
+                UpdateOfferThroughput(connection, collection, throughput)
             };
-
-            if (throughput.HasValue)
-            {
-                tasks.Add(UpdateOfferThroughput(connection, collection, throughput.Value));
-            }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        private async Task UpdateOfferThroughput(Connection connection, Resource resource, int throughtput)
+        private async Task UpdateOfferThroughput(Connection connection, DocumentCollection collection, int throughtput)
         {
             var client = GetClient(connection);
-            var query = client.CreateOfferQuery().Where(o => o.ResourceLink == resource.SelfLink).AsDocumentQuery();
+            var query = client.CreateOfferQuery().Where(o => o.ResourceLink == collection.SelfLink).AsDocumentQuery();
 
             var result = await query.ExecuteNextAsync<OfferV2>().ConfigureAwait(false);
             var offer = result.Single();
@@ -433,17 +420,17 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        public async Task<DocumentCollection> CreateCollectionAsync(Connection connection, Database database, DocumentCollection collection, int throughput, bool isDatabaseThroughput)
+        public async Task<DocumentCollection> CreateCollectionAsync(Connection connection, Database database, DocumentCollection collection, int throughput)
         {
             var client = GetClient(connection);
             var options = new RequestOptions { OfferThroughput = throughput };
 
             if (database.SelfLink == null)
             {
-                database = await client.CreateDatabaseIfNotExistsAsync(database, isDatabaseThroughput ? options : null).ConfigureAwait(false);
+                database = await client.CreateDatabaseIfNotExistsAsync(database).ConfigureAwait(false);
             }
 
-            return await client.CreateDocumentCollectionAsync(database.SelfLink, collection, isDatabaseThroughput ? null : options).ConfigureAwait(false);
+            return await client.CreateDocumentCollectionAsync(database.SelfLink, collection, options).ConfigureAwait(false);
         }
 
         public Task DeleteCollectionAsync(Connection connection, DocumentCollection collection)

@@ -274,20 +274,6 @@
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
-                DataType="{x:Type vm:DatabaseScaleNodeViewModel}" ItemsSource="{Binding Children}" >
-                <StackPanel Orientation="Horizontal">
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ScaleSettingsIcon}" />
-
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </HierarchicalDataTemplate>
-
-            <HierarchicalDataTemplate
                 DataType="{x:Type vm:DocumentNodeViewModel}"
                 ItemsSource="{Binding Children}" >
                 <StackPanel Orientation="Horizontal">

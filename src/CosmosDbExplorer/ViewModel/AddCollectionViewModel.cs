@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Extensions;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Services;
 using FluentValidation;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Azure.Documents;
 using Validar;
@@ -23,15 +25,15 @@ namespace CosmosDbExplorer.ViewModel
         private string _selectedDatabase;
         private readonly IDialogService _dialogService;
 
-        public AddCollectionViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
+        public AddCollectionViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices, ThroughputViewModel throughput)
             : base(messenger, uiServices)
         {
             IsFixedStorage = true;
-            Throughput = 400;
             Title = "New Collection";
             _dbService = dbService;
             DatabaseNames = new ObservableCollection<string>();
             _dialogService = dialogService;
+            Throughput = throughput;
         }
 
         public string Title { get; }
@@ -42,43 +44,20 @@ namespace CosmosDbExplorer.ViewModel
 
         public bool IsFixedStorage { get; set; }
 
-        public void OnIsFixedStorageChanged()
-        {
-            if (Throughput > 10000)
-            {
-                Throughput = 10000;
-            }
-
-            RaisePropertyChanged(() => MinThroughput);
-            RaisePropertyChanged(() => MaxThroughput);
-        }
-
         public bool IsUnlimitedStorage { get; set; }
-
-        public void OnIsUnlimitedStorageChanged()
-        {
-            if (Throughput < 1000)
-            {
-                Throughput = 1000;
-            }
-
-            RaisePropertyChanged(() => MinThroughput);
-            RaisePropertyChanged(() => MaxThroughput);
-        }
 
         public string PartitionKey { get; set; }
 
-        public int MaxThroughput => IsFixedStorage ? 10000 : 100000;
+        public ThroughputViewModel Throughput { get; set; }
 
-        public int MinThroughput => IsFixedStorage ? 400 : 1000;
+        public bool IsDatabaseThroughput { get; set; }
 
-        public int Throughput { get; set; }
-
-        public void OnThroughputChanged()
+        protected void OnIsDatabaseThroughputChanged()
         {
-            const decimal hourly = 0.00008m;
-            EstimatedPrice = $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
+            IsUnlimitedStorage = IsDatabaseThroughput;
         }
+
+        public bool StorageKindIsEnabled => !IsDatabaseThroughput;
 
         public RelayCommand SaveCommand
         {
@@ -100,7 +79,7 @@ namespace CosmosDbExplorer.ViewModel
                             try
                             {
                                 var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
-                                await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
+                                await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput.Value, IsDatabaseThroughput).ConfigureAwait(true);
                                 IsBusy = false;
                                 Close();
                             }
@@ -148,11 +127,65 @@ namespace CosmosDbExplorer.ViewModel
         {
             RuleFor(x => x.CollectionId).NotEmpty();
             RuleFor(x => x.SelectedDatabase).NotEmpty();
-            RuleFor(x => x.Throughput).NotEmpty()
-                                      .Must(throughput => throughput % 100 == 0)
-                                      .WithMessage("Throughput must be a multiple of 100");
+            RuleFor(x => x.Throughput).SetValidator(new ThroughputViewModelValidator());
             RuleFor(x => x.PartitionKey).NotEmpty()
                                         .When(x => x.IsUnlimitedStorage);
+        }
+    }
+
+    [InjectValidation]
+    public class ThroughputViewModel : ViewModelBase
+    {
+        public ThroughputViewModel()
+        {
+            Value = 400;
+            IsChanged = false;
+        }
+
+        public int MaxThroughput => 1000000;
+
+        public int MinThroughput => 400;
+
+        public int Value { get; set; }
+
+        public void OnValueChanged()
+        {
+            const decimal hourly = 0.00008m;
+            EstimatedPrice = $"${hourly * Value:N3} hourly / {hourly * Value * 24:N2} daily.";
+            IsChanged = true;
+        }
+
+        public async Task LoadData(Func<Task<int?>> loadThroughput)
+        {
+            Value = (await loadThroughput()).GetValueOrDefault(400);
+            IsChanged = false;
+        }
+
+        public string EstimatedPrice { get; set; }
+
+        public bool IsChanged { get; set; }
+
+        public bool IsValid
+        {
+            get
+            {
+                return !((INotifyDataErrorInfo)this).HasErrors;
+            }
+        }
+    }
+
+    public class ThroughputViewModelValidator : AbstractValidator<ThroughputViewModel>
+    {
+        public ThroughputViewModelValidator()
+        {
+            RuleFor(x => x.Value).NotEmpty()
+                           .Must(throughput => throughput % 100 == 0)
+                           .WithMessage("Throughput must be a multiple of 100");
+
+            RuleFor(x => x.Value).GreaterThanOrEqualTo(x => x.MinThroughput)
+                                            .LessThanOrEqualTo(x => x.MaxThroughput)
+                                            .WithMessage(x => $"Throughput must be between {x.MinThroughput:n0} and {x.MaxThroughput:n0}");
+
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using CosmosDbExplorer.Infrastructure;
+﻿using System;
+using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Messages;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace CosmosDbExplorer.ViewModel
 {
@@ -11,7 +13,9 @@ namespace CosmosDbExplorer.ViewModel
         public ScaleSettingsNodeViewModel(CollectionNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
-            Name = "Scale & Settings";
+            Name = parent.IsDatabaseLevelThroughput
+                        ? "Settings"
+                        : "Scale & Settings";
         }
 
         public string Name { get; private set; }

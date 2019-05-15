@@ -88,6 +88,7 @@ namespace CosmosDbExplorer.ViewModel
             MessengerInstance.Register<OpenDocumentsViewMessage>(this, msg => OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
             MessengerInstance.Register<OpenQueryViewMessage>(this, msg => OpenOrSelectTab<QueryEditorViewModel, CollectionNodeViewModel>(msg));
             MessengerInstance.Register<OpenImportDocumentViewMessage>(this, msg => OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
+            MessengerInstance.Register<OpenDatabaseScaleViewMessage>(this, msg => OpenOrSelectTab<DatabaseScaleTabViewModel, DatabaseScaleNodeViewModel>(msg));
             MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, msg => OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
             MessengerInstance.Register<EditUserMessage>(this, msg => OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
             MessengerInstance.Register<EditPermissionMessage>(this, msg => OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
@@ -203,7 +204,7 @@ namespace CosmosDbExplorer.ViewModel
         public void OnSelectedTabChanged()
         {
             IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
-            IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
+            IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel || SelectedTab is DatabaseScaleTabViewModel;
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel ;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;

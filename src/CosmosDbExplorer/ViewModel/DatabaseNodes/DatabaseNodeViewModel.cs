@@ -19,15 +19,27 @@ namespace CosmosDbExplorer.ViewModel
 
         public Database Database { get; }
 
+        public bool IsDatabaseLevelThroughput { get; private set; }
+
         protected override async Task LoadChildren()
         {
             IsLoading = true;
+
+            var throughput = await DbService.GetThroughputAsync(Parent.Connection, Database).ConfigureAwait(false);
+
+            IsDatabaseLevelThroughput = throughput.HasValue;
 
             var collections = await DbService.GetCollectionsAsync(Parent.Connection, Database).ConfigureAwait(false);
 
             await DispatcherHelper.RunAsync(() =>
             {
                 Children.Add(new UsersNodeViewModel(Database, this));
+
+                if (IsDatabaseLevelThroughput)
+                {
+                    Children.Add(new DatabaseScaleNodeViewModel(this));
+                }
+
                 foreach (var collection in collections)
                 {
                     Children.Add(new CollectionNodeViewModel(collection, this));

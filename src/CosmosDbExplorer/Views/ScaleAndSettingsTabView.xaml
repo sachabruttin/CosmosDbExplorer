@@ -11,32 +11,35 @@
              xmlns:markup="clr-namespace:CosmosDbExplorer.Infrastructure.MarkupExtensions"
              xmlns:sdk="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:ctrl="clr-namespace:CosmosDbExplorer.Views.Controls"
              mc:Ignorable="d" 
              Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
              Loaded="UserControl_Loaded">
     <DockPanel LastChildFill="True">
         
-        <GroupBox Header="Scale" DockPanel.Dock="Top" Margin="10,5">
-            <StackPanel Margin="10,5">
-                <!--<Label Content="Throughput (400 - 10,000 RU/s)"/>-->
+        <GroupBox Header="Scale" DockPanel.Dock="Top" Margin="10,5"
+                  Visibility="{Binding IsDatabaseLevelThroughput, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=true}">
+            <!--<StackPanel Margin="10,5">
+                --><!--<Label Content="Throughput (400 - 10,000 RU/s)"/>--><!--
                 <Label>
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding StringFormat="Throughput ({0:N0} - {1:N0} RU/s)">
-                                <Binding Path="MinThroughput" />
-                                <Binding Path="MaxThroughput" />
+                                <Binding Path="Throughput.MinThroughput" />
+                                <Binding Path="Throughput.MaxThroughput" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
                 </Label>
-                <xctk:IntegerUpDown Increment="1000" Minimum="{Binding MinThroughput}" Maximum="{Binding MaxThroughput}" 
+                <xctk:IntegerUpDown Increment="1000" Minimum="{Binding Throughput.MinThroughput}" Maximum="{Binding Throughput.MaxThroughput}" 
                                     HorizontalAlignment="Left"
-                                    Text="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding Throughput.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Width="150" Margin="20,0"/>
 
-                <TextBlock Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
+                <TextBlock Text="{Binding Throughput.EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
                            Margin="20,0"/>
-            </StackPanel>
+            </StackPanel>-->
+            <ctrl:ThroughputControl />
         </GroupBox>
 
         <GroupBox Header="Settings" DockPanel.Dock="Top" Margin="10,5">

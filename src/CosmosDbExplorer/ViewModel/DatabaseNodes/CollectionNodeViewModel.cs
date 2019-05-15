@@ -22,6 +22,7 @@ namespace CosmosDbExplorer.ViewModel
             : base(collection, parent, true)
         {
             Collection = collection;
+            IsDatabaseLevelThroughput = parent.IsDatabaseLevelThroughput;
         }
 
         protected override async Task LoadChildren()
@@ -38,6 +39,8 @@ namespace CosmosDbExplorer.ViewModel
         }
 
         public DocumentCollection Collection { get; }
+
+        public bool IsDatabaseLevelThroughput { get; private set; }
 
         public RelayCommand OpenSqlQueryCommand
         {

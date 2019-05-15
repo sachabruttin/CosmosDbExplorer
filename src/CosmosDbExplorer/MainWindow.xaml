@@ -75,6 +75,11 @@
                     <views:CollectionMetricsTabView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.CollectionMetricsTemplate>
+            <selector:TabContentTemplateSelector.DatabaseScaleTemplate>
+                <DataTemplate>
+                    <views:DatabaseScaleTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.DatabaseScaleTemplate>
         </selector:TabContentTemplateSelector>
 
         <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">

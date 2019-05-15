@@ -52,13 +52,11 @@ namespace CosmosDbExplorer.Services
 
         Task DeleteTriggerAsync(Connection connection, string triggerLink);
 
-        Task<int?> GetThroughputAsync(Connection connection, Resource resource);
+        Task<int> GetThroughputAsync(Connection connection, DocumentCollection collection);
 
-        Task UpdateThroughputAsync(Connection connection, Resource resource, int throughput);
+        Task UpdateCollectionSettingsAsync(Connection connection, DocumentCollection collection, int throughput);
 
-        Task UpdateCollectionSettingsAsync(Connection connection, DocumentCollection collection, int? throughput);
-
-        Task<DocumentCollection> CreateCollectionAsync(Connection connection, Database database, DocumentCollection collection, int throughput, bool isDatabaseThroughput);
+        Task<DocumentCollection> CreateCollectionAsync(Connection connection, Database database, DocumentCollection collection, int throughput);
 
         Task DeleteCollectionAsync(Connection connection, DocumentCollection collection);
 

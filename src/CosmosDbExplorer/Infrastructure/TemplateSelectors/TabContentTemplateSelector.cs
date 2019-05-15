@@ -18,39 +18,65 @@ namespace CosmosDbExplorer.Infrastructure.TemplateSelectors
         public DataTemplate UserEditTempalate { get; set; }
         public DataTemplate PermissionEditTemplate { get; set; }
         public DataTemplate CollectionMetricsTemplate { get; set; }
-        public DataTemplate DatabaseScaleTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            switch (item)
+            if (item is DatabaseViewModel)
             {
-                case DatabaseViewModel _:
-                    return DatabaseViewTemplate;
-                case DocumentsTabViewModel _:
-                    return DocumentsTemplate;
-                case QueryEditorViewModel _:
-                    return QueryEditorTemplate;
-                case ImportDocumentViewModel _:
-                    return ImportDocumentTemplate;
-                case StoredProcedureTabViewModel _:
-                    return StoredProcedureViewTemplate;
-                case UserDefFuncTabViewModel _:
-                    return UserDefFuncViewTemplate;
-                case TriggerTabViewModel _:
-                    return TriggerViewTemplate;
-                case ScaleAndSettingsTabViewModel _:
-                    return ScaleAndSettingsTemplate;
-                case UserEditViewModel _:
-                    return UserEditTempalate;
-                case PermissionEditViewModel _:
-                    return PermissionEditTemplate;
-                case CollectionMetricsTabViewModel _:
-                    return CollectionMetricsTemplate;
-                case DatabaseScaleTabViewModel _:
-                    return DatabaseScaleTemplate;
-                default:
-                    return base.SelectTemplate(item, container);
+                return DatabaseViewTemplate;
             }
+
+            if (item is DocumentsTabViewModel)
+            {
+                return DocumentsTemplate;
+            }
+
+            if (item is QueryEditorViewModel)
+            {
+                return QueryEditorTemplate;
+            }
+
+            if (item is ImportDocumentViewModel)
+            {
+                return ImportDocumentTemplate;
+            }
+
+            if (item is StoredProcedureTabViewModel)
+            {
+                return StoredProcedureViewTemplate;
+            }
+
+            if (item is UserDefFuncTabViewModel)
+            {
+                return UserDefFuncViewTemplate;
+            }
+
+            if (item is TriggerTabViewModel)
+            {
+                return TriggerViewTemplate;
+            }
+
+            if (item is ScaleAndSettingsTabViewModel)
+            {
+                return ScaleAndSettingsTemplate;
+            }
+
+            if (item is UserEditViewModel)
+            {
+                return UserEditTempalate;
+            }
+
+            if (item is PermissionEditViewModel)
+            {
+                return PermissionEditTemplate;
+            }
+
+            if (item is CollectionMetricsTabViewModel)
+            {
+                return CollectionMetricsTemplate;
+            }
+
+            return base.SelectTemplate(item, container);
         }
     }
 }

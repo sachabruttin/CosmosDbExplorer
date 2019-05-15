@@ -28,17 +28,13 @@
                 </i:Interaction.Behaviors>
             </ComboBox>
 
-            <CheckBox Margin="20,5" VerticalContentAlignment="Center" 
-                      IsChecked="{Binding IsDatabaseThroughput, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                      Content="Provision database throughput"/>
-
             <Label Content="Collection Id"/>
             <xctk:WatermarkTextBox Watermark="e.g. Collection1" KeepWatermarkOnGotFocus="True"
                                Margin="20,0"
                                Text="{Binding CollectionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="Storage capacity" />
-            <StackPanel Orientation="Horizontal" Margin="20,0" IsEnabled="{Binding StorageKindIsEnabled}">
+            <StackPanel Orientation="Horizontal" Margin="20,0">
                 <RadioButton Content="Fixed (10 GB)" Style="{StaticResource SquareRadioButtonStyle}" IsChecked="{Binding IsFixedStorage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <RadioButton x:Name="unlimitedStorage" Content="Unlimited" Style="{StaticResource SquareRadioButtonStyle}" IsChecked="{Binding IsUnlimitedStorage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
@@ -54,18 +50,18 @@
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding StringFormat="Throughput ({0:n0} - {1:n0} RU/s)">
-                                <Binding Path="Throughput.MinThroughput" />
-                                <Binding Path="Throughput.MaxThroughput" />
+                                <Binding Path="MinThroughput" />
+                                <Binding Path="MaxThroughput" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
                 </Label.Content>
             </Label>
-            <xctk:IntegerUpDown Maximum="{Binding Throughput.MaxThroughput}" Minimum="{Binding Throughput.MinThroughput}"
+            <xctk:IntegerUpDown Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
                                 Margin="20,0" Increment="100"
-                                Value="{Binding Throughput.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock Text="{Binding Throughput.EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
+            <TextBlock Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}"
                            Margin="20,0"/>
         </StackPanel>
 

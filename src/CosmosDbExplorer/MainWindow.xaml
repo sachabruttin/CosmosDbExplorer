@@ -525,7 +525,7 @@
                                         LargeIcon="{StaticResource CreateIcon}"
                                         SizeDefinition="Large">
                         <fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
-                        <fluent:MenuItem Header="User Definied Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
+                        <fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
                         <fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
                     </fluent:SplitButton>
 

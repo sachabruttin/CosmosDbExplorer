@@ -85,7 +85,7 @@
 
                                         <Label Content="Indexing Mode" />
                                         <StackPanel Orientation="Horizontal" Margin="20,5">
-                                            <infrastructure:RadioButtonEx Content="Consitent" RadioValue="Consistent" RadioBinding="{Binding PolicyViewModel.Mode}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
+                                            <infrastructure:RadioButtonEx Content="Consistent" RadioValue="Consistent" RadioBinding="{Binding PolicyViewModel.Mode}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
                                             <infrastructure:RadioButtonEx Content="Lazy" RadioValue="Lazy" RadioBinding="{Binding PolicyViewModel.Mode}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
                                             <infrastructure:RadioButtonEx Content="None" RadioValue="None" RadioBinding="{Binding PolicyViewModel.Mode}" Style="{StaticResource SquareRadioButtonStyle}" Width="130" />
                                         </StackPanel>

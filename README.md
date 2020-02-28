@@ -5,7 +5,7 @@ It mimics the Data Explorer available on the Azure Portal on the desktop.
 
 ## Features
 
-- Named connection: give meaningfull name to your connection (DEV, QA, PROD)
+- Named connection: give meaningful name to your connection (DEV, QA, PROD)
 - Create/Read/Update/Delete for every Cosmos DB resources
 - Execute SQL Query on a Collection
 - Import document(s) in JSON format
@@ -18,7 +18,7 @@ choco install cosmosdbexplorer
 
 - or - 
 
-Download the lastest version from [releases](https://github.com/sachabruttin/CosmosDbExplorer/releases) and unzip it. Run `CosmosDbExplorer.exe`.
+Download the latest version from [releases](https://github.com/sachabruttin/CosmosDbExplorer/releases) and unzip it. Run `CosmosDbExplorer.exe`.
 
 ## How to Start
 

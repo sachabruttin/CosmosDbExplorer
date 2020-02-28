@@ -26,7 +26,7 @@ namespace CosmosDbExplorer.ViewModel.Indexes
         {
             _isCreating = true;
 
-            // deep clon the indexing policy
+            // deep clone the indexing policy
             var json = JsonConvert.SerializeObject(policy);
             Policy = JsonConvert.DeserializeObject<IndexingPolicy>(json);
 

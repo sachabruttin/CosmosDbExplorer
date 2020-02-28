@@ -41,7 +41,7 @@ namespace CosmosDbExplorer
 
         private void AutoUpdateOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
-            // Use JSON format for AutoUpdate release inforrmatin file
+            // Use JSON format for AutoUpdate release information file
             dynamic json = JsonConvert.DeserializeObject(args.RemoteData);
             args.UpdateInfo = new UpdateInfoEventArgs
             {

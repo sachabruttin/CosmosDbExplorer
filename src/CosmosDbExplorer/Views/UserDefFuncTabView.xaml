@@ -14,7 +14,7 @@
     <DockPanel>
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
-            <Label Content="User Definied Function Id"/>
+            <Label Content="User Defined Function Id"/>
             <xctk:WatermarkTextBox MinWidth="250" Margin="10,0"
                      Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Watermark="Enter the user definied function id" KeepWatermarkOnGotFocus="True"/>

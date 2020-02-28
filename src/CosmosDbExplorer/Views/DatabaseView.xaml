@@ -195,7 +195,7 @@
                                     <Image Source="{StaticResource StoredProcedureIcon}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="New User Definied Function" Command="{Binding NewUdfCommand}">
+                            <MenuItem Header="New User Defined Function" Command="{Binding NewUdfCommand}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource UdfIcon}" />
                                 </MenuItem.Icon>
@@ -340,7 +340,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Refresh User Definied Functions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <MenuItem Header="Refresh User Defined Functions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
                     <Image Width="16" Height="16" Margin="3,0" 

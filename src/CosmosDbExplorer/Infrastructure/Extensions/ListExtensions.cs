@@ -54,7 +54,7 @@ namespace CosmosDbExplorer.Infrastructure.Extensions
 
         public static IList<T> Move<T>(this IList<T> list, int oldIndex, int newIndex)
         {
-            // exit if possitions are equal or outside array
+            // exit if positions are equal or outside array
             if ((oldIndex == newIndex) || (0 > oldIndex) || (oldIndex >= list.Count) || (0 > newIndex) || (newIndex >= list.Count))
             {
                 return list;

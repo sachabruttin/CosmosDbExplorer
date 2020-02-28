@@ -56,7 +56,7 @@ namespace CosmosDbExplorer.ViewModel
 
         protected override Task DeleteCommandImpl()
         {
-            return DialogService.ShowMessage("Are sure you want to delete this User Definied Function?", "Delete", null, null,
+            return DialogService.ShowMessage("Are sure you want to delete this User Defined Function?", "Delete", null, null,
                 async confirm =>
                 {
                     if (confirm)

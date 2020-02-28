@@ -13,8 +13,8 @@ namespace CosmosDbExplorer.ViewModel.Assets
         {
         }
 
-        protected override string GetDefaultHeader() { return "New User Definied Function"; }
-        protected override string GetDefaultTitle() { return "User Definied Function"; }
+        protected override string GetDefaultHeader() { return "New User Defined Function"; }
+        protected override string GetDefaultTitle() { return "User Defined Function"; }
         protected override string GetDefaultContent() { return Constants.Default.UserDefiniedFunction; }
 
         protected override void SetInformationImpl(UserDefinedFunction resource)

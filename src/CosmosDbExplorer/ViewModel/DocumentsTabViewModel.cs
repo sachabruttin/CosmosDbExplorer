@@ -321,7 +321,7 @@ namespace CosmosDbExplorer.ViewModel
                             var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
                             var message = selectedDocuments.Count == 1
                                         ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
-                                        : $"Are you sure taht you want to delete these {selectedDocuments.Count} documents?";
+                                        : $"Are you sure that you want to delete these {selectedDocuments.Count} documents?";
 
                             await _dialogService.ShowMessage(message, "Delete Document(s)", null, null, async confirm =>
                             {
@@ -340,7 +340,7 @@ namespace CosmosDbExplorer.ViewModel
                                             Documents.Remove(item);
                                         }
 
-                                        EditorViewModel.SetText(new { result = "Delete operation succeded!" }, HideSystemProperties);
+                                        EditorViewModel.SetText(new { result = "Delete operation succeeded!" }, HideSystemProperties);
                                     });
                                 }
                             }).ConfigureAwait(false);

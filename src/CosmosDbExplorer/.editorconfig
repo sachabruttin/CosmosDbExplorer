@@ -82,7 +82,7 @@ csharp_new_line_before_members_in_anonymous_types = true
 # Code Block Preferences
 csharp_prefer_braces = true:error
 
-# Identation Options
+# Indentation Options
 csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
 

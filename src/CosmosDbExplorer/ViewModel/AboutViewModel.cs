@@ -37,7 +37,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public string Version => _fvi.FileVersion;
 
-        public string Title => ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(_assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retriving assembly title";
+        public string Title => ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(_assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retrieving assembly title";
 
         public List<Author> Authors => new List<Author> { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace")};
 

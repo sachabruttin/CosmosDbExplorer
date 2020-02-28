@@ -61,7 +61,7 @@ namespace CosmosDbExplorer.ViewModel
             {
                 // Code runs "for real"
                 var assembly = Assembly.GetEntryAssembly();
-                Title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retriving assembly title";
+                Title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retrieving assembly title";
             }
 
             _dialogService = dialogService;

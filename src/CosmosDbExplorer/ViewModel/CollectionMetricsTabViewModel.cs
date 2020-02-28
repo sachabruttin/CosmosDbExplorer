@@ -44,7 +44,7 @@ namespace CosmosDbExplorer.ViewModel
 
         private void ChartConfiguration()
         {
-            // Chart configuratin
+            // Chart configuration
             var wrapper = Mappers.Xy<PartitionKeyRangeStatistics>()
                 .X((value, index) => index)
                 .Y(value => value.SizeInKB);

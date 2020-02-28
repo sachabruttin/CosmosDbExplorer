@@ -62,7 +62,7 @@ namespace CosmosDbExplorer
         private void ShowUnhandledException(Exception exception, bool isTerminating)
         {
             var details = exception.Message + (exception.InnerException != null ? "\n" + exception.InnerException.Message : null);
-            var errorMessage = $@"An application error occured.
+            var errorMessage = $@"An application error occurred.
 Please check whether your data is correct and repeat the action. If this error occurs again there seems to be a more serious malfunction in the application, and you better close it.
 
 Error: {details}";

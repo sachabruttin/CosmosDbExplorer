@@ -12,6 +12,8 @@ using GalaSoft.MvvmLight.Messaging;
 using CosmosDbExplorer.Messages;
 using System.Threading;
 using CosmosDbExplorer.Infrastructure.Extensions;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Services
 {
@@ -37,7 +39,7 @@ namespace CosmosDbExplorer.Services
                 var policy = new ConnectionPolicy
                 {
                     ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
-                    ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp
+                    ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp,
                 };
 
                 var client = new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy);
@@ -143,6 +145,7 @@ namespace CosmosDbExplorer.Services
                 MaxItemCount = querySettings.MaxItemCount,
                 MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
                 MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
+                JsonSerializerSettings = new JsonSerializerSettings {  DateParseHandling = DateParseHandling.None },
                 RequestContinuation = continuationToken,
                 PopulateQueryMetrics = true,
                 PartitionKey = GetPartitionKey(querySettings.PartitionKeyValue)
@@ -172,10 +175,13 @@ namespace CosmosDbExplorer.Services
 
         public Task<ResourceResponse<Document>> GetDocumentAsync(Connection connection, DocumentDescription document)
         {
-            var options = document.HasPartitionKey 
-                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey ?? Undefined.Value) }
-                            : new RequestOptions();
+            var options = new RequestOptions { JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None } };
 
+            if (document.HasPartitionKey)
+            {
+                options.PartitionKey = new PartitionKey(document.PartitionKey ?? Undefined.Value);
+            }
+            
             return GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
         }
 
@@ -196,7 +202,7 @@ namespace CosmosDbExplorer.Services
                 EnableCrossPartitionQuery = true,
                 EnableScanInQuery = false,
                 PartitionKey = GetPartitionKey(requestOptions?.PartitionKeyValue),
-
+                JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None },
                 MaxDegreeOfParallelism = -1,
                 MaxBufferedItemCount = -1,
                 PopulateQueryMetrics = true,
@@ -242,6 +248,7 @@ namespace CosmosDbExplorer.Services
                 PostTriggerInclude = request.PreTrigger != null ? new List<string> { request.PostTrigger } : null,
                 PartitionKey = GetPartitionKey(request.PartitionKeyValue),
                 AccessCondition = request.AccessConditionType != null ? new AccessCondition { Condition = request.AccessCondition, Type = request.AccessConditionType.Value } : null,
+                JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None }
             };
         }
 
@@ -272,7 +279,7 @@ namespace CosmosDbExplorer.Services
 
         public Task<ResourceResponse<Document>> UpdateDocumentAsync(Connection connection, string altLink, string content, IHaveRequestOptions requestOptions)
         {
-            var instance = JObject.Parse(content);
+            var instance = Parse(content);
             var options = GetRequestOptions(requestOptions);
             return GetClient(connection).UpsertDocumentAsync(altLink, instance, options);
         }
@@ -554,6 +561,22 @@ namespace CosmosDbExplorer.Services
             };
 
             return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters.ToArray());
+        }
+
+        private JObject Parse(string content)
+        {
+            JObject o = null;
+
+            using (var stringReader = new StringReader(content))
+            {
+                using (var reader = new JsonTextReader(stringReader))
+                {
+                    reader.DateParseHandling = DateParseHandling.None;
+                    o = JObject.Load(reader);
+                }
+            }
+
+            return o;
         }
     }
 }

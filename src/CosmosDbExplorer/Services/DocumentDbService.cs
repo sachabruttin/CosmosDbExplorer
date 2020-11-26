@@ -145,6 +145,7 @@ namespace CosmosDbExplorer.Services
                 MaxItemCount = querySettings.MaxItemCount,
                 MaxDegreeOfParallelism = querySettings.MaxDOP.GetValueOrDefault(-1),
                 MaxBufferedItemCount = querySettings.MaxBufferItem.GetValueOrDefault(-1),
+                JsonSerializerSettings = new JsonSerializerSettings {  DateParseHandling = DateParseHandling.None },
                 RequestContinuation = continuationToken,
                 PopulateQueryMetrics = true,
                 PartitionKey = GetPartitionKey(querySettings.PartitionKeyValue)
@@ -174,10 +175,13 @@ namespace CosmosDbExplorer.Services
 
         public Task<ResourceResponse<Document>> GetDocumentAsync(Connection connection, DocumentDescription document)
         {
-            var options = document.HasPartitionKey 
-                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey ?? Undefined.Value) }
-                            : new RequestOptions();
+            var options = new RequestOptions { JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None } };
 
+            if (document.HasPartitionKey)
+            {
+                options.PartitionKey = new PartitionKey(document.PartitionKey ?? Undefined.Value);
+            }
+            
             return GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
         }
 
@@ -198,7 +202,7 @@ namespace CosmosDbExplorer.Services
                 EnableCrossPartitionQuery = true,
                 EnableScanInQuery = false,
                 PartitionKey = GetPartitionKey(requestOptions?.PartitionKeyValue),
-
+                JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None },
                 MaxDegreeOfParallelism = -1,
                 MaxBufferedItemCount = -1,
                 PopulateQueryMetrics = true,
@@ -244,7 +248,7 @@ namespace CosmosDbExplorer.Services
                 PostTriggerInclude = request.PreTrigger != null ? new List<string> { request.PostTrigger } : null,
                 PartitionKey = GetPartitionKey(request.PartitionKeyValue),
                 AccessCondition = request.AccessConditionType != null ? new AccessCondition { Condition = request.AccessCondition, Type = request.AccessConditionType.Value } : null,
-                JsonSerializerSettings = new JsonSerializerSettings {  DateParseHandling = DateParseHandling.None }
+                JsonSerializerSettings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None }
             };
         }
 

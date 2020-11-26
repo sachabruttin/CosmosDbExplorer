@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.Documents;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using CosmosDbExplorer.Infrastructure.Extensions;
 
 namespace CosmosDbExplorer.Services
@@ -9,11 +8,12 @@ namespace CosmosDbExplorer.Services
     public class DocumentDescription
     {
         [JsonConstructor]
-        public DocumentDescription(string id, string selfLink, object partitionKey)
+        public DocumentDescription(string id, string selfLink, object partitionKey, bool hasPartitionKey)
         {
             Id = id;
             SelfLink = selfLink;
             PartitionKey = partitionKey;
+            HasPartitionKey = hasPartitionKey;
         }
 
         public DocumentDescription(Document document, DocumentCollection collection)
@@ -26,6 +26,7 @@ namespace CosmosDbExplorer.Services
             if (token != null)
             {
                 PartitionKey = document.GetPartitionKeyValue(token);
+                HasPartitionKey = true;
             }
         }
 
@@ -37,6 +38,9 @@ namespace CosmosDbExplorer.Services
 
         [JsonProperty(PropertyName = "_partitionKey")]
         public object PartitionKey { get; set; }
+
+        [JsonProperty(PropertyName = "_hasPartitionKey")]
+        public bool HasPartitionKey { get; set; }
 
         [JsonIgnore]
         public bool IsSelected { get; set; }

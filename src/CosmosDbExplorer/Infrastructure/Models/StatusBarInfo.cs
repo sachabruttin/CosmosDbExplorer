@@ -11,7 +11,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
 {
     public class StatusBarInfo : IStatusBarInfo
     {
-        public StatusBarInfo(double requestCharge, Document resource, NameValueCollection responseHeaders)
+        public StatusBarInfo(double? requestCharge, Document resource, NameValueCollection responseHeaders)
         {
             RequestCharge = requestCharge;
             Resource = resource;
@@ -20,9 +20,9 @@ namespace CosmosDbExplorer.Infrastructure.Models
 
         public StatusBarInfo(ResourceResponse<Document> response)
         {
-            RequestCharge = response.RequestCharge;
-            Resource = response.Resource;
-            ResponseHeaders = response.ResponseHeaders;
+            RequestCharge = response?.RequestCharge;
+            Resource = response?.Resource;
+            ResponseHeaders = response?.ResponseHeaders;
         }
 
         public StatusBarInfo(IEnumerable<ResourceResponse<Document>> response)
@@ -32,7 +32,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
             ResponseHeaders = null;
         }
 
-        public double RequestCharge { get; }
+        public double? RequestCharge { get; }
 
         public Document Resource { get; }
 
@@ -41,7 +41,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
 
     public interface IStatusBarInfo
     {
-        double RequestCharge { get; }
+        double? RequestCharge { get; }
 
         Document Resource { get; }
 

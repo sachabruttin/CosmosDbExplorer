@@ -172,8 +172,8 @@ namespace CosmosDbExplorer.Services
 
         public Task<ResourceResponse<Document>> GetDocumentAsync(Connection connection, DocumentDescription document)
         {
-            var options = document.PartitionKey != null
-                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey) }
+            var options = document.HasPartitionKey 
+                            ? new RequestOptions { PartitionKey = new PartitionKey(document.PartitionKey ?? Undefined.Value) }
                             : new RequestOptions();
 
             return GetClient(connection).ReadDocumentAsync(document.SelfLink, options);
@@ -184,7 +184,7 @@ namespace CosmosDbExplorer.Services
             var token = collection.PartitionKey.GetQueryToken();
             if (token != null)
             {
-                token = $", c{token} as _partitionKey";
+                token = $", c{token} as _partitionKey, true as _hasPartitionKey";
             }
 
             var sql = $"SELECT c.id, c._self {token} FROM c {filter}";

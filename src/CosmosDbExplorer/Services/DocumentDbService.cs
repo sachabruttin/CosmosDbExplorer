@@ -12,6 +12,8 @@ using GalaSoft.MvvmLight.Messaging;
 using CosmosDbExplorer.Messages;
 using System.Threading;
 using CosmosDbExplorer.Infrastructure.Extensions;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Services
 {
@@ -37,7 +39,7 @@ namespace CosmosDbExplorer.Services
                 var policy = new ConnectionPolicy
                 {
                     ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
-                    ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp
+                    ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp,
                 };
 
                 var client = new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy);
@@ -246,6 +248,7 @@ namespace CosmosDbExplorer.Services
                 PostTriggerInclude = request.PreTrigger != null ? new List<string> { request.PostTrigger } : null,
                 PartitionKey = GetPartitionKey(request.PartitionKeyValue),
                 AccessCondition = request.AccessConditionType != null ? new AccessCondition { Condition = request.AccessCondition, Type = request.AccessConditionType.Value } : null,
+                JsonSerializerSettings = new JsonSerializerSettings {  DateParseHandling = DateParseHandling.None }
             };
         }
 
@@ -276,7 +279,7 @@ namespace CosmosDbExplorer.Services
 
         public Task<ResourceResponse<Document>> UpdateDocumentAsync(Connection connection, string altLink, string content, IHaveRequestOptions requestOptions)
         {
-            var instance = JObject.Parse(content);
+            var instance = Parse(content);
             var options = GetRequestOptions(requestOptions);
             return GetClient(connection).UpsertDocumentAsync(altLink, instance, options);
         }
@@ -567,6 +570,22 @@ namespace CosmosDbExplorer.Services
             };
 
             return GetClient(connection).ExecuteStoredProcedureAsync<dynamic>(altLink, options, parameters.ToArray());
+        }
+
+        private JObject Parse(string content)
+        {
+            JObject o = null;
+
+            using (var stringReader = new StringReader(content))
+            {
+                using (var reader = new JsonTextReader(stringReader))
+                {
+                    reader.DateParseHandling = DateParseHandling.None;
+                    o = JObject.Load(reader);
+                }
+            }
+
+            return o;
         }
     }
 }

@@ -57,7 +57,8 @@ namespace CosmosDbExplorer.ViewModel
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                DateParseHandling = DateParseHandling.None
             };
 
             try
@@ -96,7 +97,8 @@ namespace CosmosDbExplorer.ViewModel
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                DateParseHandling = DateParseHandling.None
             };
 
             return JsonConvert.SerializeObject(_document, settings);
@@ -128,7 +130,8 @@ namespace CosmosDbExplorer.ViewModel
 
             var settings = new JsonSerializerSettings
             {
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                DateParseHandling = DateParseHandling.None
             };
             settings.Converters.Add(new OrderedDictionaryConverter());
 

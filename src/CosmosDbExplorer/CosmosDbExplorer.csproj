@@ -421,13 +421,13 @@
       <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="Extended.Wpf.Toolkit">
-      <Version>3.4.0</Version>
+      <Version>3.8.2</Version>
     </PackageReference>
     <PackageReference Include="Fluent.Ribbon">
       <Version>6.1.0.326</Version>
     </PackageReference>
     <PackageReference Include="FluentValidation">
-      <Version>8.3.0</Version>
+      <Version>8.6.3</Version>
     </PackageReference>
     <PackageReference Include="Fody">
       <Version>6.3.0</Version>
@@ -435,7 +435,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="gong-wpf-dragdrop">
-      <Version>1.1.0</Version>
+      <Version>2.3.2</Version>
     </PackageReference>
     <PackageReference Include="LiveCharts.Wpf">
       <Version>0.9.7</Version>

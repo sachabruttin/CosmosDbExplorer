@@ -47,9 +47,9 @@ namespace CosmosDbExplorer
             {
                 CurrentVersion = json.version,
                 ChangelogURL = json.changelog,
-                Mandatory = json.mandatory,
+                Mandatory = new Mandatory { Value = json.mandatory },
                 DownloadURL = json.url,
-                Checksum = json.checksum
+                CheckSum = new CheckSum { Value = json.checksum }
             };
         }
 

@@ -1,7 +1,7 @@
 {
-    "version": "0.7.5.0",
-    "url": "https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v0.7.5-beta/CosmosDbExplorer.0.7.5.zip",
-    "mandatory": false,
+    "version": "0.8.0.0",
+    "url": "https://github.com/sachabruttin/CosmosDbExplorer/releases/download/0.8.0-beta/CosmosDbExplorer.0.8.0.zip",
+    "mandatory": true,
     "checksum": null,
     "changelog": null
 }

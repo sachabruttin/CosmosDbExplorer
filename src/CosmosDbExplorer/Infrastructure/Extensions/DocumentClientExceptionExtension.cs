@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
 
@@ -9,6 +10,8 @@ namespace CosmosDbExplorer.Infrastructure.Extensions
 {
     public static class DocumentClientExceptionExtension
     {
+        private static readonly Regex ErrorDocumentRegex = new Regex("Message: (?<json>.*), documentdb-dotnet-sdk/.*$", RegexOptions.Compiled);
+
         public static string Parse(this DocumentClientException exception)
         {
             var message = exception.Message;
@@ -22,27 +25,24 @@ namespace CosmosDbExplorer.Infrastructure.Extensions
 
         private static string ParseSyntaxException(DocumentClientException exception)
         {
-            var message = exception.Message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                            .First()
-                            .Remove(0, "Message: ".Length);
-
             try
             {
-                var obj = JsonConvert.DeserializeObject<DocumentClientExceptionMessage>(message);
-                return obj.ToString();
+                var json = ErrorDocumentRegex.Match(exception.Message).Groups["json"].Value;
+
+                var errorDoc = JsonConvert.DeserializeObject<dynamic>(json);
+
+                var sb = new StringBuilder();
+                foreach (dynamic e in errorDoc.errors)
+                {
+                    sb.Append($"{e.code}: {e.message}");
+                    sb.Append(Environment.NewLine);
+                }
+
+                return sb.ToString();
             }
             catch
             {
-                try
-                {
-                    var obj = JsonConvert.DeserializeObject<dynamic>(message);
-                    List<string> res = obj.Errors.ToObject<List<string>>();
-                    return string.Concat(res);
-                }
-                catch
-                {
-                    return exception.Message;
-                }
+                return exception.Message;
             }
         }
     }

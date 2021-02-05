@@ -13,10 +13,9 @@ namespace CosmosDbExplorer.ViewModel
         public CollectionMetricsNodeViewModel(CollectionNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
-            Name = "Collection Metrics";
         }
 
-        public string Name { get; set; }
+        public override string Name => "Collection Metrics";
 
         public RelayCommand OpenCommand
         {

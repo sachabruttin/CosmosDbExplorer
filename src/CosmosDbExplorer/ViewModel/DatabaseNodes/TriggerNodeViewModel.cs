@@ -11,8 +11,9 @@ namespace CosmosDbExplorer.ViewModel
         public TriggerRootNodeViewModel(CollectionNodeViewModel parent)
             : base(parent)
         {
-            Name = "Triggers";
         }
+        
+        public override string Name => "Triggers";
 
         protected override async Task LoadChildren()
         {

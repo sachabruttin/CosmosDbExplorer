@@ -25,7 +25,7 @@ namespace CosmosDbExplorer.ViewModel
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name => User.Id;
+        public override string Name => User.Id;
 
         public string ContentId => User.AltLink ?? "NewUser";
 

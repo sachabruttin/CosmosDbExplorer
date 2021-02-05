@@ -18,7 +18,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public Permission Permission { get; set; }
 
-        public string Name => Permission?.Id;
+        public override string Name => Permission?.Id;
 
         public string ContentId => Permission?.AltLink ?? "NewPermission";
 

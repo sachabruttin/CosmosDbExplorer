@@ -34,7 +34,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public List<Database> Databases { get; protected set; }
 
-        public string Name => Connection.DatabaseUri.ToString();
+        public override string Name => Connection.DatabaseUri.ToString();
 
         protected override async Task LoadChildren()
         {

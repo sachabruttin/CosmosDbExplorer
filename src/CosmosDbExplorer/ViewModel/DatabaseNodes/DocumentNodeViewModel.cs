@@ -12,10 +12,9 @@ namespace CosmosDbExplorer.ViewModel
         public DocumentNodeViewModel(CollectionNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
-            Name = "Documents";
         }
 
-        public string Name { get; set; }
+        public override string Name => "Documents";
 
         public RelayCommand OpenDocumentCommand
         {

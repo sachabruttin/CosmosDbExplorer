@@ -38,6 +38,7 @@
                                         <avalonEdit:TextEditor.InputBindings>
                                             <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />                                          
                                             <KeyBinding Key="Return" Modifiers="Ctrl" Command="{Binding ExecuteCommand}" />
+                                            <KeyBinding Key="Return" Modifiers="Shift" Command="{Binding ExecuteCommand}" />
                                             <KeyBinding Key="K" Modifiers="Ctrl" Command="controls:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" />
                                             <KeyBinding Key="U" Modifiers="Ctrl" Command="controls:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" />
                                         </avalonEdit:TextEditor.InputBindings>

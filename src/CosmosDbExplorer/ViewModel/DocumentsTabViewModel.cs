@@ -101,7 +101,8 @@ namespace CosmosDbExplorer.ViewModel
             {
                 IsRunning = true;
 
-                if (_currentDocument?.Resource.Id != SelectedDocument.Id)
+                //if (_currentDocument?.Resource.Id != SelectedDocument.Id)
+                if (_currentDocument?.Resource.SelfLink != SelectedDocument.SelfLink)
                 {
                     try
                     {

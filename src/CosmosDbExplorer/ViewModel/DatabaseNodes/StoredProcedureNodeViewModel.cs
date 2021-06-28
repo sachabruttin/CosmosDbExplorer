@@ -11,8 +11,9 @@ namespace CosmosDbExplorer.ViewModel
         public StoredProcedureRootNodeViewModel(CollectionNodeViewModel parent)
             : base(parent)
         {
-            Name = "Stored Procedures";
         }
+
+        public override string Name => "Stored Procedures";
 
         protected override async Task LoadChildren()
         {

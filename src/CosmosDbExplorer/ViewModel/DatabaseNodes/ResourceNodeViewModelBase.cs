@@ -23,7 +23,7 @@ namespace CosmosDbExplorer.ViewModel
             Resource = resource;
         }
 
-        public string Name => Resource.Id;
+        public override string Name => Resource.Id;
 
         public RelayCommand RefreshCommand
         {

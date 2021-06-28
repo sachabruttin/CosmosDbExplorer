@@ -11,10 +11,9 @@ namespace CosmosDbExplorer.ViewModel
         public ScaleSettingsNodeViewModel(CollectionNodeViewModel parent)
             : base(parent, parent.MessengerInstance, false)
         {
-            Name = "Scale & Settings";
         }
 
-        public string Name { get; private set; }
+        public override string Name => "Scale & Settings";
 
         public string ContentId => Parent.Collection.SelfLink + "/ScaleSettings";
 

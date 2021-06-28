@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Media;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Infrastructure.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Services;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using Microsoft.Azure.Documents;
 
 namespace CosmosDbExplorer.ViewModel
@@ -24,8 +20,6 @@ namespace CosmosDbExplorer.ViewModel
             DbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
             MessengerInstance.Register<UpdateOrCreateNodeMessage<TResource>>(this, InnerOnUpdateOrCreateNodeMessage);
         }
-
-        public string Name { get; protected set; }
 
         public new CollectionNodeViewModel Parent
         {
@@ -72,7 +66,7 @@ namespace CosmosDbExplorer.ViewModel
             Resource = resource;
         }
 
-        public string Name => Resource.Id;
+        public override string Name => Resource.Id;
 
         public string ContentId => Resource.AltLink;
 

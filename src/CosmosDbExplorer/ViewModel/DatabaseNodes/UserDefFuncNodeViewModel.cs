@@ -11,8 +11,9 @@ namespace CosmosDbExplorer.ViewModel
         public UserDefFuncRootNodeViewModel(CollectionNodeViewModel parent)
             : base(parent)
         {
-            Name = "User Defined Functions";
         }
+
+        public override string Name => "User Defined Functions";
 
         protected override async Task LoadChildren()
         {

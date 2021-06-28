@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Messages;
 using GalaSoft.MvvmLight.Threading;
 using CosmosDbExplorer.ViewModel;
+using CosmosDbExplorer.Infrastructure;
+using System.Collections.Generic;
 
 namespace CosmosDbExplorer.Infrastructure.Models
 {
@@ -22,9 +24,9 @@ namespace CosmosDbExplorer.Infrastructure.Models
     /// Base class for all ViewModel classes displayed by TreeViewItems.  
     /// This acts as an adapter between a raw data object and a TreeViewItem.
     /// </summary>
-    public class TreeViewItemViewModel : ObservableObject
+    public abstract class TreeViewItemViewModel : ObservableObject
     {
-        private static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModel();
+        private static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModelDummy();
 
         private bool _isExpanded;
 
@@ -32,7 +34,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
         {
             Parent = parent;
             MessengerInstance = messenger;
-            Children = new ObservableCollection<TreeViewItemViewModel>();
+            Children = new SortedObservableCollection<TreeViewItemViewModel>(Comparer);
 
             messenger.Register<RemoveNodeMessage>(this, OnRemoveNodeMessage);
 
@@ -61,7 +63,7 @@ namespace CosmosDbExplorer.Infrastructure.Models
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children { get; }
+        public SortedObservableCollection<TreeViewItemViewModel> Children { get; }
 
         /// <summary>
         /// Returns true if this object's Children have not yet been populated.
@@ -126,9 +128,28 @@ namespace CosmosDbExplorer.Infrastructure.Models
         public TreeViewItemViewModel Parent { get; }
 
         public IMessenger MessengerInstance { get; }
+
+        private static readonly IComparer<TreeViewItemViewModel> Comparer = new TreeViewItemViewModelComparer();
+
+        public abstract string Name { get; }
+
+        private class TreeViewItemViewModelDummy
+            : TreeViewItemViewModel
+        {
+            public override string Name => string.Empty;
+        }
     }
 
-    public class TreeViewItemViewModel<TParent> : TreeViewItemViewModel
+    public class TreeViewItemViewModelComparer
+        : IComparer<TreeViewItemViewModel>
+    {
+        int IComparer<TreeViewItemViewModel>.Compare(TreeViewItemViewModel x, TreeViewItemViewModel y)
+        {
+            return string.Compare(x.Name, y.Name);
+        }
+    }
+
+    public abstract class TreeViewItemViewModel<TParent> : TreeViewItemViewModel
         where TParent : TreeViewItemViewModel
     {
         public TreeViewItemViewModel(TParent parent, IMessenger messenger, bool lazyLoadChildren)

@@ -128,6 +128,7 @@
     <Compile Include="Infrastructure\Models\StatusBarInfo.cs" />
     <Compile Include="Infrastructure\Models\UIViewModelBase.cs" />
     <Compile Include="Infrastructure\RadioButtonEx.cs" />
+    <Compile Include="Infrastructure\SortedObservableCollection.cs" />
     <Compile Include="Infrastructure\TemplateSelectors\DocumentDescriptionTemplateSelector.cs" />
     <Compile Include="Infrastructure\Extensions\DocumentClientExceptionExtension.cs" />
     <Compile Include="Infrastructure\Extensions\NameValueCollectionExtensions.cs" />

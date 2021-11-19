@@ -28,6 +28,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -53,6 +54,10 @@
             <Label Grid.Row="4" Grid.Column="0">Accent Color:</Label>
             <xctk:ColorPicker Grid.Row="4" Grid.Column="1" Height="22"
                               DisplayColorAndName="False" SelectedColor="{Binding AccentColor}"/>
+
+            <Label Grid.Row="5" Grid.Column="0">Enable Endpoint Discovery:</Label>
+            <CheckBox Grid.Row="5" Grid.Column="1" Height="22"
+                              IsChecked="{Binding EnableEndpointDiscovery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
 
         

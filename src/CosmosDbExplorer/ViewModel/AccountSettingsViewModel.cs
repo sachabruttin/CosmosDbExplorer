@@ -37,6 +37,7 @@ namespace CosmosDbExplorer.ViewModel
             UseLocalEmulator = _connection.IsLocalEmulator();
             ConnectionType = _connection.ConnectionType;
             AccentColor = _connection.AccentColor;
+            EnableEndpointDiscovery = _connection.EnableEndpointDiscovery;
         }
 
         public string Title => "Account Settings";
@@ -44,6 +45,7 @@ namespace CosmosDbExplorer.ViewModel
         public string AccountSecret { get; set; }
         public string Label { get; set; }
         public ConnectionType ConnectionType { get; set; }
+        public bool EnableEndpointDiscovery { get; set; }
         public Color? AccentColor { get; set; }
 
         public void OnAccentColorChanged()
@@ -93,7 +95,7 @@ namespace CosmosDbExplorer.ViewModel
                             try
                             {
                                 IsBusy = true;
-                                var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, AccentColor);
+                                var connection = new Connection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, EnableEndpointDiscovery, AccentColor);
                                 await _settingsService.SaveConnectionAsync(connection).ConfigureAwait(true);
                                 MessengerInstance.Send(new ConnectionSettingSavedMessage(connection));
 

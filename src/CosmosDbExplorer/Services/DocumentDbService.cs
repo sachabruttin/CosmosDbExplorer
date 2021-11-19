@@ -40,6 +40,7 @@ namespace CosmosDbExplorer.Services
                 {
                     ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
                     ConnectionProtocol = connection.ConnectionType == ConnectionType.DirectHttps ? Protocol.Https : Protocol.Tcp,
+                    EnableEndpointDiscovery =connection.EnableEndpointDiscovery, 
                 };
 
                 var client = new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy);

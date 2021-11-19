@@ -11,16 +11,18 @@ namespace CosmosDbExplorer.Infrastructure.Models
         public Connection(Guid id)
         {
             Id = id;
+            EnableEndpointDiscovery = true;
         }
 
         [JsonConstructor]
-        public Connection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, Color? accentColor)
+        public Connection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
         {
             Id = id ?? Guid.NewGuid();
             Label = label;
             DatabaseUri = endpoint;
             AuthenticationKey = secret;
             ConnectionType = connectionType;
+            EnableEndpointDiscovery = enableEndpointDiscovery;
             AccentColor = accentColor;
         }
 
@@ -38,6 +40,9 @@ namespace CosmosDbExplorer.Infrastructure.Models
 
         [JsonProperty]
         public ConnectionType ConnectionType { get; protected set; }
+
+        [JsonProperty]
+        public bool EnableEndpointDiscovery { get; protected set; }
 
         [JsonProperty]
         public Color? AccentColor { get; protected set; }

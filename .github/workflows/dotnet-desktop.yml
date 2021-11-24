@@ -64,7 +64,9 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Setup NuGet
-      uses: Nuget/setup-nuget@v1.0.2
+      uses: nuget/setup-nuget@v1
+      with: 
+        nuget-version: '5.7.x'
 
     - name: Restore NuGet Packages
       run: nuget restore $env:Solution_Name

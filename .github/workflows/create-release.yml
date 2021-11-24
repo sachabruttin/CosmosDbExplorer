@@ -1,17 +1,14 @@
 # https://riggaroo.dev/using-github-actions-to-automate-our-release-process/#:~:text=Now%20to%20actually%20run%20this%20Action%3A%20Log%20onto,name%20and%20number%20of%20the%20release%20to%20create.
 
-name: Create Release Branch
+name: Publish Release
 
 on: 
-  workflow_dispatch:
-    inputs:
-      versionName:
-        description: 'Name of version (ie 1.2.3-beta)'
-        required: true
-      
+  push:
+    tags:
+      - '*'
 
 jobs:
-  createrelease:
+  build:
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -43,29 +40,23 @@ jobs:
     - name: Build Application
       run: msbuild $env:Solution_Name /p:Configuration=Release
 
-    # Decode the base 64 encoded pfx and save the Signing_Certificate
-    # - name: Decode the pfx
-    #   run: |
-    #     $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-    #     $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-    #     [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
-
-    # Create the app package by building and packaging the Windows Application Packaging project
-    # - name: Create the app package
-    #   run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
-    #   env:
-    #     Appx_Bundle: Always
-    #     Appx_Bundle_Platforms: x86|x64
-    #     Appx_Package_Build_Mode: StoreUpload
-    #     Configuration: ${{ matrix.configuration }}
-
-    # Remove the pfx
-    # - name: Remove the pfx
-    #   run: Remove-Item -path $env:Wap_Project_Directory\$env:Signing_Certificate
-
-    #Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+    - name: Zip Release folder
+      uses: "papeloto/action-zip@v1"
       with:
-        name: CosmosDbExplorer.0.0.0
-        path: src\CosmosDbExplorer\bin\Release\
+        files: src\CosmosDbExplorer\bin\Release\
+        dest: CosmosDbExplorer.zip
+
+    - name: Automatic Release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: true
+        files: |
+          *.zip
+
+    # - name: Upload build artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: CosmosDbExplorer.${{ github.event.inputs.versionName }}
+    #     path: src\CosmosDbExplorer\bin\Release\
+

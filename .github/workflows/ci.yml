@@ -1,0 +1,43 @@
+name: Build CosmosDbExplorer
+
+on: 
+  push:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  build:
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: src\CosmosDbExplorer.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
+      Test_Project_Path: src\CosmosDbExplorer.Tests\CosmosDbExplorer.Tests.csproj  # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with: 
+        nuget-version: '5.7.x'
+
+    - name: Restore NuGet Packages
+      run: nuget restore $env:Solution_Name
+
+    - name: Build Application
+      run: msbuild $env:Solution_Name /p:Configuration=Release
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: CosmosDbExplorer
+        path: src\CosmosDbExplorer\bin\Release\

@@ -99,4 +99,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: CosmosDbExplorer.0.0.0
-        path: src\bin\Release
+        path: src\CosmosDbExplorer\bin\Release\

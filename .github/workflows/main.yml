@@ -1,0 +1,45 @@
+# https://riggaroo.dev/using-github-actions-to-automate-our-release-process/#:~:text=Now%20to%20actually%20run%20this%20Action%3A%20Log%20onto,name%20and%20number%20of%20the%20release%20to%20create.
+
+name: 'Test'
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: src\CosmosDbExplorer.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
+      Test_Project_Path: src\CosmosDbExplorer.Tests\CosmosDbExplorer.Tests.csproj  # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+  chocolatey:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+
+    - name: Set version to Chocolatey files
+      uses: datamonsters/replace-action@v2
+      with:
+        files: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
+        
+    - name: Pack Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: pack /src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
+
+    - name: Upload chocolatey artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Chocolatey Package
+        path: '*.nupkg'
+

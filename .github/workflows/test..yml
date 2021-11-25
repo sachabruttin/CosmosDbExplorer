@@ -23,12 +23,6 @@ jobs:
       with:
         fetch-depth: 0
 
-  chocolatey:
-    runs-on: windows-latest
-    needs: build
-
-    steps:
-
     - name: Set version to Chocolatey files
       uses: datamonsters/replace-action@v2
       with:

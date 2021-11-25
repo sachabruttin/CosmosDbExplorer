@@ -1,6 +1,6 @@
 # https://riggaroo.dev/using-github-actions-to-automate-our-release-process/#:~:text=Now%20to%20actually%20run%20this%20Action%3A%20Log%20onto,name%20and%20number%20of%20the%20release%20to%20create.
 
-name: Publish Release
+name: 'Publish Release'
 
 on: 
   push:
@@ -34,7 +34,7 @@ jobs:
         version: ${{ steps.tag.outputs.version }}
 
     - name: Set version to Chocolatey files
-      uses: datamonsters/replace-action
+      uses: datamonsters/replace-action@v2
       with:
         files: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
         replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
@@ -55,13 +55,13 @@ jobs:
       run: msbuild $env:Solution_Name /p:Configuration=Release
 
     - name: Zip Release folder
-      uses: "papeloto/action-zip@v1"
+      uses: papeloto/action-zip@v1
       with:
         files: src\CosmosDbExplorer\bin\Release\
         dest: CosmosDbExplorer.zip
 
     - name: Automatic Release
-      uses: "marvinpinto/action-automatic-releases@latest"
+      uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: true

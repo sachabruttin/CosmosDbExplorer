@@ -49,7 +49,7 @@ namespace CosmosDbExplorer
                 ChangelogURL = json.changelog,
                 Mandatory = new Mandatory { Value = json.mandatory },
                 DownloadURL = json.url,
-                CheckSum = new CheckSum { Value = json.checksum }
+                CheckSum = json.checksum != null ? new CheckSum { Value = json.checksum } : null
             };
         }
 

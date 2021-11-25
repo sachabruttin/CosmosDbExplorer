@@ -79,8 +79,13 @@ jobs:
       with:
         args: pack ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
 
+    - name: Push Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: push ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
+
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: '*.nupkg'
+        path: ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
 

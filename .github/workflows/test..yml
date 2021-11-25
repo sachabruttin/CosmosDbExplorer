@@ -8,32 +8,32 @@ on:
       - 'test'
 
 jobs:
-  build:
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
-    env:
-      Solution_Name: src\CosmosDbExplorer.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: src\CosmosDbExplorer.Tests\CosmosDbExplorer.Tests.csproj  # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+  getsrc:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
 
-    # - name: Set version to Chocolatey files
-    #   uses: datamonsters/replace-action@v2
-    #   with:
-    #     files: 'src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
-    #     replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
+  build:
+    needs: getsrc
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    steps:
 
     - name: Set version to Chocolatey files
       uses: datamonsters/replace-action@v2
       with:
-        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
+        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
         replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
+
+    # - name: Set version to Chocolatey files
+    #   uses: datamonsters/replace-action@v2
+    #   with:
+    #     files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
+    #     replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
 
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
@@ -43,6 +43,5 @@ jobs:
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Chocolatey Package
         path: '*.nupkg'
 

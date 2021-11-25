@@ -62,26 +62,25 @@ jobs:
         files: |
           *.zip
 
-  chocolatey:
-    runs-on: windows-latest
-    needs: build
-
-    steps:
-
-    - name: Set version to Chocolatey files
+    - name: 'Replace tokens Chocolatey files #1' 
       uses: datamonsters/replace-action@v2
       with:
-        files: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
+
+    - name: 'Replace tokens Chocolatey files #2' 
+      uses: datamonsters/replace-action@v2
+      with:
+        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
         replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'    
-        
+
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: pack /src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
+        args: pack ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
 
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Chocolatey Package
         path: '*.nupkg'
 

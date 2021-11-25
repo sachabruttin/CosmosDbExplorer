@@ -1,11 +1,8 @@
 # https://riggaroo.dev/using-github-actions-to-automate-our-release-process/#:~:text=Now%20to%20actually%20run%20this%20Action%3A%20Log%20onto,name%20and%20number%20of%20the%20release%20to%20create.
 
-name: 'Publish Release'
+name: 'Test'
 
-on: 
-  push:
-    tags:
-      - '*'
+on: workflow_dispatch
 
 jobs:
   build:
@@ -23,45 +20,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: olegtarasov/get-tag@v2.1
-      id: tag
-      with:
-        tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
-
-    - name: Set version on AssemblyInfo.cs
-      uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
-      with:
-        version: ${{ steps.tag.outputs.version }}
-
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
-      with: 
-        nuget-version: '5.7.x'
-
-    - name: Restore NuGet Packages
-      run: nuget restore $env:Solution_Name
-
-    - name: Build Application
-      run: msbuild $env:Solution_Name /p:Configuration=Release
-
-    - name: Zip Release folder
-      uses: papeloto/action-zip@v1
-      with:
-        files: src\CosmosDbExplorer\bin\Release\
-        dest: CosmosDbExplorer.zip
-
-    - name: Automatic Release
-      uses: marvinpinto/action-automatic-releases@latest
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: true
-        files: |
-          *.zip
-
   chocolatey:
     runs-on: windows-latest
     needs: build
@@ -72,7 +30,7 @@ jobs:
       uses: datamonsters/replace-action@v2
       with:
         files: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
-        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'    
+        replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
         
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1

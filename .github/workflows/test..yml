@@ -25,17 +25,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set version to Chocolatey files
+    - name: Set version to Chocolatey files 
       uses: datamonsters/replace-action@v2
       with:
-        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
         replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
 
-    # - name: Set version to Chocolatey files
-    #   uses: datamonsters/replace-action@v2
-    #   with:
-    #     files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
-    #     replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
+    - name: Set version to Chocolatey files 2
+      uses: datamonsters/replace-action@v2
+      with:
+        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
+        replacements: '$version=1.2.3,$tag-name=v1.2.3-beta'    
 
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1

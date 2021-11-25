@@ -16,14 +16,28 @@ jobs:
     env:
       Solution_Name: src\CosmosDbExplorer.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
       Test_Project_Path: src\CosmosDbExplorer.Tests\CosmosDbExplorer.Tests.csproj  # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      # Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      # Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
+
+    - uses: olegtarasov/get-tag@v2.1
+      id: tag
+      with:
+        tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+
+    - name: Set version on AssemblyInfo.cs
+      uses: dannevesdantas/set-version-assemblyinfo-win@v1.0.0
+      with:
+        version: ${{ steps.tag.outputs.version }}
+
+    - name: Set version to Chocolatey files
+      uses: datamonsters/replace-action
+      with:
+        files: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec,/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -54,9 +68,23 @@ jobs:
         files: |
           *.zip
 
-    # - name: Upload build artifacts
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: CosmosDbExplorer.${{ github.event.inputs.versionName }}
-    #     path: src\CosmosDbExplorer\bin\Release\
+  chocolatey:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: '/src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/'
+
+    steps:
+        
+    - name: Pack Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: pack
+
+    - name: Upload chocolatey artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Chocolatey Package
+        path: '*.nupkg'
 

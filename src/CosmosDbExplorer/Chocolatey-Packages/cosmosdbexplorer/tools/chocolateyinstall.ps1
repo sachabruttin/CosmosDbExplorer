@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop';
 
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url          = 'https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v0.8.2.1-beta/CosmosDbExplorer.zip'
+$url          = 'https://github.com/sachabruttin/CosmosDbExplorer/releases/download/$tag-name/CosmosDbExplorer.zip'
 $packageName  = $env:ChocolateyPackageName
 
 Install-ChocolateyZipPackage `

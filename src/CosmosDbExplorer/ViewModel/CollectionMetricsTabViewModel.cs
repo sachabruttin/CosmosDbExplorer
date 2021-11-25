@@ -19,7 +19,6 @@ namespace CosmosDbExplorer.ViewModel
     {
         private readonly IDocumentDbService _dbService;
         private DocumentCollection _collection;
-        private string _partitionKey;
         private Connection _connection;
         private RelayCommand _refreshCommand;
         private readonly IDialogService _dialogService;
@@ -59,7 +58,6 @@ namespace CosmosDbExplorer.ViewModel
             ContentId = contentId;
             _connection = connection;
             _collection = collection;
-            _partitionKey = collection.PartitionKey?.Paths.FirstOrDefault();
             var split = _collection.AltLink.Split(new char[] { '/' });
             ToolTip = $"{split[1]}>{split[3]}";
             AccentColor = _connection.AccentColor;

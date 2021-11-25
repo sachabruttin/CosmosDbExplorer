@@ -13,14 +13,12 @@ namespace CosmosDbExplorer.Infrastructure.Models
     {
         private RelayCommand _closeCommand;
         private readonly StatusBarItem _pathStatusBarItem;
-        private readonly IUIServices _uiServices;
 
         protected PaneViewModelBase(IMessenger messenger, IUIServices uiServices)
             : base(messenger, uiServices)
         {
             _pathStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = ToolTip, IsVisible = true }, StatusBarItemType.SimpleText, "Path", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_pathStatusBarItem);
-            _uiServices = uiServices;
         }
 
         [DoNotSetChanged]

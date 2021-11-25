@@ -10,7 +10,7 @@ namespace CosmosDbExplorer.Infrastructure.Validar
 {
     public class PartitionKeyValidator : PropertyValidator
     {
-        private static readonly JTokenType[] _acceptedTypes = new[]
+        private static readonly JTokenType[] AcceptedTypes = new[]
         {
             JTokenType.Boolean,
             JTokenType.Integer, JTokenType.Float,
@@ -30,7 +30,7 @@ namespace CosmosDbExplorer.Infrastructure.Validar
 
                 var token = JToken.Parse(pk);
 
-                if (!_acceptedTypes.Contains(token.Type))
+                if (!AcceptedTypes.Contains(token.Type))
                 {
                     context.MessageFormatter.AppendArgument("Details", null);
                     return false;

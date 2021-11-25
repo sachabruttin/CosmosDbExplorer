@@ -20,85 +20,85 @@ namespace CosmosDbExplorer.Services
 
     public class SettingsService : ISettingsService
     {
-        private const string _configurationFileName = "connection-settings.json";
-        public static readonly string _configurationFilePath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CosmosDbExplorer" , _configurationFileName);
+        private const string ConfigurationFileName = "connection-settings.json";
+        public static readonly string ConfigurationFilePath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CosmosDbExplorer" , ConfigurationFileName);
 
-        public static Dictionary<Guid, Connection> _connections;
+        public static Dictionary<Guid, Connection> Connections;
 
         public SettingsService()
         {
-            if (!Directory.Exists(Path.GetDirectoryName(_configurationFilePath)))
+            if (!Directory.Exists(Path.GetDirectoryName(ConfigurationFilePath)))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(_configurationFilePath));
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigurationFilePath));
 
                 // Use old config file if exists...
-                var oldConfigurationFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DocumentDbExplorer", _configurationFileName);
+                var oldConfigurationFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DocumentDbExplorer", ConfigurationFileName);
                 if (File.Exists(oldConfigurationFilePath))
                 {
-                    File.Copy(oldConfigurationFilePath, _configurationFilePath);
+                    File.Copy(oldConfigurationFilePath, ConfigurationFilePath);
                 }
             }
         }
 
         public async Task<Dictionary<Guid, Connection>> GetConnectionsAsync()
         {
-            if (_connections != null)
+            if (Connections != null)
             {
-                return _connections;
+                return Connections;
             }
 
-            if (File.Exists(_configurationFilePath))
+            if (File.Exists(ConfigurationFilePath))
             {
-                using (var reader = File.OpenText(_configurationFilePath))
+                using (var reader = File.OpenText(ConfigurationFilePath))
                 {
                     var json = await reader.ReadToEndAsync();
-                    _connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json)
+                    Connections = JsonConvert.DeserializeObject<IEnumerable<Connection>>(json)
                                               .ToDictionary(c => c.Id);
                 }
             }
             else
             {
-                _connections = new Dictionary<Guid, Connection>();
+                Connections = new Dictionary<Guid, Connection>();
             }
 
-            return _connections;
+            return Connections;
         }
 
         public async Task RemoveConnection(Connection connection)
         {           
-            if (_connections.Remove(connection.Id))
+            if (Connections.Remove(connection.Id))
             {
-                await SaveAsync(_connections.Values);
+                await SaveAsync(Connections.Values);
             }
         }
 
         public Task ReorderConnections(int sourceIndex, int targetIndex)
         {
-            _connections = _connections.Values.ToList().Move(sourceIndex, targetIndex).ToDictionary(c => c.Id);
+            Connections = Connections.Values.ToList().Move(sourceIndex, targetIndex).ToDictionary(c => c.Id);
 
-            return SaveAsync(_connections.Values);
+            return SaveAsync(Connections.Values);
         }
 
         public async Task SaveConnectionAsync(Connection connection)
         {
-            if (_connections.ContainsKey(connection.Id))
+            if (Connections.ContainsKey(connection.Id))
             {
-                _connections[connection.Id] = connection;
+                Connections[connection.Id] = connection;
             }
             else
             {
-                _connections.Add(connection.Id, connection);
+                Connections.Add(connection.Id, connection);
             }
 
-            await SaveAsync(_connections.Values);
+            await SaveAsync(Connections.Values);
         }
 
         private async Task SaveAsync(IEnumerable<Connection> connections)
         {
             var json = JsonConvert.SerializeObject(connections, Formatting.Indented);
 
-            using (var fs = File.Open(_configurationFilePath, FileMode.Create))
+            using (var fs = File.Open(ConfigurationFilePath, FileMode.Create))
             {
                 var info = new UTF8Encoding(true).GetBytes(json);
                 await fs.WriteAsync(info, 0, info.Length);

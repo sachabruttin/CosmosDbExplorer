@@ -87,8 +87,8 @@ namespace CosmosDbExplorer.ViewModel.Indexes
                 .Must(coll => coll.Distinct().Count() == coll.Count)
                 .WithMessage((vm, coll) => $"Duplicate indexes specified for the path '{vm.Path}' and data type '{string.Join("' and '", coll.GroupBy(g => g.DataType).Where(g => g.Skip(1).Any()).Select(g => g.Key.Value.ToString()))}'.");
 
-            RuleFor(x => x.Indexes)
-                .NotEmpty();
+            //RuleFor(x => x.Indexes)
+            //    .NotEmpty();
         }
     }
 }

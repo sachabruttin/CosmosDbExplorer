@@ -122,9 +122,7 @@ namespace CosmosDbExplorer.ViewModel.Assets
                         Parameters.Remove(item);
                         item.Dispose();
                     },
-#pragma warning disable RCS1163 // Unused parameter.
                     item => !IsBusy & !IsDirty));
-#pragma warning restore RCS1163 // Unused parameter.
             }
         }
 
@@ -150,9 +148,7 @@ namespace CosmosDbExplorer.ViewModel.Assets
                             }
                         }).ConfigureAwait(false);
                     },
-#pragma warning disable RCS1163 // Unused parameter.
                     item => !IsBusy & !IsDirty));
-#pragma warning restore RCS1163 // Unused parameter.
             }
         }
 

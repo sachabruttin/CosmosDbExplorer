@@ -31,7 +31,7 @@ namespace CosmosDbExplorer.Infrastructure.Extensions
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var index = -1;
+            int index;
             do
             {
                 index = source.IndexOf(oldValue);
@@ -60,9 +60,10 @@ namespace CosmosDbExplorer.Infrastructure.Extensions
                 return list;
             }
 
-            // local variables
-            var i = 0;
             var tmp = list[oldIndex];
+
+            // local variables
+            int i;
             // move element down and shift other elements up
             if (oldIndex < newIndex)
             {

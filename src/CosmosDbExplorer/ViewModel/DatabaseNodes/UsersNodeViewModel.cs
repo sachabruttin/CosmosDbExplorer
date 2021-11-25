@@ -11,7 +11,6 @@ namespace CosmosDbExplorer.ViewModel
 {
     public class UsersNodeViewModel : TreeViewItemViewModel<DatabaseNodeViewModel>, ICanRefreshNode
     {
-        private readonly DatabaseNodeViewModel _parent;
         private readonly IDocumentDbService _dbService;
         private RelayCommand _refreshCommand;
         private RelayCommand _addUserCommand;
@@ -21,7 +20,6 @@ namespace CosmosDbExplorer.ViewModel
         {
             Name = "Users";
             Database = database;
-            _parent = parent;
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 

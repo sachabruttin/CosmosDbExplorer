@@ -8,7 +8,7 @@ namespace CosmosDbExplorer.Infrastructure.MarkupExtensions
 {
     public class CursorExtensionConverter : MarkupExtension, IValueConverter
     {
-        private static readonly CursorExtensionConverter _instance = new CursorExtensionConverter();
+        private static readonly CursorExtensionConverter Instance = new CursorExtensionConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -27,7 +27,7 @@ namespace CosmosDbExplorer.Infrastructure.MarkupExtensions
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return _instance;
+            return Instance;
         }
     }
 }

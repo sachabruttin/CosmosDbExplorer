@@ -13,7 +13,6 @@ namespace CosmosDbExplorer.ViewModel
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {
-        private readonly IDocumentDbService _dbService;
         private readonly ISettingsService _settingsService;
 
         public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService, IUIServices uiServices)
@@ -23,7 +22,6 @@ namespace CosmosDbExplorer.ViewModel
             Title = Header;
             IsVisible = true;
 
-            _dbService = dbService;
             _settingsService = settingsService;
 
             RegisterMessages();
@@ -79,7 +77,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data != dropInfo.TargetItem && dropInfo.Data is ConnectionNodeViewModel sourceItem && dropInfo.TargetItem is ConnectionNodeViewModel)
+            if (dropInfo.Data != dropInfo.TargetItem && dropInfo.Data is ConnectionNodeViewModel && dropInfo.TargetItem is ConnectionNodeViewModel)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                 dropInfo.Effects = System.Windows.DragDropEffects.Move;

@@ -23,18 +23,18 @@ namespace CosmosDbExplorer.Services
         {
             messenger.Register<ConnectionSettingSavedMessage>(this, msg =>
             {
-                if (_clientInstances.ContainsKey(msg.Connection))
+                if (ClientInstances.ContainsKey(msg.Connection))
                 {
-                    _clientInstances.Remove(msg.Connection);
+                    ClientInstances.Remove(msg.Connection);
                 }
             });
         }
 
-        private static readonly Dictionary<Connection, DocumentClient> _clientInstances = new Dictionary<Connection, DocumentClient>();
+        private static readonly Dictionary<Connection, DocumentClient> ClientInstances = new Dictionary<Connection, DocumentClient>();
 
         private DocumentClient GetClient(Connection connection)
         {
-            if (!_clientInstances.ContainsKey(connection))
+            if (!ClientInstances.ContainsKey(connection))
             {
                 var policy = new ConnectionPolicy
                 {
@@ -46,10 +46,10 @@ namespace CosmosDbExplorer.Services
                 var client = new DocumentClient(connection.DatabaseUri, connection.AuthenticationKey, policy);
                 client.OpenAsync();
 
-                _clientInstances.Add(connection, client);
+                ClientInstances.Add(connection, client);
             }
 
-            return _clientInstances[connection];
+            return ClientInstances[connection];
         }
 
         public async Task CleanCollectionAsync(Connection connection, DocumentCollection collection)

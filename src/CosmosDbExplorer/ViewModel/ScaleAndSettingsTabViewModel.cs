@@ -108,18 +108,18 @@ namespace CosmosDbExplorer.ViewModel
             IsFixedStorage = PartitionKey == null;
 
             PolicyViewModel = new IndexingPolicyViewModel(Collection.IndexingPolicy);
-            PolicyViewModel.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(PolicyViewModel.IsValid))
-                {
-                    return;
-                }
+            //PolicyViewModel.PropertyChanged += (s, e) =>
+            //{
+            //    if (e.PropertyName == nameof(PolicyViewModel.IsValid))
+            //    {
+            //        return;
+            //    }
 
-                if (!IsLoading && PolicyViewModel.IsValid)
-                {
-                    Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
-                }
-            };
+            //    if (!IsLoading && PolicyViewModel.IsValid)
+            //    {
+            //        Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
+            //    }
+            //};
 
             Content.Text = JsonConvert.SerializeObject(PolicyViewModel.Policy, Formatting.Indented);
 

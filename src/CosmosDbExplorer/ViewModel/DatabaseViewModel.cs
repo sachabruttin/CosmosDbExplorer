@@ -44,7 +44,7 @@ namespace CosmosDbExplorer.ViewModel
                 connection.Connection = c.Value;
 
                 return connection;
-            });
+            }).OrderBy(c => c.Name);
 
             Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }

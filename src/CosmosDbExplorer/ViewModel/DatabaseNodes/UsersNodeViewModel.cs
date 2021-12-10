@@ -18,12 +18,11 @@ namespace CosmosDbExplorer.ViewModel
         public UsersNodeViewModel(Database database, DatabaseNodeViewModel parent)
                 : base(parent, parent.MessengerInstance, true)
         {
-            Name = "Users";
             Database = database;
             _dbService = SimpleIoc.Default.GetInstance<IDocumentDbService>();
         }
 
-        public string Name { get; set; }
+        public override string Name => "Users";
 
         public Database Database { get; }
 

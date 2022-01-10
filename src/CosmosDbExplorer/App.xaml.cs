@@ -1,88 +1,106 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using GalaSoft.MvvmLight.Threading;
+
+using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Contracts.Views;
+using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModels;
+using CosmosDbExplorer.Views;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace CosmosDbExplorer
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+    // For more inforation about application lifecyle events see https://docs.microsoft.com/dotnet/framework/wpf/app-development/application-management-overview
+
+    // WPF UI elements use language en-US by default.
+    // If you need to support other cultures make sure you add converters and review dates and numbers in your UI to ensure everything adapts correctly.
+    // Tracking issue for improving this is https://github.com/dotnet/wpf/issues/1946
     public partial class App : Application
     {
-        static App()
+        private IHost _host;
+
+        public T GetService<T>()
+            where T : class
+            => _host.Services.GetService(typeof(T)) as T;
+
+        public App()
         {
-            DispatcherHelper.Initialize();
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void OnStartup(object sender, StartupEventArgs e)
         {
-            // Global exception handling
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomainUnandleException);
-            Application.Current.DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(AppDispatcherUnhandledException);
-            TaskScheduler.UnobservedTaskException += new EventHandler<UnobservedTaskExceptionEventArgs>(UnobservedTaskException);
-        }
+            var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
-        private void UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            if (!Debugger.IsAttached)
-            {
-                e.SetObserved();
-                ShowUnhandledException(e.Exception, false);
-            }
-        }
-
-        private void CurrentDomainUnandleException(object sender, UnhandledExceptionEventArgs e)
-        {
-            if (!Debugger.IsAttached)
-            {
-                ShowUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
-            }
-        }
-
-        private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            if (Debugger.IsAttached)
-            {
-                e.Handled = false;
-            }
-            else
-            {
-                e.Handled = true;
-                ShowUnhandledException(e.Exception, false);
-            }
-        }
-
-        private void ShowUnhandledException(Exception exception, bool isTerminating)
-        {
-            var details = exception.Message + (exception.InnerException != null ? "\n" + exception.InnerException.Message : null);
-            var errorMessage = $@"An application error occurred.
-Please check whether your data is correct and repeat the action. If this error occurs again there seems to be a more serious malfunction in the application, and you better close it.
-
-Error: {details}";
-
-            if (!isTerminating)
-            {
-                errorMessage += "\nDo you want to continue?";
-
-                if (MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.YesNoCancel, MessageBoxImage.Error) == MessageBoxResult.No)
-                {
-                    if (MessageBox.Show("WARNING: The application will close. Any changes will not be saved!\nDo you really want to close it?", "Close the application!", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
+            _host = Host.CreateDefaultBuilder(e.Args)
+                    .ConfigureAppConfiguration(c =>
                     {
-                        Application.Current.Shutdown();
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                        c.SetBasePath(appLocation);
+                    })
+                    .ConfigureServices(ConfigureServices)
+                    .Build();
+
+            await _host.StartAsync();
+        }
+
+        private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            // TODO WTS: Register your services, viewmodels and pages here
+
+            // App Host
+            services.AddHostedService<ApplicationHostService>();
+
+            // Activation Handlers
+
+            // Core Services
+            services.AddSingleton<IFileService, FileService>();
+
+            // Services
+            services.AddSingleton<IWindowManagerService, WindowManagerService>();
+            services.AddSingleton<IApplicationInfoService, ApplicationInfoService>();
+            services.AddSingleton<ISystemService, SystemService>();
+            services.AddSingleton<IPersistAndRestoreService, PersistAndRestoreService>();
+            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+            services.AddSingleton<IPageService, PageService>();
+            services.AddSingleton<INavigationService, NavigationService>();
+
+            // Views and ViewModels
+            services.AddTransient<IShellWindow, ShellWindow>();
+            services.AddTransient<ShellViewModel>();
+
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<MainPage>();
+
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SettingsPage>();
+
+            services.AddTransient<IShellDialogWindow, ShellDialogWindow>();
+            services.AddTransient<ShellDialogViewModel>();
+
+            // Configuration
+            services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+            services.AddSingleton<IRightPaneService, RightPaneService>();
+        }
+
+        private async void OnExit(object sender, ExitEventArgs e)
+        {
+            await _host.StopAsync();
+            _host.Dispose();
+            _host = null;
+        }
+
+        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // TODO WTS: Please log and handle the exception as appropriate to your scenario
+            // For more info see https://docs.microsoft.com/dotnet/api/system.windows.application.dispatcherunhandledexception?view=netcore-3.0
         }
     }
 }

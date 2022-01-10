@@ -78,11 +78,14 @@ jobs:
       with:
         tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
 
+    # TODO: run choco install checksum
+    # TODO: run checksum -t sha256 -f CosmosDbExplorer.zip
+
     - name: 'Replace tokens Chocolatey files #1' 
       uses: datamonsters/replace-action@v2
       with:
         files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
-        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
+        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME',$checksum=
 
     - name: 'Replace tokens Chocolatey files #2' 
       uses: datamonsters/replace-action@v2

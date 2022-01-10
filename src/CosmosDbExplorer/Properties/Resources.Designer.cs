@@ -61,6 +61,15 @@ namespace CosmosDbExplorer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string AboutPageTitle {
+            get {
+                return ResourceManager.GetString("AboutPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cosmos DB Explorer.
         /// </summary>
         public static string AppDisplayName {
@@ -156,6 +165,15 @@ namespace CosmosDbExplorer.Properties {
         public static string SettingsPageTitle {
             get {
                 return ResourceManager.GetString("SettingsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string ShellPageRibbonBackstageTabAboutHeader {
+            get {
+                return ResourceManager.GetString("ShellPageRibbonBackstageTabAboutHeader", resourceCulture);
             }
         }
         

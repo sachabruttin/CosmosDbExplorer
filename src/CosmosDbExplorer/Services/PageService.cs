@@ -21,6 +21,7 @@ namespace CosmosDbExplorer.Services
             _serviceProvider = serviceProvider;
             Configure<MainViewModel, MainPage>();
             Configure<SettingsViewModel, SettingsPage>();
+            Configure<AboutViewModel, AboutPage>();
         }
 
         public Type GetPageType(string key)

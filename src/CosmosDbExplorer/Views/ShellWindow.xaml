@@ -16,6 +16,7 @@
     mc:Ignorable="d"
     MinWidth="500"
     MinHeight="350"
+    WindowState="Maximized"
     Title="{x:Static properties:Resources.AppDisplayName}">
     <controls:MetroWindow.TitleTemplate>
         <DataTemplate>
@@ -60,6 +61,9 @@
                             <Fluent:BackstageTabItem
                                 Tag="CosmosDbExplorer.ViewModels.SettingsViewModel"
                                 Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabSettingsHeader}" />
+                            <Fluent:BackstageTabItem
+                                Tag="CosmosDbExplorer.ViewModels.AboutViewModel"
+                                Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabAboutHeader}" />
                         </Fluent:BackstageTabControl>
                     </Fluent:Backstage>
                 </Fluent:Ribbon.Menu>

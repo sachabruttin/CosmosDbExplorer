@@ -159,7 +159,13 @@
   <data name="ShellPageRibbonTabHomeHeader" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="AboutPageTitle" xml:space="preserve">
+    <value>About</value>
+  </data>
   <data name="AppDisplayName" xml:space="preserve">
     <value>Cosmos DB Explorer</value>
+  </data>
+  <data name="ShellPageRibbonBackstageTabAboutHeader" xml:space="preserve">
+    <value>About</value>
   </data>
 </root>

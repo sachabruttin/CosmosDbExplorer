@@ -82,6 +82,9 @@ namespace CosmosDbExplorer
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
 
+            services.AddTransient<AboutViewModel>();
+            services.AddTransient<AboutPage>();
+
             services.AddTransient<IShellDialogWindow, ShellDialogWindow>();
             services.AddTransient<ShellDialogViewModel>();
 

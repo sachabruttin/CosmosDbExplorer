@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -13,10 +13,10 @@
     <Content Include="astronaut.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fluent.Ribbon" Version="8.0.3" />
-    <PackageReference Include="MahApps.Metro" Version="2.4.6" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.16" />
-    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.2" />
+    <PackageReference Include="Fluent.Ribbon" Version="9.0.1" />
+    <PackageReference Include="MahApps.Metro" Version="2.4.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CosmosDbExplorer.Core\CosmosDbExplorer.Core.csproj" />

@@ -18,22 +18,12 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IThemeSelectorService _themeSelectorService;
         private readonly ISystemService _systemService;
         private readonly IApplicationInfoService _applicationInfoService;
-        private AppTheme _theme;
-        private string _versionDescription;
         private ICommand _setThemeCommand;
         private ICommand _privacyStatementCommand;
 
-        public AppTheme Theme
-        {
-            get { return _theme; }
-            set { SetProperty(ref _theme, value); }
-        }
+        public AppTheme Theme { get; set; }
 
-        public string VersionDescription
-        {
-            get { return _versionDescription; }
-            set { SetProperty(ref _versionDescription, value); }
-        }
+        public string VersionDescription { get; set; }
 
         public ICommand SetThemeCommand => _setThemeCommand ?? (_setThemeCommand = new RelayCommand<string>(OnSetTheme));
 

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -6,15 +8,18 @@ using System.Windows.Threading;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.Views;
 using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
 using CosmosDbExplorer.Services;
+using CosmosDbExplorer.ViewModel;
 using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.Views;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer
 {
@@ -62,6 +67,7 @@ namespace CosmosDbExplorer
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
             // Services
             services.AddSingleton<IWindowManagerService, WindowManagerService>();
@@ -71,6 +77,8 @@ namespace CosmosDbExplorer
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+
+            services.AddSingleton<IUIServices, UIServices>();
 
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();
@@ -87,6 +95,9 @@ namespace CosmosDbExplorer
 
             services.AddTransient<IShellDialogWindow, ShellDialogWindow>();
             services.AddTransient<ShellDialogViewModel>();
+
+            services.AddTransient<DatabaseViewModel>();
+            services.AddTransient<DatabaseView>();
 
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
@@ -105,5 +116,7 @@ namespace CosmosDbExplorer
             // TODO WTS: Please log and handle the exception as appropriate to your scenario
             // For more info see https://docs.microsoft.com/dotnet/api/system.windows.application.dispatcherunhandledexception?view=netcore-3.0
         }
+
+        public static Dictionary<Guid, Connection> Connections => Current.Properties["Connections"] as Dictionary<Guid, Connection>;
     }
 }

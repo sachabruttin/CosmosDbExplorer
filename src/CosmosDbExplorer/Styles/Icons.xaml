@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="IconText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <!-- Refresh icon -->
+    <Style x:Key="RefreshIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
+        <Setter Property="Text" Value="" />
+    </Style>
+    <TextBlock x:Key="RefreshIconText" Style="{StaticResource RefreshIcon}" />
+
+    <!-- Edit icon -->
+    <Style x:Key="EditIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
+        <Setter Property="Text" Value="" />
+    </Style>
+    <TextBlock x:Key="EditIconText" Style="{StaticResource EditIcon}" />
+    
+    <!-- Connection icon -->
+    <DrawingImage x:Key="ConnectionIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8.0001,-0.000199999999999534L1.0001,3.4998 1.0001,11.4998 8.0001,15.9998 15.0001,11.4998 15.0001,3.4998z" />
+                    <GeometryDrawing Brush="#FF424242" Geometry="F1M8.51,8L8.5,14.5 14,11 14,5z M2,11L7.505,14.5 7.5,8 2,5z M13.75,4L8,7 2.25,4 8,1z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+</ResourceDictionary>

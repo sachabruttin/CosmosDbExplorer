@@ -9,7 +9,7 @@
 
     <!--  Metadata  -->
     <system:String x:Key="Theme.Name">Dark.Blue</system:String>
-    <system:String x:Key="Theme.Origin">CosmosDbExplorer.WPF</system:String>
+    <system:String x:Key="Theme.Origin">CosmosDbExplorer</system:String>
     <system:String x:Key="Theme.DisplayName">Blue (Dark)</system:String>
     <system:String x:Key="Theme.BaseColorScheme">Dark</system:String>
     <system:String x:Key="Theme.ColorScheme">Blue</system:String>

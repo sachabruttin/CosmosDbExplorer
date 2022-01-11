@@ -46,20 +46,21 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string Name => Connection.DatabaseUri.ToString();
 
-        protected override async Task LoadChildren(CancellationToken cancellationToken)
+        protected override async Task LoadChildren(CancellationToken token)
         {
 
             try
             {
-                var service = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
                 IsLoading = true;
-                Databases = await service.GetDatabasesAsync(cancellationToken);
+
+                var service = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
+                Databases = await service.GetDatabasesAsync(token);
 
                 // TODO: Handle cancellation
 
                 foreach (var db in Databases)
                 {
-                    Children.Add(new DatabaseNodeViewModel(db, this));
+                    Children.Add(new DatabaseNodeViewModel(_serviceProvider, db, this));
                     //await DispatcherHelper.RunAsync(() => Children.Add(new DatabaseNodeViewModel(db, this)));
                 }
             }

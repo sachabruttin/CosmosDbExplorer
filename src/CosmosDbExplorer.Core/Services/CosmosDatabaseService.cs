@@ -22,15 +22,15 @@ namespace CosmosDbExplorer.Core.Services
         public async Task<IList<CosmosDatabase>> GetDatabasesAsync(CancellationToken cancellationToken)
         {
             var properties = _client.GetDatabaseQueryIterator<DatabaseProperties>();
-            var results = new List<CosmosDatabase>();
+            var result = new List<CosmosDatabase>();
 
             while (properties.HasMoreResults)
             {
                 var response = await properties.ReadNextAsync(cancellationToken);
-                results.AddRange(response.Select(properties => new CosmosDatabase(properties)));
+                result.AddRange(response.Select(properties => new CosmosDatabase(properties)));
             }
 
-            return results;
+            return result;
         }
     }
 }

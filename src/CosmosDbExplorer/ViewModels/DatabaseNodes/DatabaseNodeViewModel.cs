@@ -1,9 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Views;
 using Microsoft.Azure.Documents;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
@@ -12,10 +15,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     {
         private RelayCommand _addNewCollectionCommand;
         private RelayCommand _deleteDatabaseCommand;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DatabaseNodeViewModel(CosmosDatabase database, ConnectionNodeViewModel parent)
+        public DatabaseNodeViewModel(IServiceProvider serviceProvider, CosmosDatabase database, ConnectionNodeViewModel parent)
             : base(database, parent, true)
         {
+            _serviceProvider = serviceProvider;
             Database = database;
         }
 
@@ -23,7 +28,32 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override async Task LoadChildren(CancellationToken token)
         {
-            IsLoading = true;
+            try
+            {
+                IsLoading = true;
+
+                var service = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, Database);
+                var containers = await service.GetContainersAsync(token);
+
+                // TODO: Handle cancellation
+               
+                Children.Add(new UsersNodeViewModel(Database, this));
+                
+                foreach (var container in containers)
+                {
+                    Children.Add(new ContainerNodeViewModel(_serviceProvider, container, this));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
+            //IsLoading = true;
 
             //var collections = await DbService.GetCollectionsAsync(Parent.Connection, Database).ConfigureAwait(false);
 
@@ -36,7 +66,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             //    }
             //});
 
-            IsLoading = false;
+            //IsLoading = false;
         }
 
         public RelayCommand AddNewCollectionCommand => throw new System.NotImplementedException();

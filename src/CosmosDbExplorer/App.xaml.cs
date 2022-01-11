@@ -82,13 +82,17 @@ namespace CosmosDbExplorer
 
             // Cosmos Services
             services.AddSingleton<ICosmosClientService, CosmosClientService>();
-            services.AddTransient<Func<CosmosConnection, CosmosDatabaseService>>(provider =>
+            services.AddTransient(provider =>
             {
                 return new Func<CosmosConnection, CosmosDatabaseService>(connection =>
                                 new CosmosDatabaseService(provider.GetRequiredService<ICosmosClientService>(), connection));
             });
-                
-            
+
+            services.AddTransient(provider =>
+            {
+                return new Func<CosmosConnection, CosmosDatabase, CosmosContainerService>((connection, database) =>
+                                new CosmosContainerService(provider.GetRequiredService<ICosmosClientService>(), connection, database));
+            });
 
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();

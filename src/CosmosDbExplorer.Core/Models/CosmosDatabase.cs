@@ -10,13 +10,11 @@ namespace CosmosDbExplorer.Core.Models
             Id = properties.Id;
             ETag = properties.ETag;
             SelfLink = properties.SelfLink;
-
-            Properties = properties;
         }
 
         public string Id { get; }
         public string ETag { get; }
         public string SelfLink { get; }
-        public DatabaseProperties Properties { get; }
+        
     }
 }

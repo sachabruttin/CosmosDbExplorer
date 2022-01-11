@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.ViewModels;
+using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -14,18 +19,19 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     {
         private RelayCommand _editConnectionCommand;
         private RelayCommand _removeConnectionCommand;
-        //private readonly IDocumentDbService _dbService;
+        private readonly IServiceProvider _serviceProvider;
+
         //private readonly IDialogService _dialogService;
         //private readonly ISettingsService _settingsService;
         private RelayCommand _refreshCommand;
         private RelayCommand _addNewCollectionCommand;
 
-        public ConnectionNodeViewModel()
+        public ConnectionNodeViewModel(IServiceProvider serviceProvider, CosmosConnection connection)
             : base(null, true)
         {
+            _serviceProvider = serviceProvider;
+            Connection = connection;
         }
-
-
 
         //public ConnectionNodeViewModel(IDocumentDbService dbService, IMessenger messenger, IDialogService dialogService, ISettingsService settingsService) : base(null, messenger, true)
         //{
@@ -34,32 +40,41 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    _settingsService = settingsService;
         //}
 
-        public Connection Connection { get; set; }
+        public CosmosConnection Connection { get; }
 
-        //public List<Database> Databases { get; protected set; }
+        public IList<CosmosDatabase> Databases { get; protected set; }
 
-        public string Name => "Demo";// Connection.DatabaseUri.ToString();
+        public string Name => Connection.DatabaseUri.ToString();
 
-        protected override async Task LoadChildren()
+        protected override async Task LoadChildren(CancellationToken cancellationToken)
         {
-            //try
-            //{
-            //    IsLoading = true;
-            //    Databases = await _dbService.GetDatabasesAsync(Connection);
 
-            //    foreach (var db in Databases)
-            //    {
-            //        await DispatcherHelper.RunAsync(() => Children.Add(new DatabaseNodeViewModel(db, this)));
-            //    }
-            //}
+            try
+            {
+                var service = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
+                IsLoading = true;
+                Databases = await service.GetDatabasesAsync(cancellationToken);
+
+                // TODO: Handle cancellation
+
+                foreach (var db in Databases)
+                {
+                    Children.Add(new DatabaseNodeViewModel(db, this));
+                    //await DispatcherHelper.RunAsync(() => Children.Add(new DatabaseNodeViewModel(db, this)));
+                }
+            }
             //catch (HttpRequestException ex)
             //{
             //    await DispatcherHelper.RunAsync(async () => await _dialogService.ShowError(ex, "Error", null, null));
             //}
-            //finally
-            //{
-            //    IsLoading = false;
-            //}
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         //public RelayCommand EditConnectionCommand

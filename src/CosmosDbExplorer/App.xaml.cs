@@ -80,6 +80,16 @@ namespace CosmosDbExplorer
 
             services.AddSingleton<IUIServices, UIServices>();
 
+            // Cosmos Services
+            services.AddSingleton<ICosmosClientService, CosmosClientService>();
+            services.AddTransient<Func<CosmosConnection, CosmosDatabaseService>>(provider =>
+            {
+                return new Func<CosmosConnection, CosmosDatabaseService>(connection =>
+                                new CosmosDatabaseService(provider.GetRequiredService<ICosmosClientService>(), connection));
+            });
+                
+            
+
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();
             services.AddTransient<ShellViewModel>();
@@ -97,7 +107,7 @@ namespace CosmosDbExplorer
             services.AddTransient<ShellDialogViewModel>();
 
             services.AddTransient<DatabaseViewModel>();
-            services.AddTransient<DatabaseView>();
+            //services.AddTransient<DatabaseView>();
 
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
@@ -117,6 +127,6 @@ namespace CosmosDbExplorer
             // For more info see https://docs.microsoft.com/dotnet/api/system.windows.application.dispatcherunhandledexception?view=netcore-3.0
         }
 
-        public static Dictionary<Guid, Connection> Connections => Current.Properties["Connections"] as Dictionary<Guid, Connection>;
+        public static Dictionary<Guid, CosmosConnection> Connections => Current.Properties["Connections"] as Dictionary<Guid, CosmosConnection>;
     }
 }

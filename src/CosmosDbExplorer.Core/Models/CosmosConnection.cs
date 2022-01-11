@@ -5,16 +5,16 @@ using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Core.Models
 {
-    public class Connection : IEquatable<Connection>
+    public class CosmosConnection : IEquatable<CosmosConnection>
     {
-        public Connection(Guid id)
+        public CosmosConnection(Guid id)
         {
             Id = id;
             EnableEndpointDiscovery = true;
         }
 
         [JsonConstructor]
-        public Connection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
+        public CosmosConnection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
         {
             Id = id ?? Guid.NewGuid();
             Label = label;
@@ -52,7 +52,7 @@ namespace CosmosDbExplorer.Core.Models
                 && AuthenticationKey == Constants.Emulator.Secret;
         }
 
-        public bool Equals(Connection other)
+        public bool Equals(CosmosConnection other)
         {
             return Id.Equals(other.Id);
         }

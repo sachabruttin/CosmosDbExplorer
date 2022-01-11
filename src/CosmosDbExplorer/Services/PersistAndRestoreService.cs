@@ -55,7 +55,7 @@ namespace CosmosDbExplorer.Services
         private void RestoreConnections()
         {
             var fileName = _appConfig.ConnectionsFileName;
-            var connections = _fileService.Read<List<Connection>>(_localAppData, fileName);
+            var connections = _fileService.Read<List<CosmosConnection>>(_localAppData, fileName);
             
             if (connections != null)
             {

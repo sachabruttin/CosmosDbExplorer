@@ -62,7 +62,7 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
 
-            <!--<HierarchicalDataTemplate
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:DatabaseNodeViewModel}"
                 ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal">
@@ -86,13 +86,13 @@
                     <Image  Width="16" Height="16" Margin="3,0" 
                             gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
                             Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource DatabaseIcon}"
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource DatabaseIcon}" 
                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
 
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
-
+            <!--
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:UsersNodeViewModel}"
                 ItemsSource="{Binding Children}">

@@ -10,26 +10,26 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Extensions.Options;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Core.Contracts.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using System;
 
 namespace CosmosDbExplorer.ViewModel
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {
-        public DatabaseViewModel(IUIServices uiServices) 
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ICosmosClientService _cosmosClientService;
+
+        public DatabaseViewModel(IServiceProvider serviceProvider, IUIServices uiServices, ICosmosClientService cosmosClientService) 
             : base(uiServices)
         {
             Header = "Connections";
             Title = Header;
             IsVisible = true;
-
-            //var nodes = new[] { new ConnectionNodeViewModel(), new ConnectionNodeViewModel() };
-
-            //Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
-
-
+            _serviceProvider = serviceProvider;
+            _cosmosClientService = cosmosClientService;
         }
-
-
 
         //private readonly ISettingsService _settingsService;
 
@@ -55,7 +55,7 @@ namespace CosmosDbExplorer.ViewModel
 
         public void LoadNodes()
         {
-            var nodes = App.Connections.Select(c => new ConnectionNodeViewModel { Connection = c.Value });
+            var nodes = App.Connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c.Value));
 
             Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }

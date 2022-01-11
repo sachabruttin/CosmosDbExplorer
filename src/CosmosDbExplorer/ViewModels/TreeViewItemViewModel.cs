@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
@@ -69,29 +70,23 @@ namespace CosmosDbExplorer.ViewModels
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is expanded.
         /// </summary>
-        public bool IsExpanded
+        public bool IsExpanded { get; set; }
+
+        public async void OnIsExpandedChanged()
         {
-            get { return _isExpanded; }
-            set
+            // Expand all the way up to the root.
+            if (IsExpanded && Parent != null)
             {
-                if (value != _isExpanded)
-                {
-                    _isExpanded = value;
-                    OnPropertyChanged();
-                }
+                Parent.IsExpanded = true;
+            }
 
-                // Expand all the way up to the root.
-                if (_isExpanded && Parent != null)
-                {
-                    Parent.IsExpanded = true;
-                }
-
-                // Lazy load the child items, if necessary.
-                if (HasDummyChild)
-                {
-                    Children.Remove(DummyChild);
-                    Task.Run(() => LoadChildren());
-                }
+            // Lazy load the child items, if necessary.
+            if (HasDummyChild)
+            {
+                Children.Remove(DummyChild);
+                //Task.Run(() => LoadChildren(new CancellationToken()));
+                var token = new CancellationToken();
+                await LoadChildren(token);
             }
         }
 
@@ -112,7 +107,7 @@ namespace CosmosDbExplorer.ViewModels
         /// Invoked when the child items need to be loaded on demand.
         /// Subclasses can override this to populate the Children collection.
         /// </summary>
-        protected virtual Task LoadChildren()
+        protected virtual Task LoadChildren(CancellationToken cancellationToken)
         {
             return Task.FromResult<object>(null);
         }

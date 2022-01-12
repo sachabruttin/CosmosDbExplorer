@@ -10,9 +10,18 @@
     <Application.Resources>
         <ResourceDictionary>
             <!-- Converters -->
+            <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
+            <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
+            <!--<avalonDock:BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter" />-->
+            <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
+            <converters:LogConverter x:Key="logConverter" />
+            <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />
             <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
-            
+            <converters:BytesToGigaBytesConverter x:Key="BytesToGigaBytesConverter" />
+            <!--<converters:QueryMetricsToStringConverter x:Key="queryMetricsToStringConverter" />-->
+            <!--<converters:QueryMetricsToDocumentConverter x:Key="queryMetricsToDocumentConverter" />-->
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/_FontSizes.xaml" />
                 <ResourceDictionary Source="/Styles/_Thickness.xaml" />

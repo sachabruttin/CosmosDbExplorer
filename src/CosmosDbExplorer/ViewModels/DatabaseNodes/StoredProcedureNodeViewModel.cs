@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
-using Microsoft.Azure.Documents;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -72,9 +72,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            throw new System.NotImplementedException();
-            //Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection));
-            //return Task.FromResult(0);
+            Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
+            return Task.FromResult(0);
         }
     }
 }

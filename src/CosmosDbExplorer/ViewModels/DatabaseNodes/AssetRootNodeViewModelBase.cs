@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
-using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Messages;
-using CosmosDbExplorer.Services;
-using Microsoft.Azure.Documents;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -20,7 +15,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         protected AssetRootNodeViewModelBase(ContainerNodeViewModel parent)
             : base(parent, true)
         {
-            //Messenger.Register<AssetRootNodeViewModelBase<TResource>, UpdateOrCreateNodeMessage <TResource>>(this, static (r, m) => r.InnerOnUpdateOrCreateNodeMessage(m));
+            Messenger.Register<AssetRootNodeViewModelBase<TResource>, UpdateOrCreateNodeMessage <TResource>>(this, static (r, m) => r.InnerOnUpdateOrCreateNodeMessage(m));
         }
 
         public string Name { get; protected set; }
@@ -76,17 +71,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public TResource Resource { get; set; }
 
-        public RelayCommand OpenCommand => new RelayCommand(async () => await OpenCommandImp().ConfigureAwait(false));
+        public RelayCommand OpenCommand => new(async () => await OpenCommandImp().ConfigureAwait(false));
 
         protected abstract Task OpenCommandImp();
 
-        public RelayCommand DeleteCommand
-        {
-            get
-            {
-                return new RelayCommand(async () => await DeleteCommandImpl().ConfigureAwait(false));
-            }
-        }
+        public RelayCommand DeleteCommand => new(async () => await DeleteCommandImpl().ConfigureAwait(false));
 
         protected abstract Task DeleteCommandImpl();
 

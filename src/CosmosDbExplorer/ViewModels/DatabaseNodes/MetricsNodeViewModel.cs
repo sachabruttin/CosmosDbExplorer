@@ -1,5 +1,7 @@
 ﻿using CosmosDbExplorer.Contracts.ViewModels;
+using CosmosDbExplorer.Messages;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -15,22 +17,16 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string Name { get; set; }
 
-        public RelayCommand OpenCommand
-        {
-            get
-            {
-                return _openCommand
-                    ?? (_openCommand = new RelayCommand(
-                        () =>
-                        {
-                            IsSelected = false;
-                            //Messenger.Send(new OpenCollectionMetricsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Collection));
-                        }));
-            }
-        }
+        public RelayCommand OpenCommand => new(ExecuteOpenCommand);
 
         public ContainerNodeViewModel ContainerNode => Parent;
 
         public string ContentId => Parent.Container.SelfLink + "/Metrics";
+
+        private void ExecuteOpenCommand()
+        {
+            IsSelected = false;
+            Messenger.Send(new OpenMetricsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container));
+        }
     }
 }

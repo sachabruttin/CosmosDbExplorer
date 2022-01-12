@@ -40,7 +40,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    _settingsService = settingsService;
         //}
 
-        public CosmosConnection Connection { get; }
+        public CosmosConnection Connection { get; set; }
 
         public IList<CosmosDatabase> Databases { get; protected set; }
 

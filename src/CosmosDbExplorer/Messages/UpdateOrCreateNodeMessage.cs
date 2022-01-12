@@ -3,9 +3,8 @@ using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Messages
 {
-
     public class UpdateOrCreateNodeMessage<T>
-        where T: ICosmosResource
+        where T : ICosmosResource
     {
         public UpdateOrCreateNodeMessage(T resource, CosmosContainer container, string oldAltLink)
         {

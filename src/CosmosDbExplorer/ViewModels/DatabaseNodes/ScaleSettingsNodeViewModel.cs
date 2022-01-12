@@ -2,6 +2,7 @@
 using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Messages;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -19,17 +20,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string ContentId => Parent.Container.SelfLink + "/ScaleSettings";
 
-        public RelayCommand OpenCommand
-        {
-            get
-            {
-                return _openCommand
-                    ?? (_openCommand = new RelayCommand(
-                        () => throw new System.NotImplementedException()
-                        /*Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Collection))*/
-                        ));
-            }
-        }
+        public RelayCommand OpenCommand => new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container)));
 
         public ContainerNodeViewModel ContainerNode => Parent;
     }

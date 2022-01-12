@@ -7,49 +7,33 @@ using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Messages;
 using Microsoft.Azure.Documents;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class ContainerNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveContainerNodeViewModel, IContent
     {
-        private RelayCommand _openSqlQueryCommand;
-        private RelayCommand _openImportDocumentCommand;
-        private RelayCommand _clearAllDocumentsCommand;
-        private RelayCommand _newStoredProcedureCommand;
-        private RelayCommand _newUdfCommand;
-        private RelayCommand _newTriggerCommand;
-        private RelayCommand _deleteCollectionCommand;
-        private RelayCommand _recreateAsEmptyCommand;
-
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
         {
             Container = container;
         }
 
-        protected override async Task LoadChildren(CancellationToken token)
+        protected override Task LoadChildren(CancellationToken token)
         {
-            //await DispatcherHelper.RunAsync(() =>
-            //{
             Children.Add(new DocumentNodeViewModel(this));
             Children.Add(new ScaleSettingsNodeViewModel(this));
             Children.Add(new StoredProcedureRootNodeViewModel(this));
             Children.Add(new UserDefFuncRootNodeViewModel(this));
             Children.Add(new TriggerRootNodeViewModel(this));
             Children.Add(new MetricsNodeViewModel(this));
-            //});
+
+            return Task.CompletedTask;
         }
 
         public CosmosContainer Container { get; }
 
-        //public RelayCommand OpenSqlQueryCommand
-        //{
-        //    get
-        //    {
-        //        return _openSqlQueryCommand
-        //            ?? (_openSqlQueryCommand = new RelayCommand(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Collection))));
-        //    }
-        //}
+        public RelayCommand OpenSqlQueryCommand => new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Container)));
 
         //public RelayCommand ClearAllDocumentsCommand
         //{
@@ -100,48 +84,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        //public RelayCommand OpenImportDocumentCommand
-        //{
-        //    get
-        //    {
-        //        return _openImportDocumentCommand
-        //            ?? (_openImportDocumentCommand = new RelayCommand(
-        //               () => MessengerInstance.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Collection))));
-        //    }
-        //}
+        public RelayCommand OpenImportDocumentCommand => new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Container)));
 
-        //public RelayCommand NewStoredProcedureCommand
-        //{
-        //    get
-        //    {
-        //        return _newStoredProcedureCommand
-        //            ?? (_newStoredProcedureCommand = new RelayCommand(
-        //                () => MessengerInstance.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Collection))
-        //                ));
-        //    }
-        //}
+        public RelayCommand NewStoredProcedureCommand => new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Container)));
 
-        //public RelayCommand NewUdfCommand
-        //{
-        //    get
-        //    {
-        //        return _newUdfCommand
-        //            ?? (_newUdfCommand = new RelayCommand(
-        //                () => MessengerInstance.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Collection))
-        //                ));
-        //    }
-        //}
+        public RelayCommand NewUdfCommand => new(() => Messenger.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Container)));
 
-        //public RelayCommand NewTriggerCommand
-        //{
-        //    get
-        //    {
-        //        return _newTriggerCommand
-        //            ?? (_newTriggerCommand = new RelayCommand(
-        //                () => MessengerInstance.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Collection))
-        //                ));
-        //    }
-        //}
+        public RelayCommand NewTriggerCommand => new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Container)));
 
         //public RelayCommand DeleteCollectionCommand
         //{

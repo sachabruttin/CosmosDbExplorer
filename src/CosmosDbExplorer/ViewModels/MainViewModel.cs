@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Timers;
+using CosmosDbExplorer.Contracts.ViewModels;
+using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.ViewModel;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -14,12 +17,13 @@ namespace CosmosDbExplorer.ViewModels
     {
         private IEnumerable<ToolViewModel> _tools;
         private readonly DatabaseViewModel _databaseViewModel;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MainViewModel(IMessenger messenger, DatabaseViewModel databaseViewModel)
-            : base(messenger)
+        public MainViewModel(DatabaseViewModel databaseViewModel, IServiceProvider serviceProvider)
         {
             _databaseViewModel = databaseViewModel;
-            
+            _serviceProvider = serviceProvider;
+
             SpyUsedMemory();
             RegisterMessages();
         }
@@ -64,12 +68,12 @@ namespace CosmosDbExplorer.ViewModels
         public bool IsSystemPropertiesVisible { get; set; }
 
         public ConnectionNodeViewModel Connection { get; set; }
-        //public DatabaseNodeViewModel Database { get; set; }
-        //public CollectionNodeViewModel Collection { get; set; }
-        //public UsersNodeViewModel Users { get; set; }
-        //public UserNodeViewModel UserNode { get; set; }
-        //public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
-        //public ICanEditDelete CanEditDelete { get; set; }
+        public DatabaseNodeViewModel Database { get; set; }
+        public ContainerNodeViewModel Collection { get; set; }
+        public UsersNodeViewModel Users { get; set; }
+        public UserNodeViewModel UserNode { get; set; }
+        public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
+        public ICanEditDelete CanEditDelete { get; set; }
 
         public RelayCommand ShowAboutCommand => throw new NotImplementedException();
         //{
@@ -115,7 +119,7 @@ namespace CosmosDbExplorer.ViewModels
         //    }
         //}
 
-        public RelayCommand ExitCommand => new RelayCommand(Close);
+        public RelayCommand ExitCommand => new(Close);
 
         public virtual void Close()
         {
@@ -132,23 +136,100 @@ namespace CosmosDbExplorer.ViewModels
 
         private void RegisterMessages()
         {
-            //    MessengerInstance.Register<ActivePaneChangedMessage>(this, OnActivePaneChanged);
+            Messenger.Register<MainViewModel, ActivePaneChangedMessage>(this, static (r, msg) => r.OnActivePaneChanged(msg));
 
-            //    MessengerInstance.Register<OpenDocumentsViewMessage>(this, msg => OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
-            //    MessengerInstance.Register<OpenQueryViewMessage>(this, msg => OpenOrSelectTab<QueryEditorViewModel, CollectionNodeViewModel>(msg));
-            //    MessengerInstance.Register<OpenImportDocumentViewMessage>(this, msg => OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
-            //    MessengerInstance.Register<OpenScaleAndSettingsViewMessage>(this, msg => OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
-            //    MessengerInstance.Register<EditUserMessage>(this, msg => OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
-            //    MessengerInstance.Register<EditPermissionMessage>(this, msg => OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
-            //    MessengerInstance.Register<OpenCollectionMetricsViewMessage>(this, msg => OpenOrSelectTab<CollectionMetricsTabViewModel, CollectionMetricsNodeViewModel>(msg));
+            Messenger.Register<MainViewModel, OpenDocumentsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, CollectionNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, OpenMetricsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<CollectionMetricsTabViewModel, CollectionMetricsNodeViewModel>(msg));
 
-            //    MessengerInstance.Register<EditStoredProcedureMessage>(this, msg => OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
-            //    MessengerInstance.Register<EditUserDefFuncMessage>(this, msg => OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
-            //    MessengerInstance.Register<EditTriggerMessage>(this, msg => OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, EditStoredProcedureMessage>(this, static (r, msg) => r.OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, EditUserDefFuncMessage>(this, static(r, msg) => r.OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
+            //Messenger.Register<MainViewModel, EditTriggerMessage>(this, static (r, msg) => r.OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
 
-            //    MessengerInstance.Register<TreeNodeSelectedMessage>(this, OnTreeNodeSelected);
-            //    MessengerInstance.Register<CloseDocumentMessage>(this, CloseDocument);
-            //    MessengerInstance.Register<IsBusyMessage>(this, msg => IsBusy = msg.IsBusy);
+            Messenger.Register<MainViewModel, TreeNodeSelectedMessage>(this, static(r, msg) => r.OnTreeNodeSelected(msg));
+            Messenger.Register<MainViewModel, CloseDocumentMessage>(this, static (r, msg) => r.CloseDocument(msg));
+            Messenger.Register<MainViewModel, IsBusyMessage>(this, static (r, msg) => r.IsBusy = msg.IsBusy);
         }
-    }
+
+        private void OnActivePaneChanged(ActivePaneChangedMessage message)
+        {
+            if (message.PaneViewModel is DatabaseViewModel)
+            {
+                IsRequestOptionsVisible = false;
+                IsConnectionOptionsVisible = true;
+                SelectedRibbonTab = 1;
+            }
+            else
+            {
+                IsConnectionOptionsVisible = ShouldConnectionOptionBeVisible();
+                OnSelectedTabChanged();
+                SelectedRibbonTab = 0;
+            }
+        }
+
+        private void OnTreeNodeSelected(TreeNodeSelectedMessage message)
+        {
+            CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
+            Connection = message.Item as ConnectionNodeViewModel;
+            Database = message.Item as DatabaseNodeViewModel;
+            Collection = (message.Item as IHaveContainerNodeViewModel)?.ContainerNode;
+            Users = message.Item as UsersNodeViewModel;
+            UserNode = message.Item as UserNodeViewModel;
+            CanEditDelete = message.Item as ICanEditDelete;
+
+            IsConnectionOptionsVisible = ShouldConnectionOptionBeVisible();
+        }
+
+        private bool ShouldConnectionOptionBeVisible()
+        {
+            return CanRefreshNodeViewModel != null
+                                    || Connection != null
+                                    || Database != null
+                                    || Collection != null
+                                    || CanEditDelete != null
+                                    || Users != null
+                                    || UserNode != null;
+        }
+
+        private void OpenOrSelectTab<TTabViewModel, TNodeViewModel>(OpenTabMessageBase<TNodeViewModel> message)
+            where TTabViewModel : PaneViewModel<TNodeViewModel>
+            where TNodeViewModel : TreeViewItemViewModel, IContent
+        {
+            var contentId = message.Node?.ContentId ?? Guid.NewGuid().ToString();
+            var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
+
+            if (tab != null)
+            {
+                SelectedTab = tab;
+            }
+            else
+            {
+                //var content = SimpleIoc.Default.GetInstanceWithoutCaching<TTabViewModel>(contentId); //_ioc.GetInstance<TTabViewModel>(contentId);
+                //content.Load(contentId, message.Node, message.Connection, message.Collection);
+
+                //Tabs.Add(content);
+                //SelectedTab = content;
+            }
+        }
+
+        private void CloseDocument(CloseDocumentMessage msg)
+        {
+            //DispatcherHelper.RunAsync(() =>
+            //{
+                var vm = Tabs.FirstOrDefault(t => t.ContentId == msg.ContentId);
+
+                if (vm != null)
+                {
+                    Tabs.Remove(vm);
+                    _ioc.Unregister(vm);
+                    vm = null;
+                    SelectedTab = Tabs.LastOrDefault();
+                }
+            //});
+        }
+    } 
 }

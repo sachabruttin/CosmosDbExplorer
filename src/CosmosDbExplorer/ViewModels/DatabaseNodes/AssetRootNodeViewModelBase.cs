@@ -58,7 +58,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     }
 
     public abstract class AssetNodeViewModelBase<TResource, TParent> :
-        TreeViewItemViewModel<TParent>, ICanEditDelete, IAssetNode<TResource>
+        TreeViewItemViewModel<TParent>, IAssetNode<TResource>, IHaveOpenCommand
         where TResource : ICosmosResource
         where TParent : AssetRootNodeViewModelBase<TResource>
     {
@@ -76,9 +76,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public TResource Resource { get; set; }
 
-        public RelayCommand EditCommand => new RelayCommand(async () => await EditCommandImpl().ConfigureAwait(false));
+        public RelayCommand OpenCommand => new RelayCommand(async () => await OpenCommandImp().ConfigureAwait(false));
 
-        protected abstract Task EditCommandImpl();
+        protected abstract Task OpenCommandImp();
 
         public RelayCommand DeleteCommand
         {

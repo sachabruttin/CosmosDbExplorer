@@ -70,7 +70,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             //    });
         }
 
-        protected override Task EditCommandImpl()
+        protected override Task OpenCommandImp()
         {
             throw new System.NotImplementedException();
             //MessengerInstance.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, null));

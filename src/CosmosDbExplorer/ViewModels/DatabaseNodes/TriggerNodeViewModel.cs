@@ -71,7 +71,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             //    });
         }
 
-        protected override Task EditCommandImpl()
+        protected override Task OpenCommandImp()
         {
             throw new System.NotImplementedException();
             //Messenger.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Collection));

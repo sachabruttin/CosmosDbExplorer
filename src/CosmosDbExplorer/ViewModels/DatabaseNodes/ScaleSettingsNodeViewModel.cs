@@ -5,7 +5,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
-    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent
+    public class ScaleSettingsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
         private RelayCommand _openCommand;
 

@@ -6,9 +6,9 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
-    public class DocumentNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent
+    public class DocumentNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
-        private RelayCommand _openDocumentCommand;
+        private RelayCommand _openCommand;
 
         public DocumentNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)
@@ -18,12 +18,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string Name { get; set; }
 
-        public RelayCommand OpenDocumentCommand
+        public RelayCommand OpenCommand
         {
             get
             {
-                return _openDocumentCommand
-                    ?? (_openDocumentCommand = new RelayCommand(
+                return _openCommand
+                    ?? (_openCommand = new RelayCommand(
                         () =>
                         {
                             IsSelected = false;

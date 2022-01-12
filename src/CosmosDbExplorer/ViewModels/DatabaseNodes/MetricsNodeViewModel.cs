@@ -3,7 +3,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
-    public class MetricsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent
+    public class MetricsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
         private RelayCommand _openCommand;
 

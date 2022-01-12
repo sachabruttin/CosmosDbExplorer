@@ -10,6 +10,7 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -37,7 +38,8 @@ namespace CosmosDbExplorer.ViewModels
 
         public ObservableCollection<PaneViewModelBase> Tabs { get; } = new ObservableCollection<PaneViewModelBase>();
 
-        public IEnumerable<ToolViewModel> Tools => _tools ??= new ToolViewModel[] { _databaseViewModel };
+        //public IEnumerable<ToolViewModel> Tools => _tools ??= new ToolViewModel[] { _databaseViewModel };
+        public IEnumerable<ToolViewModel> Tools => new ToolViewModel[] { _databaseViewModel };
 
         public PaneViewModelBase SelectedTab { get; set; }
 
@@ -208,11 +210,12 @@ namespace CosmosDbExplorer.ViewModels
             }
             else
             {
+                var content = _serviceProvider.GetService<TTabViewModel>();
                 //var content = SimpleIoc.Default.GetInstanceWithoutCaching<TTabViewModel>(contentId); //_ioc.GetInstance<TTabViewModel>(contentId);
                 //content.Load(contentId, message.Node, message.Connection, message.Collection);
 
-                //Tabs.Add(content);
-                //SelectedTab = content;
+                Tabs.Add(content);
+                SelectedTab = content;
             }
         }
 
@@ -225,7 +228,7 @@ namespace CosmosDbExplorer.ViewModels
                 if (vm != null)
                 {
                     Tabs.Remove(vm);
-                    _ioc.Unregister(vm);
+                    //_ioc.Unregister(vm);
                     vm = null;
                     SelectedTab = Tabs.LastOrDefault();
                 }

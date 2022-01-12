@@ -26,6 +26,8 @@ namespace CosmosDbExplorer.Services
 
         public void PersistData()
         {
+            // TODO: Handle save connections
+
             if (App.Current.Properties != null)
             {
                 var fileName = _appConfig.AppPropertiesFileName;
@@ -59,7 +61,7 @@ namespace CosmosDbExplorer.Services
             
             if (connections != null)
             {
-                App.Current.Properties.Add("Connections", connections.ToDictionary(connection => connection.Id));
+                App.Current.Properties.Add("Connections", connections);
             }
         }
     }

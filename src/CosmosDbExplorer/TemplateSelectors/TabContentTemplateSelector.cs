@@ -25,10 +25,10 @@ namespace CosmosDbExplorer.TemplateSelectors
                 return DatabaseViewTemplate;
             }
 
-            //if (item is DocumentsTabViewModel)
-            //{
-            //    return DocumentsTemplate;
-            //}
+            if (item is DocumentsTabViewModel)
+            {
+                return DocumentsTemplate;
+            }
 
             //if (item is QueryEditorViewModel)
             //{

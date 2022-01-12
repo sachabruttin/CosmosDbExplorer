@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Collections.ObjectModel;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Core.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -65,7 +60,7 @@ namespace CosmosDbExplorer.ViewModels
         public object IconSource { get; set; }
 
         [DoNotSetChanged]
-        public Color? AccentColor { get; set; }
+        public System.Drawing.Color? AccentColor { get; set; }
 
         public RelayCommand CloseCommand
         {
@@ -98,7 +93,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         // TODO: Define CosmosDB Connection and DocumentCollection
-        //public abstract void Load(string contentId, TNodeViewModel node, Connection connection, DocumentCollection collection);
+        public abstract void Load(string contentId, TNodeViewModel node, CosmosConnection connection, CosmosContainer container);
     }
 
     public abstract class PaneWithZoomViewModel<TNodeViewModel> : PaneViewModel<TNodeViewModel>

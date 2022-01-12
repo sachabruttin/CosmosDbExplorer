@@ -20,11 +20,11 @@
         <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
 
         <selector:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
-            <!--<selector:TabContentTemplateSelector.DocumentsTemplate>
+            <selector:TabContentTemplateSelector.DocumentsTemplate>
                 <DataTemplate>
                     <views:DocumentsTabView/>
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.DocumentsTemplate>-->
+            </selector:TabContentTemplateSelector.DocumentsTemplate>
             <!--<selector:TabContentTemplateSelector.QueryEditorTemplate>
                 <DataTemplate>
                     <views:QueryEditorView />

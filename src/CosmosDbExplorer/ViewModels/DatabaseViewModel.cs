@@ -45,15 +45,15 @@ namespace CosmosDbExplorer.ViewModel
 
         private void RegisterMessages()
         {
-            Messenger.Register<ConnectionSettingSavedMessage>(this, OnConnectionSettingsSaved);
-            Messenger.Register<RemoveConnectionMessage>(this, OnRemoveConnection);
+            Messenger.Register<DatabaseViewModel, ConnectionSettingSavedMessage>(this, static (r, msg) => r.OnConnectionSettingsSaved(msg));
+            Messenger.Register<DatabaseViewModel, RemoveConnectionMessage>(this, static (r, msg) => r.OnRemoveConnection(msg));
         }
 
         public ObservableCollection<ConnectionNodeViewModel> Nodes { get; private set; }
 
         public void LoadNodes()
         {
-            var nodes = App.Connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c.Value));
+            var nodes = App.Connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
 
             Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }

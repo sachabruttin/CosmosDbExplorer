@@ -10,7 +10,7 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CosmosDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModels
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {

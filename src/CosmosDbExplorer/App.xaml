@@ -22,6 +22,16 @@
             <!--<converters:QueryMetricsToStringConverter x:Key="queryMetricsToStringConverter" />-->
             <!--<converters:QueryMetricsToDocumentConverter x:Key="queryMetricsToDocumentConverter" />-->
 
+            <DataTemplate x:Key="AvalonDockHeaderTemplate">
+                <StackPanel Orientation="Horizontal" Margin="0,3" VerticalAlignment="Center">
+                    <Canvas Height="10" Width="10" Margin="3,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}, FallbackValue=Collapsed}">
+                        <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10" />
+                    </Canvas>
+                    <Image Source="{Binding IconSource}" Margin="0,0,5,0" />
+                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                </StackPanel>
+            </DataTemplate>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/_FontSizes.xaml" />
                 <ResourceDictionary Source="/Styles/_Thickness.xaml" />

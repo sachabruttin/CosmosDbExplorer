@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using CosmosDbExplorer.ViewModel;
+using CosmosDbExplorer.ViewModels;
 
 namespace CosmosDbExplorer.TemplateSelectors
 {

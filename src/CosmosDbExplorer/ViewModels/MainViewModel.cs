@@ -5,7 +5,6 @@ using System.Linq;
 using System.Timers;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
-using CosmosDbExplorer.ViewModel;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -212,7 +211,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var content = _serviceProvider.GetService<TTabViewModel>();
                 //var content = SimpleIoc.Default.GetInstanceWithoutCaching<TTabViewModel>(contentId); //_ioc.GetInstance<TTabViewModel>(contentId);
-                //content.Load(contentId, message.Node, message.Connection, message.Collection);
+                content.Load(contentId, message.Node, message.Connection, message.Container);
 
                 Tabs.Add(content);
                 SelectedTab = content;

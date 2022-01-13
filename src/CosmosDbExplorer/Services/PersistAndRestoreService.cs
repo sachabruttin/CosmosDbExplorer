@@ -9,6 +9,7 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Models;
 
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Services
 {
@@ -38,7 +39,7 @@ namespace CosmosDbExplorer.Services
         public void RestoreData()
         {
             RestoreSettings();
-            RestoreConnections();
+            MigrateConnectionsSettings();
         }
 
         private void RestoreSettings()
@@ -49,13 +50,26 @@ namespace CosmosDbExplorer.Services
             {
                 foreach (DictionaryEntry property in properties)
                 {
-                    App.Current.Properties.Add(property.Key, property.Value);
+                    switch (property.Key)
+                    {
+                        case "Connections":
+                            App.Current.Properties.Add("Connections", JsonConvert.DeserializeObject<List<CosmosConnection>>(property.Value?.ToString()));
+                            break;
+                        default:
+                            App.Current.Properties.Add(property.Key, property.Value);
+                            break;
+                    }
                 }
             }
         }
 
-        private void RestoreConnections()
+        private void MigrateConnectionsSettings()
         {
+            if (App.Current.Properties.Contains("Connections"))
+            {
+                return;
+            }
+
             var fileName = _appConfig.ConnectionsFileName;
             var connections = _fileService.Read<List<CosmosConnection>>(_localAppData, fileName);
             

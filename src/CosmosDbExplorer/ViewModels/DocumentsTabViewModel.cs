@@ -17,8 +17,12 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Validar;
+using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Core.Contracts;
+using Newtonsoft.Json.Linq;
 
-namespace CosmosDbExplorer.ViewModel
+namespace CosmosDbExplorer.ViewModels
 {
     [InjectValidation]
     public class DocumentsTabViewModel : PaneWithZoomViewModel<DocumentNodeViewModel>
@@ -39,9 +43,11 @@ namespace CosmosDbExplorer.ViewModel
         private RelayCommand _applyFilterCommand;
         private RelayCommand _closeFilterCommand;
         private RelayCommand _saveLocalCommand;
-        //private ResourceResponse<Document> _currentDocument;
+        private ICosmosDocument _currentDocument;
         private RelayCommand _resetRequestOptionsCommand;
         private IServiceProvider _serviceProvider;
+
+        private ICosmosDocumentService _cosmosDocumentService;
 
         public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
@@ -50,6 +56,9 @@ namespace CosmosDbExplorer.ViewModel
 
             Title = "Documents";
             Header = Title;
+
+            EditorViewModel = new DocumentEditorViewModel();
+            HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
         }
 
         //public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
@@ -83,6 +92,8 @@ namespace CosmosDbExplorer.ViewModel
             ToolTip = $"{split[1]}>{split[3]}";
             AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
 
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, node.Parent.Parent.Database, container);
+
             await LoadDocuments(true).ConfigureAwait(false);
         }
 
@@ -98,39 +109,44 @@ namespace CosmosDbExplorer.ViewModel
 
         public string PartitionKey { get; set; }
 
-        //public ObservableCollection<DocumentDescription> Documents { get; }
+        public ObservableCollection<ICosmosDocument> Documents { get; } = new();
 
-        //public DocumentDescription SelectedDocument { get; set; }
+        public ICosmosDocument SelectedDocument { get; set; }
 
         public async void OnSelectedDocumentChanged()
         {
-            //if (SelectedDocument != null)
-            //{
-            //    IsRunning = true;
+            if (SelectedDocument != null)
+            {
+                IsRunning = true;
 
-            //    if (_currentDocument?.Resource.SelfLink != SelectedDocument.SelfLink)
-            //    {
-            //        try
-            //        {
-            //            _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
-            //        }
-            //        catch (DocumentClientException clientEx)
-            //        {
-            //            await _dialogService.ShowError(clientEx.Parse(), "Error", null, null).ConfigureAwait(false);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //        }
-            //    }
+                if (_currentDocument?.SelfLink != SelectedDocument.SelfLink)
+                {
+                    _currentDocument = SelectedDocument;
 
-            //    SetStatusBar(new StatusBarInfo(_currentDocument));
-            //    IsRunning = false;
-            //}
-            //else
-            //{
-            //    SetStatusBar(null);
-            //}
+                    EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+                    //HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
+
+                    //try
+                    //{
+                    //    _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
+                    //}
+                    //catch (DocumentClientException clientEx)
+                    //{
+                    //    await _dialogService.ShowError(clientEx.Parse(), "Error", null, null).ConfigureAwait(false);
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                    //}
+                }
+
+                //SetStatusBar(new StatusBarInfo(_currentDocument));
+                IsRunning = false;
+            }
+            else
+            {
+                SetStatusBar(null);
+            }
         }
 
         public string Filter { get; set; }
@@ -151,8 +167,8 @@ namespace CosmosDbExplorer.ViewModel
 
         public void OnIsRunningChanged()
         {
-            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
-            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
+            //_progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            //_requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
 
         private void SetStatusBar(IStatusBarInfo response)
@@ -167,55 +183,62 @@ namespace CosmosDbExplorer.ViewModel
 
         private async Task LoadDocuments(bool cleanContent = false)
         {
-            //try
-            //{
-            //    IsRunning = true;
+            try
+            {
+                IsRunning = true;
 
-            //    if (cleanContent)
-            //    {
-            //        Documents.Clear();
-            //        ContinuationToken = null;
-            //    }
+                if (cleanContent)
+                {
+                    Documents.Clear();
+                    ContinuationToken = null;
+                }
 
-            //    var list = await _dbService.GetDocumentsAsync(Connection,
-            //                                                   Collection,
-            //                                                   Filter,
-            //                                                   Settings.Default.MaxDocumentToRetrieve,
-            //                                                   ContinuationToken,
-            //                                                   this)
-            //                                                   .ConfigureAwait(true);
+                var result = await _cosmosDocumentService.ReadAllItem(ContinuationToken, new System.Threading.CancellationToken());
 
-            //    HasMore = list.HasMore;
-            //    ContinuationToken = list.ContinuationToken;
-            //    RequestCharge = $"Request Charge: {list.RequestCharge:N2}";
+                //    var list = await _dbService.GetDocumentsAsync(Connection,
+                //                                                   Collection,
+                //                                                   Filter,
+                //                                                   Settings.Default.MaxDocumentToRetrieve,
+                //                                                   ContinuationToken,
+                //                                                   this)
+                //                                                   .ConfigureAwait(true);
 
-            //    foreach (var document in list)
-            //    {
-            //        Documents.Add(document);
-            //    }
+                //    HasMore = list.HasMore;
+                //    ContinuationToken = list.ContinuationToken;
+                //    RequestCharge = $"Request Charge: {list.RequestCharge:N2}";
 
-            //    RaisePropertyChanged(() => ItemsCount);
-            //}
-            //catch (DocumentClientException clientEx)
-            //{
-            //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //}
-            //finally
-            //{
-            //    IsRunning = false;
-            //}
+                foreach (var document in result.Items)
+                {
+                    Documents.Add(document);
+                }
+
+                //    RaisePropertyChanged(() => ItemsCount);
+                //}
+                //catch (DocumentClientException clientEx)
+                //{
+                //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
+                //}
+                //catch (Exception ex)
+                //{
+                //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+                //}
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            finally
+            {
+                IsRunning = false;
+            }
         }
 
         public long TotalItemsCount { get; set; }
-        //public long ItemsCount => Documents.Count;
+        public long ItemsCount => Documents.Count;
 
-        //public DocumentEditorViewModel EditorViewModel { get; set; }
+        public DocumentEditorViewModel EditorViewModel { get; set; }
 
-        //public HeaderEditorViewModel HeaderViewModel { get; set; }
+        public HeaderEditorViewModel HeaderViewModel { get; set; }
 
         protected CosmosConnection Connection { get; set; }
 
@@ -356,63 +379,36 @@ namespace CosmosDbExplorer.ViewModel
         //    }
         //}
 
-        public RelayCommand EditFilterCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _editFilterCommand
-        //            ?? (_editFilterCommand = new RelayCommand(
-        //                () => IsEditingFilter = true));
-        //    }
-        //}
+        public RelayCommand EditFilterCommand => new(() => IsEditingFilter = true);
 
-        public RelayCommand ApplyFilterCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _applyFilterCommand
-        //            ?? (_applyFilterCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    IsEditingFilter = false;
-        //                    await LoadDocuments(true).ConfigureAwait(false);
-        //                }));
-        //    }
-        //}
+        public RelayCommand ApplyFilterCommand => new(async () => { IsEditingFilter = false; await LoadDocuments(true).ConfigureAwait(false); });
 
-        public RelayCommand CloseFilterCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _closeFilterCommand
-        //            ?? (_closeFilterCommand = new RelayCommand(
-        //                () => IsEditingFilter = false));
-        //    }
-        //}
+        public RelayCommand CloseFilterCommand => new(() => IsEditingFilter = false);
 
-        public RelayCommand SaveLocalCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _saveLocalCommand ??
-        //        (_saveLocalCommand = new RelayCommand(
-        //            async () =>
-        //            {
-        //                var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
+        public RelayCommand SaveLocalCommand
+        {
+            get
+            {
+                return null;
+                //return _saveLocalCommand ??
+                //(_saveLocalCommand = new RelayCommand(
+                //    async () =>
+                //    {
+                //        var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
 
-        //                if (selectedDocuments.Count == 1)
-        //                {
-        //                    await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
-        //                }
-        //                else
-        //                {
-        //                    await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
-        //                }
+                //        if (selectedDocuments.Count == 1)
+                //        {
+                //            await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
+                //        }
+                //        else
+                //        {
+                //            await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
+                //        }
 
-        //            },
-        //            () => !IsRunning && SelectedDocument != null && IsValid));
-        //    }
-        //}
+                //    },
+                //    () => !IsRunning && SelectedDocument != null && IsValid));
+            }
+        }
 
         //private Task SaveLocalMultipleDocumentsAsync(List<DocumentDescription> selectedDocuments)
         //{
@@ -494,7 +490,7 @@ namespace CosmosDbExplorer.ViewModel
         //    });
         //}
 
-        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => true;//!((INotifyDataErrorInfo)this).HasErrors;
 
         public bool HideSystemProperties { get; set; } = true;
 
@@ -509,24 +505,25 @@ namespace CosmosDbExplorer.ViewModel
         public int? MaxDOP { get; set; }
         public int? MaxBufferItem { get; set; }
 
-        public RelayCommand ResetRequestOptionsCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _resetRequestOptionsCommand
-        //            ?? (_resetRequestOptionsCommand = new RelayCommand(
-        //                () =>
-        //                {
-        //                    IndexingDirective = null;
-        //                    ConsistencyLevel = null;
-        //                    PartitionKeyValue = null;
-        //                    AccessConditionType = null;
-        //                    AccessCondition = null;
-        //                    PreTrigger = null;
-        //                    PostTrigger = null;
-        //                }));
-        //    }
-        //}
+        public RelayCommand ResetRequestOptionsCommand
+        {
+            get
+            {
+                return null;
+            //    return _resetRequestOptionsCommand
+            //        ?? (_resetRequestOptionsCommand = new RelayCommand(
+            //            () =>
+            //            {
+            //                IndexingDirective = null;
+            //                ConsistencyLevel = null;
+            //                PartitionKeyValue = null;
+            //                AccessConditionType = null;
+            //                AccessCondition = null;
+            //                PreTrigger = null;
+            //                PostTrigger = null;
+            //            }));
+            }
+        }
 
         //public IndexingDirective? IndexingDirective { get; set; }
         //public ConsistencyLevel? ConsistencyLevel { get; set; }

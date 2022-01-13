@@ -3,11 +3,220 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+             xmlns:controls="clr-namespace:CosmosDbExplorer.Controls" 
+             xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:DocumentsTabViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Background="Red">
-    <StackPanel>
-        <TextBlock Text="Document Tab View" />
-    </StackPanel>
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" VerticalAlignment="Center"
+                    Margin="5,10" Height="28">
+            <TextBlock Text="SELECT * FROM c" VerticalAlignment="Center"/>
+
+            <!--<xctk:WatermarkTextBox  MinWidth="250" Margin="10,0" VerticalContentAlignment="Center" 
+                                    Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}}"
+                                    Watermark="Type query predicate (e.g. WHERE c.id = '1')" KeepWatermarkOnGotFocus="True"/>-->
+
+            <TextBlock Text="{Binding Filter}" Margin="5,0" VerticalAlignment="Center"
+                       Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
+
+            <Button Margin="5,0" Padding="5,0" 
+                    Command="{Binding ApplyFilterCommand}"
+                    Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}}"
+                    Content="Apply Filter">
+            </Button>
+            <Button Margin="5,0" Padding="5,0" 
+                    Command="{Binding CloseFilterCommand}"
+                    Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}}"
+                    ToolTip="Close Filter">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                            <Viewbox Width="16" Height="16" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M9.5859,12L7.9999,10.414 6.4139,12 1.5859,12 5.5859,8 1.5859,4 6.4139,4 7.9999,5.586 9.5859,4 14.4139,4 10.4139,8 14.4139,12z" />
+                                                        <GeometryDrawing Brush="#FF656565" Geometry="F1M4,5L6,5 8,7 10,5 12,5 9,8 12,11 10,11 8,9 6,11 4,11 7,8z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Margin="5,0" Padding="5,0" 
+                    Command="{Binding EditFilterCommand}"
+                    Visibility="{Binding IsEditingFilter, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}">Edit Filter</Button>
+        </StackPanel>
+
+        <DockingManager Grid.Column="2"
+                        DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}"
+                        AllowMixedOrientation="True">
+
+            <LayoutRoot x:Name="_layoutRoot">
+                <LayoutPanel Orientation="Horizontal">
+
+                    <LayoutAnchorablePane DockWidth="200">
+                        <LayoutAnchorable Title="Documents" CanHide="False" CanClose="False"
+                                               AutoHideWidth="240"
+                                               IconSource="{StaticResource DocumentIcon}">
+
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+
+                                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="2" ToolTip="Refresh">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets">&#xE72C;</TextBlock>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" TargetName="theBorder" Value="LightGray" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+
+                                <controls:ListBoxMore Grid.Row="1"
+                                                   ItemsSource="{Binding Documents}"
+                                                   SelectedValue="{Binding SelectedDocument}"
+                                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                   SelectionMode="Extended"
+                                                   HorizontalContentAlignment="Stretch">
+                                    <controls:ListBoxMore.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                        </DataTemplate>
+                                    </controls:ListBoxMore.ItemTemplate>
+                                    <!--<controls:ListBoxMore.ItemTemplateSelector>
+                                        <template:DocumentDescriptionTemplateSelector>
+                                            <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                </DataTemplate>
+                                            </template:DocumentDescriptionTemplateSelector.DefaultTemplate>
+                                            <template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.5*" />
+                                                            <ColumnDefinition Width="0.5*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <TextBlock Grid.Column="0" Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                    </Grid>
+                                                </DataTemplate>
+
+                                            </template:DocumentDescriptionTemplateSelector.PartitionTemplate>
+                                        </template:DocumentDescriptionTemplateSelector>
+                                    </controls:ListBoxMore.ItemTemplateSelector>-->
+
+                                    <controls:ListBoxMore.Style>
+                                        <Style TargetType="ListBox">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListBox}">
+                                                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="True">
+                                                            <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
+                                                                <Grid>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
+                                                                    </Grid.RowDefinitions>
+                                                                    <ItemsPresenter Grid.Row="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                                    <Button Grid.Row="1" x:Name="PART_MoreButton" 
+                                                                            Visibility="{Binding Path=HasMore, Converter={StaticResource boolToVisibilityConverter}}"
+                                                                            Command="{Binding Path=LoadMoreCommand}"
+                                                                            Content="Load more...">
+                                                                    </Button>
+                                                                </Grid>
+                                                            </ScrollViewer>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Background" TargetName="Bd" Value="White"/>
+                                                                <Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9"/>
+                                                            </Trigger>
+                                                            <MultiTrigger>
+                                                                <MultiTrigger.Conditions>
+                                                                    <Condition Property="IsGrouping" Value="True"/>
+                                                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
+                                                                </MultiTrigger.Conditions>
+                                                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                                                            </MultiTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </controls:ListBoxMore.Style>
+
+                                    <controls:ListBoxMore.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                                        </Style>
+                                    </controls:ListBoxMore.ItemContainerStyle>
+                                </controls:ListBoxMore>
+
+                            </Grid>
+
+                        </LayoutAnchorable>
+                    </LayoutAnchorablePane>
+
+                    <LayoutDocumentPaneGroup>
+                        <LayoutDocumentPane >
+                            <LayoutDocument Title="Raw Data" CanClose="False" IconSource="{StaticResource ResultPaneIcon}">
+                                <!--ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"-->
+                                <local:JsonEditorView x:Name="documentEditor" 
+                                          DataContext="{Binding EditorViewModel}" 
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                            </LayoutDocument>
+                            <LayoutDocument Title="Response Headers" CanClose="False" IconSource="{StaticResource HttpIcon}">
+                                <!--ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"-->
+                                <local:JsonEditorView x:Name="headerEditor" 
+                                          DataContext="{Binding HeaderViewModel}" 
+                                          Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
+                            </LayoutDocument>
+                        </LayoutDocumentPane>
+                    </LayoutDocumentPaneGroup>
+                </LayoutPanel>
+            </LayoutRoot>
+        </DockingManager>
+
+
+    </DockPanel>
 </UserControl>

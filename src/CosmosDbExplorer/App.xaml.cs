@@ -12,7 +12,6 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
 using CosmosDbExplorer.Services;
-using CosmosDbExplorer.ViewModel;
 using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.Views;
 
@@ -42,6 +41,7 @@ namespace CosmosDbExplorer
 
         private async void OnStartup(object sender, StartupEventArgs e)
         {
+            AvalonEdit.AvalonSyntax.LoadHighlighting();
             var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
             // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
@@ -92,6 +92,12 @@ namespace CosmosDbExplorer
             {
                 return new Func<CosmosConnection, CosmosDatabase, CosmosContainerService>((connection, database) =>
                                 new CosmosContainerService(provider.GetRequiredService<ICosmosClientService>(), connection, database));
+            });
+
+            services.AddTransient(provider =>
+            {
+                return new Func<CosmosConnection, CosmosDatabase, CosmosContainer, CosmosDocumentService>((connection, database, container) =>
+                                new CosmosDocumentService(provider.GetRequiredService<ICosmosClientService>(), connection, database, container));
             });
 
             // Views and ViewModels

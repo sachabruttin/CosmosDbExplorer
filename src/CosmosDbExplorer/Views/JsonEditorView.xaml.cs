@@ -12,24 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CosmosDbExplorer.ViewModels;
 
 namespace CosmosDbExplorer.Views
 {
     /// <summary>
-    /// Interaction logic for DatabaseView.xaml
+    /// Interaction logic for JsonEditorView.xaml
     /// </summary>
-    public partial class DatabaseView : UserControl
+    public partial class JsonEditorView : UserControl
     {
-        public DatabaseView()
+        public JsonEditorView()
         {
             InitializeComponent();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            var vm = (DatabaseViewModel)DataContext;
-            vm.LoadNodes();
         }
     }
 }

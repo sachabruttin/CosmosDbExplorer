@@ -124,7 +124,7 @@ namespace CosmosDbExplorer.ViewModels
                     _currentDocument = SelectedDocument;
 
                     EditorViewModel.SetText(_currentDocument, HideSystemProperties);
-                    //HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
+                    //HeaderViewModel.SetText( response?.ResponseHeaders, HideSystemProperties);
 
                     //try
                     //{

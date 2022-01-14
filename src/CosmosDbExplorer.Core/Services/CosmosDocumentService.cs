@@ -41,7 +41,7 @@ namespace CosmosDbExplorer.Core.Services
 
             var options = new QueryRequestOptions
             {
-                MaxItemCount = 5,
+                MaxItemCount = 2,
                
             };
 
@@ -55,6 +55,7 @@ namespace CosmosDbExplorer.Core.Services
                 result.RequestCharge = result.RequestCharge;
                 result.ContinuationToken = result.ContinuationToken;
                 result.Items = response.Select(i => new CosmosDocument { Document = i }).ToArray();
+                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
             }
 
             return result;

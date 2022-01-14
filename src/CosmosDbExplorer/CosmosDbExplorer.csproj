@@ -8,6 +8,7 @@
     <PackageIcon>astronaut.png</PackageIcon>
     <ApplicationIcon>astronaut.ico</ApplicationIcon>
     <Title>Cosmos DB Explorer</Title>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AvalonEdit\JSON.xshd" />

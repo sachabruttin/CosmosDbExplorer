@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using CosmosDbExplorer.Services;
+using CosmosDbExplorer.Core.Contracts;
 
 namespace CosmosDbExplorer.TemplateSelectors
 {
@@ -11,9 +11,9 @@ namespace CosmosDbExplorer.TemplateSelectors
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            //var dd = (DocumentDescription)item;
+            //var dd = (ICosmosDocument)item;
 
-            //if (dd.PartitionKey != null)
+            //if (dd.PartitionPath != null)
             //{
             //    return PartitionTemplate;
             //}

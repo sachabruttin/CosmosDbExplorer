@@ -34,15 +34,14 @@ namespace CosmosDbExplorer.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task<CosmosQueryResult> ReadAllItem(string continuationToken, CancellationToken cancellationToken)
+        public async Task<CosmosQueryResult> ReadAllItem(string? filter, int? maxItemsCount, string? continuationToken, CancellationToken cancellationToken)
         {
             var container = _client.GetContainer(_database.Id, _container.Id);
             var result = new CosmosQueryResult();
 
             var options = new QueryRequestOptions
             {
-                MaxItemCount = 2,
-               
+                MaxItemCount = maxItemsCount
             };
 
             using (var resultSet = container.GetItemQueryIterator<JObject>(
@@ -52,14 +51,23 @@ namespace CosmosDbExplorer.Core.Services
             {
                 var response = await resultSet.ReadNextAsync(cancellationToken);
 
-                result.RequestCharge = result.RequestCharge;
-                result.ContinuationToken = result.ContinuationToken;
-                result.Items = response.Select(i => new CosmosDocument { Document = i }).ToArray();
+                result.RequestCharge = response.RequestCharge;
+                result.ContinuationToken = response.ContinuationToken;
+                result.Items = response.Select(i => new CosmosDocument { Document = i, PartitionKey = GetPartitionKeyValue(i) }).ToArray();
                 result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
             }
 
             return result;
         }
 
+        private string? GetPartitionKeyValue(JObject document)
+        {
+            if (_container.PartitionKeyJsonPath == null)
+            {
+                return null;
+            }
+
+            return document.SelectToken(_container.PartitionKeyJsonPath)?.ToString();
+        }
     }
 }

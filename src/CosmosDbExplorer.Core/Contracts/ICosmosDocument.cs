@@ -12,5 +12,6 @@ namespace CosmosDbExplorer.Core.Contracts
         string Attachments { get; }
 
         string TimeStamp { get; }
+        string? PartitionKey { get; }
     }
 }

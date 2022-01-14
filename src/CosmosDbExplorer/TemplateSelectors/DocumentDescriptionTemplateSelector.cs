@@ -11,12 +11,13 @@ namespace CosmosDbExplorer.TemplateSelectors
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            //var dd = (ICosmosDocument)item;
+            var dd = (ICosmosDocument)item;
 
-            //if (dd.PartitionPath != null)
-            //{
-            //    return PartitionTemplate;
-            //}
+            if (!string.IsNullOrEmpty(dd.PartitionKey))
+            {
+                return PartitionTemplate;
+            }
+
             return DefaultTemplate;
         }
     }

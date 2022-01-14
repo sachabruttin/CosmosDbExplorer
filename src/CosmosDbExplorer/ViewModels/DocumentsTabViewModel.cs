@@ -21,6 +21,7 @@ using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Core.Contracts;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -94,7 +95,7 @@ namespace CosmosDbExplorer.ViewModels
 
             _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, node.Parent.Parent.Database, container);
 
-            await LoadDocuments(true).ConfigureAwait(false);
+            await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false);
         }
 
         protected override void OnDeactivated()
@@ -154,13 +155,13 @@ namespace CosmosDbExplorer.ViewModels
         public bool IsEditingFilter { get; set; }
 
         public bool HasMore { get; set; }
-        public string ContinuationToken { get; set; }
+        public string? ContinuationToken { get; set; }
 
         public string RequestCharge { get; set; }
 
         public void OnRequestChargeChanged()
         {
-            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
+            //_requestChargeStatusBarItem.DataContext.Value = RequestCharge;
         }
 
         public bool IsRunning { get; set; }
@@ -181,7 +182,7 @@ namespace CosmosDbExplorer.ViewModels
             //HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
         }
 
-        private async Task LoadDocuments(bool cleanContent = false)
+        private async Task LoadDocuments(bool cleanContent, CancellationToken cancellationToken)
         {
             try
             {
@@ -193,7 +194,10 @@ namespace CosmosDbExplorer.ViewModels
                     ContinuationToken = null;
                 }
 
-                var result = await _cosmosDocumentService.ReadAllItem(ContinuationToken, new System.Threading.CancellationToken());
+                var result = await _cosmosDocumentService.ReadAllItem(
+                    Filter,
+                    100, // MaxDocumentToRetrieve
+                    ContinuationToken, cancellationToken);
 
                 //    var list = await _dbService.GetDocumentsAsync(Connection,
                 //                                                   Collection,
@@ -203,9 +207,9 @@ namespace CosmosDbExplorer.ViewModels
                 //                                                   this)
                 //                                                   .ConfigureAwait(true);
 
-                //    HasMore = list.HasMore;
-                //    ContinuationToken = list.ContinuationToken;
-                //    RequestCharge = $"Request Charge: {list.RequestCharge:N2}";
+                HasMore = result.HasMore;
+                ContinuationToken = result.ContinuationToken;
+                RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
 
                 foreach (var document in result.Items)
                 {
@@ -250,7 +254,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 return _loadMoreCommand
                     ?? (_loadMoreCommand = new RelayCommand(
-                        async () => await LoadDocuments(false).ConfigureAwait(false)));
+                        async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false)));
             }
         }
 
@@ -260,7 +264,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 return _refreshLoadCommand
                     ?? (_refreshLoadCommand = new RelayCommand(
-                        async () => await LoadDocuments(true).ConfigureAwait(false),
+                        async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
                         () => !IsRunning && IsValid));
             }
         }
@@ -381,7 +385,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand EditFilterCommand => new(() => IsEditingFilter = true);
 
-        public RelayCommand ApplyFilterCommand => new(async () => { IsEditingFilter = false; await LoadDocuments(true).ConfigureAwait(false); });
+        public RelayCommand ApplyFilterCommand => new(async () => { IsEditingFilter = false; await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false); });
 
         public RelayCommand CloseFilterCommand => new(() => IsEditingFilter = false);
 

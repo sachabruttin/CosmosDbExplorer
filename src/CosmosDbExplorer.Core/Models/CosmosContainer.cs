@@ -19,6 +19,7 @@ namespace CosmosDbExplorer.Core.Models
         public string ETag { get; }
         public string SelfLink { get; }
         public string PartitionKeyPath { get; }
+        public string? PartitionKeyJsonPath => string.IsNullOrEmpty(PartitionKeyPath) ? null : "$" + PartitionKeyPath.Replace('/', '.');
         public bool? IsLargePartitionKey { get; }
         public int? DefaultTimeToLive { get; set; }
     }

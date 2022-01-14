@@ -17,5 +17,7 @@ namespace CosmosDbExplorer.Core.Models
         public string Attachments => (string)Document.GetValue("_attachments");
 
         public string TimeStamp => (string)Document.GetValue("_");
+
+        public string? PartitionKey { get; internal set; }
     }
 }

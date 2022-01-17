@@ -1,23 +1,30 @@
-﻿using System.Text;
+﻿using System;
 using CosmosDbExplorer.Core.Contracts;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosDocument : ICosmosDocument
     {
-        public JObject Document { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; } = string.Empty;
 
-        public string Id => (string)Document.GetValue("id");
+        [JsonProperty("_etag")]
+        public string ETag { get; set; } = string.Empty;
 
-        public string ETag => (string)Document.GetValue("_etag");
+        [JsonProperty("_self")]
+        public string SelfLink { get; set; } = string.Empty;
 
-        public string SelfLink => (string)Document.GetValue("_self");
+        [JsonProperty("_attachments")]
+        public string Attachments { get; set; } = string.Empty;
 
-        public string Attachments => (string)Document.GetValue("_attachments");
+        [JsonProperty("_ts")]
+        public long TimeStamp { get; set; }
 
-        public string TimeStamp => (string)Document.GetValue("_");
+        [JsonProperty("_partitionKey")]
+        public string? PartitionKey { get; set; } 
 
-        public string? PartitionKey { get; internal set; }
+        [JsonProperty("_hasPartitionKey")]
+        public bool HasPartitionKey { get; set; }
     }
 }

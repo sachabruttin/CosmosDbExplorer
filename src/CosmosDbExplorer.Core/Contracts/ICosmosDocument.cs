@@ -6,12 +6,10 @@ using Newtonsoft.Json.Linq;
 namespace CosmosDbExplorer.Core.Contracts
 {
     public interface ICosmosDocument : ICosmosResource
-    {
-        JObject Document { get; set; }
-    
+    {  
         string Attachments { get; }
-
-        string TimeStamp { get; }
+        long TimeStamp { get; }
         string? PartitionKey { get; }
+        bool HasPartitionKey { get; }
     }
 }

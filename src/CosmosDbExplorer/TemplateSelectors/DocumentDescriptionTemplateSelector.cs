@@ -13,12 +13,9 @@ namespace CosmosDbExplorer.TemplateSelectors
         {
             var dd = (ICosmosDocument)item;
 
-            if (!string.IsNullOrEmpty(dd.PartitionKey))
-            {
-                return PartitionTemplate;
-            }
-
-            return DefaultTemplate;
+            return dd.HasPartitionKey
+                ? PartitionTemplate
+                : DefaultTemplate;
         }
     }
 }

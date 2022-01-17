@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Helpers;
 using CosmosDbExplorer.Core.Models;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json.Linq;
@@ -34,18 +35,28 @@ namespace CosmosDbExplorer.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task<CosmosQueryResult> ReadAllItem(string? filter, int? maxItemsCount, string? continuationToken, CancellationToken cancellationToken)
+        public async Task<CosmosQueryResult<IReadOnlyCollection<ICosmosDocument>>> GetDocumentsAsync(string? filter, int? maxItemsCount, string? continuationToken, CancellationToken cancellationToken)
         {
             var container = _client.GetContainer(_database.Id, _container.Id);
-            var result = new CosmosQueryResult();
+            var result = new CosmosQueryResult<IReadOnlyCollection<ICosmosDocument>>();
+
+            var token = _container.PartitionKeyJsonPath;
+            if (token != null)
+            {
+                token = $", c{token} as _partitionKey, true as _hasPartitionKey";
+            }
+
+            var sql = $"SELECT c.id, c._self, c._etag, c._ts, c._attachments {token} FROM c {filter}";
 
             var options = new QueryRequestOptions
             {
-                MaxItemCount = maxItemsCount
+                MaxItemCount = maxItemsCount,
+                // TODO: Handle Partition key and other IHaveRequestOptions values
+                //PartitionKey = 
             };
 
-            using (var resultSet = container.GetItemQueryIterator<JObject>(
-                queryDefinition: null,
+            using (var resultSet = container.GetItemQueryIterator<CosmosDocument>(
+                queryText: sql,
                 continuationToken: continuationToken,
                 requestOptions: options))
             {
@@ -53,21 +64,37 @@ namespace CosmosDbExplorer.Core.Services
 
                 result.RequestCharge = response.RequestCharge;
                 result.ContinuationToken = response.ContinuationToken;
-                result.Items = response.Select(i => new CosmosDocument { Document = i, PartitionKey = GetPartitionKeyValue(i) }).ToArray();
+                result.Items = response.Resource.ToArray();
                 result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
             }
 
             return result;
         }
 
-        private string? GetPartitionKeyValue(JObject document)
+        public async Task<CosmosQueryResult<JObject?>> GetDocumentAsync(ICosmosDocument document, CancellationToken cancellation)
         {
-            if (_container.PartitionKeyJsonPath == null)
+            var container = _client.GetContainer(_database.Id, _container.Id);
+            var result = new CosmosQueryResult<JObject?>();
+
+            try
             {
-                return null;
+                var response = await container.ReadItemAsync<JObject>(document.Id,
+                    partitionKey: PartitionKeyHelper.Get(document.PartitionKey),
+                    requestOptions: null,
+                    cancellation);
+
+                result.RequestCharge = response.RequestCharge;
+                result.Items = response.Resource;
+                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
+
+                return result;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return result;
             }
 
-            return document.SelectToken(_container.PartitionKeyJsonPath)?.ToString();
         }
     }
 }

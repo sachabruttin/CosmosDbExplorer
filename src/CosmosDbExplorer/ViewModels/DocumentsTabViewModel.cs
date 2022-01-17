@@ -20,8 +20,8 @@ using Validar;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Core.Contracts;
-using Newtonsoft.Json.Linq;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -30,23 +30,12 @@ namespace CosmosDbExplorer.ViewModels
         , IHaveRequestOptions
         , IHaveSystemProperties
     {
-        //private readonly IDocumentDbService _dbService;
         //private readonly IDialogService _dialogService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
-        private RelayCommand _loadMoreCommand;
-        private RelayCommand _refreshLoadCommand;
-        private RelayCommand _newDocumentCommand;
-        private RelayCommand _discardCommand;
-        private RelayCommand _saveDocumentCommand;
-        private RelayCommand _deleteDocumentCommand;
-        private RelayCommand _editFilterCommand;
-        private RelayCommand _applyFilterCommand;
-        private RelayCommand _closeFilterCommand;
-        private RelayCommand _saveLocalCommand;
-        private ICosmosDocument _currentDocument;
-        private RelayCommand _resetRequestOptionsCommand;
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
+        
+        private JObject _currentDocument;
 
         private ICosmosDocumentService _cosmosDocumentService;
 
@@ -112,7 +101,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public ObservableCollection<ICosmosDocument> Documents { get; } = new();
 
-        public ICosmosDocument SelectedDocument { get; set; }
+        public ICosmosDocument? SelectedDocument { get; set; }
 
         public async void OnSelectedDocumentChanged()
         {
@@ -120,16 +109,13 @@ namespace CosmosDbExplorer.ViewModels
             {
                 IsRunning = true;
 
-                if (_currentDocument?.SelfLink != SelectedDocument.SelfLink)
+                if (_currentDocument == null || (_currentDocument.SelectToken("_self").Value<string>() != SelectedDocument.SelfLink))
                 {
-                    _currentDocument = SelectedDocument;
-
-                    EditorViewModel.SetText(_currentDocument, HideSystemProperties);
-                    //HeaderViewModel.SetText( response?.ResponseHeaders, HideSystemProperties);
 
                     //try
                     //{
-                    //    _currentDocument = await _dbService.GetDocumentAsync(Node.Parent.Parent.Parent.Connection, SelectedDocument).ConfigureAwait(false);
+                    var response = await _cosmosDocumentService.GetDocumentAsync(SelectedDocument, new CancellationToken());
+                    _currentDocument = response.Items;
                     //}
                     //catch (DocumentClientException clientEx)
                     //{
@@ -139,10 +125,15 @@ namespace CosmosDbExplorer.ViewModels
                     //{
                     //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
                     //}
+
+                    //SetStatusBar(new StatusBarInfo(_currentDocument));
+
+                    EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+                    HeaderViewModel.SetText(response?.Headers, HideSystemProperties);
+
+                    IsRunning = false;
                 }
 
-                //SetStatusBar(new StatusBarInfo(_currentDocument));
-                IsRunning = false;
             }
             else
             {
@@ -172,7 +163,7 @@ namespace CosmosDbExplorer.ViewModels
             //_requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
 
-        private void SetStatusBar(IStatusBarInfo response)
+        private void SetStatusBar(IStatusBarInfo? response)
         {
             RequestCharge = response != null
                 ? $"Request Charge: {response.RequestCharge:N2}"
@@ -194,7 +185,7 @@ namespace CosmosDbExplorer.ViewModels
                     ContinuationToken = null;
                 }
 
-                var result = await _cosmosDocumentService.ReadAllItem(
+                var result = await _cosmosDocumentService.GetDocumentsAsync(
                     Filter,
                     100, // MaxDocumentToRetrieve
                     ContinuationToken, cancellationToken);
@@ -240,148 +231,106 @@ namespace CosmosDbExplorer.ViewModels
         public long TotalItemsCount { get; set; }
         public long ItemsCount => Documents.Count;
 
-        public DocumentEditorViewModel EditorViewModel { get; set; }
+        public DocumentEditorViewModel EditorViewModel { get; }
 
-        public HeaderEditorViewModel HeaderViewModel { get; set; }
+        public HeaderEditorViewModel HeaderViewModel { get; }
 
         protected CosmosConnection Connection { get; set; }
 
         protected CosmosContainer Collection { get; set; }
 
-        public RelayCommand LoadMoreCommand
+        public RelayCommand LoadMoreCommand => new(async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false));
+
+        public RelayCommand RefreshLoadCommand => new(async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
+                                                      () => !IsRunning && IsValid);
+
+
+        public RelayCommand NewDocumentCommand => new(NewDocumentExecute, NewDocumentCommandCanExecute);
+
+        private void NewDocumentExecute()
         {
-            get
-            {
-                return _loadMoreCommand
-                    ?? (_loadMoreCommand = new RelayCommand(
-                        async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false)));
-            }
+            SelectedDocument = null;
+            SetStatusBar(null);
+            EditorViewModel.SetText(new CosmosDocument { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
         }
 
-        public RelayCommand RefreshLoadCommand
+        private bool NewDocumentCommandCanExecute()
         {
-            get
-            {
-                return _refreshLoadCommand
-                    ?? (_refreshLoadCommand = new RelayCommand(
-                        async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
-                        () => !IsRunning && IsValid));
-            }
+            // Can create new document if current document is not a new document
+            return true;//!IsRunning && !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
         }
 
-        public RelayCommand NewDocumentCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _newDocumentCommand
-        //            ?? (_newDocumentCommand = new RelayCommand(
-        //                () =>
-        //                {
-        //                    SelectedDocument = null;
-        //                    SetStatusBar(null);
-        //                    EditorViewModel.SetText(new Document() { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
-        //                },
-        //                () =>
-        //                {
-        //                    // Can create new document if current document is not a new document
-        //                    return !IsRunning && !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
-        //                }));
-        //    }
-        //}
+        public RelayCommand DiscardCommand => new(() => OnSelectedDocumentChanged(), () => !IsRunning && EditorViewModel.IsDirty);
 
-        public RelayCommand DiscardCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _discardCommand
-        //            ?? (_discardCommand = new RelayCommand(
-        //                () => OnSelectedDocumentChanged(),
-        //                () => !IsRunning && EditorViewModel.IsDirty));
-        //    }
-        //}
+        public RelayCommand SaveDocumentCommand => new(async () => await SaveDocumentCommandExecute(), () => !IsRunning && EditorViewModel.IsDirty && IsValid);
 
-        public RelayCommand SaveDocumentCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _saveDocumentCommand
-        //            ?? (_saveDocumentCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    IsRunning = true;
-        //                    try
-        //                    {
-        //                        var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(true);
-        //                        var document = response.Resource;
+        private async Task SaveDocumentCommandExecute()
+        {
+            IsRunning = true;
+            try
+            {
+                //    var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(true);
+                //    var document = response.Resource;
 
-        //                        SetStatusBar(new StatusBarInfo(response));
+                //    SetStatusBar(new StatusBarInfo(response));
 
-        //                        var description = new DocumentDescription(document, Collection);
+                //    var description = new DocumentDescription(document, Collection);
 
-        //                        if (SelectedDocument == null)
-        //                        {
-        //                            Documents.Add(description);
-        //                            SelectedDocument = description;
-        //                        }
+                //    if (SelectedDocument == null)
+                //    {
+                //        Documents.Add(description);
+                //        SelectedDocument = description;
+                //    }
 
-        //                        HeaderViewModel.SetText(response.ResponseHeaders, HideSystemProperties);
-        //                    }
-        //                    catch (DocumentClientException ex)
-        //                    {
-        //                        var message = ex.Parse();
-        //                        await _dialogService.ShowError(message, "Error", null, null).ConfigureAwait(false);
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        await _dialogService.ShowError(ex.Message, "Error", null, null).ConfigureAwait(false);
-        //                    }
-        //                    finally
-        //                    {
-        //                        IsRunning = false;
-        //                    }
-        //                },
-        //                () => !IsRunning && EditorViewModel.IsDirty && IsValid));
-        //    }
-        //}
+                //    HeaderViewModel.SetText(response.ResponseHeaders, HideSystemProperties);
+            }
+            //catch (DocumentClientException ex)
+            //{
+            //    var message = ex.Parse();
+            //    await _dialogService.ShowError(message, "Error", null, null).ConfigureAwait(false);
+            //}
+            //catch (Exception ex)
+            //{
+            //    await _dialogService.ShowError(ex.Message, "Error", null, null).ConfigureAwait(false);
+            //}
+            finally
+            {
+                IsRunning = false;
+            }
 
-        public RelayCommand DeleteDocumentCommand => throw new System.NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _deleteDocumentCommand
-        //            ?? (_deleteDocumentCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
-        //                    var message = selectedDocuments.Count == 1
-        //                                ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
-        //                                : $"Are you sure that you want to delete these {selectedDocuments.Count} documents?";
+        }
 
-        //                    await _dialogService.ShowMessage(message, "Delete Document(s)", null, null, async confirm =>
-        //                    {
-        //                        if (confirm)
-        //                        {
-        //                            IsRunning = true;
-        //                            var response = await _dbService.DeleteDocumentsAsync(Node.Parent.Parent.Parent.Connection, selectedDocuments).ConfigureAwait(false);
-        //                            IsRunning = false;
-        //                            SetStatusBar(new StatusBarInfo(response));
+        public RelayCommand DeleteDocumentCommand => new(async () => await DeleteDocumentCommandExecute(), () => true/*!IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid*/);
 
-        //                            await DispatcherHelper.RunAsync(() =>
-        //                            {
-        //                                SelectedDocument = null;
-        //                                foreach (var item in selectedDocuments)
-        //                                {
-        //                                    Documents.Remove(item);
-        //                                }
+        private async Task DeleteDocumentCommandExecute()
+        {
+            //var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
+            //var message = selectedDocuments.Count == 1
+            //            ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
+            //            : $"Are you sure that you want to delete these {selectedDocuments.Count} documents?";
 
-        //                                EditorViewModel.SetText(new { result = "Delete operation succeeded!" }, HideSystemProperties);
-        //                            });
-        //                        }
-        //                    }).ConfigureAwait(false);
-        //                },
-        //                () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid));
-        //    }
-        //}
+            //await _dialogService.ShowMessage(message, "Delete Document(s)", null, null, async confirm =>
+            //{
+            //    if (confirm)
+            //    {
+            //        IsRunning = true;
+            //        var response = await _dbService.DeleteDocumentsAsync(Node.Parent.Parent.Parent.Connection, selectedDocuments).ConfigureAwait(false);
+            //        IsRunning = false;
+            //        SetStatusBar(new StatusBarInfo(response));
+
+            //        await DispatcherHelper.RunAsync(() =>
+            //        {
+            //            SelectedDocument = null;
+            //            foreach (var item in selectedDocuments)
+            //            {
+            //                Documents.Remove(item);
+            //            }
+
+            //            EditorViewModel.SetText(new { result = "Delete operation succeeded!" }, HideSystemProperties);
+            //        });
+            //    }
+            //}).ConfigureAwait(false);
+        }
 
         public RelayCommand EditFilterCommand => new(() => IsEditingFilter = true);
 
@@ -389,29 +338,20 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand CloseFilterCommand => new(() => IsEditingFilter = false);
 
-        public RelayCommand SaveLocalCommand
+        public RelayCommand SaveLocalCommand => new(async () => await SaveDocumentCommandExecute(), () => !IsRunning && SelectedDocument != null && IsValid);
+
+        private async Task SaveLocalCommandExecute()
         {
-            get
-            {
-                return null;
-                //return _saveLocalCommand ??
-                //(_saveLocalCommand = new RelayCommand(
-                //    async () =>
-                //    {
-                //        var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
+            //var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
 
-                //        if (selectedDocuments.Count == 1)
-                //        {
-                //            await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
-                //        }
-                //        else
-                //        {
-                //            await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
-                //        }
-
-                //    },
-                //    () => !IsRunning && SelectedDocument != null && IsValid));
-            }
+            //if (selectedDocuments.Count == 1)
+            //{
+            //    await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
+            //}
+            //else
+            //{
+            //    await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
+            //}
         }
 
         //private Task SaveLocalMultipleDocumentsAsync(List<DocumentDescription> selectedDocuments)
@@ -494,7 +434,7 @@ namespace CosmosDbExplorer.ViewModels
         //    });
         //}
 
-        public bool IsValid => true;//!((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
 
         public bool HideSystemProperties { get; set; } = true;
 
@@ -509,33 +449,26 @@ namespace CosmosDbExplorer.ViewModels
         public int? MaxDOP { get; set; }
         public int? MaxBufferItem { get; set; }
 
-        public RelayCommand ResetRequestOptionsCommand
+        public RelayCommand ResetRequestOptionsCommand => new(ResetRequestOptionCommandExecute);
+
+        private void ResetRequestOptionCommandExecute()
         {
-            get
-            {
-                return null;
-            //    return _resetRequestOptionsCommand
-            //        ?? (_resetRequestOptionsCommand = new RelayCommand(
-            //            () =>
-            //            {
-            //                IndexingDirective = null;
-            //                ConsistencyLevel = null;
-            //                PartitionKeyValue = null;
-            //                AccessConditionType = null;
-            //                AccessCondition = null;
-            //                PreTrigger = null;
-            //                PostTrigger = null;
-            //            }));
-            }
+            //IndexingDirective = null;
+            //ConsistencyLevel = null;
+            PartitionKeyValue = null;
+            //AccessConditionType = null;
+            AccessCondition = null;
+            PreTrigger = null;
+            PostTrigger = null;
         }
 
         //public IndexingDirective? IndexingDirective { get; set; }
         //public ConsistencyLevel? ConsistencyLevel { get; set; }
-        public string PartitionKeyValue { get; set; }
+        public string? PartitionKeyValue { get; set; }
         //public AccessConditionType? AccessConditionType { get; set; }
-        public string AccessCondition { get; set; }
-        public string PreTrigger { get; set; }
-        public string PostTrigger { get; set; }
+        public string? AccessCondition { get; set; }
+        public string? PreTrigger { get; set; }
+        public string? PostTrigger { get; set; }
     }
 
     public class DocumentsTabViewModelValidator : AbstractValidator<DocumentsTabViewModel>

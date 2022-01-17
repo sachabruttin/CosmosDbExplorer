@@ -5,6 +5,7 @@ using CosmosDbExplorer.Extensions;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -14,25 +15,22 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         public bool IsDirty { get; set; }
 
         public bool IsReadOnly { get; set; }
 
-        public virtual void SetText(object content, bool removeSystemProperties)
+        public virtual void SetText(object? content, bool removeSystemProperties)
         {
             var text = GetDocumentContent(content, removeSystemProperties) ?? string.Empty;
 
-            //DispatcherHelper.RunAsync(() =>
-            //{
             Text = text;
-                OnPropertyChanged(nameof(HasContent));
-                IsDirty = false;
-            //});
+            OnPropertyChanged(nameof(HasContent));
+            IsDirty = false;
         }
 
-        protected abstract string GetDocumentContent(object content, bool removeSystemProperties);
+        protected abstract string? GetDocumentContent(object? content, bool removeSystemProperties);
 
         public bool HasContent => Text?.Length != 0; //Content.TextLength != 0;
     }
@@ -43,7 +41,7 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        protected override string? GetDocumentContent(object? content, bool removeSystemProperties)
         {
             if (content == null)
             {
@@ -71,42 +69,47 @@ namespace CosmosDbExplorer.ViewModels
 
     public class DocumentEditorViewModel : JsonViewerViewModel
     {
-        private CosmosDocument _document;
+        private static readonly string[] SystemResourceNames = new [] { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
+        private JObject? _document;
 
         public DocumentEditorViewModel() 
         {
         }
 
-        public override void SetText(object content, bool removeSystemProperties)
+        protected override string? GetDocumentContent(object? content, bool removeSystemProperties)
         {
-            _document = content as CosmosDocument;
-            base.SetText(_document, removeSystemProperties);
-        }
-
-        protected override string GetDocumentContent(object content, bool removeSystemProperties)
-        {
-            if (_document == null)
+            if (content == null)
             {
                 return null;
             }
 
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
-                Formatting = Formatting.Indented,
-                DateParseHandling = DateParseHandling.None
-            };
+            _document = (JObject)content;
 
-            return JsonConvert.SerializeObject(_document.Document, settings);
+            return removeSystemProperties 
+                ? RemoveCosmosSystemProperties(_document)
+                : _document.ToString(Formatting.Indented);
         }
 
-        public string Id => _document?.Id;
+        protected static string RemoveCosmosSystemProperties(JObject content)
+        {
+            var document = new JObject(content); // create a copy of the object 
+
+            foreach (var item in SystemResourceNames)
+            {
+                document.Remove(item);
+            }
+
+            return document.ToString(Formatting.Indented);
+        }
+
+
+        public string? Id => _document?.Property("id")?.Value<string>();
 
         public bool IsNewDocument
         {
             get
             {
-                return _document != null && _document.SelfLink == null;
+                return _document != null && _document?.Property("_self")?.Value<string>() == null;
             }
         }
     }
@@ -131,7 +134,8 @@ namespace CosmosDbExplorer.ViewModels
             };
             settings.Converters.Add(new OrderedDictionaryConverter());
 
-            return JsonConvert.SerializeObject(((NameValueCollection)content).ToDictionary(), settings);
+            return JsonConvert.SerializeObject(content, settings);
+            //return JsonConvert.SerializeObject(((NameValueCollection)content).ToDictionary(), settings);
         }
     }
 }

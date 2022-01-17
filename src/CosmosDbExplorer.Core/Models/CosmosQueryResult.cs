@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json.Linq;
 
 namespace CosmosDbExplorer.Core.Models
 {
-    public class CosmosQueryResult
+    public class CosmosQueryResult<T>
     {
-        public IReadOnlyList<CosmosDocument> Items { get; internal set; } = Array.Empty<CosmosDocument>();
+        public T? Items { get; internal set; } = default;
         public Exception? Error { get; internal set; }
         public TimeSpan TimeElapsed { get; internal set; }
         public double RequestCharge { get; internal set; }
@@ -15,5 +14,6 @@ namespace CosmosDbExplorer.Core.Models
         public IEnumerable<string> Warnings { get; internal set; } = Array.Empty<string>();
         public Dictionary<string, string> Headers { get; internal set; } = new Dictionary<string, string>();
         public bool HasMore => !string.IsNullOrEmpty(ContinuationToken);
+        public JObject? Diagnostics { get; internal set; }
     }
 }

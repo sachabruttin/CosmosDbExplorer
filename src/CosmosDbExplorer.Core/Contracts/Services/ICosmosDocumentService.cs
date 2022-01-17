@@ -10,8 +10,8 @@ namespace CosmosDbExplorer.Core.Contracts.Services
 {
     public interface ICosmosDocumentService
     {
-        Task<ICosmosDocument> GetAsync(string id, CancellationToken cancellationToken);
-        Task<CosmosQueryResult<JObject?>> GetDocumentAsync(ICosmosDocument document, CancellationToken cancellation);
+        Task<CosmosQueryResult<IReadOnlyCollection<JObject>>> ExecuteQueryAsync(ICosmosQuery query, CancellationToken cancellationToken);
+        Task<CosmosQueryResult<JObject>> GetDocumentAsync(ICosmosDocument document, CancellationToken cancellation);
         Task<CosmosQueryResult<IReadOnlyCollection<ICosmosDocument>>> GetDocumentsAsync(string? filter, int? maxItemsCount, string? continuationToken, CancellationToken cancellationToken);
     }
 }

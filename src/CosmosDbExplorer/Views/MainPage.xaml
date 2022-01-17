@@ -25,11 +25,11 @@
                     <views:DocumentsTabView/>
                 </DataTemplate>
             </selector:TabContentTemplateSelector.DocumentsTemplate>
-            <!--<selector:TabContentTemplateSelector.QueryEditorTemplate>
+            <selector:TabContentTemplateSelector.QueryEditorTemplate>
                 <DataTemplate>
                     <views:QueryEditorView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.QueryEditorTemplate>-->
+            </selector:TabContentTemplateSelector.QueryEditorTemplate>
             <!--<selector:TabContentTemplateSelector.ImportDocumentTemplate>
                 <DataTemplate>
                     <views:ImportDocumentView />

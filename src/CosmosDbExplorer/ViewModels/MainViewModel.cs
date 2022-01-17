@@ -140,7 +140,7 @@ namespace CosmosDbExplorer.ViewModels
             Messenger.Register<MainViewModel, ActivePaneChangedMessage>(this, static (r, msg) => r.OnActivePaneChanged(msg));
 
             Messenger.Register<MainViewModel, OpenDocumentsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
-            //Messenger.Register<MainViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, CollectionNodeViewModel>(msg));
+            Messenger.Register<MainViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, ContainerNodeViewModel>(msg));
             //Messenger.Register<MainViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
             //Messenger.Register<MainViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
             //Messenger.Register<MainViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));

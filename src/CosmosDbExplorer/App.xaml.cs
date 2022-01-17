@@ -118,6 +118,7 @@ namespace CosmosDbExplorer
 
             services.AddTransient<DatabaseViewModel>();
             services.AddTransient<DocumentsTabViewModel>();
+            services.AddTransient<QueryEditorViewModel>();
 
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

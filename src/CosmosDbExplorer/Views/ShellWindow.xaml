@@ -102,6 +102,71 @@
                 </DataTemplate>
             </selector:TabContentTemplateSelector.CollectionMetricsTemplate>-->
         </selector:TabContentTemplateSelector>
+
+        <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">
+            <selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="Used memory"
+                                  Margin="5,0"
+                                  Value="{Binding DataContext.UsedMemory, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, StringFormat={}{0:##\,000} KB}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ZoomTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="Zoom">
+                        <Grid DataContext="{Binding DataContext.Value}" Margin="5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Slider x:Name="zoomSlider" Grid.Column="0"
+                                    Minimum="0" Maximum="1"
+                                    IsDirectionReversed="False"
+                                    Style="{DynamicResource ZoomSliderStyle}"
+                                    Value="{Binding Zoom, Mode=TwoWay}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="0.01"
+                                    SmallChange="0.01"
+                                    LargeChange="0.5" />
+
+                            <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P0}, Converter={StaticResource logConverter}}"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ZoomTemplate>
+
+            <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="{Binding Title}"
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}" 
+                                          Value="{Binding DataContext.Value}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="{Binding Title}" 
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <ProgressBar IsIndeterminate="True" Width="150" Height="12" VerticalAlignment="Center"/>
+                            <Button Command="{Binding DataContext.Value}" Margin="3,0" ToolTip="Stop Execution" Height="16"
+                                    BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                    Visibility="{Binding DataContext.IsCancellable, Converter={StaticResource boolToVisibilityConverter}}">
+                                <Button.Content>
+                                    <Image Source="{StaticResource StopIcon}" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+
+        </selector:StatusBarItemTemplateSelector>
     </controls:MetroWindow.Resources>
 
     <controls:MetroWindow.Content>
@@ -115,6 +180,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <!--
             Learn more about using Fluent.Ribbon Control at
@@ -692,6 +758,25 @@
                     </DockingManager>
                 </controls:SplitView.Content>
             </controls:SplitView>
+            <Fluent:StatusBar Grid.Row="2" Grid.ColumnSpan="4" VerticalAlignment="Center" 
+                          ItemsSource="{Binding SelectedTab.StatusBarItems}"
+                          ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
+                          UsesItemContainerTemplate="True"  >
+                <Fluent:StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel LastChildFill="False" />
+                    </ItemsPanelTemplate>
+                </Fluent:StatusBar.ItemsPanel>
+                <Fluent:StatusBar.ItemContainerStyle>
+                    <Style TargetType="Fluent:StatusBarItem">
+                        <Setter Property="DockPanel.Dock" Value="{Binding Dock}" />
+                        <Setter Property="Title" Value="{Binding Title}" />
+                    </Style>
+                </Fluent:StatusBar.ItemContainerStyle>
+
+            </Fluent:StatusBar>
+
+
         </Grid>
     </controls:MetroWindow.Content>
 </controls:MetroWindow>

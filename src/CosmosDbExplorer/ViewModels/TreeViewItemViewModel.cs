@@ -20,14 +20,11 @@ namespace CosmosDbExplorer.ViewModels
     {
         private static readonly TreeViewItemViewModel DummyChild = new();
 
-        private bool _isExpanded;
-
         protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
         {
             Parent = parent;
             Children = new ObservableCollection<TreeViewItemViewModel>();
 
-            //messenger.Register<RemoveNodeMessage>(this, OnRemoveNodeMessage);
             Messenger.Register<TreeViewItemViewModel, RemoveNodeMessage>(this, static (r, m) => r.OnRemoveNodeMessage(m));
 
             if (lazyLoadChildren)
@@ -109,7 +106,7 @@ namespace CosmosDbExplorer.ViewModels
         /// </summary>
         protected virtual Task LoadChildren(CancellationToken cancellationToken)
         {
-            return Task.FromResult<object>(null);
+            return Task.CompletedTask;
         }
 
         public TreeViewItemViewModel Parent { get; }

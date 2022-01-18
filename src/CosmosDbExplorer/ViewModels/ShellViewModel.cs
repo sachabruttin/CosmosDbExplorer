@@ -60,7 +60,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public IEnumerable<ToolViewModel> Tools => new ToolViewModel[] { _databaseViewModel };
 
-        public PaneViewModelBase SelectedTab { get; set; }
+        public PaneViewModelBase? SelectedTab { get; set; }
 
         public void OnSelectedTabChanged()
         {
@@ -88,13 +88,13 @@ namespace CosmosDbExplorer.ViewModels
         public bool IsRefreshTabVisible { get; set; }
         public bool IsSystemPropertiesVisible { get; set; }
 
-        public ConnectionNodeViewModel Connection { get; set; }
-        public DatabaseNodeViewModel Database { get; set; }
-        public ContainerNodeViewModel Collection { get; set; }
-        public UsersNodeViewModel Users { get; set; }
-        public UserNodeViewModel UserNode { get; set; }
-        public ICanRefreshNode CanRefreshNodeViewModel { get; set; }
-        public ICanEditDelete CanEditDelete { get; set; }
+        public ConnectionNodeViewModel? Connection { get; set; }
+        public DatabaseNodeViewModel? Database { get; set; }
+        public ContainerNodeViewModel? Collection { get; set; }
+        public UsersNodeViewModel? Users { get; set; }
+        public UserNodeViewModel? UserNode { get; set; }
+        public ICanRefreshNode? CanRefreshNodeViewModel { get; set; }
+        public ICanEditDelete? CanEditDelete { get; set; }
 
         public RelayCommand ShowAboutCommand => throw new NotImplementedException();
         //{
@@ -128,17 +128,15 @@ namespace CosmosDbExplorer.ViewModels
         //    }
         //}
 
-        public RelayCommand RefreshCommand => throw new NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _refreshCommand
-        //            ?? (_refreshCommand = new RelayCommand(
-        //                () => CanRefreshNodeViewModel.RefreshCommand.Execute(null),
-        //                () => CanRefreshNodeViewModel?.RefreshCommand.CanExecute(null) == true
-        //                ));
-        //    }
-        //}
+        public RelayCommand RefreshCommand => new(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>
+        {
+            if (CanRefreshNodeViewModel?.RefreshCommand == null)
+            {
+                return false;
+            }
+
+            return CanRefreshNodeViewModel.RefreshCommand.CanExecute(null);
+        }); 
 
         public RelayCommand ExitCommand => new(Close);
 
@@ -194,6 +192,11 @@ namespace CosmosDbExplorer.ViewModels
 
         private void OnTreeNodeSelected(TreeNodeSelectedMessage message)
         {
+            if (message is null || message.Item is null)
+            {
+                return;
+            }
+
             CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
             Connection = message.Item as ConnectionNodeViewModel;
             Database = message.Item as DatabaseNodeViewModel;
@@ -220,12 +223,13 @@ namespace CosmosDbExplorer.ViewModels
             where TTabViewModel : PaneViewModel<TNodeViewModel>
             where TNodeViewModel : TreeViewItemViewModel, IContent
         {
-            if (message.Node == null)
+            if (message is null || message.Node is null)
             {
                 throw new Exception("Node is null!");
             }
 
             var contentId = message.Node?.ContentId ?? Guid.NewGuid().ToString();
+
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
             if (tab != null)

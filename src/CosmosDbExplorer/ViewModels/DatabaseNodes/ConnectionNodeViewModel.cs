@@ -122,20 +122,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        public RelayCommand RefreshCommand => throw new NotImplementedException();
-        //public RelayCommand RefreshCommand
-        //{
-        //    get
-        //    {
-        //        return _refreshCommand
-        //            ?? (_refreshCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    Children.Clear();
-        //                    await LoadChildren();
-        //                }));
-        //    }
-        //}
+        public RelayCommand RefreshCommand => new(async () =>
+        {
+            Children.Clear();
+            await LoadChildren(new CancellationToken());
+        });
 
         //public RelayCommand AddNewCollectionCommand
         //{

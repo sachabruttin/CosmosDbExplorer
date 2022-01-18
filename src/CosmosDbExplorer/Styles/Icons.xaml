@@ -382,4 +382,83 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+
+    <DrawingImage x:Key="NewDocumentIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8,30C5.492,30,4.194,28.161,4.021,26.339L4,26.277 4,6C4,3.402,6.061,2,8,2L19.733,2 28,10.164 28,26C27.993,27.896,27,29.932,24,29.992L24,30z" />
+                    <GeometryDrawing Brush="#FF424242" Geometry="F1M19,6L19,12 24,12 24,26 8,26 8,6z M18.912,4L8,4C8,4,6,4,6,6L6,26 6,26.277C6,26.277,6.32,28,8,28L24,28 24.111,28 24.051,27.993C25.993,27.955,26,26,26,26L26,11z" />
+                    <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M8,6L8,26 24,26 24,12 19,12 19,6z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="SaveDocumentIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M30,30L2,30 2,2 26,2 30,6z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M20,4L16,4 16,10 20,10z M28,8L28,28 4,28 4,4 10,4 10,14 22,14 22,4 24,4z" />
+                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M20,4L20,10 16,10 16,4 10,4 10,14 22,14 22,4z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DiscardIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M18.0088,0C15.1648,0,12.4068,1.014,10.2528,2.85L9.9948,3.068 9.9948,0 7.1648,0 1.9988,5.172 1.9988,16 12.8198,16 20.1728,8.64C21.2748,9.353 22.0028,10.593 22.0028,12 22.0028,13.169 21.4838,14.284 20.5558,15.083L7.8678,26.332 12.8818,32 13.5298,32 25.8078,21.113C28.4718,18.832 29.9988,15.509 29.9988,12 29.9988,5.383 24.6198,0 18.0088,0" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M18.0088,2C15.6398,2,13.3428,2.845,11.5458,4.376L7.9948,7.384 7.9948,2 3.9988,6 3.9988,10 3.9988,12 3.9988,14 11.9908,14 15.9878,10 11.0908,10 14.1318,7.426C15.2098,6.506 16.5888,6 18.0088,6 21.3138,6 24.0028,8.691 24.0028,12 24.0028,13.754 23.2378,15.415 21.8818,16.579L10.6908,26.504 13.3388,29.496 24.5068,19.594C26.7278,17.691 27.9988,14.923 27.9988,12 27.9988,6.486 23.5168,2 18.0088,2" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ShowSystemPropertiesIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M1,15L15,15 15,1 1,1z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M2,9L3,9 3,8 2,8z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M2,11L3,11 3,10 2,10z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M2,7L3,7 3,6 2,6z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M2,5L3,5 3,4 2,4z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M2,3L3,3 3,1.999 2,1.999z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M4,3L5.001,3 5.001,1.999 4,1.999z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M6,3L7,3 7,1.999 6,1.999z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M8,3L9,3 9,1.999 8,1.999z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M10,3L11,3 11,1.999 10,1.999z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M13,13L5,13 5,14 14,14 14,5 13,5z" />
+                    <GeometryDrawing Brush="#FF414141" Geometry="F1M13.6465,1.6465L1.6465,13.6465 2.3535,14.3535 14.3535,2.3535z" />
+                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M3,3L3,12.293 12.293,3z" />
+                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M3.707,13L13,13 13,3.707z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <Style x:Key="NextPageIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
+        <Setter Property="Text" Value="" />
+    </Style>
+
+    <DrawingImage x:Key="CreateIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15.8436,14.9072L15.8026,14.9492 15.8026,15.0122 15.8426,15.0542 15.9056,15.0542 15.9476,15.0112 15.9476,14.9522 15.9036,14.9072z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="M26.9473,12L23.0313,12 25.6173,9.417 21.4473,5.24 19.0003,7.686 19.0003,4 13.0353,4 13.0353,7.969 10.3083,5.241 6.1333,9.413 8.7193,12 5.0003,12 5.0003,17.965 8.7193,17.965 6.1353,20.551 10.3073,24.723 13.0043,22.025 13.0043,26 19.0003,26 19.0003,22.281 21.4393,24.721 25.6193,20.553 23.0313,17.966 26.9473,17.966z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M17,12.802L15.035,12.802 15.035,6 17,6z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M17,24L15.004,24 15.004,17.195 17,17.195z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M15.0791,12.8428L13.7351,14.1878 8.9621,9.4138 10.3081,8.0698z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M22.7891,20.5508L21.4411,21.8948 16.6661,17.1198 18.0121,15.7748z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M13.802,15.965L7,15.965 7,14 13.802,14z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M24.9473,14L24.9473,15.966 18.1403,15.965 18.1443,14z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M13.7354,15.7754L15.0814,17.1204 10.3074,21.8944 8.9644,20.5504z" />
+                    <GeometryDrawing Brush="#FFC27C19" Geometry="M21.4453,8.0693L22.7893,9.4153 18.0113,14.1883 16.6683,12.8423z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>

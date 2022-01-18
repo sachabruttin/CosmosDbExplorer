@@ -32,8 +32,8 @@ namespace CosmosDbExplorer.Views
             navigationBehavior.Initialize(pageService);
         }
 
-        public Frame GetNavigationFrame()
-            => shellFrame;
+        //public Frame GetNavigationFrame()
+        //    => shellFrame;
 
         public RibbonTabsBehavior GetRibbonTabsBehavior()
             => tabsBehavior;

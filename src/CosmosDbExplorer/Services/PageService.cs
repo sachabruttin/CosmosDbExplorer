@@ -19,7 +19,6 @@ namespace CosmosDbExplorer.Services
         public PageService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            Configure<MainViewModel, MainPage>();
             Configure<SettingsViewModel, SettingsPage>();
             Configure<AboutViewModel, AboutPage>();
         }

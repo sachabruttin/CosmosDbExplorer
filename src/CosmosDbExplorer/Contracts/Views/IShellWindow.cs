@@ -8,7 +8,7 @@ namespace CosmosDbExplorer.Contracts.Views
 {
     public interface IShellWindow
     {
-        Frame GetNavigationFrame();
+        //Frame GetNavigationFrame();
 
         void ShowWindow();
 

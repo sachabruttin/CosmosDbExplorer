@@ -200,6 +200,11 @@ namespace CosmosDbExplorer.ViewModels
             where TTabViewModel : PaneViewModel<TNodeViewModel>
             where TNodeViewModel : TreeViewItemViewModel, IContent
         {
+            if (message.Node == null)
+            {
+                throw new Exception("Node is null!");
+            }
+
             var contentId = message.Node?.ContentId ?? Guid.NewGuid().ToString();
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
@@ -207,14 +212,17 @@ namespace CosmosDbExplorer.ViewModels
             {
                 SelectedTab = tab;
             }
-            else
+            else 
             {
                 var content = _serviceProvider.GetService<TTabViewModel>();
-                //var content = SimpleIoc.Default.GetInstanceWithoutCaching<TTabViewModel>(contentId); //_ioc.GetInstance<TTabViewModel>(contentId);
-                content.Load(contentId, message.Node, message.Connection, message.Container);
 
-                Tabs.Add(content);
-                SelectedTab = content;
+                if (content != null)
+                {
+                    content.Load(contentId, message.Node, message.Connection, message.Container);
+
+                    Tabs.Add(content);
+                    SelectedTab = content;
+                }
             }
         }
 

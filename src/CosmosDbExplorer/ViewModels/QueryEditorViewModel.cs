@@ -24,9 +24,6 @@ namespace CosmosDbExplorer.ViewModels
         , IHaveQuerySettings
         , IHaveSystemProperties
     {
-        //private RelayCommand _executeCommand;
-        //private readonly IDocumentDbService _dbService;
-        //private readonly IDialogService _dialogService;
         private RelayCommand _saveLocalCommand;
         private CosmosQueryResult<IReadOnlyCollection<JObject>> _queryResult;
         //private RelayCommand _goToNextPageCommand;
@@ -109,14 +106,14 @@ namespace CosmosDbExplorer.ViewModels
             //_requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
             //_queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
 
-            if (IsRunning)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-            }
-            else
-            {
-                _cancellationTokenSource = null;
-            }
+            //if (IsRunning)
+            //{
+            //    _cancellationTokenSource = new CancellationTokenSource();
+            //}
+            //else
+            //{
+            //    _cancellationTokenSource = null;
+            //}
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -139,7 +136,7 @@ namespace CosmosDbExplorer.ViewModels
             //_queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
-        public string ContinuationToken { get; set; } = String.Empty;
+        public string? ContinuationToken { get; set; }
 
         //public Dictionary<string, QueryMetrics> QueryMetrics { get; set; }
 
@@ -230,11 +227,18 @@ namespace CosmosDbExplorer.ViewModels
             GC.Collect();
         }
 
-        //public RelayCommand GoToNextPageCommand = new(async () => await ExecuteQueryAsync(ContinuationToken).ConfigureAwait(false),
-        //                                               () =>
-        //                                               {
-        //                                                   return !string.IsNullOrEmpty(ContinuationToken) && !IsRunning && !string.IsNullOrEmpty(Content) && IsValid;
-        //                                               });
+        public RelayCommand GoToNextPageCommand => new (async () => await GoToNextPageCommandExecute(), () => GoToNextPageCommandCanExecute());
+
+        private Task GoToNextPageCommandExecute()
+        {
+            return ExecuteQueryAsync(ContinuationToken);
+        }
+
+        private bool GoToNextPageCommandCanExecute()
+        {
+            return !string.IsNullOrEmpty(ContinuationToken) && !IsRunning && !string.IsNullOrEmpty(Content) && IsValid;
+        }
+
 
         public RelayCommand SaveLocalCommand
         {

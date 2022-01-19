@@ -14,12 +14,8 @@ namespace CosmosDbExplorer.ViewModels.Assets
         public UserDefFuncTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) 
             : base(serviceProvider, uiServices)
         {
+            IconSource = App.Current.FindResource("UdfIcon");
         }
-
-        //public UserDefFuncTabViewModel(IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
-        //    : base(dialogService, dbService, uiServices)
-        //{
-        //}
 
         protected override string GetDefaultHeader() => "New User Defined Function";
         protected override string GetDefaultTitle() => "User Defined Function";

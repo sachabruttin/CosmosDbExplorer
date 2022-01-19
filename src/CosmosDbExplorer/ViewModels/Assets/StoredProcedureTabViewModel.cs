@@ -39,6 +39,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             ResultViewModel = new JsonViewerViewModel { IsReadOnly = true };
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
+            IconSource = App.Current.FindResource("StoredProcedureIcon");
 
             _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);

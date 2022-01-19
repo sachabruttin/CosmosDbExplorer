@@ -10,6 +10,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
     {
         public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) : base(serviceProvider, uiServices)
         {
+            IconSource = App.Current.FindResource("TriggerIcon");
         }
 
         //private TriggerType _triggerType;

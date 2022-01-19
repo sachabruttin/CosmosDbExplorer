@@ -46,6 +46,7 @@ namespace CosmosDbExplorer.ViewModels
 
             EditorViewModel = new JsonViewerViewModel { IsReadOnly = true };
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
+            IconSource = App.Current.FindResource("SqlQueryIcon");
 
             _cancellationTokenSource = new CancellationTokenSource();
             _query = new CosmosQuery();

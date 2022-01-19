@@ -46,6 +46,7 @@ namespace CosmosDbExplorer.ViewModels
 
             Title = "Documents";
             Header = Title;
+            IconSource = App.Current.FindResource("DocumentIcon");
 
             EditorViewModel = new DocumentEditorViewModel();
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };

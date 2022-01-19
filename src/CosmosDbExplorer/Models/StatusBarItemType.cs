@@ -28,7 +28,7 @@ namespace CosmosDbExplorer.Models
     {
         public bool IsVisible { get; set; }
 
-        public object Value { get; set; }
+        public object? Value { get; set; }
     }
 
     public class StatusBarItemContextCancellableCommand : StatusBarItemContext

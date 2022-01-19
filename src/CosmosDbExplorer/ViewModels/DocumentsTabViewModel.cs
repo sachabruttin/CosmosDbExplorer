@@ -50,6 +50,11 @@ namespace CosmosDbExplorer.ViewModels
 
             EditorViewModel = new DocumentEditorViewModel();
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
+
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = IsRunning, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
         //public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
@@ -149,26 +154,26 @@ namespace CosmosDbExplorer.ViewModels
         public bool HasMore { get; set; }
         public string? ContinuationToken { get; set; }
 
-        public string RequestCharge { get; set; }
+        public string? RequestCharge { get; set; }
 
         public void OnRequestChargeChanged()
         {
-            //_requestChargeStatusBarItem.DataContext.Value = RequestCharge;
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
         }
 
         public bool IsRunning { get; set; }
 
         public void OnIsRunningChanged()
         {
-            //_progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
-            //_requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
+            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
 
         private void SetStatusBar(IStatusBarInfo? response)
         {
-            RequestCharge = response != null
-                ? $"Request Charge: {response.RequestCharge:N2}"
-                : null;
+            RequestCharge = response == null
+                ? null
+                : $"Request Charge: {response.RequestCharge:N2}";
 
             //EditorViewModel.SetText(response?.Resource, HideSystemProperties);
             //HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
@@ -188,16 +193,8 @@ namespace CosmosDbExplorer.ViewModels
 
                 var result = await _cosmosDocumentService.GetDocumentsAsync(
                     Filter,
-                    100, // MaxDocumentToRetrieve
+                    50, // MaxDocumentToRetrieve
                     ContinuationToken, cancellationToken);
-
-                //    var list = await _dbService.GetDocumentsAsync(Connection,
-                //                                                   Collection,
-                //                                                   Filter,
-                //                                                   Settings.Default.MaxDocumentToRetrieve,
-                //                                                   ContinuationToken,
-                //                                                   this)
-                //                                                   .ConfigureAwait(true);
 
                 HasMore = result.HasMore;
                 ContinuationToken = result.ContinuationToken;

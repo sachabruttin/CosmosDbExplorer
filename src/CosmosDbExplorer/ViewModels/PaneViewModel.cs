@@ -22,10 +22,10 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         [DoNotSetChanged]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [DoNotSetChanged]
-        public string ToolTip { get; set; }
+        public string? ToolTip { get; set; }
 
         public virtual void OnToolTipChanged()
         {
@@ -57,7 +57,7 @@ namespace CosmosDbExplorer.ViewModels
         public ObservableCollection<StatusBarItem> StatusBarItems { get; protected set; } = new ObservableCollection<StatusBarItem>();
 
         [DoNotSetChanged]
-        public object IconSource { get; set; }
+        public object? IconSource { get; set; }
 
         [DoNotSetChanged]
         public System.Drawing.Color? AccentColor { get; set; }

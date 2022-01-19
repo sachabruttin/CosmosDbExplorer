@@ -97,21 +97,6 @@ namespace CosmosDbExplorer.ViewModels
         public ICanRefreshNode? CanRefreshNodeViewModel { get; set; }
         public ICanEditDelete? CanEditDelete { get; set; }
 
-        public RelayCommand ShowAboutCommand => throw new NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _showAboutCommand
-        //            ?? (_showAboutCommand = new RelayCommand(
-        //            async () =>
-        //            {
-        //                var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-        //                var name = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute), false))?.Title ?? "Unknown Title";
-        //                await _dialogService.ShowMessageBox($"{name}\nVersion {fvi.FileVersion}", "About").ConfigureAwait(false);
-        //            }));
-        //    }
-        //}
-
         public RelayCommand ShowAccountSettingsCommand => throw new NotImplementedException();
         //{
         //    get

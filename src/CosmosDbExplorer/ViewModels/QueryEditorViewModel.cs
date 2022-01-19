@@ -11,6 +11,7 @@ using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,12 +27,11 @@ namespace CosmosDbExplorer.ViewModels
     {
         private RelayCommand _saveLocalCommand;
         private CosmosQueryResult<IReadOnlyCollection<JObject>>? _queryResult;
-        //private RelayCommand _goToNextPageCommand;
-        //private readonly StatusBarItem _requestChargeStatusBarItem;
-        //private readonly StatusBarItem _queryInformationStatusBarItem;
-        //private readonly StatusBarItem _progessBarStatusBarItem;
-        private CancellationTokenSource _cancellationTokenSource;
-        //private RelayCommand _cancelCommand;
+        private readonly StatusBarItem _requestChargeStatusBarItem;
+        private readonly StatusBarItem _queryInformationStatusBarItem;
+        private readonly StatusBarItem _progessBarStatusBarItem;
+        private CancellationTokenSource? _cancellationTokenSource;
+
         private RelayCommand<string> _saveQueryCommand;
         private RelayCommand _openQueryCommand;
 
@@ -48,8 +48,14 @@ namespace CosmosDbExplorer.ViewModels
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
             IconSource = App.Current.FindResource("SqlQueryIcon");
 
-            _cancellationTokenSource = new CancellationTokenSource();
             _query = new CosmosQuery();
+
+            _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_requestChargeStatusBarItem);
+            _queryInformationStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = QueryInformation, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_queryInformationStatusBarItem);
+            _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
+            StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
 
@@ -106,18 +112,18 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnIsRunningChanged()
         {
-            //_progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
-            //_requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
-            //_queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
+            _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
+            _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
+            _queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
 
-            //if (IsRunning)
-            //{
-            //    _cancellationTokenSource = new CancellationTokenSource();
-            //}
-            //else
-            //{
-            //    _cancellationTokenSource = null;
-            //}
+            if (IsRunning)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+            else
+            {
+                _cancellationTokenSource = null;
+            }
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -130,14 +136,14 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnRequestChargeChanged()
         {
-            //_requestChargeStatusBarItem.DataContext.Value = RequestCharge;
+            _requestChargeStatusBarItem.DataContext.Value = RequestCharge;
         }
 
         public string? QueryInformation { get; set; }
 
         public void OnQueryInformationChanged()
         {
-            //_queryInformationStatusBarItem.DataContext.Value = QueryInformation;
+            _queryInformationStatusBarItem.DataContext.Value = QueryInformation;
         }
 
         public string? ContinuationToken { get; set; }
@@ -159,14 +165,14 @@ namespace CosmosDbExplorer.ViewModels
 
                 Clean();
 
-                //((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 _query.QueryText= string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
                 _query.ContinuationToken = token;
 
                 _queryResult = await _documentService.ExecuteQueryAsync(_query, _cancellationTokenSource.Token);
 
-                //((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
+                ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 
                 ContinuationToken = _queryResult.ContinuationToken;
 

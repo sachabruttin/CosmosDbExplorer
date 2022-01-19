@@ -9,7 +9,7 @@ using FluentValidation.Results;
 namespace CosmosDbExplorer.Validar
 {
     public class ValidationTemplate<T> : IDataErrorInfo, INotifyDataErrorInfo
-        where T : INotifyPropertyChanged
+        where T : class, INotifyPropertyChanged
     {
         private readonly INotifyPropertyChanged _target;
         private readonly IValidator _validator;
@@ -18,16 +18,14 @@ namespace CosmosDbExplorer.Validar
 
         public ValidationTemplate(T target)
         {
-            _validationContext = new ValidationContext<T>(target);
-            //_target = target;
             _validator = ValidationFactory.GetValidator<T>();
-            _validationResult = _validator.Validate(_validationContext);
+            _validationResult = _validator.Validate(new ValidationContext<T>(target));
             target.PropertyChanged += Validate;
         }
 
-        private void Validate(object sender, PropertyChangedEventArgs e)
+        private void Validate(object? sender, PropertyChangedEventArgs e)
         {
-            _validationResult = _validator.Validate(_validationContext);
+            _validationResult = _validator.Validate(new ValidationContext<T>(sender as T));
             foreach (var error in _validationResult.Errors)
             {
                 RaiseErrorsChanged(error.PropertyName);
@@ -38,7 +36,8 @@ namespace CosmosDbExplorer.Validar
         {
             return _validationResult.Errors
                                    .Where(x => x.PropertyName == propertyName)
-                                   .Select(x => x.ErrorMessage);
+                                   .Select(x => x.ErrorMessage)
+                                   .Distinct();
         }
 
         public bool HasErrors => _validationResult.Errors.Count > 0;
@@ -47,7 +46,7 @@ namespace CosmosDbExplorer.Validar
         {
             get
             {
-                var strings = _validationResult.Errors.Select(x => x.ErrorMessage)
+                var strings = _validationResult.Errors.Select(x => x.ErrorMessage).Distinct()
                                               .ToArray();
                 return string.Join(Environment.NewLine, strings);
             }
@@ -58,7 +57,7 @@ namespace CosmosDbExplorer.Validar
             get
             {
                 var strings = _validationResult.Errors.Where(x => x.PropertyName == columnName)
-                                              .Select(x => x.ErrorMessage)
+                                              .Select(x => x.ErrorMessage).Distinct()
                                               .ToArray();
                 return string.Join(Environment.NewLine, strings);
             }

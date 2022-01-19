@@ -45,25 +45,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool UseLocalEmulator { get; set; }
 
-        private void SetConnection(CosmosConnection connection)
-        {
-            _connection = connection;
-
-            AccountEndpoint = _connection.DatabaseUri?.ToString();
-            AccountSecret = _connection.AuthenticationKey;
-            Label = _connection.Label;
-            UseLocalEmulator = _connection.IsLocalEmulator();
-            ConnectionType = _connection.ConnectionType;
-
-            if (connection.AccentColor is not null)
-            {
-                AccentColor = Color.FromArgb(_connection.AccentColor.Value.A, _connection.AccentColor.Value.R, _connection.AccentColor.Value.G, _connection.AccentColor.Value.B);
-            }
-            
-            EnableEndpointDiscovery = _connection.EnableEndpointDiscovery;
-        }
-
-        public void OnUserLocalEmulatorChanged()
+        public void OnUseLocalEmulatorChanged()
         {
             if (UseLocalEmulator)
             {
@@ -81,11 +63,11 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand AddAccountCommand => new(AddAccountCommandExecute, AddAccountCommandCanExecute);
 
-        private void AddAccountCommandExecute()
+        public void AddAccountCommandExecute()
         { 
         }
 
-        private bool AddAccountCommandCanExecute() => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool AddAccountCommandCanExecute() => !((INotifyDataErrorInfo)this).HasErrors;
 
         public void OnNavigatedTo(object parameter)
         {
@@ -96,15 +78,33 @@ namespace CosmosDbExplorer.ViewModels
         {
            
         }
+
+        private void SetConnection(CosmosConnection connection)
+        {
+            _connection = connection;
+
+            AccountEndpoint = _connection.DatabaseUri?.ToString();
+            AccountSecret = _connection.AuthenticationKey;
+            Label = _connection.Label;
+            UseLocalEmulator = _connection.IsLocalEmulator();
+            ConnectionType = _connection.ConnectionType;
+
+            if (connection.AccentColor is not null)
+            {
+                AccentColor = Color.FromArgb(_connection.AccentColor.Value.A, _connection.AccentColor.Value.R, _connection.AccentColor.Value.G, _connection.AccentColor.Value.B);
+            }
+
+            EnableEndpointDiscovery = _connection.EnableEndpointDiscovery;
+        }
     }
 
     public class AccountSettingsViewModelValidator : AbstractValidator<AccountSettingsViewModel>
     {
         public AccountSettingsViewModelValidator()
         {
-            //RuleFor(x => x.AccountEndpoint).NotEmpty().When(x => !x.UseLocalEmulator);
-            //RuleFor(x => x.AccountSecret).NotEmpty().When(x => !x.UseLocalEmulator);
-            //RuleFor(x => x.Label).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.AccountEndpoint).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.AccountSecret).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.Label).NotEmpty();
         }
     }
 }

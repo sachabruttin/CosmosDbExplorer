@@ -7,16 +7,16 @@ namespace CosmosDbExplorer.Core.Models
     public class CosmosDocument : ICosmosDocument
     {
         [JsonProperty("id")]
-        public string Id { get; set; } = string.Empty;
+        public string? Id { get; set; }
 
         [JsonProperty("_etag")]
-        public string ETag { get; set; } = string.Empty;
+        public string? ETag { get; set; }
 
         [JsonProperty("_self")]
-        public string SelfLink { get; set; } = string.Empty;
+        public string? SelfLink { get; set; }
 
         [JsonProperty("_attachments")]
-        public string Attachments { get; set; } = string.Empty;
+        public string? Attachments { get; set; }
 
         [JsonProperty("_ts")]
         public long TimeStamp { get; set; }

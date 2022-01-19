@@ -13,6 +13,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using CosmosDbExplorer.ViewModels.Assets;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -67,7 +68,7 @@ namespace CosmosDbExplorer.ViewModels
             IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
             //IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
-            IsQueryTabVisible = SelectedTab is QueryEditorViewModel; // || SelectedTab is StoredProcedureTabViewModel;
+            IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel;
             //IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsQuerySettingsVisible = SelectedTab is QueryEditorViewModel;
             IsSystemPropertiesVisible = SelectedTab is IHaveSystemProperties;
@@ -165,9 +166,9 @@ namespace CosmosDbExplorer.ViewModels
             //Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
             //Messenger.Register<ShellViewModel, OpenMetricsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<CollectionMetricsTabViewModel, CollectionMetricsNodeViewModel>(msg));
 
-            //Messenger.Register<ShellViewModel, EditStoredProcedureMessage>(this, static (r, msg) => r.OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
-            //Messenger.Register<ShellViewModel, EditUserDefFuncMessage>(this, static(r, msg) => r.OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
-            //Messenger.Register<ShellViewModel, EditTriggerMessage>(this, static (r, msg) => r.OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditStoredProcedureMessage>(this, static (r, msg) => r.OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditUserDefFuncMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditTriggerMessage>(this, static (r, msg) => r.OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
 
             Messenger.Register<ShellViewModel, TreeNodeSelectedMessage>(this, static (r, msg) => r.OnTreeNodeSelected(msg));
             Messenger.Register<ShellViewModel, CloseDocumentMessage>(this, static (r, msg) => r.CloseDocument(msg));

@@ -100,6 +100,13 @@ namespace CosmosDbExplorer
                                 new CosmosDocumentService(provider.GetRequiredService<ICosmosClientService>(), connection, database, container));
             });
 
+            services.AddTransient(provider =>
+            {
+                return new Func<CosmosConnection, CosmosDatabase, CosmosContainer, CosmosScriptService>((connection, database, container) =>
+                                new CosmosScriptService(provider.GetRequiredService<ICosmosClientService>(), connection, database, container));
+
+            });
+
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();
             services.AddTransient<ShellViewModel>();
@@ -116,6 +123,9 @@ namespace CosmosDbExplorer
             services.AddTransient<DatabaseViewModel>();
             services.AddTransient<DocumentsTabViewModel>();
             services.AddTransient<QueryEditorViewModel>();
+            services.AddTransient<ViewModels.Assets.TriggerTabViewModel>();
+            services.AddTransient<ViewModels.Assets.StoredProcedureTabViewModel>();
+            services.AddTransient<ViewModels.Assets.UserDefFuncTabViewModel>();
 
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

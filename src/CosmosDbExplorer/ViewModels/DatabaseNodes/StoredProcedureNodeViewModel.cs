@@ -1,30 +1,39 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class StoredProcedureRootNodeViewModel : AssetRootNodeViewModelBase<CosmosStoredProcedure>
     {
-        public StoredProcedureRootNodeViewModel(ContainerNodeViewModel parent)
+        private readonly IServiceProvider _serviceProvider;
+
+        public StoredProcedureRootNodeViewModel(ContainerNodeViewModel parent, IServiceProvider serviceProvider)
             : base(parent)
         {
             Name = "Stored Procedures";
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task LoadChildren(CancellationToken token)
         {
             IsLoading = true;
 
-            //var storedProcedure = await DbService.GetStoredProceduresAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var service = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
 
-            //foreach (var sp in storedProcedure)
-            //{
-            //    await DispatcherHelper.RunAsync(() => Children.Add(new StoredProcedureNodeViewModel(this, sp)));
-            //}
+            var function = await service.GetStoredProceduresAsync(token);
+
+            foreach (var func in function)
+            {
+                //await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
+                Children.Add(new StoredProcedureNodeViewModel(this, func));
+            }
 
             IsLoading = false;
         }
@@ -73,7 +82,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         protected override Task OpenCommandImp()
         {
             Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

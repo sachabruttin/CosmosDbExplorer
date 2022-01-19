@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModels.DatabaseNodes"
              xmlns:gif="http://wpfanimatedgif.codeplex.com" 
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
-             xmlns:b="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              xmlns:controls="clr-namespace:CosmosDbExplorer.Controls"
              d:DataContext="{d:DesignInstance Type=viewmodel:DatabaseViewModel}"
              mc:Ignorable="d" 
@@ -301,23 +301,18 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
 
-            <!--<HierarchicalDataTemplate
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:StoredProcedureNodeViewModel}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open Stored Procedure" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete Stored Procedure" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
-            </HierarchicalDataTemplate>-->
+            </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:UserDefFuncRootNodeViewModel}" 
@@ -339,23 +334,18 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
 
-            <!--<HierarchicalDataTemplate
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:UserDefFuncNodeViewModel}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open User Defined Function" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open User Defined Function" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete User Defined Function" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
-            </HierarchicalDataTemplate>-->
+            </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:TriggerRootNodeViewModel}" 
@@ -377,23 +367,18 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
 
-            <!--<HierarchicalDataTemplate
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:TriggerNodeViewModel}">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Edit Trigger" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
+                            <MenuItem Header="Edit Trigger" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}"/>
                             <MenuItem Header="Delete Trigger" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}"/>
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
-            </HierarchicalDataTemplate>-->
+            </HierarchicalDataTemplate>
 
         </TreeView.Resources>
     </controls:TreeViewEx>

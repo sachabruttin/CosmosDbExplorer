@@ -68,21 +68,21 @@
                     <views:DatabaseView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.DatabaseViewTemplate>
-            <!--<selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
+            <selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
                 <DataTemplate>
                     <views:StoredProcedureTabView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.StoredProcedureViewTemplate>-->
-            <!--<selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
+            </selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
+            <selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
                 <DataTemplate>
                     <views:UserDefFuncTabView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.UserDefFuncViewTemplate>-->
-            <!--<selector:TabContentTemplateSelector.TriggerViewTemplate>
+            </selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
+            <selector:TabContentTemplateSelector.TriggerViewTemplate>
                 <DataTemplate>
                     <views:TriggerTabView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.TriggerViewTemplate>-->
+            </selector:TabContentTemplateSelector.TriggerViewTemplate>
             <!--<selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>
                 <DataTemplate>
                     <views:ScaleAndSettingsTabView />

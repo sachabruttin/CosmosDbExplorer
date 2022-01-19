@@ -1,13 +1,27 @@
 ﻿using CosmosDbExplorer.Core.Contracts;
+using Microsoft.Azure.Cosmos.Scripts;
 
 namespace CosmosDbExplorer.Core.Models
 {
-    public class CosmosUserDefinedFunction : ICosmosResource
+    public class CosmosUserDefinedFunction : ICosmosScript
     {
-        public string Id => throw new System.NotImplementedException();
+        public CosmosUserDefinedFunction(string body)
+        {
+            Body = body;
+        }
 
-        public string ETag => throw new System.NotImplementedException();
+        public CosmosUserDefinedFunction(UserDefinedFunctionProperties properties)
+        {
+            Id = properties.Id;
+            ETag = properties.ETag;
+            SelfLink = properties.SelfLink;
 
-        public string SelfLink => throw new System.NotImplementedException();
+            Body = properties.Body;
+        }
+
+        public string? Id { get; set; }
+        public string? ETag { get; private set; }
+        public string? SelfLink { get; private set; }
+        public string Body { get; }
     }
 }

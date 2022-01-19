@@ -13,9 +13,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class ContainerNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveContainerNodeViewModel, IContent
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
         {
+            _serviceProvider = serviceProvider;
             Container = container;
         }
 
@@ -23,9 +26,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             Children.Add(new DocumentNodeViewModel(this));
             Children.Add(new ScaleSettingsNodeViewModel(this));
-            Children.Add(new StoredProcedureRootNodeViewModel(this));
-            Children.Add(new UserDefFuncRootNodeViewModel(this));
-            Children.Add(new TriggerRootNodeViewModel(this));
+            Children.Add(new StoredProcedureRootNodeViewModel(this, _serviceProvider));
+            Children.Add(new UserDefFuncRootNodeViewModel(this, _serviceProvider));
+            Children.Add(new TriggerRootNodeViewModel(this, _serviceProvider));
             Children.Add(new MetricsNodeViewModel(this));
 
             return Task.CompletedTask;

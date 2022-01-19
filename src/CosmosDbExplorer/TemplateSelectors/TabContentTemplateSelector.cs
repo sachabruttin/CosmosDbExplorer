@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using CosmosDbExplorer.ViewModels;
+using CosmosDbExplorer.ViewModels.Assets;
 
 namespace CosmosDbExplorer.TemplateSelectors
 {
@@ -40,20 +41,20 @@ namespace CosmosDbExplorer.TemplateSelectors
             //    return ImportDocumentTemplate;
             //}
 
-            //if (item is StoredProcedureTabViewModel)
-            //{
-            //    return StoredProcedureViewTemplate;
-            //}
+            if (item is StoredProcedureTabViewModel)
+            {
+                return StoredProcedureViewTemplate;
+            }
 
-            //if (item is UserDefFuncTabViewModel)
-            //{
-            //    return UserDefFuncViewTemplate;
-            //}
+            if (item is UserDefFuncTabViewModel)
+            {
+                return UserDefFuncViewTemplate;
+            }
 
-            //if (item is TriggerTabViewModel)
-            //{
-            //    return TriggerViewTemplate;
-            //}
+            if (item is TriggerTabViewModel)
+            {
+                return TriggerViewTemplate;
+            }
 
             //if (item is ScaleAndSettingsTabViewModel)
             //{

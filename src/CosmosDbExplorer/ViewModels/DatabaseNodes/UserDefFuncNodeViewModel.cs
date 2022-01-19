@@ -1,29 +1,39 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class UserDefFuncRootNodeViewModel : AssetRootNodeViewModelBase<CosmosUserDefinedFunction>
     {
-        public UserDefFuncRootNodeViewModel(ContainerNodeViewModel parent)
+        private readonly IServiceProvider _serviceProvider;
+
+        public UserDefFuncRootNodeViewModel(ContainerNodeViewModel parent, IServiceProvider serviceProvider)
             : base(parent)
         {
             Name = "User Defined Functions";
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task LoadChildren(CancellationToken token)
         {
             IsLoading = true;
 
-            //var function = await DbService.GetUdfsAsync(Parent.Parent.Parent.Connection, Parent.Collection).ConfigureAwait(false);
+            var service = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
+            
+            var function = await service.GetUserDefinedFunctionsAsync(token);
 
-            //foreach (var func in function)
-            //{
-            //    await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
-            //}
+            foreach (var func in function)
+            {
+                //await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
+                Children.Add(new UserDefFuncNodeViewModel(this, func));
+            }
 
             IsLoading = false;
         }
@@ -72,9 +82,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            throw new System.NotImplementedException();
-            //MessengerInstance.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, null));
-            //return Task.FromResult(0);
+            Messenger.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
+            return Task.CompletedTask;
         }
     }
 }

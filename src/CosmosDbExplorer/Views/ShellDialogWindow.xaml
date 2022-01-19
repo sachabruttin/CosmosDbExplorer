@@ -6,7 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     mc:Ignorable="d"
-    Style="{StaticResource CustomMetroWindow}">
+    Style="{StaticResource CustomMetroWindow}"
+    ResizeMode="NoResize"
+    SaveWindowPosition="True"
+    SizeToContent="WidthAndHeight"
+    Icon="{Binding Content.DataContext.Icon, ElementName=dialogFrame, Mode=OneWay}"
+    Title="{Binding Content.DataContext.Title, ElementName=dialogFrame, Mode=OneWay}">
     <controls:MetroWindow.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -17,13 +22,13 @@
                 x:Name="dialogFrame"
                 Focusable="False"
                 NavigationUIVisibility="Hidden" />
-            <Button
+            <!--<Button
                 Grid.Row="1"
                 Content="Close"
                 HorizontalAlignment="Right"
                 Command="{Binding CloseCommand}"
                 Width="200"
-                Margin="{StaticResource SmallLeftTopRightBottomMargin}" />
+                Margin="{StaticResource SmallLeftTopRightBottomMargin}" />-->
         </Grid>
     </controls:MetroWindow.Content>
 </controls:MetroWindow>

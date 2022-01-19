@@ -1,11 +1,7 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
-using CosmosDbExplorer.Infrastructure;
-using CosmosDbExplorer.Services;
-using Microsoft.Azure.Documents;
 using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes

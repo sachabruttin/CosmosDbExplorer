@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
@@ -20,6 +21,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private RelayCommand _editConnectionCommand;
         private RelayCommand _removeConnectionCommand;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IWindowManagerService _windowManagerService;
 
         //private readonly IDialogService _dialogService;
         //private readonly ISettingsService _settingsService;
@@ -30,6 +32,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             : base(null, true)
         {
             _serviceProvider = serviceProvider;
+            _windowManagerService = serviceProvider.GetRequiredService<IWindowManagerService>();
             Connection = connection;
         }
 
@@ -77,6 +80,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 IsLoading = false;
             }
         }
+
+        public RelayCommand EditConnectionCommand => new(() => _windowManagerService.OpenInDialog("CosmosDbExplorer.ViewModels.AccountSettingsViewModel", Connection));
 
         //public RelayCommand EditConnectionCommand
         //{

@@ -79,6 +79,24 @@ namespace CosmosDbExplorer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://localhost:8081.
+        /// </summary>
+        public static string EmulatorEndpoint {
+            get {
+                return ResourceManager.GetString("EmulatorEndpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==.
+        /// </summary>
+        public static string EmulatorSecret {
+            get {
+                return ResourceManager.GetString("EmulatorSecret", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Main.
         /// </summary>
         public static string MainPageTitle {

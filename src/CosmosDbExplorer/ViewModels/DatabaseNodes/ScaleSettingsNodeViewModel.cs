@@ -1,5 +1,4 @@
 ﻿using CosmosDbExplorer.Contracts.ViewModels;
-using CosmosDbExplorer.Infrastructure;
 using CosmosDbExplorer.Messages;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;

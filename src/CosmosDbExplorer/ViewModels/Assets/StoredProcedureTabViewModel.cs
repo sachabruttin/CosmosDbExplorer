@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
-using CosmosDbExplorer.Infrastructure;
-using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Models;
-using CosmosDbExplorer.Validar;
-using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
-using Microsoft.Azure.Documents;
 using Microsoft.Toolkit.Mvvm.Input;
-using Newtonsoft.Json.Linq;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModels.Assets

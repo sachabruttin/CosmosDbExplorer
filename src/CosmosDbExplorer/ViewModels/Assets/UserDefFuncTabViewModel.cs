@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
-using CosmosDbExplorer.Infrastructure;
-using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
-using Microsoft.Azure.Documents;
 
 namespace CosmosDbExplorer.ViewModels.Assets
 {

@@ -31,18 +31,6 @@ namespace CosmosDbExplorer.ViewModels
 
         //private readonly ISettingsService _settingsService;
 
-        //public DatabaseViewModel(IMessenger messenger, IDocumentDbService dbService, ISettingsService settingsService, IUIServices uiServices)
-        //    : base(messenger, uiServices)
-        //{
-        //    Header = "Connections";
-        //    Title = Header;
-        //    IsVisible = true;
-
-        //    _settingsService = settingsService;
-
-        //    RegisterMessages();
-        //}
-
         private void RegisterMessages()
         {
             Messenger.Register<DatabaseViewModel, ConnectionSettingSavedMessage>(this, static (r, msg) => r.OnConnectionSettingsSaved(msg));
@@ -64,7 +52,6 @@ namespace CosmosDbExplorer.ViewModels
 
             if (node != null)
             {
-                //DispatcherHelper.RunAsync(() => Nodes.Remove(node));
                 Nodes.Remove(node);
             }
         }
@@ -79,7 +66,6 @@ namespace CosmosDbExplorer.ViewModels
             }
             else
             {
-                //var connection = SimpleIoc.Default.GetInstanceWithoutCaching<ConnectionNodeViewModel>();
                 var connection = _serviceProvider.GetService<ConnectionNodeViewModel>();
                 connection.Connection = msg.Connection;
                 Nodes.Add(connection);

@@ -3,9 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
-using CosmosDbExplorer.Infrastructure;
-using CosmosDbExplorer.Views;
-using Microsoft.Azure.Documents;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 

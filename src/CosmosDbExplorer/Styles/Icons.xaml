@@ -506,4 +506,17 @@
     <Style x:Key="AddIcon" BasedOn="{StaticResource IconText}" TargetType="TextBlock">
         <Setter Property="Text" Value="" />
     </Style>
+
+    <DrawingImage x:Key="AddConnectionIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M16,4L16,7 14.982,7 14.982,11 13,11 13,16 9,16 9,11 7.004,11 7,7 6,7 6,8 2,8 2,6 0,6 0,2 2,2 2,0 6,0 6,2 7,2 7,0.903C7.354,0.377 8.294,0.0270000000000001 9,0.0270000000000001 9.706,0.0270000000000001 10.648,0.377 11,0.903 11.352,0.377 12.275,0.0270000000000001 12.982,0.0270000000000001 13.689,0.0270000000000001 14.648,0.377 15,0.903L15,4z" />
+                    <GeometryDrawing Brush="#FF424242" Geometry="F1M7,5L7,6 8,6 8,10 10,10 10,15 12,15 12,10 14,10 14,6 15,6 15,5z M14,1.944C14,1.46 13.544,1 13,1 12.457,1 12,1.46 12,1.944L12,4 14,4z M10,4L8,4 8,1.944C8,1.46 8.457,1 9,1 9.544,1 10,1.46 10,1.944z" />
+                    <GeometryDrawing Brush="#FF388A34" Geometry="F1M7,5L5,5 5,7 3.018,7 3.018,5 1,5 1,3.018 3.018,3.018 3.018,1 5,1 5,3.018 7,3.018z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>

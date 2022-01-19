@@ -196,6 +196,10 @@
                             <i:Interaction.Behaviors>
                                 <behaviors:BackstageTabNavigationBehavior x:Name="navigationBehavior" />
                             </i:Interaction.Behaviors>
+                            <Fluent:Button Header="Add Account" 
+                                           Command="{Binding ShowAccountSettingsCommand}"
+                                           Icon="{StaticResource AddConnectionIcon}" 
+                                           KeyTip="A"/>
                             <Fluent:BackstageTabItem
                                 Tag="CosmosDbExplorer.ViewModels.SettingsViewModel"
                                 Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabSettingsHeader}" />

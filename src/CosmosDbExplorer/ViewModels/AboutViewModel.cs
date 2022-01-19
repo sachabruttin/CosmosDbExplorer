@@ -9,7 +9,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace CosmosDbExplorer.ViewModels
 {
-    public class AboutViewModel : ObservableObject //, INavigationAware
+    public class AboutViewModel : ObservableObject, INavigationAware
     {
         private readonly Assembly _assembly;
         private readonly FileVersionInfo _fvi;
@@ -38,14 +38,22 @@ namespace CosmosDbExplorer.ViewModels
 
         public string Version => _fvi.FileVersion;
 
-        public string Title => ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(_assembly, typeof(AssemblyTitleAttribute), false))?.Title ?? "error retrieving assembly title";
+        public string Title => (Attribute.GetCustomAttribute(_assembly, typeof(AssemblyTitleAttribute), false) as AssemblyTitleAttribute)?.Title ?? "error retrieving assembly title";
 
-        public List<Author> Authors => new List<Author> { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace") };
+        public static List<Author> Authors => new() { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace") };
 
         public string LicenseUrl => "https://github.com/sachabruttin/CosmosDbExplorer/blob/master/LICENSE";
 
         public string ProjectUrl => "https://www.bruttin.com/CosmosDbExplorer";
 
         public List<ExternalComponent> ExternalComponents { get; }
+
+        public void OnNavigatedFrom()
+        {
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+        }
     }
 }

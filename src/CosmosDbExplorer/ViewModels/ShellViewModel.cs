@@ -14,11 +14,13 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using CosmosDbExplorer.ViewModels.Assets;
+using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.ViewModels
 {
     public class ShellViewModel : ObservableRecipient
     {
+        private readonly IWindowManagerService _windowManagerService;
         private readonly IRightPaneService _rightPaneService;
         private readonly IApplicationInfoService _applicationInfoService;
         private readonly DatabaseViewModel _databaseViewModel;
@@ -30,8 +32,9 @@ namespace CosmosDbExplorer.ViewModels
 
         public ICommand UnloadedCommand => _unloadedCommand ?? (_unloadedCommand = new RelayCommand(OnUnloaded));
 
-        public ShellViewModel(IRightPaneService rightPaneService, IApplicationInfoService applicationInfoService, DatabaseViewModel databaseViewModel, IServiceProvider serviceProvider)
+        public ShellViewModel(IWindowManagerService windowManagerService, IRightPaneService rightPaneService, IApplicationInfoService applicationInfoService, DatabaseViewModel databaseViewModel, IServiceProvider serviceProvider)
         {
+            _windowManagerService = windowManagerService;
             _rightPaneService = rightPaneService;
             _applicationInfoService = applicationInfoService;
             _databaseViewModel = databaseViewModel;
@@ -97,22 +100,12 @@ namespace CosmosDbExplorer.ViewModels
         public ICanRefreshNode? CanRefreshNodeViewModel { get; set; }
         public ICanEditDelete? CanEditDelete { get; set; }
 
-        public RelayCommand ShowAccountSettingsCommand => throw new NotImplementedException();
-        //{
-        //    get
-        //    {
-        //        return _showAccountSettingsCommand
-        //            ?? (_showAccountSettingsCommand = new RelayCommand(
-        //            () =>
-        //            {
-        //                var form = new Views.AccountSettingsView();
-        //                var vm = (AccountSettingsViewModel)form.DataContext;
-        //                vm.SetConnection(new Connection(Guid.NewGuid()));
+        public RelayCommand ShowAccountSettingsCommand => new(ShowAccountSettingsCommandExecute);
 
-        //                var result = form.ShowDialog();
-        //            }));
-        //    }
-        //}
+        private void ShowAccountSettingsCommandExecute()
+        {
+            _windowManagerService.OpenInDialog("CosmosDbExplorer.ViewModels.AccountSettingsViewModel", new CosmosConnection(Guid.NewGuid()));
+        }
 
         public RelayCommand RefreshCommand => new(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>
         {

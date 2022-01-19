@@ -69,7 +69,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             //IsLoading = false;
         }
 
-        public RelayCommand AddNewCollectionCommand => throw new System.NotImplementedException();
+        public RelayCommand AddNewCollectionCommand => new(() => throw new System.NotImplementedException());
         //{
         //    get
         //    {
@@ -93,7 +93,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        public RelayCommand DeleteDatabaseCommand => throw new System.NotImplementedException();
+        public RelayCommand DeleteDatabaseCommand => new(() => throw new System.NotImplementedException());
         //{
         //    get
         //    {

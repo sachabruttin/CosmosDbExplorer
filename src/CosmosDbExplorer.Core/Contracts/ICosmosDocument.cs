@@ -12,11 +12,4 @@ namespace CosmosDbExplorer.Core.Contracts
         string? PartitionKey { get; }
         bool HasPartitionKey { get; }
     }
-
-    public interface ICosmosQuery
-    {
-        string QueryText { get; }
-        int MaxItemCount { get; }
-        string? ContinuationToken { get; }
-    }
 }

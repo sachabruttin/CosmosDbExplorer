@@ -13,7 +13,9 @@
     xmlns:selector="clr-namespace:CosmosDbExplorer.TemplateSelectors" 
     xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"     
     xmlns:Fluent="urn:fluent-ribbon"
-    xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions"
+    xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+    xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+    d:DataContext="{d:DesignInstance Type=viewmodels:ShellViewModel}"
     ShowSystemMenuOnRightClick="False"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded"
@@ -378,7 +380,6 @@
 
                 </Fluent:RibbonGroupBox>
 
-
                 <Fluent:RibbonGroupBox KeyTip="S" Header="File"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
@@ -451,31 +452,7 @@
 
                 <Fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
                                        Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"
-                                       Grid.IsSharedSizeScope="True">
-
-                    <Fluent:CheckBox Header="Enable Scan In Query" Icon="{x:Null}"
-                                     IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}">
-                        <Fluent:CheckBox.ToolTip>
-                            <Fluent:ScreenTip Title="Enable Cross Partition Query"
-                                              Text="Sets the option to enable scans on the queries which couldn't be served as indexing was opted out on the requested paths in the Azure Cosmos DB service."
-                                              Width="190" />
-                        </Fluent:CheckBox.ToolTip>
-                    </Fluent:CheckBox>
-
-                    <Fluent:CheckBox Header="Enable Cross Partition Query" 
-                                     IsChecked="{Binding SelectedTab.EnableCrossPartitionQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                     IsEnabled="{Binding SelectedTab.EnableCrossPartitionQuery, Converter={StaticResource nullToEnabledConverter}}">
-                        <Fluent:CheckBox.ToolTip>
-                            <Fluent:ScreenTip Title="Enable Cross Partition Query"
-                                              Text="Sets a value indicating whether users are enabled to send more than one request to execute the query in the Azure Cosmos DB service. More than one request is necessary if the query is not scoped to single partition key value."
-                                              Width="190" />
-                        </Fluent:CheckBox.ToolTip>
-                    </Fluent:CheckBox>
-
-                    <Fluent:TextBox Header="Partition Key"
-                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    InputWidth="150"/>
+                                       Grid.IsSharedSizeScope="False">
 
                     <Fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
                                     Value="{Binding SelectedTab.MaxItemCount, UpdateSourceTrigger=PropertyChanged}" 
@@ -489,14 +466,14 @@
                         </Fluent:Spinner.ToolTip>
                     </Fluent:Spinner>
 
-                    <Fluent:Spinner Header="Max DoP" Minimum="-1" Format="N0" Increment="1"
+                    <Fluent:Spinner Header="Max Concurrency" Minimum="-1" Format="N0" Increment="1"
                                     Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
                                     InputWidth="60" Margin="-1"
                                     Size="Large">
                         <Fluent:Spinner.ToolTip>
-                            <Fluent:ScreenTip Title="Max Degree of Parallelism"
-                                              Text="Sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
+                            <Fluent:ScreenTip Title="Max Concurrency"
+                                              Text="Gets or sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
                                               Width="190" />
                         </Fluent:Spinner.ToolTip>
                     </Fluent:Spinner>
@@ -507,13 +484,27 @@
                                     InputWidth="60" Margin="-1"
                                     Size="Large" >
                         <Fluent:Spinner.ToolTip>
-                            <Fluent:ScreenTip Title="Max Buffer"
-                                              Text="Sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
+                            <Fluent:ScreenTip Title="Max Buffer Item Count"
+                                              Text="Gets or sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
                                               Width="190" />
                         </Fluent:Spinner.ToolTip>
                     </Fluent:Spinner>
 
-                </Fluent:RibbonGroupBox>
+                        <Fluent:CheckBox Header="Enable Scan In Query" Icon="{x:Null}" FlowDirection="RightToLeft"
+                                     IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}">
+                            <Fluent:CheckBox.ToolTip>
+                                <Fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets the option to enable scans on the queries which couldn't be served as indexing was opted out on the requested paths in the Azure Cosmos DB service."
+                                              Width="190" />
+                            </Fluent:CheckBox.ToolTip>
+                        </Fluent:CheckBox>
+
+                        <Fluent:TextBox Header="Partition Key"
+                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    InputWidth="150"/>
+
+                    </Fluent:RibbonGroupBox>
                 
                 <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
                                        Visibility="{Binding IsSystemPropertiesVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">

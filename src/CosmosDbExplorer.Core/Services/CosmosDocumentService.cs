@@ -93,9 +93,13 @@ namespace CosmosDbExplorer.Core.Services
 
             var options = new QueryRequestOptions
             {
-                MaxItemCount = query.MaxItemCount,
                 // TODO: Handle Partition key and other IHaveRequestOptions values
-                //PartitionKey = 
+                PartitionKey = string.IsNullOrEmpty(query.PartitionKeyValue) ? null : PartitionKeyHelper.Get(query.PartitionKeyValue),
+                EnableScanInQuery = query.EnableScanInQuery,
+                MaxItemCount = query.MaxItemCount,
+                MaxBufferedItemCount = query.MaxBufferItem,
+                MaxConcurrency = query.MaxDOP,
+                PopulateIndexMetrics = true,
             };
 
             using (var resultSet = _container.GetItemQueryIterator<JObject>(
@@ -109,6 +113,8 @@ namespace CosmosDbExplorer.Core.Services
                 result.ContinuationToken = response.ContinuationToken;
                 result.Items = response.Resource.ToArray();
                 result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                //result.Diagnostics = response.Diagnostics.ToString;
+                result.IndexMetrics = response.IndexMetrics;
             }
 
             return result;

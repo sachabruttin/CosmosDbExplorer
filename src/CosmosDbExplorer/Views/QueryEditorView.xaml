@@ -116,28 +116,29 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
 
-                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <!--<StackPanel Orientation="Horizontal" Margin="0,2">
                                             <Label Content="Partition:" VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding QueryMetrics}" 
                                                   DisplayMemberPath="Key" SelectedValuePath="Value"
                                                   x:Name="metrics" IsSynchronizedWithCurrentItem="True"
                                                   Width="80" VerticalAlignment="Center" />
 
-                                        </StackPanel>
+                                        </StackPanel>-->
 
-                                        <!--<avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
+                                        <avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
                                                            Grid.Row="1" IsReadOnly="True" 
                                                            ShowLineNumbers="True"
-                                                           Document="{Binding ElementName=metrics, Path=SelectedValue, Mode=OneWay, Converter={StaticResource queryMetricsToDocumentConverter}}" HorizontalScrollBarVisibility="Auto" >
+                                                          
+                                                           HorizontalScrollBarVisibility="Auto" >
 
                                             <i:Interaction.Behaviors>
                                                 <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
                                                 <bhv:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
                                                 <bhv:AvalonTextEditorBehavior UseSearch="True" />
-                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding QueryMetrics, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                                             </i:Interaction.Behaviors>
 
-                                        </avalonEdit:TextEditor>-->
+                                        </avalonEdit:TextEditor>
 
                                     </Grid>
                                 </LayoutAnchorable>

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
+using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
@@ -21,11 +22,10 @@ namespace CosmosDbExplorer.ViewModels
 {
     [InjectValidation]
     public class QueryEditorViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
-        , IHaveQuerySettings
         , IHaveSystemProperties
     {
         private RelayCommand _saveLocalCommand;
-        private CosmosQueryResult<IReadOnlyCollection<JObject>> _queryResult;
+        private CosmosQueryResult<IReadOnlyCollection<JObject>>? _queryResult;
         //private RelayCommand _goToNextPageCommand;
         //private readonly StatusBarItem _requestChargeStatusBarItem;
         //private readonly StatusBarItem _queryInformationStatusBarItem;
@@ -37,6 +37,8 @@ namespace CosmosDbExplorer.ViewModels
 
         private ICosmosDocumentService _documentService;
 
+        private ICosmosQuery _query;
+
         public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
         {
@@ -46,6 +48,7 @@ namespace CosmosDbExplorer.ViewModels
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
 
             _cancellationTokenSource = new CancellationTokenSource();
+            _query = new CosmosQuery();
         }
 
 
@@ -138,6 +141,8 @@ namespace CosmosDbExplorer.ViewModels
 
         public string? ContinuationToken { get; set; }
 
+        public string? QueryMetrics { get; set; }
+
         //public Dictionary<string, QueryMetrics> QueryMetrics { get; set; }
 
         public RelayCommand ExecuteCommand => new(async () => await ExecuteQueryAsync(null).ConfigureAwait(false),
@@ -155,15 +160,10 @@ namespace CosmosDbExplorer.ViewModels
 
                 //((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
-                var query = new CosmosQuery
-                {
-                    QueryText = string.IsNullOrEmpty(SelectedText) ? Content : SelectedText,
-                    ContinuationToken = ContinuationToken
-                };
+                _query.QueryText= string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
+                _query.ContinuationToken = token;
 
-   
-                _queryResult = await _documentService.ExecuteQueryAsync(query, _cancellationTokenSource.Token);
-                //_queryResult = await _dbService.ExecuteQueryAsync(Connection, Container, query, this, token, _cancellationToken?.Token).ConfigureAwait(false);
+                _queryResult = await _documentService.ExecuteQueryAsync(_query, _cancellationTokenSource.Token);
 
                 //((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = false;
 
@@ -174,6 +174,8 @@ namespace CosmosDbExplorer.ViewModels
                                         (ContinuationToken != null
                                                 ? " (more results available)"
                                                 : string.Empty);
+
+                QueryMetrics = _queryResult.IndexMetrics;
 
                 //if (_queryResult.QueryMetrics != null)
                 //{
@@ -192,7 +194,8 @@ namespace CosmosDbExplorer.ViewModels
                 //    QueryMetrics = null;
                 //}
 
-                EditorViewModel.SetText(_queryResult, HideSystemProperties);
+
+                EditorViewModel.SetText(_queryResult.Items, HideSystemProperties);
                 HeaderViewModel.SetText(_queryResult.Headers, HideSystemProperties);
             }
             catch (OperationCanceledException)
@@ -220,7 +223,7 @@ namespace CosmosDbExplorer.ViewModels
             ContinuationToken = null;
             RequestCharge = null;
             QueryInformation = null;
-            //QueryMetrics = null;
+            QueryMetrics = null;
             EditorViewModel.SetText(null, HideSystemProperties);
             HeaderViewModel.SetText(null, HideSystemProperties);
 
@@ -383,7 +386,11 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public bool HideSystemProperties { get; set; } = true;
+        public bool HideSystemProperties
+        {
+            get { return _query.HideSystemProperties; }
+            set { _query.HideSystemProperties = value; }
+        }
 
         public void OnHideSystemPropertiesChanged()
         {
@@ -393,12 +400,48 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
+        public bool EnableScanInQuery
+        {
+            get { return _query.EnableScanInQuery; }
+            set { _query.EnableScanInQuery = value; }
+        }
+        public bool EnableCrossPartitionQuery
+        {
+            get { return _query.EnableCrossPartitionQuery; }
+            set { _query.EnableCrossPartitionQuery = value; }
+        }
+
+        public int MaxItemCount
+        {
+            get { return _query.MaxItemCount; }
+            set { _query.MaxItemCount = value; }
+        }
+
+        public int MaxDOP
+        {
+            get { return _query.MaxDOP; }
+            set { _query.MaxDOP = value; }
+        }
+
+        public int MaxBufferItem
+        {
+            get { return _query.MaxBufferItem; }
+            set { _query.MaxBufferItem = value; }
+        }
+        
+        public string? PartitionKeyValue
+        {
+            get { return _query.PartitionKeyValue; }
+            set { _query.PartitionKeyValue = value; }
+        }
+
+        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+
         protected override void OnClose()
         {
             Clean();
             base.OnClose();
         }
-
 
         //public override void Cleanup()
         //{
@@ -408,13 +451,6 @@ namespace CosmosDbExplorer.ViewModels
         //    base.Cleanup();
         //}
 
-        public bool? EnableScanInQuery { get; set; } = false;
-        public bool? EnableCrossPartitionQuery { get; set; } = false;
-        public int? MaxItemCount { get; set; } = 100;
-        public int? MaxDOP { get; set; } = -1;
-        public int? MaxBufferItem { get; set; } = -1;
-        public string PartitionKeyValue { get; set; }
-        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
     }
 
     public class QueryEditorViewModelValidator : AbstractValidator<QueryEditorViewModel>

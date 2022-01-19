@@ -8,7 +8,6 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:controls="clr-namespace:CosmosDbExplorer.Behaviors"
              xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              d:DataContext="{d:DesignInstance Type=assets:TriggerTabViewModel}"
@@ -39,11 +38,9 @@
 
         <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
                                ShowLineNumbers="True"
-                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                ContextMenu="{StaticResource JsonEditorContextMenu}">
             <i:Interaction.Behaviors>
-                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
                 <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
                 <bhv:AvalonTextEditorBehavior UseSearch="True" />
                 <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

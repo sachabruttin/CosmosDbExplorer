@@ -7,7 +7,7 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:controls="clr-namespace:CosmosDbExplorer.Behaviors" 
+             xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors" 
              xmlns:templateselectors="clr-namespace:CosmosDbExplorer.TemplateSelectors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -41,11 +41,12 @@
                                 <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
                                     <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
                                            ShowLineNumbers="True"
-                                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            ContextMenu="{StaticResource JsonEditorContextMenu}">
                                         <i:Interaction.Behaviors>
-                                            <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                                            <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                                            <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                            <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </i:Interaction.Behaviors>
                                     </avalonedit:TextEditor>
                                 </LayoutAnchorable>
@@ -113,10 +114,11 @@
                                                                                         <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
                                                                                                                BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
                                                                                                                ShowLineNumbers="True" Padding="2"
-                                                                                                               Document="{Binding Path=DataContext.Document, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}"
                                                                                                                ContextMenu="{StaticResource JsonEditorContextMenu}">
                                                                                             <i:Interaction.Behaviors>
-                                                                                                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                                                                                <bhv:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                                                                                <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                                                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Path=DataContext.Document, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}" />
                                                                                             </i:Interaction.Behaviors>
                                                                                         </avalonedit:TextEditor>
 

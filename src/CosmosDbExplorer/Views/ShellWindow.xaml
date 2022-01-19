@@ -709,6 +709,7 @@
                         Grid.Row="0"
                         DocumentsSource="{Binding Tabs}"
                         AnchorablesSource="{Binding Tools}"
+                        DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}"
                         ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
                         LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}">
 

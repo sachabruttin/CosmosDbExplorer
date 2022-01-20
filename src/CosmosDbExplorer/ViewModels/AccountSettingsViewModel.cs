@@ -67,7 +67,7 @@ namespace CosmosDbExplorer.ViewModels
         { 
         }
 
-        public bool AddAccountCommandCanExecute() => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool AddAccountCommandCanExecute() => string.IsNullOrEmpty(((IDataErrorInfo)this).Error); //!((INotifyDataErrorInfo)this).HasErrors;
 
         public void OnNavigatedTo(object parameter)
         {

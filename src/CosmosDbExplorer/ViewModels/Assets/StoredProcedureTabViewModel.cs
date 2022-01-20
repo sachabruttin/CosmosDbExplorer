@@ -226,7 +226,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public RelayCommand GoToNextPageCommand => new(() => throw new NotImplementedException(), () => false);
 
-        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error); //!((INotifyDataErrorInfo)this).HasErrors;
     }
 
     public class StoredProcedureTabViewModelValidator : AbstractValidator<StoredProcedureTabViewModel>

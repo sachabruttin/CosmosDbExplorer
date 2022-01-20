@@ -442,7 +442,7 @@ namespace CosmosDbExplorer.ViewModels
             set { _query.PartitionKeyValue = value; }
         }
 
-        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;
 
         protected override void OnClose()
         {

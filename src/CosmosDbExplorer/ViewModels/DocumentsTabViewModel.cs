@@ -432,7 +432,7 @@ namespace CosmosDbExplorer.ViewModels
         //    });
         //}
 
-        public bool IsValid => !((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;
 
         public bool HideSystemProperties { get; set; } = true;
 

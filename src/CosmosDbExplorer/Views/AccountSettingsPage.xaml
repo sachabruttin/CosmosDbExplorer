@@ -11,9 +11,12 @@
       xmlns:models="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
       d:DataContext="{d:DesignInstance Type=viewmodels:AccountSettingsViewModel}"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AccountSettingsPage">
-
+      Width="600"
+      Height="280"
+      d:DesignHeight="300" d:DesignWidth="800"
+      Title="{Binding Title}"
+      >
+    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

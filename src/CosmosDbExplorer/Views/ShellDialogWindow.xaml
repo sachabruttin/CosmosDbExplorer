@@ -8,27 +8,16 @@
     mc:Ignorable="d"
     Style="{StaticResource CustomMetroWindow}"
     ResizeMode="NoResize"
+    Width="{Binding Content.Width, FallbackValue=800}"
+    Height="{Binding Content.Height, FallbackValue=400}"
     SaveWindowPosition="True"
     SizeToContent="WidthAndHeight"
     Icon="{Binding Content.DataContext.Icon, ElementName=dialogFrame, Mode=OneWay}"
-    Title="{Binding Content.DataContext.Title, ElementName=dialogFrame, Mode=OneWay}">
+    Title="{Binding Content.Title, ElementName=dialogFrame, Mode=OneWay}">
     <controls:MetroWindow.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Frame
-                x:Name="dialogFrame"
-                Focusable="False"
-                NavigationUIVisibility="Hidden" />
-            <!--<Button
-                Grid.Row="1"
-                Content="Close"
-                HorizontalAlignment="Right"
-                Command="{Binding CloseCommand}"
-                Width="200"
-                Margin="{StaticResource SmallLeftTopRightBottomMargin}" />-->
-        </Grid>
+        <Frame
+            x:Name="dialogFrame"
+            Focusable="False"
+            NavigationUIVisibility="Hidden" />
     </controls:MetroWindow.Content>
 </controls:MetroWindow>

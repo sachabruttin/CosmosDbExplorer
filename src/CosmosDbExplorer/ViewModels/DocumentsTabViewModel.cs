@@ -132,7 +132,7 @@ namespace CosmosDbExplorer.ViewModels
                     //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
                     //}
 
-                    //SetStatusBar(new StatusBarInfo(_currentDocument));
+                    SetStatusBar(new StatusBarInfo(response));
 
                     EditorViewModel.SetText(_currentDocument, HideSystemProperties);
                     HeaderViewModel.SetText(response?.Headers, HideSystemProperties);

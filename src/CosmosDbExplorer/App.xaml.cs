@@ -77,7 +77,7 @@ namespace CosmosDbExplorer
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
-
+            services.AddSingleton<IDialogService, MetroDialogService>();
             services.AddSingleton<IUIServices, UIServices>();
 
             // Cosmos Services

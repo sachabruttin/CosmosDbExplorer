@@ -9,5 +9,6 @@ namespace CosmosDbExplorer.Contracts.Services
         void PersistData();
 
         void PersistConnection(CosmosConnection connection);
+        void RemoveConnection(CosmosConnection connection);
     }
 }

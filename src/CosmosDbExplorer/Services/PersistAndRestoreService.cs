@@ -38,12 +38,7 @@ namespace CosmosDbExplorer.Services
 
         public void PersistConnection(CosmosConnection connection)
         {
-            if (App.Current.Properties["Connections"] is not List<CosmosConnection> connections)
-            {
-                throw new Exception("Cannot find Connections on Application Settings!");
-            }
-
-            var index = connections.IndexOf(connection);
+            var (index, connections) = GetCosmosIndex(connection);
 
             if (index > -1)
             {
@@ -55,6 +50,26 @@ namespace CosmosDbExplorer.Services
             }
 
             PersistData();
+        }
+
+        public void RemoveConnection(CosmosConnection connection)
+        {
+            var (index, connections) = GetCosmosIndex(connection);
+
+            if (index > 1)
+            {
+                connections.RemoveAt(index);
+            }
+        }
+
+        private (int index, List<CosmosConnection> connections) GetCosmosIndex(CosmosConnection connection)
+        {
+            if (App.Current.Properties["Connections"] is not List<CosmosConnection> connections)
+            {
+                throw new Exception("Cannot find Connections on Application Settings!");
+            }
+
+            return new(connections.IndexOf(connection), connections);
         }
 
         public void RestoreData()

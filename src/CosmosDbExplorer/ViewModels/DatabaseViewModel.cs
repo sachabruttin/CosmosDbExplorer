@@ -66,8 +66,7 @@ namespace CosmosDbExplorer.ViewModels
             }
             else
             {
-                var connection = _serviceProvider.GetService<ConnectionNodeViewModel>();
-                connection.Connection = msg.Connection;
+                var connection = new ConnectionNodeViewModel(_serviceProvider, msg.Connection);
                 Nodes.Add(connection);
             }
         }

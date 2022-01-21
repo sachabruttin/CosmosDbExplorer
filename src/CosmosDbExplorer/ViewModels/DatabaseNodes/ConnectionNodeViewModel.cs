@@ -9,6 +9,7 @@ using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -18,21 +19,18 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class ConnectionNodeViewModel : TreeViewItemViewModel, ICanRefreshNode
     {
-        private RelayCommand _editConnectionCommand;
-        private RelayCommand _removeConnectionCommand;
         private readonly IServiceProvider _serviceProvider;
         private readonly IWindowManagerService _windowManagerService;
-
-        //private readonly IDialogService _dialogService;
-        //private readonly ISettingsService _settingsService;
-        private RelayCommand _refreshCommand;
-        private RelayCommand _addNewCollectionCommand;
+        private readonly IDialogService _dialogService;
+        private readonly IPersistAndRestoreService _persistAndRestoreService;
 
         public ConnectionNodeViewModel(IServiceProvider serviceProvider, CosmosConnection connection)
             : base(null, true)
         {
             _serviceProvider = serviceProvider;
+            _dialogService = serviceProvider.GetRequiredService<IDialogService>();
             _windowManagerService = serviceProvider.GetRequiredService<IWindowManagerService>();
+            _persistAndRestoreService = serviceProvider.GetRequiredService<IPersistAndRestoreService>();
             Connection = connection;
         }
 
@@ -64,13 +62,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 foreach (var db in Databases)
                 {
                     Children.Add(new DatabaseNodeViewModel(_serviceProvider, db, this));
-                    //await DispatcherHelper.RunAsync(() => Children.Add(new DatabaseNodeViewModel(db, this)));
                 }
             }
-            //catch (HttpRequestException ex)
-            //{
-            //    await DispatcherHelper.RunAsync(async () => await _dialogService.ShowError(ex, "Error", null, null));
-            //}
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
@@ -83,55 +76,24 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public RelayCommand EditConnectionCommand => new(() => _windowManagerService.OpenInDialog("CosmosDbExplorer.ViewModels.AccountSettingsViewModel", Connection));
 
-        //public RelayCommand EditConnectionCommand
-        //{
-        //    get
-        //    {
-        //        return _editConnectionCommand
-        //            ?? (_editConnectionCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    var form = new AccountSettingsView();
-        //                    var vm = (AccountSettingsViewModel)form.DataContext;
-        //                    vm.SetConnection(Connection);
+        public RelayCommand RemoveConnectionCommand => new(RemoveConnectionCommandExecute);
 
-        //                    if (form.ShowDialog().GetValueOrDefault(false))
-        //                    {
-        //                        Children.Clear();
-        //                        await LoadChildren();
-        //                    }
-        //                }
-        //                ));
-        //    }
-        //}
-
-        //public RelayCommand RemoveConnectionCommand
-        //{
-        //    get
-        //    {
-        //        return _removeConnectionCommand
-        //            ?? (_removeConnectionCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    await _dialogService.ShowMessage("Are you sure that you want to delete this connection?", "Delete connection", null, null,
-        //                        async confirm =>
-        //                        {
-        //                            if (confirm)
-        //                            {
-        //                                await _settingsService.RemoveConnection(Connection);
-        //                                MessengerInstance.Send(new RemoveConnectionMessage(Connection));
-        //                            }
-        //                        });
-        //                }
-        //                ));
-        //    }
-        //}
-
-        public RelayCommand RefreshCommand => new(async () =>
+        private async void RemoveConnectionCommandExecute()
         {
-            Children.Clear();
-            await LoadChildren(new CancellationToken());
-        });
+            void confirmed(bool confirm)
+            {
+                if (confirm)
+                {
+                    _persistAndRestoreService.RemoveConnection(Connection);
+                    Messenger.Send(new RemoveConnectionMessage(Connection));
+                }
+            }
+
+            await _dialogService.ShowQuestion(
+                $"Are you sure that you want to delete this connection '{Connection.Label}'?", 
+                "Delete connection", 
+                confirmed);
+        }
 
         //public RelayCommand AddNewCollectionCommand
         //{
@@ -154,6 +116,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //                    }
         //                }));
         //    }
-        //}
+
+        public RelayCommand RefreshCommand => new(async () =>
+        {
+            Children.Clear();
+            await LoadChildren(new CancellationToken());
+        });
     }
 }

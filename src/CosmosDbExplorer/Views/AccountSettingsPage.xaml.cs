@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CosmosDbExplorer.ViewModels;
+using CosmosDbExplorer.Helpers;
+using MahApps.Metro.Controls;
 
 namespace CosmosDbExplorer.Views
 {
@@ -24,7 +26,18 @@ namespace CosmosDbExplorer.Views
         public AccountSettingsPage(AccountSettingsViewModel viewModel)
         {
             InitializeComponent();
+            viewModel.SetResult = OnSetResult;
             DataContext = viewModel;
+        }
+
+        private void OnSetResult(bool? result)
+        {
+            var window = UIHelper.FindVisualParent<MetroWindow>(this);
+
+            if (window != null)
+            {
+                window.Close();
+            }
         }
     }
 }

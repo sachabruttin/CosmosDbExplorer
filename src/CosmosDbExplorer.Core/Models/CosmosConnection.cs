@@ -14,7 +14,7 @@ namespace CosmosDbExplorer.Core.Models
         }
 
         [JsonConstructor]
-        public CosmosConnection(Guid? id, string label, Uri endpoint, string secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
+        public CosmosConnection(Guid? id, string? label, Uri? endpoint, string ?secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
         {
             Id = id ?? Guid.NewGuid();
             Label = label;
@@ -29,13 +29,13 @@ namespace CosmosDbExplorer.Core.Models
         public Guid Id { get; protected set; }
 
         [JsonProperty]
-        public string Label { get; protected set; }
+        public string? Label { get; protected set; }
 
         [JsonProperty]
-        public Uri DatabaseUri { get; protected set; }
+        public Uri? DatabaseUri { get; protected set; }
 
         [JsonProperty]
-        public string AuthenticationKey { get; protected set; }
+        public string? AuthenticationKey { get; protected set; }
 
         [JsonProperty]
         public ConnectionType ConnectionType { get; protected set; }
@@ -48,7 +48,7 @@ namespace CosmosDbExplorer.Core.Models
 
         public bool IsLocalEmulator()
         {
-            return DatabaseUri == Constants.Emulator.Endpoint
+            return Constants.Emulator.Endpoint.Equals(DatabaseUri)
                 && AuthenticationKey == Constants.Emulator.Secret;
         }
 

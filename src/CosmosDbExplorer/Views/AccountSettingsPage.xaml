@@ -69,7 +69,7 @@
                   IsChecked="{Binding UseLocalEmulator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10" Grid.Row="3">
-            <Button Content="OK" IsDefault="True" Width="80" Command="{Binding AddAccountCommand}"  />
+            <Button Content="Save" IsDefault="True" Width="80" Command="{Binding SaveAccountCommand}"  />
             <Button Content="Cancel" IsCancel="True" Width="80" Margin="20,0,0,0" />
         </StackPanel>
     </Grid>

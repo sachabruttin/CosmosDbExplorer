@@ -36,6 +36,27 @@ namespace CosmosDbExplorer.Services
             }
         }
 
+        public void PersistConnection(CosmosConnection connection)
+        {
+            if (App.Current.Properties["Connections"] is not List<CosmosConnection> connections)
+            {
+                throw new Exception("Cannot find Connections on Application Settings!");
+            }
+
+            var index = connections.IndexOf(connection);
+
+            if (index > -1)
+            {
+                connections[index] = connection;
+            }
+            else
+            {
+                connections.Add(connection);
+            }
+
+            PersistData();
+        }
+
         public void RestoreData()
         {
             RestoreSettings();

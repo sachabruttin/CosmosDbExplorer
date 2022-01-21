@@ -16,7 +16,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 {
     public abstract class AssetTabViewModelBase<TNode, TResource> : PaneWithZoomViewModel<TNode>, IAssetTabCommand
         where TNode : TreeViewItemViewModel, IAssetNode<TResource>
-        where TResource : ICosmosScript 
+        where TResource : ICosmosScript
     {
         //private readonly IDialogService _dialogService;
         private readonly IServiceProvider _serviceProvider;
@@ -55,12 +55,16 @@ namespace CosmosDbExplorer.ViewModels.Assets
             Connection = connection;
             Collection = collection;
             AccentColor = connection.AccentColor;
-            SetInformation(Node.Resource);
+
+            if (node != null)
+            {
+                SetInformation(node.Resource);
+            }
         }
 
         public TNode Node { get; protected set; }
 
-        protected void SetInformation(TResource resource)
+        protected void SetInformation(TResource? resource)
         {
             if (resource != null)
             {

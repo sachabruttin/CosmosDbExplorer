@@ -202,7 +202,7 @@ namespace CosmosDbExplorer.ViewModels
             where TTabViewModel : PaneViewModel<TNodeViewModel>
             where TNodeViewModel : TreeViewItemViewModel, IContent
         {
-            if (message is null || message.Node is null)
+            if (message is null)
             {
                 throw new Exception("Node is null!");
             }

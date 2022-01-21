@@ -8,6 +8,6 @@ namespace CosmosDbExplorer.Contracts.ViewModels
     where T : ICosmosResource
     {
         System.Drawing.Color? AccentColor { get; }
-        T Resource { get; set; }
+        T? Resource { get; set; }
     }
 }

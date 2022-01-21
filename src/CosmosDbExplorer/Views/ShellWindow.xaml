@@ -98,11 +98,11 @@
                     <views:PermissionEditView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.PermissionEditTemplate>-->
-            <!--<selector:TabContentTemplateSelector.CollectionMetricsTemplate>
+            <selector:TabContentTemplateSelector.MetricsTemplate>
                 <DataTemplate>
-                    <views:CollectionMetricsTabView />
+                    <views:MetricsTabView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.CollectionMetricsTemplate>-->
+            </selector:TabContentTemplateSelector.MetricsTemplate>
         </selector:TabContentTemplateSelector>
 
         <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">

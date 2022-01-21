@@ -32,5 +32,10 @@ namespace CosmosDbExplorer.Core.Services
 
             return result;
         }
+
+        public async Task<AccountProperties> GetDatabaseMetricsAsync()
+        {
+            return await _client.ReadAccountAsync();
+        }
     }
 }

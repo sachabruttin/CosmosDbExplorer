@@ -35,5 +35,17 @@ namespace CosmosDbExplorer.Core.Services
 
             return result;
         }
+
+        public async Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken)
+        {
+            var ctx = _client.GetContainer(_cosmosDatabase.Id, container.Id);
+            var options = new ContainerRequestOptions
+            {
+                PopulateQuotaInfo = true,
+            };
+
+            var response = await ctx.ReadContainerAsync(options, cancellationToken);
+            return new CosmosContainerMetric(response);
+        }
     }
 }

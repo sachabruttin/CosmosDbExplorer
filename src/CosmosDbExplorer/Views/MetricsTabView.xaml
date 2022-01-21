@@ -1,0 +1,181 @@
+﻿<UserControl x:Class="CosmosDbExplorer.Views.MetricsTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+             xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:MetricsTabViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}" x:Key="ProgressBarText">
+            <Setter Property="Margin" Value="10,0" />
+        </Style>
+
+        <Style TargetType="{x:Type ProgressBar}">
+            <Setter Property="Margin" Value="5,2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                        <Grid MinHeight="14" MinWidth="200">
+                            <Rectangle Name="PART_Track" Stroke="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" StrokeThickness="1">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#FF00FF00"/>
+                                        <GradientStop Offset="0.8" Color="#FFFFFF00"/>
+                                        <GradientStop Offset="1" Color="#FFFF0000"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <DockPanel Margin="1">
+                                <Rectangle Name="PART_Indicator" />
+                                <Rectangle Name="Mask" MinWidth="{TemplateBinding Width}" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </DockPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="0.5*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Summary" Grid.Column="0" Margin="0,5,5,5">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--<Label Grid.Row="0" Grid.Column="0" Content="Partition Count:" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Metrics.PartitionCount}" FontWeight="Bold" />-->
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Document Count:" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Metrics.DocumentsCountUsage, StringFormat={}{0:N0}}" FontWeight="Bold" />
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Document Size:" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Metrics.DocumentsSizeUsage, Converter={StaticResource BytesToGigaBytesConverter}, StringFormat={}{0:N3} GiB}" FontWeight="Bold" />
+
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Quotas" Grid.Column="1" Margin="5,5,0,5">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Collection Size:" />
+                    <ProgressBar Grid.Row="0" Grid.Column="1" Minimum="0" 
+                                 Maximum="{Binding Metrics.CollectionSizeQuota}"
+                                 Value="{Binding Metrics.CollectionSizeUsage, Mode=OneWay}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource ProgressBarText}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:N3}/{1:N3} GiB">
+                                <Binding Path="Metrics.CollectionSizeUsage" Converter="{StaticResource BytesToGigaBytesConverter}" />
+                                <Binding Path="Metrics.CollectionSizeQuota" Converter="{StaticResource BytesToGigaBytesConverter}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Stored Procedures:" />
+                    <ProgressBar Grid.Row="1" Grid.Column="1" Minimum="0" 
+                                 Maximum="{Binding Metrics.StoredProceduresQuota}"
+                                 Value="{Binding Metrics.StoredProceduresUsage, Mode=OneWay}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ProgressBarText}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:N0}/{1:N0}">
+                                <Binding Path="Metrics.StoredProceduresUsage" />
+                                <Binding Path="Metrics.StoredProceduresQuota" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Triggers:" />
+                    <ProgressBar Grid.Row="2" Grid.Column="1" Minimum="0" 
+                                 Maximum="{Binding Metrics.TriggersQuota}"
+                                 Value="{Binding Metrics.TriggersUsage, Mode=OneWay}" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource ProgressBarText}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:N0}/{1:N0}">
+                                <Binding Path="Metrics.TriggersUsage" />
+                                <Binding Path="Metrics.TriggersQuota" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <Label Grid.Row="3" Grid.Column="0" Content="User Defined Functions:" />
+                    <ProgressBar Grid.Row="3" Grid.Column="1" Minimum="0" 
+                                 Maximum="{Binding Metrics.UserDefinedFunctionsQuota}"
+                                 Value="{Binding Metrics.UserDefinedFunctionsUsage, Mode=OneWay}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource ProgressBarText}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:N0}/{1:N0}">
+                                <Binding Path="Metrics.UserDefinedFunctionsUsage" />
+                                <Binding Path="Metrics.UserDefinedFunctionsQuota" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <GroupBox Header="Partitions" Grid.Row="1" Margin="0,5">
+
+            <!--<lvc:CartesianChart Grid.Row="0" Series="{Binding PartitionSizeSeries}" Margin="10">
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MinValue="0" LabelFormatter="{Binding Formatter}">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator  IsEnabled="True" Step="1048576" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Labels="{Binding Labels}" Position="LeftBottom" LabelsRotation="-90" DisableAnimations="True">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator  IsEnabled="False" Step="1" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.DataTooltip>
+                    <local:PartitionMetricChartTooltip/>
+                </lvc:CartesianChart.DataTooltip>
+            </lvc:CartesianChart>-->
+
+        </GroupBox>
+
+    </Grid>
+</UserControl>

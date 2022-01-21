@@ -17,7 +17,7 @@ namespace CosmosDbExplorer.TemplateSelectors
         public DataTemplate? ScaleAndSettingsTemplate { get; set; }
         public DataTemplate? UserEditTempalate { get; set; }
         public DataTemplate? PermissionEditTemplate { get; set; }
-        public DataTemplate? CollectionMetricsTemplate { get; set; }
+        public DataTemplate? MetricsTemplate { get; set; }
 
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
@@ -71,10 +71,10 @@ namespace CosmosDbExplorer.TemplateSelectors
             //    return PermissionEditTemplate;
             //}
 
-            //if (item is CollectionMetricsTabViewModel)
-            //{
-            //    return CollectionMetricsTemplate;
-            //}
+            if (item is MetricsTabViewModel)
+            {
+                return MetricsTemplate;
+            }
 
             return base.SelectTemplate(item, container);
         }

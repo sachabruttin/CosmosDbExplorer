@@ -92,7 +92,6 @@ namespace CosmosDbExplorer.ViewModels
 
         }
 
-        // TODO: Define CosmosDB Connection and DocumentCollection
         public abstract void Load(string contentId, TNodeViewModel node, CosmosConnection connection, CosmosContainer container);
     }
 

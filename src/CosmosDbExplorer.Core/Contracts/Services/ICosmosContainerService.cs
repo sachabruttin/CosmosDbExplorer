@@ -9,6 +9,7 @@ namespace CosmosDbExplorer.Core.Contracts.Services
 {
     public interface ICosmosContainerService
     {
+        Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken);
         Task<IList<CosmosContainer>> GetContainersAsync(CancellationToken cancellationToken);
     }
 }

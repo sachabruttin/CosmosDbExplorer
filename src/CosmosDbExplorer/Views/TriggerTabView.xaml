@@ -11,6 +11,7 @@
              xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              d:DataContext="{d:DesignInstance Type=assets:TriggerTabViewModel}"
+             Style="{DynamicResource CosmosUserControl}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>

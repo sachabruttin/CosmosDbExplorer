@@ -8,9 +8,9 @@
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
              xmlns:template="clr-namespace:CosmosDbExplorer.TemplateSelectors" 
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             d:DataContext="{d:DesignInstance Type=viewmodel:DocumentsTabViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource CosmosUserControl}">
     <DockPanel>
 
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" VerticalAlignment="Center"
@@ -114,7 +114,7 @@
                                     </controls:ListBoxMore.ItemTemplateSelector>
 
                                     <controls:ListBoxMore.Style>
-                                        <Style TargetType="ListBox">
+                                        <Style TargetType="ListBox" BasedOn="{StaticResource MahApps.Styles.ListBox}">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type ListBox}">

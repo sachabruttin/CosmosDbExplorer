@@ -9,6 +9,7 @@
              xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
              xmlns:avalon="clr-namespace:CosmosDbExplorer.AvalonEdit"
              mc:Ignorable="d" 
+             Style="{DynamicResource CosmosUserControl}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>

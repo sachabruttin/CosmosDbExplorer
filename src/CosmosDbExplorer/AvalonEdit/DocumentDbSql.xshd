@@ -1,33 +1,63 @@
 ﻿<?xml version="1.0"?>
 <!-- Shades of Red-Brown: #a31515, #cf4315, #ffb96e, #ffdc95 -->
 <!-- Shades of Bright-Blue: #0077dc #008fe4 #8dbbdc #8de8ff -->
-<SyntaxDefinition name="DocumentDb" extensions=".docdb"
-                 xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-
+<SyntaxDefinition name="DocumentDbSql" extensions=".docdb"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
+                  >
   <!-- T-SQL Reference: http://msdn.microsoft.com/de-de/library/ms189826%28v=sql.90%29.aspx -->
-  <Color name="Digits"  foreground="#09885a" exampleText="3.1415f"/>
-  <Color name="Comment" foreground="Green" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Digits"  foreground="DarkGreen" exampleText="3.1415f"/>
+  <Color name="Comment" foreground="DarkGreen" exampleText="string text = &quot;Hello, World!&quot;"/>
   <Color name="Punctuation" foreground="Silver" exampleText="string text = &quot;Hello, World!&quot;"/>
-
-  <Color name="String" foreground="#a31515" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="String2" foreground="#a31515" exampleText="string text = &quot;Hello, World!&quot;"/>
-
+  <Color name="String" foreground="DarkRed" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="String2" foreground="DarkRed" exampleText="string text = &quot;Hello, World!&quot;"/>
   <Color name="Keyword" fontWeight="bold" foreground="Blue" exampleText="SELECT"/>
   <Color name="Function" fontWeight="bold" foreground="Orchid" exampleText="ARRAY_CONCAT" />
-  
   <Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" />
-
-  <Color name="Variable" foreground="Red"  exampleText="@Variable" />
-  <Color name="Variable1" foreground="Red" exampleText="@@Variable" />
-
+  <Color name="Variable" foreground="DarkBlue"  exampleText="@Variable" />
+  <Color name="Variable1" foreground="DarkBlue" exampleText="@@Variable" />
   <Color name="ObjectReference" foreground="Teal" exampleText="Customer.Name" />
   <Color name="ObjectReference1" foreground="Teal" exampleText="dbo.Customer.Name" />
-
   <Color name="ObjectReferenceInBrackets" foreground="Teal" exampleText="[Customer].[Name]" />
   <Color name="ObjectReferenceInBrackets1" foreground="Teal" exampleText="[dbo].[Customer].[Name]" />
+  <Color name="CommentMarkerSetTodo"       foreground="DarkGreen"     fontWeight="bold" />
+  <Color name="CommentMarkerSetHackUndone" foreground="DarkRed" fontWeight="bold" />
 
-  <Color name="CommentMarkerSetTodo"       foreground="Red"     fontWeight="bold" />
-  <Color name="CommentMarkerSetHackUndone" foreground="#E0E000" fontWeight="bold" />
+  <!-- Light -->
+  <Color name="Light.Digits"  foreground="DarkGreen" exampleText="3.1415f"/>
+  <Color name="Light.Comment" foreground="DarkGreen" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Light.Punctuation" foreground="Silver" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Light.String" foreground="DarkRed" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Light.String2" foreground="DarkRed" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Light.Keyword" fontWeight="bold" foreground="Blue" exampleText="SELECT"/>
+  <Color name="Light.Function" fontWeight="bold" foreground="Orchid" exampleText="ARRAY_CONCAT" />
+  <Color name="Light.MethodCall" foreground="MidnightBlue" fontWeight="bold" />
+  <Color name="Light.Variable" foreground="DarkBlue"  exampleText="@Variable" />
+  <Color name="Light.Variable1" foreground="DarkBlue" exampleText="@@Variable" />
+  <Color name="Light.ObjectReference" foreground="Teal" exampleText="Customer.Name" />
+  <Color name="Light.ObjectReference1" foreground="Teal" exampleText="dbo.Customer.Name" />
+  <Color name="Light.ObjectReferenceInBrackets" foreground="Teal" exampleText="[Customer].[Name]" />
+  <Color name="Light.ObjectReferenceInBrackets1" foreground="Teal" exampleText="[dbo].[Customer].[Name]" />
+  <Color name="Light.CommentMarkerSetTodo"       foreground="DarkGreen"     fontWeight="bold" />
+  <Color name="Light.CommentMarkerSetHackUndone" foreground="DarkRed" fontWeight="bold" />
+
+  <!-- Light -->
+  <Color name="Dark.Digits"  foreground="#b5cea8" exampleText="3.1415f"/>
+  <Color name="Dark.Comment" foreground="#6a9955" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Dark.Punctuation" foreground="#f1d700" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Dark.String" foreground="#ce9178" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Dark.String2" foreground="#ce9178" exampleText="string text = &quot;Hello, World!&quot;"/>
+  <Color name="Dark.Keyword" fontWeight="bold" foreground="#569cd6" exampleText="SELECT"/>
+  <Color name="Dark.Function" fontWeight="bold" foreground="Orchid" exampleText="ARRAY_CONCAT" />
+  <Color name="Dark.MethodCall" foreground="MidnightBlue" fontWeight="bold" />
+  <Color name="Dark.Variable" foreground="#9cdcfe"  exampleText="@Variable" />
+  <Color name="Dark.Variable1" foreground="#9cdcfe" exampleText="@@Variable" />
+  <Color name="Dark.ObjectReference" foreground="Teal" exampleText="Customer.Name" />
+  <Color name="Dark.ObjectReference1" foreground="Teal" exampleText="dbo.Customer.Name" />
+  <Color name="Dark.ObjectReferenceInBrackets" foreground="Teal" exampleText="[Customer].[Name]" />
+  <Color name="Dark.ObjectReferenceInBrackets1" foreground="Teal" exampleText="[dbo].[Customer].[Name]" />
+  <Color name="Dark.CommentMarkerSetTodo"       foreground="DarkGreen"     fontWeight="bold" />
+  <Color name="Dark.CommentMarkerSetHackUndone" foreground="DarkRed" fontWeight="bold" />
+
 
   <RuleSet name="CommentMarkerSet">
     <Keywords color="CommentMarkerSetTodo">

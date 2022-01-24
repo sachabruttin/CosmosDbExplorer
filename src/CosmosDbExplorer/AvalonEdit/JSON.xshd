@@ -3,11 +3,44 @@
 <!-- update by zuijin in 2019.12.20 -->
 <SyntaxDefinition name="JSON" extensions=".json" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
   <Color name="Bool" foreground="Blue" exampleText="true | false" />
-  <Color name="Number" foreground="#098658" exampleText="3.14" />
-  <Color name="String" foreground="#a31515" exampleText="" />
+  <Color name="Number" foreground="DarkGreen" exampleText="3.14" />
+  <Color name="String" foreground="DarkRed" exampleText="" />
   <Color name="Null" foreground="Blue" exampleText="" />
-  <Color name="FieldName" foreground="#0451a5" />
+  <Color name="FieldName" foreground="DarkBlue" />
+  <Color name="Object" foreground="DarkGreen" />
+  <Color name="Array" foreground="Blue" />
   <Color name="Punctuation" foreground="Black" />
+
+  <!-- Light -->
+  <Color name="Light.Bool" foreground="Blue" exampleText="true | false" />
+  <Color name="Light.Number" foreground="DarkGreen" exampleText="3.14" />
+  <Color name="Light.String" foreground="DarkRed" exampleText="" />
+  <Color name="Light.Null" foreground="Blue" exampleText="" />
+  <Color name="Light.FieldName" foreground="DarkBlue" />
+  <Color name="Light.Object" foreground="DarkGreen" />
+  <Color name="Light.Array" foreground="Blue" />
+  <Color name="Light.Punctuation" foreground="Black" />
+
+  <!-- Dark -->
+  <Color name="Dark.Bool" foreground="Blue" exampleText="true | false"  />
+  <Color name="Dark.Number" foreground="LightGreen" exampleText="3.14" />
+  <Color name="Dark.String" foreground="Tan" exampleText="" />
+  <Color name="Dark.Null" foreground="Blue" exampleText="" />
+  <Color name="Dark.FieldName" foreground="LightBlue" />
+  <Color name="Dark.Object" foreground="Pink" />
+  <Color name="Dark.Array" foreground="Gold" />
+  <Color name="Dark.Punctuation" foreground="White" />
+
+  <!-- Dracula -->
+  <!--<Color name="Bool" foreground="#bd93f9" exampleText="true | false"  />
+  <Color name="Number" foreground="#bd93f9" exampleText="3.14" />
+  <Color name="String" foreground="#f1fa8c" exampleText="" />
+  <Color name="Null" foreground="#bd93f9" exampleText="" />
+  <Color name="FieldName" foreground="SkyBlue" />
+  <Color name="Object" foreground="Pink" />
+  <Color name="Array" foreground="White" />
+  <Color name="Punctuation" foreground="White" />-->
+
 
   <RuleSet name="String">
     <Span begin="\\" end="."/>
@@ -53,11 +86,11 @@
       <Begin>'</Begin>
       <End>'</End>
     </Span>
-    <Span color="Punctuation" ruleSet="Object" multiline="true">
+    <Span color="Object" ruleSet="Object" multiline="true">
       <Begin>\{</Begin>
       <End>\}</End>
     </Span>
-    <Span color="Punctuation" ruleSet="Array" multiline="true">
+    <Span color="Array" ruleSet="Array" multiline="true">
       <Begin>\[</Begin>
       <End>\]</End>
     </Span>

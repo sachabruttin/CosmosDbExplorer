@@ -26,6 +26,7 @@ namespace CosmosDbExplorer.AvalonEdit
                 using var stream = assembly.GetManifestResourceStream(resourceName)!;
                 using var reader = XmlReader.Create(stream);
                 var definition = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+
                 HighlightingManager.Instance.RegisterHighlighting(syntaxName, Array.Empty<string>(), definition);
             }
         }

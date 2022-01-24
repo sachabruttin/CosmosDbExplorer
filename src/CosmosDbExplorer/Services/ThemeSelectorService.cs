@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
-
+using System.Linq;
 using ControlzEx.Theming;
 
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Models;
-
+using ICSharpCode.AvalonEdit.Highlighting;
 using MahApps.Metro.Theming;
 
 namespace CosmosDbExplorer.Services
@@ -43,6 +43,7 @@ namespace CosmosDbExplorer.Services
                 ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncWithHighContrast;
                 ThemeManager.Current.SyncTheme();
                 ThemeManager.Current.ChangeTheme(Application.Current, $"{theme}.Blue", SystemParameters.HighContrast);
+                UpdateHighlightingColor(theme);
             }
 
             App.Current.Properties["Theme"] = theme.ToString();
@@ -58,6 +59,41 @@ namespace CosmosDbExplorer.Services
             }
 
             return AppTheme.Default;
+        }
+
+        private void UpdateHighlightingColor(AppTheme theme)
+        {
+            UpdateJsonHighlightingColor(theme);
+            UpdateCosomosSqlHighlightingColor(theme);
+        }
+
+        private static void UpdateJsonHighlightingColor(AppTheme theme)
+        {
+            var definition = HighlightingManager.Instance.GetDefinition("JSON");
+            var colors = new[] { "Bool", "Number", "String", "Null", "FieldName", "Object", "Array", "Punctuation" };
+
+            foreach (var color in colors)
+            {
+                var sourceColor = $"{theme}.{color}";
+                definition.GetNamedColor(color).MergeWith(definition.GetNamedColor(sourceColor));
+            }
+        }
+
+        private static void UpdateCosomosSqlHighlightingColor(AppTheme theme)
+        {
+            var definition = HighlightingManager.Instance.GetDefinition("DocumentDbSql");
+            //var colors = new[] { "Digits", "Comment", "Punctuation", "String", "String2", 
+            //                     "Keyword", "Function", "MethodCall", "Variable", "Variable1", 
+            //                     "ObjectReference", "ObjectReference1", "ObjectReferenceInBrackets", 
+            //                     "ObjectReferenceInBrackets1", "CommentsMarkerSetTodo", "CommentsMarkerSetHackUndone" };
+
+            //definition.NamedHighlightingColors.Where(c => !c.Name.Contains("."))
+
+            foreach (var color in definition.NamedHighlightingColors.Where(c => !c.Name.Contains('.')).Select(c => c.Name))
+            {
+                var sourceColor = $"{theme}.{color}";
+                definition.GetNamedColor(color).MergeWith(definition.GetNamedColor(sourceColor));
+            }
         }
     }
 }

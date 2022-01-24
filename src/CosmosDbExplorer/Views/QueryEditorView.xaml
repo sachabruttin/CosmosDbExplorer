@@ -30,7 +30,7 @@
                                 <LayoutDocument CanClose="False" Title="{Binding DataContext.FileName, TargetNullValue=Query, Source={StaticResource ProxyElement}}" IconSource="{StaticResource SqlQueryIcon}">
                                     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
                                                            ShowLineNumbers="True"
-                                                           Foreground="{DynamicResource MahApps.Brushes.Text}"
+                                                           Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                         <avalonEdit:TextEditor.InputBindings>
                                             <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
@@ -130,7 +130,7 @@
                                         <avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
                                                            Grid.Row="1" IsReadOnly="True" 
                                                            ShowLineNumbers="True"
-                                                          
+                                                           Style="{StaticResource CosmosEditor}"
                                                            HorizontalScrollBarVisibility="Auto" >
 
                                             <i:Interaction.Behaviors>

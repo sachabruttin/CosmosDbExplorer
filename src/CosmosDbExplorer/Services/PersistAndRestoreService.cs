@@ -27,7 +27,7 @@ namespace CosmosDbExplorer.Services
 
         public void PersistData()
         {
-            // TODO: Handle save connections
+            Properties.Settings.Default.Save();
 
             if (App.Current.Properties != null)
             {

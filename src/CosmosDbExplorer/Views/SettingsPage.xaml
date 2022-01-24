@@ -8,11 +8,30 @@
     xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"
     xmlns:models="clr-namespace:CosmosDbExplorer.Models"
     xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:componentmodel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800">
     <Page.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="models:AppTheme" />
+        <converters:FontToSupportedGliphConverter x:Key="FontToSupportedGliphConverter" />
+
+        <CollectionViewSource x:Key="MyFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}, Converter={StaticResource FontToSupportedGliphConverter}}">
+            <CollectionViewSource.SortDescriptions>
+                <componentmodel:SortDescription PropertyName="Source" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <Style x:Key="FontStyle">
+            <Setter Property="Control.FontFamily" Value="{Binding .}" />
+            <Setter Property="Control.FontSize" Value="16" />
+        </Style>
+
+        <DataTemplate x:Key="FontTemplate">
+            <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" ScrollViewer.IsDeferredScrollingEnabled="True">
+                <TextBlock Style="{StaticResource FontStyle}" Text="{Binding .}" ToolTip="{Binding .}" />
+            </VirtualizingStackPanel>
+        </DataTemplate>
+
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="{StaticResource SmallTopBottomMargin}">
@@ -72,6 +91,50 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </RadioButton>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="Editor Font" />
+                    <StackPanel>
+                        <Grid Margin="{StaticResource XSmallTopMargin}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100px" />
+                                <ColumnDefinition Width="310px" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Style="{StaticResource BodyTextStyle}" 
+                                   Grid.Column="0" Grid.Row="0"
+                                   VerticalAlignment="Center"
+                                   Text="Font Familly:" />
+                            <ComboBox Grid.Column="1" Grid.Row="0"
+                                      ItemTemplate="{StaticResource FontTemplate}"
+                                      SelectedItem="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName, Mode=TwoWay}">
+                                <ComboBox.ItemsSource>
+                                    <Binding Source="{StaticResource MyFonts}" />
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+
+
+                        </Grid>
+                        <Grid Margin="{StaticResource XSmallTopMargin}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100px" />
+                                <ColumnDefinition Width="310px" />
+                            </Grid.ColumnDefinitions>
+
+
+                            <TextBlock Style="{StaticResource BodyTextStyle}" 
+                                   Grid.Column="0" Grid.Row="1" 
+                                   VerticalAlignment="Center"
+                                   Text="Font Size:" />
+                            <mah:NumericUpDown Grid.Column="1" Grid.Row="1"
+                                               Minimum="6" Maximum="96"
+                                               Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontSize, Mode=TwoWay}"/>
+
+                        </Grid>
                     </StackPanel>
                 </StackPanel>
 

@@ -8,12 +8,15 @@
     xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"
     xmlns:models="clr-namespace:CosmosDbExplorer.Models"
     xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:componentmodel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
+    xmlns:componentmodel="clr-namespace:System.ComponentModel;assembly=WindowsBase" 
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800">
     <Page.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="models:AppTheme" />
         <converters:FontToSupportedGliphConverter x:Key="FontToSupportedGliphConverter" />
+        <converters:StringToFontFamillyConverter x:Key="StringToFontFamillyConverter" />
 
         <CollectionViewSource x:Key="MyFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}, Converter={StaticResource FontToSupportedGliphConverter}}">
             <CollectionViewSource.SortDescriptions>
@@ -99,6 +102,7 @@
                         Style="{StaticResource BodyTextStyle}"
                         Text="Editor Font" />
                     <StackPanel>
+                      
                         <Grid Margin="{StaticResource XSmallTopMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100px" />
@@ -111,12 +115,9 @@
                                    Text="Font Familly:" />
                             <ComboBox Grid.Column="1" Grid.Row="0"
                                       ItemTemplate="{StaticResource FontTemplate}"
-                                      SelectedItem="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName, Mode=TwoWay}">
-                                <ComboBox.ItemsSource>
-                                    <Binding Source="{StaticResource MyFonts}" />
-                                </ComboBox.ItemsSource>
+                                      ItemsSource="{Binding Source={StaticResource MyFonts}}"
+                                      SelectedValue="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName, Mode=TwoWay, Converter={StaticResource StringToFontFamillyConverter}}">
                             </ComboBox>
-
 
                         </Grid>
                         <Grid Margin="{StaticResource XSmallTopMargin}">

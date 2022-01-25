@@ -29,6 +29,10 @@ namespace CosmosDbExplorer.ViewModels
 
         public ICommand PrivacyStatementCommand => _privacyStatementCommand ?? (_privacyStatementCommand = new RelayCommand(OnPrivacyStatement));
 
+        public string SampleText => @"abcdefghijklmnopqrstuvwxyz
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            oO08 iIlL1 {} [] g9qcGQ ~-+=>";
+
         public SettingsViewModel(IOptions<AppConfig> appConfig, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService)
         {
             _appConfig = appConfig.Value;

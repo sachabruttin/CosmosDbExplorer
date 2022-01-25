@@ -11,58 +11,90 @@
       xmlns:models="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
       d:DataContext="{d:DesignInstance Type=viewmodels:AccountSettingsViewModel}"
       mc:Ignorable="d" 
-      Width="600"
-      Height="280"
-      d:DesignHeight="300" d:DesignWidth="800"
+      Width="850"
+      Height="340"
+      d:DesignHeight="340" d:DesignWidth="850"
       Title="{Binding Title}"
       >
     
-    <Grid Margin="10">
+    <Grid Margin="{StaticResource SmallLeftTopRightBottomMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0">Please enter your Azure DocumentDB endpoint and secret key.</TextBlock>
-        <Grid Margin="0,10" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource SubtitleTextStyle}" Grid.Row="0" Text="Please enter your Azure DocumentDB endpoint and secret key."/>
+        <StackPanel Margin="{StaticResource SmallTopBottomMargin}" Grid.Row="1">
 
-            <Label Grid.Row="0" Grid.Column="0">Label:</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Height="22" Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="1" Grid.Column="0">Account Endpoint:</Label>
-            <TextBox Grid.Row="1" Grid.Column="1" Height="22" Text="{Binding AccountEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Column="0" Text="Label:" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="1" Grid.Column="0" Text="Account Endpoint:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" 
+                     Text="{Binding AccountEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      IsReadOnly="{Binding UseLocalEmulator}"/>
+            </Grid>
 
-            <Label Grid.Row="2" Grid.Column="0">Account Secret:</Label>
-            <TextBox Grid.Row="2" Grid.Column="1" Height="22" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Account Secret:" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      IsReadOnly="{Binding UseLocalEmulator}"/>
+            </Grid>
 
-            <Label Grid.Row="3" Grid.Column="0">Connection Type:</Label>
-            <ComboBox Grid.Row="3" Grid.Column="1" Height="22"
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="3" Grid.Column="0" Text="Connection Type:"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" 
                       ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type models:ConnectionType}}}"
                       SelectedValue="{Binding ConnectionType}" />
+            </Grid>
 
-            <Label Grid.Row="4" Grid.Column="0">Accent Color:</Label>
-            <mah:ColorPicker Grid.Row="4" Grid.Column="1" Height="22"
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="4" Grid.Column="0" Text="Accent Color:" />
+                <mah:ColorPicker Grid.Row="4" Grid.Column="1" 
                              SelectedColor="{Binding AccentColor}"/>
+            </Grid>
 
-            <Label Grid.Row="5" Grid.Column="0">Enable Endpoint Discovery:</Label>
-            <CheckBox Grid.Row="5" Grid.Column="1" Height="22"
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="5" Grid.Column="0" Text="Enable Endpoint Discovery:" />
+                <CheckBox Grid.Row="5" Grid.Column="1" 
                               IsChecked="{Binding EnableEndpointDiscovery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </Grid>
+            </Grid>
+        </StackPanel>
 
 
         <CheckBox Content="Use local emulator" Margin="0,5" Grid.Row="2"

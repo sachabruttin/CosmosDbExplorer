@@ -90,8 +90,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Generic.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/AvalonDock.Themes.VS2013;component/DarkBrushs.xaml" />
-                <!--<ResourceDictionary Source="/AvalonDock.Themes.VS2013;component/LightBrushs.xaml" />-->
+                <!--<ResourceDictionary Source="pack://application:,,,/AvalonDock.Themes.VS2013;component/DarkBrushs.xaml" />-->
                 <ResourceDictionary Source="/Styles/CosmosControls.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

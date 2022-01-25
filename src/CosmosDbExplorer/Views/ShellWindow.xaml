@@ -46,6 +46,7 @@
     <controls:MetroWindow.Resources>
         <BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter" />
         <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
+        <converters:AvalonThemeConverter x:Key="AvalonThemeConverter" />
 
         <selector:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
             <selector:TabContentTemplateSelector.DocumentsTemplate>
@@ -715,7 +716,9 @@
                         AnchorablesSource="{Binding Tools}"
                         DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}"
                         ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
-                        LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}">
+                        LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}"
+                        Theme="{Binding Source={x:Static properties:Settings.Default}, Path=Theme, Converter={StaticResource AvalonThemeConverter}}">
+                        
 
                         <DockingManager.LayoutItemContainerStyleSelector>
                             <pane:PaneStyleSelector>

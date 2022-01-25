@@ -29,11 +29,11 @@ namespace CosmosDbExplorer.Services
         {
             Properties.Settings.Default.Save();
 
-            if (App.Current.Properties != null)
-            {
-                var fileName = _appConfig.AppPropertiesFileName;
-                _fileService.Save(_localAppData, fileName, App.Current.Properties);
-            }
+            //if (App.Current.Properties != null)
+            //{
+            //    var fileName = _appConfig.AppPropertiesFileName;
+            //    _fileService.Save(_localAppData, fileName, App.Current.Properties);
+            //}
         }
 
         public void PersistConnection(CosmosConnection connection)
@@ -91,9 +91,9 @@ namespace CosmosDbExplorer.Services
                         case "Connections":
                             App.Current.Properties.Add("Connections", JsonConvert.DeserializeObject<List<CosmosConnection>>(property.Value?.ToString()));
                             break;
-                        default:
-                            App.Current.Properties.Add(property.Key, property.Value);
-                            break;
+                        //default:
+                        //    App.Current.Properties.Add(property.Key, property.Value);
+                        //    break;
                     }
                 }
             }

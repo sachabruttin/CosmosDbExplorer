@@ -43,57 +43,36 @@ namespace CosmosDbExplorer.Services
                 ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncWithHighContrast;
                 ThemeManager.Current.SyncTheme();
                 ThemeManager.Current.ChangeTheme(Application.Current, $"{theme}.Blue", SystemParameters.HighContrast);
-                UpdateHighlightingColor(theme);
             }
 
-            App.Current.Properties["Theme"] = theme.ToString();
+            UpdateHighlightingColor(theme);
+            Properties.Settings.Default.Theme = theme.ToString();
         }
 
         public AppTheme GetCurrentTheme()
         {
-            if (App.Current.Properties.Contains("Theme"))
-            {
-                var themeName = App.Current.Properties["Theme"].ToString();
-                Enum.TryParse(themeName, out AppTheme theme);
-                return theme;
-            }
-
-            return AppTheme.Default;
+            return Enum.Parse<AppTheme>(Properties.Settings.Default.Theme);
         }
 
         private void UpdateHighlightingColor(AppTheme theme)
         {
-            UpdateJsonHighlightingColor(theme);
-            UpdateCosomosSqlHighlightingColor(theme);
-        }
-
-        private static void UpdateJsonHighlightingColor(AppTheme theme)
-        {
-            var definition = HighlightingManager.Instance.GetDefinition("JSON");
-            var colors = new[] { "Bool", "Number", "String", "Null", "FieldName", "Object", "Array", "Punctuation" };
-
-            foreach (var color in colors)
+            if (theme == AppTheme.Default)
             {
-                var sourceColor = $"{theme}.{color}";
-                definition.GetNamedColor(color).MergeWith(definition.GetNamedColor(sourceColor));
+                theme = WindowsThemeHelper.AppsUseLightTheme() ? AppTheme.Light : AppTheme.Dark;
             }
+
+            UpdateHighlightingColor(HighlightingManager.Instance.GetDefinition("JSON"), theme);
+            UpdateHighlightingColor(HighlightingManager.Instance.GetDefinition("DocumentDbSql"), theme);
         }
 
-        private static void UpdateCosomosSqlHighlightingColor(AppTheme theme)
+        private static void UpdateHighlightingColor(IHighlightingDefinition definition, AppTheme theme)
         {
-            var definition = HighlightingManager.Instance.GetDefinition("DocumentDbSql");
-            //var colors = new[] { "Digits", "Comment", "Punctuation", "String", "String2", 
-            //                     "Keyword", "Function", "MethodCall", "Variable", "Variable1", 
-            //                     "ObjectReference", "ObjectReference1", "ObjectReferenceInBrackets", 
-            //                     "ObjectReferenceInBrackets1", "CommentsMarkerSetTodo", "CommentsMarkerSetHackUndone" };
-
-            //definition.NamedHighlightingColors.Where(c => !c.Name.Contains("."))
-
             foreach (var color in definition.NamedHighlightingColors.Where(c => !c.Name.Contains('.')).Select(c => c.Name))
             {
                 var sourceColor = $"{theme}.{color}";
                 definition.GetNamedColor(color).MergeWith(definition.GetNamedColor(sourceColor));
             }
         }
+
     }
 }

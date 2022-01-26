@@ -74,7 +74,17 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             }
         }
 
-        public RelayCommand EditConnectionCommand => new(() => _windowManagerService.OpenInDialog("CosmosDbExplorer.ViewModels.AccountSettingsViewModel", Connection));
+        public RelayCommand EditConnectionCommand => new(EditConnectionCommandExecute);
+
+        private void EditConnectionCommandExecute()
+        {
+            var vmName = typeof(AccountSettingsViewModel)?.FullName;
+
+            if (!string.IsNullOrEmpty(vmName))
+            {
+                _windowManagerService.OpenInDialog(vmName, Connection);
+            }
+        }
 
         public RelayCommand RemoveConnectionCommand => new(RemoveConnectionCommandExecute);
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 
@@ -13,11 +15,18 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private RelayCommand _addNewCollectionCommand;
         private RelayCommand _deleteDatabaseCommand;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRightPaneService _rightPaneService;
+        private readonly IWindowManagerService _windowManagerService;
+        private readonly CosmosContainerService _containerService;
 
         public DatabaseNodeViewModel(IServiceProvider serviceProvider, CosmosDatabase database, ConnectionNodeViewModel parent)
             : base(database, parent, true)
         {
             _serviceProvider = serviceProvider;
+            _rightPaneService = _serviceProvider.GetRequiredService<IRightPaneService>();
+            _windowManagerService = _serviceProvider.GetRequiredService<IWindowManagerService>();
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, database);
+
             Database = database;
         }
 
@@ -29,13 +38,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             {
                 IsLoading = true;
 
-                var service = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, Database);
-                var containers = await service.GetContainersAsync(token);
+                var containers = await _containerService.GetContainersAsync(token);
 
                 // TODO: Handle cancellation
-               
+
                 Children.Add(new UsersNodeViewModel(Database, this));
-                
+
                 foreach (var container in containers)
                 {
                     Children.Add(new ContainerNodeViewModel(_serviceProvider, container, this));
@@ -66,7 +74,30 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             //IsLoading = false;
         }
 
-        public RelayCommand AddNewCollectionCommand => new(() => throw new System.NotImplementedException());
+        public RelayCommand AddNewCollectionCommand => new(AddNewCollectionCommandExecute);
+
+        private async void AddNewCollectionCommandExecute()
+        {
+
+            var vmName = typeof(ContainerPropertyViewModel).FullName;
+            
+            if (string.IsNullOrEmpty(vmName))
+            {
+                return;
+            }
+
+            //var result = _windowManagerService.OpenInDialog(vmName, (Parent.Databases, Parent.Connection, Database));
+
+            _rightPaneService.OpenInRightPane(vmName, (Parent.Connection, Database));
+
+            //if (result.GetValueOrDefault())
+            //{
+            //    Children.Clear();
+            //    await LoadChildren(new CancellationToken()).ConfigureAwait(false);
+            //}
+        }
+
+
         //{
         //    get
         //    {

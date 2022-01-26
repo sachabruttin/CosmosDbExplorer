@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Contracts.Services;
@@ -34,6 +35,50 @@ namespace CosmosDbExplorer.Core.Services
             }
 
             return result;
+        }
+
+        public async Task<CosmosContainer> CreateContainerAsync(CosmosContainer container, int? throughput, bool? isAutoscale, CancellationToken cancellationToken)
+        {
+            var db = _client.GetDatabase(_cosmosDatabase.Id);
+
+            var containerProperties = new ContainerProperties()
+            {
+                Id = container.Id,
+                PartitionKeyPath = container.PartitionKeyPath,
+                DefaultTimeToLive = container.DefaultTimeToLive,
+                PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion
+            };
+
+            var requestOptions = new RequestOptions { };
+
+            try
+            {
+
+                if (throughput.HasValue)
+                {
+                    var throughputProperties = isAutoscale.GetValueOrDefault(true)
+                        ? ThroughputProperties.CreateManualThroughput(throughput.Value)
+                        : ThroughputProperties.CreateAutoscaleThroughput(throughput.Value);
+
+                    var result = await db.CreateContainerAsync(containerProperties, throughputProperties, requestOptions, cancellationToken);
+                    return new CosmosContainer(result.Resource);
+                }
+                else
+                {
+                    var result = await db.CreateContainerAsync(containerProperties, throughput, requestOptions, cancellationToken);
+                    return new CosmosContainer(result.Resource);
+                }
+            }
+            catch (CosmosException ex)
+            {
+                var regex = new Regex(@"Message: ({.*})", RegexOptions.Multiline);
+
+                var match = regex.Match(ex.ResponseBody);
+
+                var json = match.Captures.First().Value.Replace("Message:", string.Empty);
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
+                throw new Exception(string.Join(Environment.NewLine, obj["Errors"]?.Values<string>()));
+            }
         }
 
         public async Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken)

@@ -694,6 +694,7 @@
                 x:Name="splitView"
                 PanePlacement="Right"
                 OpenPaneLength="400"
+                DisplayMode="Overlay"
                 Focusable="False" Grid.ColumnSpan="4">
                 <controls:SplitView.Pane>
                     <Frame

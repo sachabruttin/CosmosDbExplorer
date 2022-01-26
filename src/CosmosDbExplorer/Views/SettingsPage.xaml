@@ -123,7 +123,7 @@
                         <Grid Margin="{StaticResource XSmallTopMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100px" />
-                                <ColumnDefinition Width="310px" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
 
@@ -139,31 +139,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.SettingsPageAboutTitle}" />
-                <TextBlock
-                    Text="{Binding VersionDescription, Mode=OneWay}"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{StaticResource BodyTextStyle}" />
-                <TextBlock
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{StaticResource BodyTextStyle}"
-                    Text="{x:Static properties:Resources.SettingsPageAboutText}" />
-
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}">
-                    <Hyperlink
-                        Command="{Binding PrivacyStatementCommand}"
-                        AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}">
-                        <TextBlock
-                            x:Name="settingsPrivacyStatement"
-                            Style="{StaticResource BodyTextStyle}"
-                            Text="{x:Static properties:Resources.SettingsPagePrivacyStatementText}" />
-                    </Hyperlink>
-                </TextBlock>
             </StackPanel>
         </Grid>
     </ScrollViewer>

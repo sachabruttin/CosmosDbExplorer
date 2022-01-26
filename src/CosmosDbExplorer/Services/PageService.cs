@@ -22,6 +22,7 @@ namespace CosmosDbExplorer.Services
             Configure<SettingsViewModel, SettingsPage>();
             Configure<AboutViewModel, AboutPage>();
             Configure<AccountSettingsViewModel, AccountSettingsPage>();
+            Configure<ContainerPropertyViewModel, ContainerPropertyPage>();
         }
 
         public Type GetPageType(string key)

@@ -74,7 +74,7 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        private void OnPaneClosed(object sender, EventArgs e)
+        private void OnPaneClosed(object? sender, EventArgs e)
             => PaneClosed?.Invoke(sender, e);
     }
 }

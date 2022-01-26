@@ -1,8 +1,4 @@
-﻿using System.Collections.Specialized;
-using CosmosDbExplorer.Core.Models;
-using CosmosDbExplorer.Helpers;
-using CosmosDbExplorer.Extensions;
-using ICSharpCode.AvalonEdit.Document;
+﻿using CosmosDbExplorer.Helpers;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

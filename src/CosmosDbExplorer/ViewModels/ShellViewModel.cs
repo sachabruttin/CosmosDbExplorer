@@ -104,7 +104,12 @@ namespace CosmosDbExplorer.ViewModels
 
         private void ShowAccountSettingsCommandExecute()
         {
-            _windowManagerService.OpenInDialog("CosmosDbExplorer.ViewModels.AccountSettingsViewModel", new CosmosConnection(Guid.NewGuid()));
+            var vmName = typeof(AccountSettingsViewModel).FullName;
+
+            if (!string.IsNullOrEmpty(vmName))
+            {
+                _windowManagerService.OpenInDialog(vmName, new CosmosConnection(Guid.NewGuid()));
+            }
         }
 
         public RelayCommand RefreshCommand => new(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>

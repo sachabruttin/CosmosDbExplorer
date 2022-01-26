@@ -66,10 +66,9 @@ namespace CosmosDbExplorer.Core.Models
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum ConnectionType
     {
+        [Description("Gateway")]
         Gateway,
-        [Description("Direct HTTPS")]
-        DirectHttps,
-        [Description("Direct TCP")]
-        DirectTcp
+        [Description("Direct")]
+        Direct,
     }
 }

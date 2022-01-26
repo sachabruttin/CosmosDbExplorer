@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Helpers;
 using CosmosDbExplorer.Core.Models;
 using Microsoft.Azure.Cosmos;
 
@@ -49,8 +50,6 @@ namespace CosmosDbExplorer.Core.Services
                 PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion
             };
 
-            var requestOptions = new RequestOptions { };
-
             try
             {
 
@@ -60,24 +59,18 @@ namespace CosmosDbExplorer.Core.Services
                         ? ThroughputProperties.CreateManualThroughput(throughput.Value)
                         : ThroughputProperties.CreateAutoscaleThroughput(throughput.Value);
 
-                    var result = await db.CreateContainerAsync(containerProperties, throughputProperties, requestOptions, cancellationToken);
+                    var result = await db.CreateContainerAsync(containerProperties, throughputProperties, requestOptions: null, cancellationToken);
                     return new CosmosContainer(result.Resource);
                 }
                 else
                 {
-                    var result = await db.CreateContainerAsync(containerProperties, throughput, requestOptions, cancellationToken);
+                    var result = await db.CreateContainerAsync(containerProperties, throughput, requestOptions: null, cancellationToken);
                     return new CosmosContainer(result.Resource);
                 }
             }
             catch (CosmosException ex)
             {
-                var regex = new Regex(@"Message: ({.*})", RegexOptions.Multiline);
-
-                var match = regex.Match(ex.ResponseBody);
-
-                var json = match.Captures.First().Value.Replace("Message:", string.Empty);
-                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
-                throw new Exception(string.Join(Environment.NewLine, obj["Errors"]?.Values<string>()));
+                throw new Exception(ex.GetMessage());
             }
         }
 

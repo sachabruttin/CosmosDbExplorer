@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Helpers;
 using CosmosDbExplorer.Core.Models;
 using Microsoft.Azure.Cosmos;
 
@@ -31,6 +32,31 @@ namespace CosmosDbExplorer.Core.Services
             }
 
             return result;
+        }
+
+        public async Task<CosmosDatabase> CreateDatabaseAsync(CosmosDatabase database, int? throughput, bool? isAutoscale, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (throughput.HasValue)
+                {
+                    var throughputProperties = isAutoscale.GetValueOrDefault(true)
+                        ? ThroughputProperties.CreateManualThroughput(throughput.Value)
+                        : ThroughputProperties.CreateAutoscaleThroughput(throughput.Value);
+
+                    var result = await _client.CreateDatabaseAsync(database.Id, throughputProperties, requestOptions: null, cancellationToken: cancellationToken);
+                    return new CosmosDatabase(result.Resource);
+                }
+                else
+                {
+                    var result = await _client.CreateDatabaseAsync(database.Id, throughput, requestOptions: null, cancellationToken: cancellationToken);
+                    return new CosmosDatabase(result.Resource);
+                }
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
         }
 
         public async Task<AccountProperties> GetDatabaseMetricsAsync()

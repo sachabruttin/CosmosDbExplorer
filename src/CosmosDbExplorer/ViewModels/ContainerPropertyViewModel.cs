@@ -13,6 +13,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Validar;
 
@@ -34,6 +35,8 @@ namespace CosmosDbExplorer.ViewModels
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
         }
+
+        public Action<bool?>? SetResult { get; set; }
 
         public string Title { get; }
 
@@ -123,7 +126,11 @@ namespace CosmosDbExplorer.ViewModels
                     PartitionKeyPath = PartitionKey,
                 };
 
-                await _containerService.CreateContainerAsync(container, Throughput, IsThroughputAutoscale, new System.Threading.CancellationToken());
+                var createdContainer = await _containerService.CreateContainerAsync(container, Throughput, IsThroughputAutoscale, new System.Threading.CancellationToken());
+
+                Messenger.Send(new Messages.UpdateOrCreateNodeMessage<CosmosContainer>(createdContainer, createdContainer, null));
+
+                OnClose();
             }
             catch (Exception ex)
             {
@@ -142,6 +149,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnNavigatedFrom()
         {
+
         }
 
         public void OnNavigatedTo(object parameter)
@@ -151,6 +159,11 @@ namespace CosmosDbExplorer.ViewModels
             Database = database;
 
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Connection, Database);
+        }
+
+        private void OnClose()
+        {
+            SetResult?.Invoke(true);
         }
     }
 

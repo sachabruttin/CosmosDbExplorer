@@ -25,10 +25,11 @@
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Margin" Value="0,1" />
 
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
                     </Trigger>
                 </Style.Triggers>
             </Style>

@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CosmosDbExplorer.Helpers;
 using CosmosDbExplorer.ViewModels;
+using MahApps.Metro.Controls;
 
 namespace CosmosDbExplorer.Views
 {
@@ -24,7 +26,18 @@ namespace CosmosDbExplorer.Views
         public ContainerPropertyPage(ContainerPropertyViewModel viewModel)
         {
             InitializeComponent();
+            viewModel.SetResult = OnSetResult;
             DataContext = viewModel;
+        }
+
+        private void OnSetResult(bool? result)
+        {
+            var view = UIHelper.FindVisualParent<SplitView>(this);
+
+            if (view != null)
+            {
+                view.IsPaneOpen = false;
+            }
         }
     }
 }

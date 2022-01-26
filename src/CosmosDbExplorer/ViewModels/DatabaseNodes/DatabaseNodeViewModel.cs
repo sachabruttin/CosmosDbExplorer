@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -28,6 +31,15 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, database);
 
             Database = database;
+
+            Messenger.Register<DatabaseNodeViewModel, UpdateOrCreateNodeMessage<CosmosContainer>>(this, static (r, m) => r.OnNewContainerCreated(m));
+
+        }
+
+        private void OnNewContainerCreated(UpdateOrCreateNodeMessage<CosmosContainer> message)
+        {
+            Children.Add(new ContainerNodeViewModel(_serviceProvider, message.Container, this));
+            _rightPaneService.CleanUp();
         }
 
         public CosmosDatabase Database { get; }
@@ -44,7 +56,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
                 Children.Add(new UsersNodeViewModel(Database, this));
 
-                foreach (var container in containers)
+                foreach (var container in containers.OrderBy(c => c.Id))
                 {
                     Children.Add(new ContainerNodeViewModel(_serviceProvider, container, this));
                 }

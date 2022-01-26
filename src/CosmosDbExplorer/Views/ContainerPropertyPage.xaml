@@ -78,7 +78,7 @@
             </StackPanel>-->
                 <StackPanel x:Name="ThroughputPanel"
                             Visibility="{Binding ProvisionThroughput, Converter={StaticResource boolToVisibilityConverter}}">
-                    <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <StackPanel Margin="{StaticResource SmallTopMargin}">
                         <TextBlock Text="Container throughput (autoscale)"
                                Style="{StaticResource BodyTextStyle}"/>
                         <mah:ToggleSwitch OnContent="Autoscale" 

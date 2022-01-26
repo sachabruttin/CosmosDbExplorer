@@ -120,6 +120,9 @@ namespace CosmosDbExplorer
             services.AddTransient<ContainerPropertyViewModel>();
             services.AddTransient<ContainerPropertyPage>();
 
+            services.AddTransient<DatabasePropertyViewModel>();
+            services.AddTransient<DatabasePropertyPage>();
+
             services.AddTransient<AboutViewModel>();
             services.AddTransient<AboutPage>();
 

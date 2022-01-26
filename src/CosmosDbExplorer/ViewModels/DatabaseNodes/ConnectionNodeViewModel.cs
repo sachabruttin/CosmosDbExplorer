@@ -21,6 +21,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IWindowManagerService _windowManagerService;
+        private readonly IRightPaneService _rightPaneService;
         private readonly IDialogService _dialogService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
 
@@ -30,16 +31,20 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _serviceProvider = serviceProvider;
             _dialogService = serviceProvider.GetRequiredService<IDialogService>();
             _windowManagerService = serviceProvider.GetRequiredService<IWindowManagerService>();
+            _rightPaneService = _serviceProvider.GetRequiredService<IRightPaneService>();
             _persistAndRestoreService = serviceProvider.GetRequiredService<IPersistAndRestoreService>();
             Connection = connection;
+
+            Messenger.Register<ConnectionNodeViewModel, UpdateOrCreateNodeMessage<CosmosDatabase, CosmosConnection>>(this, static (r, m) => r.OnDatabaseCreated(m));
         }
 
-        //public ConnectionNodeViewModel(IDocumentDbService dbService, IMessenger messenger, IDialogService dialogService, ISettingsService settingsService) : base(null, messenger, true)
-        //{
-        //    _dbService = dbService;
-        //    _dialogService = dialogService;
-        //    _settingsService = settingsService;
-        //}
+        private void OnDatabaseCreated(UpdateOrCreateNodeMessage<CosmosDatabase, CosmosConnection> message)
+        {
+            if (message.Parent == Connection)
+            {
+                Children.Add(new DatabaseNodeViewModel(_serviceProvider, message.Resource, this));
+            }
+        }
 
         public CosmosConnection Connection { get; set; }
 
@@ -105,27 +110,21 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 confirmed);
         }
 
-        //public RelayCommand AddNewCollectionCommand
-        //{
-        //    get
-        //    {
-        //        return _addNewCollectionCommand
-        //            ?? (_addNewCollectionCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    var form = new AddCollectionView();
-        //                    var vm = (AddCollectionViewModel)form.DataContext;
+        public RelayCommand AddNewDatabaseCommand => new(AddNewDatabaseCommandExecute, AddNewDatabaseCommandCanExecute);
 
-        //                    vm.Databases = Databases;
-        //                    vm.Connection = Connection;
+        private void AddNewDatabaseCommandExecute()
+        {
+            var vmName = typeof(DatabasePropertyViewModel).FullName;
 
-        //                    if (form.ShowDialog().GetValueOrDefault(false))
-        //                    {
-        //                        Children.Clear();
-        //                        await LoadChildren();
-        //                    }
-        //                }));
-        //    }
+            if (string.IsNullOrEmpty(vmName))
+            {
+                return;
+            }
+
+            _rightPaneService.OpenInRightPane(vmName, Connection);
+        }
+
+        private bool AddNewDatabaseCommandCanExecute() => !HasDummyChild;
 
         public RelayCommand RefreshCommand => new(async () =>
         {

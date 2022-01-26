@@ -5,6 +5,11 @@ namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosDatabase : ICosmosResource
     {
+        public CosmosDatabase(string id)
+        {
+            Id = id;
+        }
+
         public CosmosDatabase(DatabaseProperties properties)
         {
             Id = properties.Id;

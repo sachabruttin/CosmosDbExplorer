@@ -32,14 +32,17 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
             Database = database;
 
-            Messenger.Register<DatabaseNodeViewModel, UpdateOrCreateNodeMessage<CosmosContainer>>(this, static (r, m) => r.OnNewContainerCreated(m));
+            Messenger.Register<DatabaseNodeViewModel, UpdateOrCreateNodeMessage<CosmosContainer, CosmosConnection>>(this, static (r, m) => r.OnNewContainerCreated(m));
 
         }
 
-        private void OnNewContainerCreated(UpdateOrCreateNodeMessage<CosmosContainer> message)
+        private void OnNewContainerCreated(UpdateOrCreateNodeMessage<CosmosContainer, CosmosConnection> message)
         {
-            Children.Add(new ContainerNodeViewModel(_serviceProvider, message.Container, this));
-            _rightPaneService.CleanUp();
+            if (message.Parent == Parent.Connection)
+            {
+                Children.Add(new ContainerNodeViewModel(_serviceProvider, message.Resource, this));
+                _rightPaneService.CleanUp();
+            }
         }
 
         public CosmosDatabase Database { get; }

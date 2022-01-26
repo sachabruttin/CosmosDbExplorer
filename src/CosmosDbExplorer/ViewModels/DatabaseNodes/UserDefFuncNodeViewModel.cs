@@ -38,7 +38,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             IsLoading = false;
         }
 
-        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosUserDefinedFunction> message)
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosUserDefinedFunction, ContainerNodeViewModel> message)
         {
             throw new System.NotImplementedException();
             //if (message.IsNewResource)

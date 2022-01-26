@@ -15,7 +15,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         protected AssetRootNodeViewModelBase(ContainerNodeViewModel parent)
             : base(parent, true)
         {
-            Messenger.Register<AssetRootNodeViewModelBase<TResource>, UpdateOrCreateNodeMessage<TResource>>(this, static (r, m) => r.InnerOnUpdateOrCreateNodeMessage(m));
+            Messenger.Register<AssetRootNodeViewModelBase<TResource>, UpdateOrCreateNodeMessage<TResource, ContainerNodeViewModel>>(this, static (r, m) => r.InnerOnUpdateOrCreateNodeMessage(m));
         }
 
         public string Name { get; protected set; }
@@ -41,15 +41,15 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public ContainerNodeViewModel ContainerNode => Parent;
 
-        private void InnerOnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource> message)
+        private void InnerOnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource, ContainerNodeViewModel> message)
         {
-            if (message.Container == ContainerNode.Container)
+            if (message.Parent.Container == ContainerNode.Container)
             {
                 OnUpdateOrCreateNodeMessage(message);
             }
         }
 
-        protected abstract void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource> message);
+        protected abstract void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<TResource, ContainerNodeViewModel> message);
     }
 
     public abstract class AssetNodeViewModelBase<TResource, TParent> :

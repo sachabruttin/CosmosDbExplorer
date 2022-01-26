@@ -41,8 +41,8 @@ namespace CosmosDbExplorer.ViewModels
         [DoNotSetChanged]
         public bool IsSelected { get; set; }
 
-        //[DoNotSetChanged]
-        //public bool IsActive { get; set; }
+        [DoNotSetChanged]
+        public bool IsActive { get; set; }
 
         [DoNotSetChanged]
         public bool IsClosed { get; set; }

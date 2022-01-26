@@ -26,6 +26,8 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
 
+        private CosmosContainerService _containerService;
+
         public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
         {
             IsFixedStorage = true;
@@ -128,7 +130,7 @@ namespace CosmosDbExplorer.ViewModels
 
                 var createdContainer = await _containerService.CreateContainerAsync(container, Throughput, IsThroughputAutoscale, new System.Threading.CancellationToken());
 
-                Messenger.Send(new Messages.UpdateOrCreateNodeMessage<CosmosContainer>(createdContainer, createdContainer, null));
+                Messenger.Send(new Messages.UpdateOrCreateNodeMessage<CosmosContainer, CosmosConnection>(createdContainer, Connection, null));
 
                 OnClose();
             }
@@ -142,7 +144,6 @@ namespace CosmosDbExplorer.ViewModels
 
         public CosmosDatabase Database { get; set; }
 
-        private CosmosContainerService _containerService;
 
         public string EstimatedPrice { get; set; }
 

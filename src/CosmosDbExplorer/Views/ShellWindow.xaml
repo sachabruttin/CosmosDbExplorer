@@ -732,6 +732,7 @@
                                         <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
                                         <Setter Property="CanHide" Value="False" />
                                         <Setter Property="CanClose" Value="False" />
+                                        <Setter Property="CanFloat" Value="False" />
                                         <Setter Property="IconSource" Value="{Binding Model.IconSource}" />
                                     </Style>
                                 </pane:PaneStyleSelector.ToolStyle>
@@ -751,7 +752,7 @@
 
                         <LayoutRoot x:Name="_layoutRoot">
                             <LayoutPanel Orientation="Horizontal">
-                                <LayoutAnchorablePane Name="Connections" DockWidth="200" FloatingWidth="200" />
+                                <LayoutAnchorablePane Name="Connections" DockWidth="250" />
                                 <LayoutDocumentPane />
                             </LayoutPanel>
                         </LayoutRoot>

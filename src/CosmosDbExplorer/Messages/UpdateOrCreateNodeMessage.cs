@@ -3,22 +3,22 @@ using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Messages
 {
-    public class UpdateOrCreateNodeMessage<T>
-        where T : ICosmosResource
+    public class UpdateOrCreateNodeMessage<TResource, TParent>
+        where TResource : ICosmosResource
     {
-        public UpdateOrCreateNodeMessage(T resource, CosmosContainer container, string oldAltLink)
+        public UpdateOrCreateNodeMessage(TResource resource, TParent container, string oldAltLink)
         {
             Resource = resource;
             OldAltLink = oldAltLink;
-            Container = container;
+            Parent = container;
         }
 
-        public T Resource { get; }
+        public TResource Resource { get; }
 
         public bool IsNewResource => string.IsNullOrEmpty(OldAltLink);
 
         public string OldAltLink { get; }
 
-        public CosmosContainer Container { get; }
+        public TParent Parent { get; }
     }
 }

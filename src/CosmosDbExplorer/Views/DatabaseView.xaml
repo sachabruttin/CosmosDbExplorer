@@ -44,7 +44,7 @@
                         <ContextMenu>
                             <MenuItem Header="Refresh Connection" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New Database" Command="{Binding AddNewCollectionCommand}" />
+                            <MenuItem Header="New Database" Command="{Binding AddNewDatabaseCommand}" />
                             <Separator />
                             <MenuItem Header="Edit Connection" Command="{Binding EditConnectionCommand}" Icon="{StaticResource EditIconText}"  />
                             <MenuItem Header="Remove Connection" Command="{Binding RemoveConnectionCommand}" />

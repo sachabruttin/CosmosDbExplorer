@@ -22,6 +22,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             Header = "Connections";
             Title = Header;
+            IconSource = App.Current.FindResource("ConnectionIcon");
             IsVisible = true;
             _serviceProvider = serviceProvider;
             _cosmosClientService = cosmosClientService;
@@ -29,7 +30,6 @@ namespace CosmosDbExplorer.ViewModels
             RegisterMessages();
         }
 
-        //private readonly ISettingsService _settingsService;
 
         private void RegisterMessages()
         {

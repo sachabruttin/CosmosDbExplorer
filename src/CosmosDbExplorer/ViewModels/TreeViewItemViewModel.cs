@@ -81,7 +81,6 @@ namespace CosmosDbExplorer.ViewModels
             if (HasDummyChild)
             {
                 Children.Remove(DummyChild);
-                //Task.Run(() => LoadChildren(new CancellationToken()));
                 var token = new CancellationToken();
                 await LoadChildren(token);
             }

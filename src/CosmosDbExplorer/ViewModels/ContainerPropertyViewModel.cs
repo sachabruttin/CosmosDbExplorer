@@ -27,6 +27,7 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IDialogService _dialogService;
 
         private CosmosContainerService _containerService;
+        private AsyncRelayCommand _saveCommand;
 
         public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
         {
@@ -44,6 +45,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public CosmosConnection Connection { get; protected set; }
 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string ContainerId { get; set; }
 
         public bool IsFixedStorage { get; set; }
@@ -68,6 +70,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool ProvisionThroughput { get; set; } = false;
 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string PartitionKey { get; set; }
 
         public bool IsThroughputAutoscale { get; set; } = true;
@@ -80,47 +83,18 @@ namespace CosmosDbExplorer.ViewModels
         [DependsOn(nameof(IsUnlimitedStorage), nameof(IsFixedStorage))]
         public int MinThroughput => IsFixedStorage ? 400 : 1000;
 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
+        [AlsoNotifyFor(nameof(EstimatedPrice))]
         public int Throughput { get; set; }
 
-        public void OnThroughputChanged()
-        {
-            const decimal hourly = 0.00008m;
-            EstimatedPrice = $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
-        }
+        protected void UpdateSaveCommandStatus() => SaveCommand.NotifyCanExecuteChanged();
 
-        [DependsOn(nameof(Throughput),
-            nameof(Database),
-            nameof(ProvisionThroughput),
-            nameof(ContainerId),
-            nameof(PartitionKey))]
-        public RelayCommand SaveCommand => new(SaveCommandExecute, SaveCommandCanExecute);
+        public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecuteAsync, SaveCommandCanExecute);
 
-        private async void SaveCommandExecute()
+        private async Task SaveCommandExecuteAsync()
         {
             //IsBusy = true;
 
-            //var collection = new DocumentCollection { Id = CollectionId.Trim() };
-
-            //if (IsUnlimitedStorage)
-            //{
-            //    collection.PartitionKey.Paths.Add(PartitionKey);
-            //}
-
-            //try
-            //{
-            //    var db = Databases.Find(_ => _.Id == SelectedDatabase.Trim()) ?? new Database { Id = SelectedDatabase.Trim() };
-            //    await _dbService.CreateCollectionAsync(Connection, db, collection, Throughput).ConfigureAwait(true);
-            //    IsBusy = false;
-            //    Close();
-            //}
-            //catch (DocumentClientException clientEx)
-            //{
-            //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //}
             try
             {
                 var container = new CosmosContainer(ContainerId, IsLargePartition)
@@ -138,6 +112,10 @@ namespace CosmosDbExplorer.ViewModels
             {
                 await _dialogService.ShowError(ex, "Error during Container Creation");
             }
+            finally
+            {
+                //IsBusy = false;
+            }
         }
 
         private bool SaveCommandCanExecute() => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
@@ -145,7 +123,14 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosDatabase Database { get; set; }
 
 
-        public string EstimatedPrice { get; set; }
+        public string EstimatedPrice
+        {
+            get
+            {
+                const decimal hourly = 0.00008m;
+                return $"${hourly * Throughput:N3} hourly / {hourly * Throughput * 24:N2} daily.";
+            }
+        }
 
 
         public void OnNavigatedFrom()
@@ -173,8 +158,8 @@ namespace CosmosDbExplorer.ViewModels
         public ContainerPropertyViewModelValidator()
         {
             RuleFor(x => x.ContainerId).NotEmpty();
-            RuleFor(x => x.Throughput).NotEmpty();
             RuleFor(x => x.PartitionKey).NotEmpty();
+            RuleFor(x => x.Throughput).NotEmpty().When(x => x.ProvisionThroughput);
         }
     }
 }

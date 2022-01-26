@@ -11,8 +11,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     {
         private RelayCommand _refreshCommand;
         private RelayCommand _copySelfLinkToClipboardCommand;
-        private RelayCommand _copyResourceToClipboardCommand;
-        private RelayCommand _copyAltLinkToClipboardCommand;
 
         protected ResourceNodeViewModelBase(ICosmosResource resource, TParent parent, bool lazyLoadChildren)
             : base(parent, lazyLoadChildren)
@@ -22,73 +20,16 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string Name => Resource.Id;
 
-        public RelayCommand RefreshCommand
+        public RelayCommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
+
+        private async void RefreshCommandExecute()
         {
-            get
-            {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async () =>
-                        {
-                            Children.Clear();
-                            await LoadChildren(new CancellationToken()).ConfigureAwait(false);
-                            //await DispatcherHelper.RunAsync(async () =>
-                            //{
-                            //    Children.Clear();
-                            //    await LoadChildren().ConfigureAwait(false);
-                            //});
-                        }));
-            }
+            Children.Clear();
+            await LoadChildren(new CancellationToken()).ConfigureAwait(false);
         }
 
-        public RelayCommand CopySelfLinkToClipboardCommand
-        {
-            get
-            {
-                return _copySelfLinkToClipboardCommand
-                    ?? (_copySelfLinkToClipboardCommand = new RelayCommand(
-                        () => Clipboard.SetText(Resource.SelfLink)
-                        ));
-            }
-        }
-
-        //public RelayCommand CopyAltLinkToClipboardCommand
-        //{
-        //    get
-        //    {
-        //        return _copyAltLinkToClipboardCommand
-        //            ?? (_copyAltLinkToClipboardCommand = new RelayCommand(
-        //                () => Clipboard.SetText(Resource.AltLink)
-        //                ));
-        //    }
-        //}
-
-        //public RelayCommand CopyResourceToClipboardCommand
-        //{
-        //    get
-        //    {
-        //        return _copyResourceToClipboardCommand
-        //            ?? (_copyResourceToClipboardCommand = new RelayCommand(
-        //                () =>
-        //                {
-        //                    using (var stream = new MemoryStream())
-        //                    {
-        //                        Resource.SaveTo(stream, SerializationFormattingPolicy.Indented);
-        //                        var json = System.Text.Encoding.UTF8.GetString(stream.ToArray());
-        //                        Clipboard.SetText(json);
-        //                    }
-        //                }
-        //                ));
-        //    }
-        //}
+        public RelayCommand CopySelfLinkToClipboardCommand => _copySelfLinkToClipboardCommand ??= new(() => Clipboard.SetText(Resource.SelfLink));
 
         protected ICosmosResource Resource { get; set; }
-
-        //protected IDocumentDbService DbService => SimpleIoc.Default.GetInstance<IDocumentDbService>();
-
-        //protected IDialogService DialogService => SimpleIoc.Default.GetInstance<IDialogService>();
-
-        //protected IUIServices UIServices => SimpleIoc.Default.GetInstance<IUIServices>();
-
     }
 }

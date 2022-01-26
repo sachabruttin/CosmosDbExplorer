@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -24,6 +25,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private readonly IRightPaneService _rightPaneService;
         private readonly IDialogService _dialogService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
+        private RelayCommand _addNewDatabaseCommand;
+        private RelayCommand _editConnectionCommand;
+        private RelayCommand _refreshCommand;
+        private AsyncRelayCommand _removeConnectionCommand;
 
         public ConnectionNodeViewModel(IServiceProvider serviceProvider, CosmosConnection connection)
             : base(null, true)
@@ -54,6 +59,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override async Task LoadChildren(CancellationToken token)
         {
+            AddNewDatabaseCommand.NotifyCanExecuteChanged();
 
             try
             {
@@ -79,7 +85,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             }
         }
 
-        public RelayCommand EditConnectionCommand => new(EditConnectionCommandExecute);
+        public RelayCommand EditConnectionCommand => _editConnectionCommand ??= new(EditConnectionCommandExecute);
 
         private void EditConnectionCommandExecute()
         {
@@ -91,9 +97,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             }
         }
 
-        public RelayCommand RemoveConnectionCommand => new(RemoveConnectionCommandExecute);
+        public AsyncRelayCommand RemoveConnectionCommand => _removeConnectionCommand ??= new(RemoveConnectionCommandExecute);
 
-        private async void RemoveConnectionCommandExecute()
+        private async Task RemoveConnectionCommandExecute()
         {
             void confirmed(bool confirm)
             {
@@ -110,7 +116,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 confirmed);
         }
 
-        public RelayCommand AddNewDatabaseCommand => new(AddNewDatabaseCommandExecute, AddNewDatabaseCommandCanExecute);
+        public RelayCommand AddNewDatabaseCommand => _addNewDatabaseCommand ??= new(AddNewDatabaseCommandExecute, () => !HasDummyChild);
 
         private void AddNewDatabaseCommandExecute()
         {
@@ -124,12 +130,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _rightPaneService.OpenInRightPane(vmName, Connection);
         }
 
-        private bool AddNewDatabaseCommandCanExecute() => !HasDummyChild;
+        public RelayCommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecuteAsync);
 
-        public RelayCommand RefreshCommand => new(async () =>
+        private async void RefreshCommandExecuteAsync()
         {
             Children.Clear();
             await LoadChildren(new CancellationToken());
-        });
+        }
     }
 }

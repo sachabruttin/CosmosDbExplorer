@@ -6,7 +6,7 @@ namespace CosmosDbExplorer.Messages
     public class UpdateOrCreateNodeMessage<TResource, TParent>
         where TResource : ICosmosResource
     {
-        public UpdateOrCreateNodeMessage(TResource resource, TParent container, string oldAltLink)
+        public UpdateOrCreateNodeMessage(TResource resource, TParent container, string? oldAltLink)
         {
             Resource = resource;
             OldAltLink = oldAltLink;
@@ -17,7 +17,7 @@ namespace CosmosDbExplorer.Messages
 
         public bool IsNewResource => string.IsNullOrEmpty(OldAltLink);
 
-        public string OldAltLink { get; }
+        public string? OldAltLink { get; }
 
         public TParent Parent { get; }
     }

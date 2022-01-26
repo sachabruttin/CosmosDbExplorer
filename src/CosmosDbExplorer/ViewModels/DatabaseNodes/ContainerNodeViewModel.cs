@@ -13,6 +13,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public class ContainerNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveContainerNodeViewModel, IContent
     {
         private readonly IServiceProvider _serviceProvider;
+        private RelayCommand _openImportDocumentCommand;
+        private RelayCommand _newStoredProcedureCommand;
+        private RelayCommand _newUdfCommand;
+        private RelayCommand _newTriggerCommand;
+        private RelayCommand _openSqlQueryCommand;
 
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
@@ -35,7 +40,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosContainer Container { get; }
 
-        public RelayCommand OpenSqlQueryCommand => new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Container)));
+        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??=  new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Container)));
 
         //public RelayCommand ClearAllDocumentsCommand
         //{
@@ -86,13 +91,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        public RelayCommand OpenImportDocumentCommand => new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Container)));
+        public RelayCommand OpenImportDocumentCommand => _openImportDocumentCommand ??= new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Container)));
 
-        public RelayCommand NewStoredProcedureCommand => new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewStoredProcedureCommand => _newStoredProcedureCommand ??= new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Container)));
 
-        public RelayCommand NewUdfCommand => new(() => Messenger.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewUdfCommand => _newUdfCommand ??= new(() => Messenger.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Container)));
 
-        public RelayCommand NewTriggerCommand => new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewTriggerCommand => _newTriggerCommand ??= new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Container)));
 
         //public RelayCommand DeleteCollectionCommand
         //{

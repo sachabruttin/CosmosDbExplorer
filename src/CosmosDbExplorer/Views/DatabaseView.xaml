@@ -142,7 +142,7 @@
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <Separator />
+                            <!--<Separator />
                             <MenuItem Header="Copy">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CopyIcon}" />
@@ -150,7 +150,7 @@
                                 <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
                                 <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
                                 <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
-                            </MenuItem>
+                            </MenuItem>-->
 
                         </ContextMenu>
                     </StackPanel.ContextMenu>

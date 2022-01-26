@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
@@ -24,14 +25,14 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private CosmosDatabaseService _containerService;
+        private CosmosDatabaseService _databaseService;
+        private AsyncRelayCommand _saveCommand;
 
         public DatabasePropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
         {
             //IsFixedStorage = true;
-            //Throughput = 400;
+            Throughput = 400;
             Title = "Add Container";
-            //_dbService = dbService;
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
         }
@@ -42,30 +43,45 @@ namespace CosmosDbExplorer.ViewModels
         
         public CosmosConnection Connection { get; private set; }
 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string DatabaseId { get; set; }
-        
+
+        //[AlsoNotifyFor(nameof(IsThroughputAutoscale))]
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public bool ProvisionThroughput { get; set; } = true;
-        
+
         public bool IsThroughputAutoscale { get; set; } = true;
 
-        [DependsOn(nameof(IsThroughputAutoscale))]
+        //[DependsOn(nameof(IsThroughputAutoscale))]
         public int MaxThroughput => IsThroughputAutoscale ? 10000 : 100000;
 
-        [DependsOn(nameof(IsThroughputAutoscale))]
+        //[DependsOn(nameof(IsThroughputAutoscale))]
         public int MinThroughput => IsThroughputAutoscale ? 400 : 1000;
 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public int Throughput { get; set; }
-        [DependsOn(nameof(Throughput),
-                   nameof(DatabaseId),
-                   nameof(ProvisionThroughput))]
-        public RelayCommand SaveCommand => new(SaveCommandExecute, SaveCommandCanExecute);
 
-        private void SaveCommandExecute()
+        protected void UpdateSaveCommandStatus() => SaveCommand.NotifyCanExecuteChanged();
+
+        public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, SaveCommandCanExecute);
+
+        private async Task SaveCommandExecute()
         {
-            var database = new CosmosDatabase(DatabaseId);
-            Messenger.Send(new Messages.UpdateOrCreateNodeMessage<CosmosDatabase, CosmosConnection>(database, Connection, null));
+            try
+            {
+                var database = new CosmosDatabase(DatabaseId);
+                var throughput = ProvisionThroughput ? Throughput : (int?)null;
+                var isAutoScale = ProvisionThroughput ? IsThroughputAutoscale : (bool?)null;
 
-            OnClose();
+                var createdDatabase = await _databaseService.CreateDatabaseAsync(database, throughput, isAutoScale, new System.Threading.CancellationToken());
+
+                Messenger.Send(new Messages.UpdateOrCreateNodeMessage<CosmosDatabase, CosmosConnection>(createdDatabase, Connection, null));
+                OnClose();
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error during Database creation");
+            }
         }
 
         private bool SaveCommandCanExecute() => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
@@ -79,7 +95,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             Connection = (CosmosConnection)parameter;
 
-            _containerService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
+            _databaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
         }
 
         private void OnClose()
@@ -93,7 +109,8 @@ namespace CosmosDbExplorer.ViewModels
         public DatabasePropertyViewModelValidator()
         {
             RuleFor(x => x.DatabaseId).NotEmpty();
-            RuleFor(x => x.Throughput).NotEmpty();
+            RuleFor(x => x.Throughput).NotEmpty()
+                                      .When(x => x.ProvisionThroughput);
         }
     }
 }

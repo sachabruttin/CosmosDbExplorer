@@ -53,6 +53,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             {
                 IsLoading = true;
 
+                AddNewCollectionCommand.NotifyCanExecuteChanged();
+
                 var containers = await _containerService.GetContainersAsync(token);
 
                 // TODO: Handle cancellation
@@ -72,28 +74,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             {
                 IsLoading = false;
             }
-
-            //IsLoading = true;
-
-            //var collections = await DbService.GetCollectionsAsync(Parent.Connection, Database).ConfigureAwait(false);
-
-            //await DispatcherHelper.RunAsync(() =>
-            //{
-            //    Children.Add(new UsersNodeViewModel(Database, this));
-            //    foreach (var collection in collections)
-            //    {
-            //        Children.Add(new CollectionNodeViewModel(collection, this));
-            //    }
-            //});
-
-            //IsLoading = false;
         }
 
-        public RelayCommand AddNewCollectionCommand => new(AddNewCollectionCommandExecute);
+        public RelayCommand AddNewCollectionCommand => _addNewCollectionCommand ??= new(AddNewCollectionCommandExecute, () => !HasDummyChild);
 
-        private async void AddNewCollectionCommandExecute()
+        private void AddNewCollectionCommandExecute()
         {
-
             var vmName = typeof(ContainerPropertyViewModel).FullName;
             
             if (string.IsNullOrEmpty(vmName))
@@ -101,40 +87,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 return;
             }
 
-            //var result = _windowManagerService.OpenInDialog(vmName, (Parent.Databases, Parent.Connection, Database));
-
             _rightPaneService.OpenInRightPane(vmName, (Parent.Connection, Database));
-
-            //if (result.GetValueOrDefault())
-            //{
-            //    Children.Clear();
-            //    await LoadChildren(new CancellationToken()).ConfigureAwait(false);
-            //}
         }
 
-
-        //{
-        //    get
-        //    {
-        //        return _addNewCollectionCommand
-        //            ?? (_addNewCollectionCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    var form = new AddCollectionView();
-        //                    var vm = (AddCollectionViewModel)form.DataContext;
-
-        //                    vm.Databases = Parent.Databases;
-        //                    vm.Connection = Parent.Connection;
-        //                    vm.SelectedDatabase = Database.Id;
-
-        //                    if (form.ShowDialog().GetValueOrDefault(false))
-        //                    {
-        //                        Children.Clear();
-        //                        await LoadChildren().ConfigureAwait(false);
-        //                    }
-        //                }));
-        //    }
-        //}
 
         public RelayCommand DeleteDatabaseCommand => new(() => throw new System.NotImplementedException());
         //{

@@ -23,6 +23,7 @@ namespace CosmosDbExplorer.ViewModels
     public class AccountSettingsViewModel : ObservableRecipient, INavigationAware
     {
         private CosmosConnection? _connection = default;
+        private RelayCommand _saveAccountCommand;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
 
         public AccountSettingsViewModel(IPersistAndRestoreService persistAndRestoreService)
@@ -35,21 +36,33 @@ namespace CosmosDbExplorer.ViewModels
 
 
         public bool IsBusy { get; set; } = false;
+
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
         public string? AccountEndpoint { get; set; }
+        
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
         public string? AccountSecret { get; set; }
+        
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
         public string? Label { get; set; }
+        
         public ConnectionType ConnectionType { get; set; }
+        
         public bool EnableEndpointDiscovery { get; set; }
+        
         public Color? AccentColor { get; set; } 
+        
         public Action<bool?>? SetResult { get; set; }
 
-        public void OnAccentColorChanged()
+        protected void OnAccentColorChanged()
         {
             if (AccentColor != null && AccentColor.Value.Equals(Colors.Transparent))
             {
                 AccentColor = null;
             }
         }
+
+        protected void UpdateSaveCommandStatus() => SaveAccountCommand.NotifyCanExecuteChanged();
 
         public bool UseLocalEmulator { get; set; }
 
@@ -67,10 +80,7 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        [DependsOn(nameof(AccountEndpoint), 
-            nameof(AccountSecret), 
-            nameof(Label))]
-        public RelayCommand SaveAccountCommand => new(SaveCommandExecute, SaveCommandCanExecute);
+        public RelayCommand SaveAccountCommand => _saveAccountCommand ??= new(SaveCommandExecute, SaveCommandCanExecute);
 
         public void SaveCommandExecute()
         {
@@ -94,7 +104,7 @@ namespace CosmosDbExplorer.ViewModels
             IsBusy = false;
         }
 
-        public bool SaveCommandCanExecute() => string.IsNullOrEmpty(((IDataErrorInfo)this).Error); //!((INotifyDataErrorInfo)this).HasErrors;
+        public bool SaveCommandCanExecute() => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
         public void OnNavigatedTo(object parameter)
         {

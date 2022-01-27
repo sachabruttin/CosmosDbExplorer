@@ -20,8 +20,10 @@ namespace CosmosDbExplorer.ViewModels.Assets
     {
         //private readonly IDialogService _dialogService;
         private readonly IServiceProvider _serviceProvider;
-
-        private CosmosContainer _collection;
+        private CosmosContainer _container;
+        private RelayCommand _discardCommand;
+        private RelayCommand _saveCommand;
+        private RelayCommand _deleteCommand;
 
         protected AssetTabViewModelBase(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
@@ -53,7 +55,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             ContentId = contentId;
             Node = node;
             Connection = connection;
-            Collection = collection;
+            Container = collection;
             AccentColor = connection.AccentColor;
 
             if (node != null)
@@ -78,12 +80,12 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public CosmosConnection Connection { get; set; }
 
-        public CosmosContainer Collection
+        public CosmosContainer Container
         {
-            get { return _collection; }
+            get { return _container; }
             set
             {
-                _collection = value;
+                _container = value;
                 var split = value.SelfLink.Split(new char[] { '/' });
                 ToolTip = $"{split[1]}>{split[3]}";
             }
@@ -104,7 +106,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             //});
         }
 
-        public RelayCommand DiscardCommand => new(DiscardCommandExecute, DiscardCommandCanExecute);
+        public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, DiscardCommandCanExecute);
 
         protected abstract void DiscardCommandExecute();
 
@@ -113,7 +115,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             return IsDirty;
         }
 
-        public RelayCommand SaveCommand => new(SaveCommandExecute, SaveCommandCanExecute);
+        public RelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, SaveCommandCanExecute);
 
         protected virtual void SaveCommandExecute()
         {
@@ -134,12 +136,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
             //}
         }
 
-        protected virtual bool SaveCommandCanExecute()
-        {
-            return IsDirty;
-        }
+        protected virtual bool SaveCommandCanExecute() => IsDirty;
 
-        public RelayCommand DeleteCommand => new(DeleteCommandExecute, DeleteCommandCanExecute);
+        public RelayCommand DeleteCommand => _deleteCommand ??= new(DeleteCommandExecute, DeleteCommandCanExecute);
 
         protected virtual void DeleteCommandExecute()
         {
@@ -155,9 +154,6 @@ namespace CosmosDbExplorer.ViewModels.Assets
             //}).ConfigureAwait(false);
         }
 
-        protected virtual bool DeleteCommandCanExecute()
-        {
-            return !IsNewDocument;
-        }
+        protected virtual bool DeleteCommandCanExecute() => !IsNewDocument;
     }
 }

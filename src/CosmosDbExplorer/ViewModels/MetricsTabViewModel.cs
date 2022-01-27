@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
@@ -22,6 +23,7 @@ namespace CosmosDbExplorer.ViewModels
         private CosmosConnection _connection;
         private CosmosContainer _container;
         private CosmosContainerService _cosmosContainerService;
+        private AsyncRelayCommand _refreshCommand;
 
         public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) 
             : base(uiServices)
@@ -65,7 +67,7 @@ namespace CosmosDbExplorer.ViewModels
             await LoadMetrics().ConfigureAwait(false);
         }
 
-        public RelayCommand RefreshCommand => new(async () => await LoadMetrics().ConfigureAwait(false), () => !IsBusy);
+        public ICommand RefreshCommand => _refreshCommand ??= new AsyncRelayCommand(LoadMetrics, () => !IsBusy);
 
         private async Task LoadMetrics()
         {

@@ -10,7 +10,7 @@ namespace CosmosDbExplorer.ViewModels
     {
         private ICommand _closeCommand;
 
-        public ICommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(OnClose));
+        public ICommand CloseCommand => _closeCommand ??= new RelayCommand(OnClose);
 
         public Action<bool?> SetResult { get; set; }
 

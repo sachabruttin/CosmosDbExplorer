@@ -57,6 +57,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         where TResource : ICosmosResource
         where TParent : AssetRootNodeViewModelBase<TResource>
     {
+        private RelayCommand _openCommand;
+        private RelayCommand _deleteCommand;
+
         protected AssetNodeViewModelBase(TParent parent, TResource resource)
             : base(parent, false)
         {
@@ -71,11 +74,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public TResource Resource { get; set; }
 
-        public RelayCommand OpenCommand => new(async () => await OpenCommandImp().ConfigureAwait(false));
+        public RelayCommand OpenCommand => _openCommand ??=  new(async () => await OpenCommandImp().ConfigureAwait(false));
 
         protected abstract Task OpenCommandImp();
 
-        public RelayCommand DeleteCommand => new(async () => await DeleteCommandImpl().ConfigureAwait(false));
+        public RelayCommand DeleteCommand => _deleteCommand ??= new(async () => await DeleteCommandImpl().ConfigureAwait(false));
 
         protected abstract Task DeleteCommandImpl();
 

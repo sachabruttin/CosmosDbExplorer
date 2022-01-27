@@ -103,17 +103,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public ObservableCollection<StoredProcParameterViewModel> Parameters { get; } = new ObservableCollection<StoredProcParameterViewModel>();
 
-        public RelayCommand AddParameterCommand
-        {
-            get
-            {
-                return _addParameterCommand ?? (_addParameterCommand = new RelayCommand(
-                    () => Parameters.Add(new StoredProcParameterViewModel()),
-                    () => !IsBusy && !IsDirty));
-            }
-        }
+        public RelayCommand AddParameterCommand => _addParameterCommand ??= new(() => Parameters.Add(new StoredProcParameterViewModel()), () => !IsBusy && !IsDirty);
 
-        public RelayCommand<StoredProcParameterViewModel> RemoveParameterCommand => new(RemoveParameterCommandExecute, RemoveParameterCommandCanExecute);
+        public RelayCommand<StoredProcParameterViewModel> RemoveParameterCommand => _removeParameterCommand ??= new(RemoveParameterCommandExecute, RemoveParameterCommandCanExecute);
 
         private void RemoveParameterCommandExecute(StoredProcParameterViewModel? item)
         {
@@ -128,7 +120,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
 
-        public RelayCommand<object> BrowseParameterCommand => new(BrowseParameterCommandExecute, BrowseParameterCommandCanExecute);
+        public RelayCommand<object> BrowseParameterCommand => _browseParameterCommand ??= new(BrowseParameterCommandExecute, BrowseParameterCommandCanExecute);
 
         private void BrowseParameterCommandExecute(object? item)
         {
@@ -153,7 +145,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
 
 
-        public RelayCommand ExecuteCommand => new(ExecuteCommandExecute, ExecuteCommandCanExecute);
+        public RelayCommand ExecuteCommand => _executeCommand ??= new(ExecuteCommandExecute, ExecuteCommandCanExecute);
 
         private void ExecuteCommandExecute()
         {
@@ -185,7 +177,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         private bool ExecuteCommandCanExecute() => !IsBusy && !IsDirty && IsValid;
 
-        public RelayCommand SaveLocalCommand => new(SaveLocalCommandExecute, SaveLocalCommandCanExecute);
+        public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, SaveLocalCommandCanExecute);
 
         private void SaveLocalCommandExecute()
         {
@@ -224,7 +216,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         private bool SaveLocalCommandCanExecute() => !IsBusy && !string.IsNullOrEmpty(ResultViewModel.Text);
 
-        public RelayCommand GoToNextPageCommand => new(() => throw new NotImplementedException(), () => false);
+        public RelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(() => throw new NotImplementedException(), () => false);
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error); //!((INotifyDataErrorInfo)this).HasErrors;
     }

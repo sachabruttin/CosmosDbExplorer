@@ -17,7 +17,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string Name { get; set; }
 
-        public RelayCommand OpenCommand => new(ExecuteOpenCommand);
+        public RelayCommand OpenCommand => _openCommand ??= new(ExecuteOpenCommand);
 
         public ContainerNodeViewModel ContainerNode => Parent;
 

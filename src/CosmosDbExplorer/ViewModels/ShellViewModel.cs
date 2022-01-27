@@ -27,10 +27,13 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private ICommand _loadedCommand;
         private ICommand _unloadedCommand;
+        private ICommand _refreshCommand;
+        private ICommand _exitCommand;
+        private ICommand _showAccountSettingsCommand;
 
-        public ICommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new RelayCommand(OnLoaded));
+        public ICommand LoadedCommand => _loadedCommand ??= new RelayCommand(OnLoaded);
 
-        public ICommand UnloadedCommand => _unloadedCommand ?? (_unloadedCommand = new RelayCommand(OnUnloaded));
+        public ICommand UnloadedCommand => _unloadedCommand ??= new RelayCommand(OnUnloaded);
 
         public ShellViewModel(IWindowManagerService windowManagerService, IRightPaneService rightPaneService, IApplicationInfoService applicationInfoService, DatabaseViewModel databaseViewModel, IServiceProvider serviceProvider)
         {
@@ -100,7 +103,7 @@ namespace CosmosDbExplorer.ViewModels
         public ICanRefreshNode? CanRefreshNodeViewModel { get; set; }
         public ICanEditDelete? CanEditDelete { get; set; }
 
-        public RelayCommand ShowAccountSettingsCommand => new(ShowAccountSettingsCommandExecute);
+        public ICommand ShowAccountSettingsCommand => _showAccountSettingsCommand ??= new RelayCommand(ShowAccountSettingsCommandExecute);
 
         private void ShowAccountSettingsCommandExecute()
         {
@@ -112,7 +115,7 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public RelayCommand RefreshCommand => new(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>
+        public ICommand RefreshCommand => _refreshCommand ??= new RelayCommand(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>
         {
             if (CanRefreshNodeViewModel?.RefreshCommand == null)
             {
@@ -122,7 +125,7 @@ namespace CosmosDbExplorer.ViewModels
             return CanRefreshNodeViewModel.RefreshCommand.CanExecute(null);
         }); 
 
-        public RelayCommand ExitCommand => new(Close);
+        public ICommand ExitCommand => _exitCommand ??= new RelayCommand(Close);
 
         public virtual void Close()
         {

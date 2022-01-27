@@ -25,19 +25,20 @@ namespace CosmosDbExplorer.ViewModels
     public class QueryEditorViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
         , IHaveSystemProperties
     {
-        private RelayCommand _saveLocalCommand;
         private CosmosQueryResult<IReadOnlyCollection<JObject>>? _queryResult;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
         private CancellationTokenSource? _cancellationTokenSource;
 
-        private RelayCommand<string> _saveQueryCommand;
-        private RelayCommand _openQueryCommand;
+        private AsyncRelayCommand _saveLocalCommand;
+        private AsyncRelayCommand<string> _saveQueryCommand;
+        private AsyncRelayCommand _openQueryCommand;
 
         private ICosmosDocumentService _documentService;
 
         private ICosmosQuery _query;
+        private AsyncRelayCommand _goToNextPageCommand;
 
         public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
@@ -237,7 +238,7 @@ namespace CosmosDbExplorer.ViewModels
             GC.Collect();
         }
 
-        public RelayCommand GoToNextPageCommand => new (async () => await GoToNextPageCommandExecute(), () => GoToNextPageCommandCanExecute());
+        public AsyncRelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(GoToNextPageCommandExecute, () => GoToNextPageCommandCanExecute());
 
         private Task GoToNextPageCommandExecute()
         {
@@ -250,147 +251,129 @@ namespace CosmosDbExplorer.ViewModels
         }
 
 
-        public RelayCommand SaveLocalCommand
+        public AsyncRelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Text));
+        
+        private Task SaveLocalCommandExecute()
         {
-            get
-            {
-                return _saveLocalCommand ??
-                (_saveLocalCommand = new RelayCommand(
-                    async () =>
-                    {
-                        //var settings = new SaveFileDialogSettings
-                        //{
-                        //    DefaultExt = "json",
-                        //    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                        //    AddExtension = true,
-                        //    OverwritePrompt = true,
-                        //    CheckFileExists = false,
-                        //    Title = "Save document locally",
-                        //    InitialDirectory = Settings.Default.GetExportFolder()
-                        //};
+            throw new NotImplementedException();
+            //var settings = new SaveFileDialogSettings
+            //{
+            //    DefaultExt = "json",
+            //    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+            //    AddExtension = true,
+            //    OverwritePrompt = true,
+            //    CheckFileExists = false,
+            //    Title = "Save document locally",
+            //    InitialDirectory = Settings.Default.GetExportFolder()
+            //};
 
-                        //await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-                        //{
-                        //    if (confirm)
-                        //    {
-                        //        try
-                        //        {
-                        //            IsRunning = true;
+            //await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+            //{
+            //    if (confirm)
+            //    {
+            //        try
+            //        {
+            //            IsRunning = true;
 
-                        //            Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
-                        //            Settings.Default.Save();
+            //            Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
+            //            Settings.Default.Save();
 
-                        //            await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
-                        //        }
-                        //        catch (Exception ex)
-                        //        {
-                        //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-                        //        }
-                        //        finally
-                        //        {
-                        //            IsRunning = false;
-                        //        }
-                        //    }
-                        //}).ConfigureAwait(false);
-                    },
-                    () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Text)));
-            }
+            //            await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+            //        }
+            //        finally
+            //        {
+            //            IsRunning = false;
+            //        }
+            //    }
+            //}).ConfigureAwait(false);
         }
 
         public string FileName { get; set; }
 
-        public RelayCommand<string> SaveQueryCommand
+        public AsyncRelayCommand<string> SaveQueryCommand => _saveQueryCommand ??= new(SaveQueryCommandExecute, param => !IsRunning && !string.IsNullOrEmpty(Content));
+
+        private Task SaveQueryCommandExecute(string param)
         {
-            get
-            {
-                return _saveQueryCommand ??
-                    (_saveQueryCommand = new RelayCommand<string>(
-                     async param =>
-                     {
-                         //if (FileName == null || param == "SaveAs")
-                         //{
-                         //    var settings = new SaveFileDialogSettings
-                         //    {
-                         //        DefaultExt = "sql",
-                         //        Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
-                         //        AddExtension = true,
-                         //        OverwritePrompt = true,
-                         //        CheckFileExists = false,
-                         //        Title = "Save Query"
-                         //    };
+            throw new NotImplementedException();
+            //if (FileName == null || param == "SaveAs")
+            //{
+            //    var settings = new SaveFileDialogSettings
+            //    {
+            //        DefaultExt = "sql",
+            //        Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+            //        AddExtension = true,
+            //        OverwritePrompt = true,
+            //        CheckFileExists = false,
+            //        Title = "Save Query"
+            //    };
 
-                         //    await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-                         //    {
-                         //        if (confirm)
-                         //        {
-                         //            try
-                         //            {
-                         //                IsRunning = true;
-                         //                FileName = result.FileName;
+            //    await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+            //    {
+            //        if (confirm)
+            //        {
+            //            try
+            //            {
+            //                IsRunning = true;
+            //                FileName = result.FileName;
 
-                         //                await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, Content.Text));
-                         //            }
-                         //            catch (Exception ex)
-                         //            {
-                         //                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-                         //            }
-                         //            finally
-                         //            {
-                         //                IsRunning = false;
-                         //            }
-                         //        }
-                         //    }).ConfigureAwait(false);
-                         //}
-                         //else
-                         //{
-                         //    await DispatcherHelper.RunAsync(() => File.WriteAllText(FileName, Content.Text));
-                         //}
-                     },
-                     param => !IsRunning && !string.IsNullOrEmpty(Content)));
-            }
+            //                await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, Content.Text));
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+            //            }
+            //            finally
+            //            {
+            //                IsRunning = false;
+            //            }
+            //        }
+            //    }).ConfigureAwait(false);
+            //}
+            //else
+            //{
+            //    await DispatcherHelper.RunAsync(() => File.WriteAllText(FileName, Content.Text));
+            //}
         }
 
-        public RelayCommand OpenQueryCommand
+        public AsyncRelayCommand OpenQueryCommand => _openQueryCommand ??= new(OpenQueryCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(Content));
+        
+        private Task OpenQueryCommandExecute()
         {
-            get
-            {
-                return _openQueryCommand ??
-                    (_openQueryCommand = new RelayCommand(
-                     async () =>
-                     {
-                         //var settings = new OpenFileDialogSettings
-                         //{
-                         //    DefaultExt = "sql",
-                         //    Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
-                         //    AddExtension = true,
-                         //    CheckFileExists = false,
-                         //    Title = "Save Query"
-                         //};
+            throw new NotImplementedException();
+            //var settings = new OpenFileDialogSettings
+            //{
+            //    DefaultExt = "sql",
+            //    Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+            //    AddExtension = true,
+            //    CheckFileExists = false,
+            //    Title = "Save Query"
+            //};
 
-                         //await _dialogService.ShowOpenFileDialog(settings, async (confirm, result) =>
-                         //{
-                         //    if (confirm)
-                         //    {
-                         //        try
-                         //        {
-                         //            IsRunning = true;
-                         //            FileName = result.FileName;
-                         //            var txt = File.ReadAllText(result.FileName);
-                         //            await DispatcherHelper.RunAsync(() => Content.Text = txt);
-                         //        }
-                         //        catch (Exception ex)
-                         //        {
-                         //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-                         //        }
-                         //        finally
-                         //        {
-                         //            IsRunning = false;
-                         //        }
-                         //    }
-                         //}).ConfigureAwait(false);
-                     },
-                     () => !IsRunning && !string.IsNullOrEmpty(Content)));
-            }
+            //await _dialogService.ShowOpenFileDialog(settings, async (confirm, result) =>
+            //{
+            //    if (confirm)
+            //    {
+            //        try
+            //        {
+            //            IsRunning = true;
+            //            FileName = result.FileName;
+            //            var txt = File.ReadAllText(result.FileName);
+            //            await DispatcherHelper.RunAsync(() => Content.Text = txt);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
+            //        }
+            //        finally
+            //        {
+            //            IsRunning = false;
+            //        }
+            //    }
+            //}).ConfigureAwait(false);
         }
 
         public bool HideSystemProperties

@@ -1,9 +1,10 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using System.Windows.Input;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.Contracts.ViewModels
 {
     public interface ICanRefreshTab
     {
-        RelayCommand RefreshCommand { get; }
+        ICommand RefreshCommand { get; }
     }
 }

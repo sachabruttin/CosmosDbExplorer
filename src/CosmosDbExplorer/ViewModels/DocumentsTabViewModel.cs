@@ -38,6 +38,17 @@ namespace CosmosDbExplorer.ViewModels
         private JObject _currentDocument;
 
         private ICosmosDocumentService _cosmosDocumentService;
+        private AsyncRelayCommand _loadMoreCommand;
+        private AsyncRelayCommand _refreshLoadCommand;
+        private RelayCommand _newDocumentCommand;
+        private RelayCommand _resetRequestOptionsCommand;
+        private AsyncRelayCommand _saveLocalCommand;
+        private RelayCommand _closeFilterCommand;
+        private AsyncRelayCommand _applyFilterCommand;
+        private RelayCommand _editFilterCommand;
+        private AsyncRelayCommand _deleteDocumentCommand;
+        private AsyncRelayCommand _saveDocumentCommand;
+        private RelayCommand _discardCommand;
 
         public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
@@ -237,13 +248,13 @@ namespace CosmosDbExplorer.ViewModels
 
         protected CosmosContainer Collection { get; set; }
 
-        public RelayCommand LoadMoreCommand => new(async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false));
+        public AsyncRelayCommand LoadMoreCommand => _loadMoreCommand ??= new(async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false));
 
-        public RelayCommand RefreshLoadCommand => new(async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
+        public AsyncRelayCommand RefreshLoadCommand => _refreshLoadCommand ??= new(async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
                                                       () => !IsRunning && IsValid);
 
 
-        public RelayCommand NewDocumentCommand => new(NewDocumentExecute, NewDocumentCommandCanExecute);
+        public RelayCommand NewDocumentCommand => _newDocumentCommand ??= new(NewDocumentExecute, NewDocumentCommandCanExecute);
 
         private void NewDocumentExecute()
         {
@@ -258,9 +269,9 @@ namespace CosmosDbExplorer.ViewModels
             return true;//!IsRunning && !EditorViewModel.IsNewDocument && !EditorViewModel.IsDirty;
         }
 
-        public RelayCommand DiscardCommand => new(() => OnSelectedDocumentChanged(), () => !IsRunning && EditorViewModel.IsDirty);
+        public RelayCommand DiscardCommand => _discardCommand ??= new(() => OnSelectedDocumentChanged(), () => !IsRunning && EditorViewModel.IsDirty);
 
-        public RelayCommand SaveDocumentCommand => new(async () => await SaveDocumentCommandExecute(), () => !IsRunning && EditorViewModel.IsDirty && IsValid);
+        public AsyncRelayCommand SaveDocumentCommand => _saveDocumentCommand ??= new(SaveDocumentCommandExecute, () => !IsRunning && EditorViewModel.IsDirty && IsValid);
 
         private async Task SaveDocumentCommandExecute()
         {
@@ -298,7 +309,7 @@ namespace CosmosDbExplorer.ViewModels
 
         }
 
-        public RelayCommand DeleteDocumentCommand => new(async () => await DeleteDocumentCommandExecute(), () => true/*!IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid*/);
+        public AsyncRelayCommand DeleteDocumentCommand => _deleteDocumentCommand ??= new(DeleteDocumentCommandExecute, () => true/*!IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid*/);
 
         private async Task DeleteDocumentCommandExecute()
         {
@@ -330,13 +341,13 @@ namespace CosmosDbExplorer.ViewModels
             //}).ConfigureAwait(false);
         }
 
-        public RelayCommand EditFilterCommand => new(() => IsEditingFilter = true);
+        public RelayCommand EditFilterCommand => _editFilterCommand ??= new(() => IsEditingFilter = true);
 
-        public RelayCommand ApplyFilterCommand => new(async () => { IsEditingFilter = false; await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false); });
+        public AsyncRelayCommand ApplyFilterCommand => _applyFilterCommand ??= new(async () => { IsEditingFilter = false; await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false); });
 
-        public RelayCommand CloseFilterCommand => new(() => IsEditingFilter = false);
+        public RelayCommand CloseFilterCommand => _closeFilterCommand ??= new(() => IsEditingFilter = false);
 
-        public RelayCommand SaveLocalCommand => new(async () => await SaveDocumentCommandExecute(), () => !IsRunning && SelectedDocument != null && IsValid);
+        public AsyncRelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveDocumentCommandExecute, () => !IsRunning && SelectedDocument != null && IsValid);
 
         private async Task SaveLocalCommandExecute()
         {
@@ -447,7 +458,7 @@ namespace CosmosDbExplorer.ViewModels
         public int? MaxDOP { get; set; }
         public int? MaxBufferItem { get; set; }
 
-        public RelayCommand ResetRequestOptionsCommand => new(ResetRequestOptionCommandExecute);
+        public RelayCommand ResetRequestOptionsCommand => _resetRequestOptionsCommand ??= new(ResetRequestOptionCommandExecute);
 
         private void ResetRequestOptionCommandExecute()
         {

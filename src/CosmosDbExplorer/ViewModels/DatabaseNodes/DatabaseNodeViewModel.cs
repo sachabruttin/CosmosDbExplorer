@@ -91,7 +91,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         }
 
 
-        public RelayCommand DeleteDatabaseCommand => new(() => throw new System.NotImplementedException());
+        public RelayCommand DeleteDatabaseCommand => _deleteDatabaseCommand ??= new(() => throw new System.NotImplementedException());
         //{
         //    get
         //    {

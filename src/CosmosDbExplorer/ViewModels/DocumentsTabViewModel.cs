@@ -68,26 +68,6 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-        //public DocumentsTabViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
-        //    : base(messenger, uiServices)
-        //{
-        //    Documents = new ObservableCollection<DocumentDescription>();
-        //    _dbService = dbService;
-        //    _dialogService = dialogService;
-
-        //    EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<DocumentEditorViewModel>();
-        //    HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
-        //    HeaderViewModel.IsReadOnly = true;
-
-        //    Title = "Documents";
-        //    Header = Title;
-
-        //    _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_requestChargeStatusBarItem);
-        //    _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = IsRunning, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_progessBarStatusBarItem);
-        //}
-
         public override async void Load(string contentId, DocumentNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
             ContentId = contentId;
@@ -156,6 +136,21 @@ namespace CosmosDbExplorer.ViewModels
             {
                 SetStatusBar(null);
             }
+
+            NotifyCanExecuteChanged();
+        }
+
+        private void NotifyCanExecuteChanged()
+        {
+            NewDocumentCommand.NotifyCanExecuteChanged();
+            LoadMoreCommand.NotifyCanExecuteChanged();
+            RefreshLoadCommand.NotifyCanExecuteChanged();
+            DiscardCommand.NotifyCanExecuteChanged();
+            SaveDocumentCommand.NotifyCanExecuteChanged();
+            DeleteDocumentCommand.NotifyCanExecuteChanged();
+            EditFilterCommand.NotifyCanExecuteChanged();
+            ApplyFilterCommand.NotifyCanExecuteChanged();
+            SaveLocalCommand.NotifyCanExecuteChanged();
         }
 
         public string Filter { get; set; }
@@ -185,9 +180,6 @@ namespace CosmosDbExplorer.ViewModels
             RequestCharge = response == null
                 ? null
                 : $"Request Charge: {response.RequestCharge:N2}";
-
-            //EditorViewModel.SetText(response?.Resource, HideSystemProperties);
-            //HeaderViewModel.SetText(response?.ResponseHeaders, HideSystemProperties);
         }
 
         private async Task LoadDocuments(bool cleanContent, CancellationToken cancellationToken)
@@ -234,6 +226,7 @@ namespace CosmosDbExplorer.ViewModels
             finally
             {
                 IsRunning = false;
+                NotifyCanExecuteChanged();
             }
         }
 
@@ -445,11 +438,12 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;
 
-        public bool HideSystemProperties { get; set; } = true;
+        public bool HideSystemProperties { get; set; }
 
         public void OnHideSystemPropertiesChanged()
         {
-            OnSelectedDocumentChanged();
+            EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+            NotifyCanExecuteChanged();
         }
 
         public bool? EnableScanInQuery { get; set; }

@@ -17,6 +17,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json.Linq;
+using PropertyChanged;
 using Validar;
 
 namespace CosmosDbExplorer.ViewModels
@@ -103,10 +104,13 @@ namespace CosmosDbExplorer.ViewModels
 
         protected CosmosContainer Container { get; set; }
 
+        [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
         public string Content { get; set; }
 
+        [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
         public string SelectedText { get; set; }
 
+        [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
         public bool IsDirty { get; set; }
 
         public bool IsRunning { get; set; }
@@ -125,6 +129,8 @@ namespace CosmosDbExplorer.ViewModels
             {
                 _cancellationTokenSource = null;
             }
+
+            NotifyCanExecuteChanged();
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -205,6 +211,9 @@ namespace CosmosDbExplorer.ViewModels
 
                 EditorViewModel.SetText(_queryResult.Items, HideSystemProperties);
                 HeaderViewModel.SetText(_queryResult.Headers, HideSystemProperties);
+
+                NotifyCanExecuteChanged();
+
             }
             catch (OperationCanceledException)
             {
@@ -236,6 +245,14 @@ namespace CosmosDbExplorer.ViewModels
             HeaderViewModel.SetText(null, HideSystemProperties);
 
             GC.Collect();
+        }
+
+        private void NotifyCanExecuteChanged()
+        {
+            GoToNextPageCommand.NotifyCanExecuteChanged();
+            SaveLocalCommand.NotifyCanExecuteChanged();
+            SaveQueryCommand.NotifyCanExecuteChanged();
+            OpenQueryCommand.NotifyCanExecuteChanged();
         }
 
         public AsyncRelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(GoToNextPageCommandExecute, () => GoToNextPageCommandCanExecute());
@@ -386,7 +403,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             if (_queryResult != null)
             {
-                EditorViewModel.SetText(_queryResult, HideSystemProperties);
+                EditorViewModel.SetText(_queryResult.Items, HideSystemProperties);
             }
         }
 

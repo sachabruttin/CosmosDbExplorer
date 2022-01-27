@@ -1,4 +1,5 @@
-﻿using CosmosDbExplorer.Helpers;
+﻿using System;
+using CosmosDbExplorer.Helpers;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,6 +34,8 @@ namespace CosmosDbExplorer.ViewModels
 
     public class JsonViewerViewModel : JsonEditorViewModelBase
     {
+        private static readonly string[] SystemResourceNames = new[] { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
+
         public JsonViewerViewModel()
         {
         }
@@ -44,22 +47,27 @@ namespace CosmosDbExplorer.ViewModels
                 return null;
             }
 
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = removeSystemProperties ? new DocumentDbWithoutSystemPropertyResolver() : null,
-                Formatting = Formatting.Indented,
-                DateParseHandling = DateParseHandling.None
-            };
+            var _document = new JArray(content);
 
-            try
+            return removeSystemProperties
+                ? RemoveCosmosSystemProperties(_document)
+                : _document.ToString(Formatting.Indented);
+        }
+
+        private static string RemoveCosmosSystemProperties(JArray content)
+        {
+            foreach (var obj in content.Values<JObject>())
             {
-                var doc = (dynamic)content;
-                return JsonConvert.SerializeObject(doc, settings);
+                if (obj != null)
+                {
+                    foreach (var item in SystemResourceNames)
+                    {
+                        obj.Remove(item);
+                    }
+                }
             }
-            catch
-            {
-                return JsonConvert.SerializeObject(content, settings);
-            }
+
+            return content.ToString(Formatting.Indented);
         }
     }
 
@@ -86,7 +94,7 @@ namespace CosmosDbExplorer.ViewModels
                 : _document.ToString(Formatting.Indented);
         }
 
-        protected static string RemoveCosmosSystemProperties(JObject content)
+        private static string RemoveCosmosSystemProperties(JObject content)
         {
             var document = new JObject(content); // create a copy of the object 
 
@@ -116,7 +124,7 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        protected override string GetDocumentContent(object content, bool removeSystemProperties)
+        protected override string? GetDocumentContent(object content, bool removeSystemProperties)
         {
             if (content == null)
             {

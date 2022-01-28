@@ -9,13 +9,20 @@ namespace CosmosDbExplorer.Core.Helpers
     {
         public static string GetMessage(this CosmosException exception)
         {
-            var regex = new Regex(@"Message: ({.*})", RegexOptions.Multiline);
+            try
+            {
+                var regex = new Regex(@"Message: ({.*})", RegexOptions.Multiline);
 
-            var match = regex.Match(exception.ResponseBody);
+                var match = regex.Match(exception.ResponseBody);
 
-            var json = match.Captures.First().Value.Replace("Message:", string.Empty);
-            var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
-            return string.Join(Environment.NewLine, obj["Errors"]?.Values<string>());
+                var json = match.Captures.First().Value.Replace("Message:", string.Empty);
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
+                return string.Join(Environment.NewLine, obj["Errors"]?.Values<string>());
+            }
+            catch
+            {
+                return exception.Message;
+            }
         }
     }
 }

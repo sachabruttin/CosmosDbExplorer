@@ -36,10 +36,10 @@ namespace CosmosDbExplorer.TemplateSelectors
                 return QueryEditorTemplate;
             }
 
-            //if (item is ImportDocumentViewModel)
-            //{
-            //    return ImportDocumentTemplate;
-            //}
+            if (item is ImportDocumentViewModel)
+            {
+                return ImportDocumentTemplate;
+            }
 
             if (item is StoredProcedureTabViewModel)
             {

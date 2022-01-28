@@ -61,11 +61,11 @@
                     <views:QueryEditorView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.QueryEditorTemplate>
-            <!--<selector:TabContentTemplateSelector.ImportDocumentTemplate>
+            <selector:TabContentTemplateSelector.ImportDocumentTemplate>
                 <DataTemplate>
                     <views:ImportDocumentView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.ImportDocumentTemplate>-->
+            </selector:TabContentTemplateSelector.ImportDocumentTemplate>
             <selector:TabContentTemplateSelector.DatabaseViewTemplate>
                 <DataTemplate>
                     <views:DatabaseView />
@@ -562,35 +562,39 @@
 
                     <Fluent:RibbonGroupBox KeyTip="O" x:Name="Container" TabIndex="2"
                                        Header="Container"
-                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}">
+                                       >
 
                         <Fluent:SplitButton x:Name="CreateButton"
                                         KeyTip="A"
                                         Header="Add Item"
                                         LargeIcon="{StaticResource CreateIcon}"
                                         SizeDefinition="Large">
-                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Container.NewStoredProcedureCommand}" />
-                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Container.NewUdfCommand}" />
-                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Container.NewTriggerCommand}"/>
+                            <Fluent:MenuItem Header="Container" Icon="{StaticResource CollectionIcon}" Command="{Binding Database.AddNewContainerCommand}" IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Container.NewStoredProcedureCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Container.NewUdfCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Container.NewTriggerCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
                         </Fluent:SplitButton>
 
                         <Fluent:Button Header="SQL Query" 
+                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
                                    Icon="{StaticResource SqlQueryIcon}" 
                                    SizeDefinition="Middle,Small"
                                    Command="{Binding Container.OpenSqlQueryCommand}"
                                    KeyTip="Q"/>
 
-                        <!--<Fluent:Button Header="Import" x:Name="ImportDocuments"
+                        <Fluent:Button Header="Import" x:Name="ImportDocuments"
                                    Command="{Binding Container.OpenImportDocumentCommand}"
                                    SizeDefinition="Middle,Small"
+                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
                                    KeyTip="I">
                             <Fluent:Button.Icon>
                                 <TextBlock Style="{StaticResource ImportDocumentIcon}" />
                             </Fluent:Button.Icon>
-                        </Fluent:Button>-->
+                        </Fluent:Button>
 
                         <Fluent:MenuItem Header="Delete Container" 
-                                   Command="{Binding Container.DeleteContainerCommand}">
+                                         IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
+                                         Command="{Binding Container.DeleteContainerCommand}">
                             <Fluent:MenuItem.Icon>
                                 <TextBlock Style="{StaticResource DeleteIcon}" />
                             </Fluent:MenuItem.Icon>

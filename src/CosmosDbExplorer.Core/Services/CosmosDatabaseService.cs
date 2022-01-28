@@ -41,8 +41,8 @@ namespace CosmosDbExplorer.Core.Services
                 if (throughput.HasValue)
                 {
                     var throughputProperties = isAutoscale.GetValueOrDefault(true)
-                        ? ThroughputProperties.CreateManualThroughput(throughput.Value)
-                        : ThroughputProperties.CreateAutoscaleThroughput(throughput.Value);
+                        ? ThroughputProperties.CreateAutoscaleThroughput(throughput.Value)
+                        : ThroughputProperties.CreateManualThroughput(throughput.Value);
 
                     var result = await _client.CreateDatabaseAsync(database.Id, throughputProperties, requestOptions: null, cancellationToken: cancellationToken);
                     return new CosmosDatabase(result.Resource);

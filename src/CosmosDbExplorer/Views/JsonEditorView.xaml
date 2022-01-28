@@ -12,7 +12,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
-    <UserControl.Resources>
+    <!--<UserControl.Resources>
         <Style TargetType="{x:Type avalonEdit:TextEditor}">
             <Setter Property="FontSize" Value="10pt" />
             <Setter Property="FontFamily" Value="Consolas,Courrier New" />
@@ -25,7 +25,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
 
     
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 

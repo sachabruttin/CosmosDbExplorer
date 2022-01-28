@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -87,6 +88,37 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
+        public async Task<int> ImportDocumentsAsync(string content, CancellationToken cancellationToken)
+        {
+            var itemsToInsert = GetDocuments(content, _cosmosContainer.PartitionKeyJsonPath);
+            var tasks = new List<Task>(itemsToInsert.Length);
+
+            foreach (var item in itemsToInsert)
+            {
+                tasks.Add(_container.CreateItemAsync(item.Resource, PartitionKeyHelper.Get(item.PK), cancellationToken: cancellationToken)
+                    .ContinueWith(itemResponse =>
+                    {
+                        if (!itemResponse.IsCompletedSuccessfully)
+                        {
+                            var innerExceptions = itemResponse.Exception.Flatten();
+                            if (innerExceptions.InnerExceptions.FirstOrDefault(innerEx => innerEx is CosmosException) is CosmosException cosmosException)
+                            {
+                                throw new Exception(cosmosException.GetMessage());
+                            }
+                            else
+                            {
+                                throw new Exception($"Exception {innerExceptions.InnerExceptions.FirstOrDefault()}.");
+                            }
+                        }
+                    }));
+            }
+
+            // Wait until all are done
+            await Task.WhenAll(tasks);
+
+            return tasks.Where(t => t.IsCompletedSuccessfully).Count();
+        }
+
         public async Task<CosmosQueryResult<IReadOnlyCollection<JObject>>> ExecuteQueryAsync(ICosmosQuery query, CancellationToken cancellationToken)
         {
             var result = new CosmosQueryResult<IReadOnlyCollection<JObject>>();
@@ -118,6 +150,31 @@ namespace CosmosDbExplorer.Core.Services
             }
 
             return result;
+        }
+
+        private Document[] GetDocuments(string content, string pkPath)
+        {
+            var token = JToken.Parse(content);
+
+            if (token == null)
+            {
+                return Array.Empty<Document>();
+            }
+
+            if (token is JArray)
+            {
+                return token.Select(t => new Document { PK = t.SelectToken(pkPath).Value<string>(), Resource = t }).ToArray();
+            }
+            else
+            {
+                return new[] { new Document { PK = token.SelectToken(pkPath).Value<string>(), Resource = token } };
+            }
+        }
+
+        public class Document
+        {
+            public string PK { get; set; }
+            public JToken Resource { get; set; }
         }
     }
 }

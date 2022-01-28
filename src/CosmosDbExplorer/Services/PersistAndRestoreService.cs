@@ -29,11 +29,11 @@ namespace CosmosDbExplorer.Services
         {
             Properties.Settings.Default.Save();
 
-            //if (App.Current.Properties != null)
-            //{
-            //    var fileName = _appConfig.AppPropertiesFileName;
-            //    _fileService.Save(_localAppData, fileName, App.Current.Properties);
-            //}
+            if (App.Current.Properties != null)
+            {
+                var fileName = _appConfig.AppPropertiesFileName;
+                _fileService.Save(_localAppData, fileName, App.Current.Properties);
+            }
         }
 
         public void PersistConnection(CosmosConnection connection)

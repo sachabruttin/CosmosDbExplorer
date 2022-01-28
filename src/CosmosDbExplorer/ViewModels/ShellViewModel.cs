@@ -76,7 +76,7 @@ namespace CosmosDbExplorer.ViewModels
             //IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel;
-            //IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
+            IsImportTabVisible = SelectedTab is ImportDocumentViewModel;
             IsQuerySettingsVisible = SelectedTab is QueryEditorViewModel;
             IsSystemPropertiesVisible = SelectedTab is IHaveSystemProperties;
             IsRequestOptionsVisible = SelectedTab is IHaveRequestOptions;
@@ -156,7 +156,7 @@ namespace CosmosDbExplorer.ViewModels
 
             Messenger.Register<ShellViewModel, OpenDocumentsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, ContainerNodeViewModel>(msg));
-            //Messenger.Register<ShellViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, CollectionNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, ContainerNodeViewModel>(msg));
             //Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
             //Messenger.Register<ShellViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
             //Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));

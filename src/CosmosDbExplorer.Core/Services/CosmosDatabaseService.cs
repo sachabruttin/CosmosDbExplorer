@@ -59,6 +59,20 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
+        public async Task DeleteDatabaseAsync(CosmosDatabase database, CancellationToken cancellationToken)
+        {
+            var db = _client.GetDatabase(database.Id);
+            
+            try
+            {
+                await db.DeleteAsync(cancellationToken: cancellationToken);
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
+        }
+
         public async Task<AccountProperties> GetDatabaseMetricsAsync()
         {
             return await _client.ReadAccountAsync();

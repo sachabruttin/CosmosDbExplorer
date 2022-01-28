@@ -37,7 +37,8 @@ namespace CosmosDbExplorer.Services
             {
                 ColorScheme = MetroDialogColorScheme.Theme,
                 DefaultButtonFocus = MessageDialogResult.Negative,
-                NegativeButtonText = "NO"
+                NegativeButtonText = "NO",
+                AffirmativeButtonText = "YES"
             };
 
             var result = await MainWindow.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative, settings);

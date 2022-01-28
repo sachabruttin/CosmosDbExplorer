@@ -40,7 +40,6 @@ namespace CosmosDbExplorer.ViewModels
                 if (this is IContent assetNode && assetNode.ContentId == msg.AltLink)
                 {
                     Parent.Children.Remove(this);
-                    //DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
                 }
             }
         }

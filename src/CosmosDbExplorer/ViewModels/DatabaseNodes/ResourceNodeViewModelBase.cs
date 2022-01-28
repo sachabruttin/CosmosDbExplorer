@@ -6,7 +6,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
-    public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode
+    public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode, IContent
         where TParent : TreeViewItemViewModel
     {
         private RelayCommand _refreshCommand;
@@ -18,7 +18,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Resource = resource;
         }
 
-        public string Name => Resource.Id;
+        public string Name => Resource?.Id ?? "Unknown";
+        public string? ContentId => Resource?.SelfLink;
 
         public RelayCommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
 
@@ -31,5 +32,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public RelayCommand CopySelfLinkToClipboardCommand => _copySelfLinkToClipboardCommand ??= new(() => Clipboard.SetText(Resource.SelfLink));
 
         protected ICosmosResource Resource { get; set; }
+
     }
 }

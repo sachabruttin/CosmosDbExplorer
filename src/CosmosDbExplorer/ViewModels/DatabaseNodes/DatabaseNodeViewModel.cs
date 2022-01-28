@@ -16,11 +16,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public class DatabaseNodeViewModel : ResourceNodeViewModelBase<ConnectionNodeViewModel>
     {
         private RelayCommand _addNewCollectionCommand;
-        private RelayCommand _deleteDatabaseCommand;
+        private AsyncRelayCommand _deleteDatabaseCommand;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRightPaneService _rightPaneService;
         private readonly IWindowManagerService _windowManagerService;
+        private readonly IDialogService _dialogService;
         private readonly CosmosContainerService _containerService;
+        private readonly CosmosDatabaseService _databaseService;
 
         public DatabaseNodeViewModel(IServiceProvider serviceProvider, CosmosDatabase database, ConnectionNodeViewModel parent)
             : base(database, parent, true)
@@ -28,7 +30,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _serviceProvider = serviceProvider;
             _rightPaneService = _serviceProvider.GetRequiredService<IRightPaneService>();
             _windowManagerService = _serviceProvider.GetRequiredService<IWindowManagerService>();
+            _dialogService = _serviceProvider.GetRequiredService<IDialogService>();
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, database);
+            _databaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Parent.Connection);
 
             Database = database;
 
@@ -91,7 +95,36 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         }
 
 
-        public RelayCommand DeleteDatabaseCommand => _deleteDatabaseCommand ??= new(() => throw new System.NotImplementedException());
+        public AsyncRelayCommand DeleteDatabaseCommand => _deleteDatabaseCommand ??= new(DeleteDatabaseCommandExecuteAsync);
+
+        private async Task DeleteDatabaseCommandExecuteAsync()
+        {
+            var msg = $"Are you sure you want to delete the database '{Database.Id}' and all his content?";
+
+            //Action OnDialogClose(bool confirm) = {
+
+            //};
+
+            async void OnDialogClose(bool confirm)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+
+                try
+                {
+                    await _databaseService.DeleteDatabaseAsync(Database, new CancellationToken());
+                    Messenger.Send(new RemoveNodeMessage(Database.SelfLink));
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, $"Error during database {Database.Id} deletion");
+                }
+            }
+
+            await _dialogService.ShowQuestion(msg, "Delete Database", OnDialogClose);
+        }
         //{
         //    get
         //    {

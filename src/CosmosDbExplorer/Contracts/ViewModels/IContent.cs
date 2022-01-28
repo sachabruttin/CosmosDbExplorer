@@ -2,6 +2,6 @@
 {
     public interface IContent
     {
-        string ContentId { get; }
+        string? ContentId { get; }
     }
 }

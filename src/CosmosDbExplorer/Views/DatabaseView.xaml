@@ -12,7 +12,6 @@
              xmlns:controls="clr-namespace:CosmosDbExplorer.Controls"
              d:DataContext="{d:DesignInstance Type=viewmodel:DatabaseViewModel}"
              mc:Ignorable="d" 
-             Loaded="UserControl_Loaded"
              d:DesignHeight="450" d:DesignWidth="800">
     
     <controls:TreeViewEx ItemsSource="{Binding Nodes}"

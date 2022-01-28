@@ -15,6 +15,7 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using CosmosDbExplorer.ViewModels.Assets;
 using CosmosDbExplorer.Core.Models;
+using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -27,9 +28,9 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private ICommand _loadedCommand;
         private ICommand _unloadedCommand;
-        private ICommand _refreshCommand;
         private ICommand _exitCommand;
-        private ICommand _showAccountSettingsCommand;
+        private RelayCommand _refreshCommand;
+        private RelayCommand _showAccountSettingsCommand;
 
         public ICommand LoadedCommand => _loadedCommand ??= new RelayCommand(OnLoaded);
 
@@ -97,10 +98,13 @@ namespace CosmosDbExplorer.ViewModels
 
         public ConnectionNodeViewModel? Connection { get; set; }
         public DatabaseNodeViewModel? Database { get; set; }
-        public ContainerNodeViewModel? Collection { get; set; }
+        public ContainerNodeViewModel? Container { get; set; }
         public UsersNodeViewModel? Users { get; set; }
         public UserNodeViewModel? UserNode { get; set; }
+
+        [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
         public ICanRefreshNode? CanRefreshNodeViewModel { get; set; }
+
         public ICanEditDelete? CanEditDelete { get; set; }
 
         public ICommand ShowAccountSettingsCommand => _showAccountSettingsCommand ??= new RelayCommand(ShowAccountSettingsCommandExecute);
@@ -126,6 +130,12 @@ namespace CosmosDbExplorer.ViewModels
         }); 
 
         public ICommand ExitCommand => _exitCommand ??= new RelayCommand(Close);
+
+
+        private void NotifyCanExecuteChanged()
+        {
+            _refreshCommand?.NotifyCanExecuteChanged();
+        }
 
         public virtual void Close()
         {
@@ -187,7 +197,7 @@ namespace CosmosDbExplorer.ViewModels
             CanRefreshNodeViewModel = message.Item as ICanRefreshNode;
             Connection = message.Item as ConnectionNodeViewModel;
             Database = message.Item as DatabaseNodeViewModel;
-            Collection = (message.Item as IHaveContainerNodeViewModel)?.ContainerNode;
+            Container = (message.Item as IHaveContainerNodeViewModel)?.ContainerNode;
             Users = message.Item as UsersNodeViewModel;
             UserNode = message.Item as UserNodeViewModel;
             CanEditDelete = message.Item as ICanEditDelete;
@@ -200,7 +210,7 @@ namespace CosmosDbExplorer.ViewModels
             return CanRefreshNodeViewModel != null
                                     || Connection != null
                                     || Database != null
-                                    || Collection != null
+                                    || Container != null
                                     || CanEditDelete != null
                                     || Users != null
                                     || UserNode != null;

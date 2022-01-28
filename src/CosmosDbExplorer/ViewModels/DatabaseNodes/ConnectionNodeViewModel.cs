@@ -116,7 +116,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 confirmed);
         }
 
-        public RelayCommand AddNewDatabaseCommand => _addNewDatabaseCommand ??= new(AddNewDatabaseCommandExecute, () => !HasDummyChild);
+        public RelayCommand AddNewDatabaseCommand => _addNewDatabaseCommand ??= new(AddNewDatabaseCommandExecute);
 
         private void AddNewDatabaseCommandExecute()
         {
@@ -136,6 +136,14 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             Children.Clear();
             await LoadChildren(new CancellationToken());
+        }
+
+        protected override void NotifyCanExecuteChanged()
+        {
+            AddNewDatabaseCommand?.NotifyCanExecuteChanged();
+            RefreshCommand?.NotifyCanExecuteChanged();
+            RemoveConnectionCommand?.NotifyCanExecuteChanged();
+            EditConnectionCommand?.NotifyCanExecuteChanged();
         }
     }
 }

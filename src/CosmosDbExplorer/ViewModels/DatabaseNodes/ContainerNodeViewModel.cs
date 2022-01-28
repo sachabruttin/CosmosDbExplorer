@@ -126,5 +126,14 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public ContainerNodeViewModel ContainerNode => this;
 
         public string ContentId => Guid.NewGuid().ToString();
+
+        protected override void NotifyCanExecuteChanged()
+        {
+            OpenImportDocumentCommand.NotifyCanExecuteChanged();
+            NewStoredProcedureCommand.NotifyCanExecuteChanged();
+            NewUdfCommand.NotifyCanExecuteChanged();
+            NewTriggerCommand.NotifyCanExecuteChanged();
+            OpenSqlQueryCommand.NotifyCanExecuteChanged();
+        }
     }
 }

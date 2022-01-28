@@ -225,7 +225,6 @@
                     Visibility="{Binding IsRequestOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}"/>
 
                     <Fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
-                                                     MinWidth="100"
                                                      Background="Violet" BorderBrush="Violet"
                     Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}" />
                 </Fluent:Ribbon.ContextualGroups>
@@ -543,13 +542,15 @@
 
                     </Fluent:RibbonGroupBox>
 
-                    <Fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1"
-                                       IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}">
+                    <Fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1">
+                        
                         <Fluent:Button Header="New" 
-                                   Command="{Binding Database.AddNewCollectionCommand}"
+                                       IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}"  
+                                   Command="{Binding Connection.AddNewDatabaseCommand}"
                                    LargeIcon="{StaticResource DatabaseIcon}"/>
 
                         <Fluent:Button Header="Delete" 
+                                       IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}"  
                                    Command="{Binding Database.DeleteDatabaseCommand}">
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
@@ -566,19 +567,19 @@
                                         Header="Add Item"
                                         LargeIcon="{StaticResource CreateIcon}"
                                         SizeDefinition="Large">
-                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
-                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
-                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
+                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Container.NewStoredProcedureCommand}" />
+                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Container.NewUdfCommand}" />
+                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Container.NewTriggerCommand}"/>
                         </Fluent:SplitButton>
 
                         <Fluent:Button Header="SQL Query" 
                                    Icon="{StaticResource SqlQueryIcon}" 
                                    SizeDefinition="Middle,Small"
-                                   Command="{Binding Collection.OpenSqlQueryCommand}"
+                                   Command="{Binding Container.OpenSqlQueryCommand}"
                                    KeyTip="Q"/>
 
                         <Fluent:Button Header="Import" x:Name="ImportDocuments"
-                                   Command="{Binding Collection.OpenImportDocumentCommand}"
+                                   Command="{Binding Container.OpenImportDocumentCommand}"
                                    SizeDefinition="Middle,Small"
                                    KeyTip="I">
                             <Fluent:Button.Icon>
@@ -593,7 +594,7 @@
                             </Fluent:SplitButton.Icon>
 
                             <Fluent:MenuItem Header="Delete Collection" 
-                                   Command="{Binding Collection.DeleteCollectionCommand}">
+                                   Command="{Binding Container.DeleteContainerCommand}">
                                 <Fluent:MenuItem.Icon>
                                     <TextBlock Style="{StaticResource DeleteIcon}" />
                                 </Fluent:MenuItem.Icon>
@@ -601,11 +602,11 @@
 
                             <Fluent:MenuItem Header="Remove All Documents (Delete)" 
                                    Icon="{StaticResource RemoveAllIcon}" 
-                                   Command="{Binding Collection.ClearAllDocumentsCommand}"
+                                   Command="{Binding Container.ClearAllDocumentsCommand}"
                                    />
                             <Fluent:MenuItem Header="Remove All Documents (Recreate)" 
                                    Icon="{StaticResource RemoveAllIcon}" 
-                                   Command="{Binding Collection.RecreateAsEmptyCommand}"
+                                   Command="{Binding Container.RecreateAsEmptyCommand}"
                                    />
                         </Fluent:SplitButton>
 

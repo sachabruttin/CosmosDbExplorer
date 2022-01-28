@@ -53,7 +53,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             {
                 IsLoading = true;
 
-                AddNewCollectionCommand.NotifyCanExecuteChanged();
+                AddNewContainerCommand.NotifyCanExecuteChanged();
 
                 var containers = await _containerService.GetContainersAsync(token);
 
@@ -76,9 +76,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             }
         }
 
-        public RelayCommand AddNewCollectionCommand => _addNewCollectionCommand ??= new(AddNewCollectionCommandExecute, () => !HasDummyChild);
+        public RelayCommand AddNewContainerCommand => _addNewCollectionCommand ??= new(AddNewContainerCommandExecute, () => !HasDummyChild);
 
-        private void AddNewCollectionCommandExecute()
+        private void AddNewContainerCommandExecute()
         {
             var vmName = typeof(ContainerPropertyViewModel).FullName;
             
@@ -114,5 +114,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //                }));
         //    }
         //}
+
+        protected override void NotifyCanExecuteChanged()
+        {
+            AddNewContainerCommand.NotifyCanExecuteChanged();
+            DeleteDatabaseCommand.NotifyCanExecuteChanged();
+        }
     }
 }

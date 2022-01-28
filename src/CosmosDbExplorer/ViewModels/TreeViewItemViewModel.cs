@@ -95,6 +95,12 @@ namespace CosmosDbExplorer.ViewModels
         public void OnIsSelectedChanged()
         {
             Messenger.Send(new TreeNodeSelectedMessage(this));
+            NotifyCanExecuteChanged();
+        }
+
+        protected virtual void NotifyCanExecuteChanged()
+        {
+
         }
 
         public bool IsLoading { get; set; }

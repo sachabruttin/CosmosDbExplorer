@@ -193,7 +193,9 @@
             Learn more about using Fluent.Ribbon Control at
             https://fluentribbon.github.io/
             -->
-            <Fluent:Ribbon x:Name="ribbonControl" Grid.ColumnSpan="4" VerticalAlignment="Center">
+            <Fluent:Ribbon x:Name="ribbonControl" Grid.ColumnSpan="4" VerticalAlignment="Center"
+                           CanUseSimplified="False"
+                           AutomaticStateManagement="True">
                 <!--Backstage-->
                 <Fluent:Ribbon.Menu>
                     <Fluent:Backstage UseHighestAvailableAdornerLayer="False">
@@ -558,8 +560,8 @@
                         </Fluent:Button>
                     </Fluent:RibbonGroupBox>
 
-                    <Fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
-                                       Header="Collection"
+                    <Fluent:RibbonGroupBox KeyTip="O" x:Name="Container" TabIndex="2"
+                                       Header="Container"
                                        IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}">
 
                         <Fluent:SplitButton x:Name="CreateButton"
@@ -578,22 +580,29 @@
                                    Command="{Binding Container.OpenSqlQueryCommand}"
                                    KeyTip="Q"/>
 
-                        <Fluent:Button Header="Import" x:Name="ImportDocuments"
+                        <!--<Fluent:Button Header="Import" x:Name="ImportDocuments"
                                    Command="{Binding Container.OpenImportDocumentCommand}"
                                    SizeDefinition="Middle,Small"
                                    KeyTip="I">
                             <Fluent:Button.Icon>
                                 <TextBlock Style="{StaticResource ImportDocumentIcon}" />
                             </Fluent:Button.Icon>
-                        </Fluent:Button>
+                        </Fluent:Button>-->
 
-                        <Fluent:SplitButton KeyTip="D" Header="Delete"
+                        <Fluent:MenuItem Header="Delete Container" 
+                                   Command="{Binding Container.DeleteContainerCommand}">
+                            <Fluent:MenuItem.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:MenuItem.Icon>
+                        </Fluent:MenuItem>
+
+                        <!--<Fluent:SplitButton KeyTip="D" Header="Delete"
                                         SizeDefinition="Middle,Small">
                             <Fluent:SplitButton.Icon>
                                 <TextBlock Style="{StaticResource DeleteIcon}" />
                             </Fluent:SplitButton.Icon>
 
-                            <Fluent:MenuItem Header="Delete Collection" 
+                            <Fluent:MenuItem Header="Delete Container" 
                                    Command="{Binding Container.DeleteContainerCommand}">
                                 <Fluent:MenuItem.Icon>
                                     <TextBlock Style="{StaticResource DeleteIcon}" />
@@ -608,7 +617,7 @@
                                    Icon="{StaticResource RemoveAllIcon}" 
                                    Command="{Binding Container.RecreateAsEmptyCommand}"
                                    />
-                        </Fluent:SplitButton>
+                        </Fluent:SplitButton>-->
 
                     </Fluent:RibbonGroupBox>
 

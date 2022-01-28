@@ -74,6 +74,20 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
+        public async Task DeleteContainserAsync(CosmosContainer container, CancellationToken cancellationToken)
+        {
+            var client = _client.GetDatabase(_cosmosDatabase.Id).GetContainer(container.Id);
+
+            try
+            {
+                await client.DeleteContainerAsync(cancellationToken: cancellationToken);
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
+        }
+
         public async Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken)
         {
             var ctx = _client.GetContainer(_cosmosDatabase.Id, container.Id);

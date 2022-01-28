@@ -99,12 +99,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         private async Task DeleteDatabaseCommandExecuteAsync()
         {
-            var msg = $"Are you sure you want to delete the database '{Database.Id}' and all his content?";
-
-            //Action OnDialogClose(bool confirm) = {
-
-            //};
-
             async void OnDialogClose(bool confirm)
             {
                 if (!confirm)
@@ -123,30 +117,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 }
             }
 
+            var msg = $"Are you sure you want to delete the database '{Database.Id}' and all his content?";
             await _dialogService.ShowQuestion(msg, "Delete Database", OnDialogClose);
         }
-        //{
-        //    get
-        //    {
-        //        return _deleteDatabaseCommand
-        //            ?? (_deleteDatabaseCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    var msg = $"Are you sure you want to delete the database '{Name}' and all his content?";
-        //                    await DialogService.ShowMessage(msg, "Delete", null, null,
-        //                        async confirm =>
-        //                        {
-        //                            if (confirm)
-        //                            {
-        //                                UIServices.SetBusyState(true);
-        //                                await DbService.DeleteDatabaseAsync(Parent.Connection, Database).ConfigureAwait(true);
-        //                                Parent.Children.Remove(this);
-        //                                UIServices.SetBusyState(false);
-        //                            }
-        //                        }).ConfigureAwait(true);
-        //                }));
-        //    }
-        //}
+
 
         protected override void NotifyCanExecuteChanged()
         {

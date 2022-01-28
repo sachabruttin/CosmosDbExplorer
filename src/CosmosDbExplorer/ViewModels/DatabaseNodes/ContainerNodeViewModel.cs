@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
 using Microsoft.Azure.Documents;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -13,17 +16,23 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public class ContainerNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveContainerNodeViewModel, IContent
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly CosmosContainerService _containerService;
+        private readonly IDialogService _dialogService;
         private RelayCommand _openImportDocumentCommand;
         private RelayCommand _newStoredProcedureCommand;
         private RelayCommand _newUdfCommand;
         private RelayCommand _newTriggerCommand;
         private RelayCommand _openSqlQueryCommand;
+        private AsyncRelayCommand _deleteContainerCommand;
 
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
         {
             _serviceProvider = serviceProvider;
             Container = container;
+
+            _dialogService = _serviceProvider.GetRequiredService<IDialogService>();
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Parent.Connection, Parent.Database);
         }
 
         protected override Task LoadChildren(CancellationToken token)
@@ -99,33 +108,33 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public RelayCommand NewTriggerCommand => _newTriggerCommand ??= new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Container)));
 
-        //public RelayCommand DeleteCollectionCommand
-        //{
-        //    get
-        //    {
-        //        return _deleteCollectionCommand
-        //            ?? (_deleteCollectionCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    await DialogService.ShowMessage("Are you sure you want to delete this collection?", "Delete", null, null,
-        //                        async confirm =>
-        //                        {
-        //                            if (confirm)
-        //                            {
-        //                                MessengerInstance.Send(new IsBusyMessage(true));
-        //                                await DbService.DeleteCollectionAsync(Parent.Parent.Connection, Collection).ConfigureAwait(false);
-        //                                MessengerInstance.Send(new IsBusyMessage(false));
-        //                                await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-        //                            }
-        //                        }).ConfigureAwait(false);
-        //                }
-        //                ));
-        //    }
-        //}
+        public AsyncRelayCommand DeleteContainerCommand => _deleteContainerCommand ??= new(DeleteContainerCommandExecute);
+
+        private async Task DeleteContainerCommandExecute()
+        {
+            async void OnDialogClose(bool confirm)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+
+                try
+                {
+                    await _containerService.DeleteContainserAsync(Container, new CancellationToken());
+                    Messenger.Send(new RemoveNodeMessage(Container.SelfLink));
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, $"Error during container {Container.Id} deletion");
+                }
+            }
+
+            var msg = $"Are you sure you want to delete the container '{Container.Id}' and all his content?";
+            await _dialogService.ShowQuestion(msg, "Delete Container", OnDialogClose);
+        }
 
         public ContainerNodeViewModel ContainerNode => this;
-
-        public string ContentId => Guid.NewGuid().ToString();
 
         protected override void NotifyCanExecuteChanged()
         {

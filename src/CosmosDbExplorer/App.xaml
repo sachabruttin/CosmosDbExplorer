@@ -15,7 +15,6 @@
             <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
             <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
-            <!--<avalonDock:BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter" />-->
             <converters:IsNotNullToBooleanConverter x:Key="isNotNullToBooleanConverter" />
             <converters:LogConverter x:Key="logConverter" />
             <converters:NullToEnabledConverter x:Key="nullToEnabledConverter" />

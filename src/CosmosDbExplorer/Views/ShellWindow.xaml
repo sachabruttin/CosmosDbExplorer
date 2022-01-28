@@ -23,6 +23,7 @@
     mc:Ignorable="d"
     MinWidth="500"
     MinHeight="350"
+    d:Width="1800"
     WindowState="Maximized"
     Title="{x:Static properties:Resources.AppDisplayName}">
     
@@ -30,6 +31,7 @@
         <DataTemplate>
             <Fluent:RibbonTitleBar
                 x:Name="RibbonTitleBar"
+                DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=controls:MetroWindow}}"
                 Header="{Binding Path=Title, RelativeSource={RelativeSource AncestorType=controls:MetroWindow}}" />
         </DataTemplate>
     </controls:MetroWindow.TitleTemplate>
@@ -185,6 +187,8 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+
+            
             <!--
             Learn more about using Fluent.Ribbon Control at
             https://fluentribbon.github.io/
@@ -217,283 +221,283 @@
 
                 <Fluent:Ribbon.ContextualGroups>
                     <Fluent:RibbonContextualTabGroup x:Name="optionsGroup" Header="Options"
-                                                 Background="Green" BorderBrush="Green"
-                                                 Visibility="{Binding IsRequestOptionsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"/>
+                                                     Background="Green" BorderBrush="Green"
+                    Visibility="{Binding IsRequestOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}"/>
 
                     <Fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
-                                                 MinWidth="100"
-                                                 Background="Violet" BorderBrush="Violet"
-                                                 Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}" />
+                                                     MinWidth="100"
+                                                     Background="Violet" BorderBrush="Violet"
+                    Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}" />
                 </Fluent:Ribbon.ContextualGroups>
 
                 <!--Tabs-->
-            <Fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
-                <!--<Fluent:RibbonGroupBox Header="Account" KeyTip="A"
+                <Fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
+                    <!--<Fluent:RibbonGroupBox Header="Account" KeyTip="A"
                                        IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
                     <Fluent:Button Header="Edit" Command="{Binding Connection.EditConnectionCommand}" />
                     <Fluent:Button Header="Remove" Command="{Binding Connection.RemoveConnectionCommand}" />
                 </Fluent:RibbonGroupBox>-->
 
-                <Fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
+                    <Fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
                                        Header="Clipboard" TabIndex="0">
 
-                    <Fluent:Button Header="Paste" 
+                        <Fluent:Button Header="Paste" 
                                    KeyTip="V"
                                    Command="Paste"
                                    LargeIcon="{StaticResource PasteIcon}"
                                    Icon="{StaticResource PasteIcon}"
                                    FocusManager.IsFocusScope="True">
-                        <Fluent:Button.ToolTip>
-                            <Fluent:ScreenTip Title="Paste (Ctrl+V)"
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Paste (Ctrl+V)"
                                               Text="Paste the contents of the Clipboard."
                                               DisableReason="Enable it do use this function"
                                               Width="190" />
-                        </Fluent:Button.ToolTip>
-                    </Fluent:Button>
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
 
-                    <Fluent:Button x:Name="cutButton"
+                        <Fluent:Button x:Name="cutButton"
                                    KeyTip="X"
                                    Header="Cut"
                                    Icon="{StaticResource CutIcon}"
                                    SizeDefinition="Middle,Small"
                                    Command="Cut"
                                    FocusManager.IsFocusScope="True">
-                        <Fluent:Button.ToolTip>
-                            <Fluent:ScreenTip Title="Cut (Ctrl+X)"
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Cut (Ctrl+X)"
                                               Text="Cut the contents to the Clipboard."
                                               DisableReason="Cut is currently not available."
                                               Width="190" />
-                        </Fluent:Button.ToolTip>
-                    </Fluent:Button>
-                    <Fluent:Button x:Name="copyButton"
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+                        <Fluent:Button x:Name="copyButton"
                                    KeyTip="C"
                                    Header="Copy"
                                    Icon="{StaticResource CopyIcon}"
                                    Command="Copy"
                                    SizeDefinition="Middle,Small"
                                    FocusManager.IsFocusScope="True">
-                        <Fluent:Button.ToolTip>
-                            <Fluent:ScreenTip Title="Copy (Ctrl+C)"
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Copy (Ctrl+C)"
                                               Text="Copy the contents to the Clipboard."
                                               DisableReason="Copy is currently not available."
                                               Width="190"/>
-                        </Fluent:Button.ToolTip>
-                    </Fluent:Button>
-                    <Fluent:Button x:Name="findButton"
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+                        <Fluent:Button x:Name="findButton"
                                    KeyTip="F"
                                    Header="Find"
                                    Command="ApplicationCommands.Find"
                                    Icon="{StaticResource SearchIcon}"
                                    SizeDefinition="Middle,Small"
                                    FocusManager.IsFocusScope="True">
-                        <Fluent:Button.ToolTip>
-                            <Fluent:ScreenTip Title="Find (Ctrl+F)"
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Find (Ctrl+F)"
                                               Text="Find text in the content."
                                               DisableReason="Find is currently not available."
                                               Width="190"/>
-                        </Fluent:Button.ToolTip>
-                    </Fluent:Button>
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="R" x:Name="Refresh"
+                    <Fluent:RibbonGroupBox KeyTip="R" x:Name="Refresh"
                                        Header="Refresh" TabIndex="1"
                                        Visibility="{Binding IsRefreshTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
-                    <Fluent:Button Command="{Binding SelectedTab.RefreshCommand}"
+                        <Fluent:Button Command="{Binding SelectedTab.RefreshCommand}"
                                    Header="Refresh">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" />
-                        </Fluent:Button.Icon>
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
-                </Fluent:RibbonGroupBox>
-                
-                <Fluent:RibbonGroupBox KeyTip="D" x:Name="Documents" Header="Documents"
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="D" x:Name="Documents" Header="Documents"
                                        Visibility="{Binding IsTabDocumentsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Save"
+                        <Fluent:Button Header="Save"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.SaveDocumentCommand}"
                                    LargeIcon="{StaticResource SaveDocumentIcon}"/>
 
-                    <Fluent:Button Header="Discard"
+                        <Fluent:Button Header="Discard"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.DiscardCommand}"
                                    LargeIcon="{StaticResource DiscardIcon}"/>
 
-                    <Fluent:Button Header="New Document"
+                        <Fluent:Button Header="New Document"
                                    SizeDefinition="Middle,Small"
                                    Command="{Binding SelectedTab.NewDocumentCommand}"
                                    Icon="{StaticResource NewDocumentIcon}" />
 
-                    <Fluent:Button Header="Delete Document"
+                        <Fluent:Button Header="Delete Document"
                                    Command="{Binding SelectedTab.DeleteDocumentCommand}"
                                    SizeDefinition="Middle,Small">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </Fluent:Button.Icon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
 
-                    <Fluent:Button Header="Export"
+                        <Fluent:Button Header="Export"
                                    Command="{Binding SelectedTab.SaveLocalCommand}"
                                    SizeDefinition="Middle,Small">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" />
-                        </Fluent:Button.Icon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
 
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
                                        Visibility="{Binding IsSettingsTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Save"
+                        <Fluent:Button Header="Save"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.SaveCommand}"
                                    LargeIcon="{StaticResource SaveDocumentIcon}"/>
 
-                    <Fluent:Button Header="Discard"
+                        <Fluent:Button Header="Discard"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.DiscardCommand}" 
                                    LargeIcon="{StaticResource DiscardIcon}" />
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
                                        Visibility="{Binding IsAssetTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Save"
+                        <Fluent:Button Header="Save"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.SaveCommand}"
                                    LargeIcon="{StaticResource SaveDocumentIcon}" />
 
-                    <Fluent:Button Header="Discard"
+                        <Fluent:Button Header="Discard"
                                    SizeDefinition="Large"
                                    Command="{Binding SelectedTab.DiscardCommand}" 
                                    LargeIcon="{StaticResource DiscardIcon}" />
 
-                    <Fluent:Button Header="Delete"
+                        <Fluent:Button Header="Delete"
                                    Command="{Binding SelectedTab.DeleteCommand}"
                                    SizeDefinition="Large">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="S" Header="File"
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="File"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Open"
+                        <Fluent:Button Header="Open"
                         Command="{Binding SelectedTab.OpenQueryCommand}"
                         SizeDefinition="Large">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
 
-                    <Fluent:SplitButton Header="Save"                       
+                        <Fluent:SplitButton Header="Save"                       
                                         SizeDefinition="Large"
                                         Command="{Binding SelectedTab.SaveQueryCommand}"
                                         LargeIcon="{StaticResource SaveDocumentIcon}">
-                        <Fluent:SplitButton.Items>
-                            <MenuItem Header="Save As..." Command="{Binding SelectedTab.SaveQueryCommand}" CommandParameter="SaveAs"/>
-                        </Fluent:SplitButton.Items>
-                    </Fluent:SplitButton>
-                </Fluent:RibbonGroupBox>
+                            <Fluent:SplitButton.Items>
+                                <MenuItem Header="Save As..." Command="{Binding SelectedTab.SaveQueryCommand}" CommandParameter="SaveAs"/>
+                            </Fluent:SplitButton.Items>
+                        </Fluent:SplitButton>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="Q" Header="Query"
+                    <Fluent:RibbonGroupBox KeyTip="Q" Header="Query"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Run"
+                        <Fluent:Button Header="Run"
                                    Command="{Binding SelectedTab.ExecuteCommand}"
                                    SizeDefinition="Large">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
 
-                    <Fluent:Button Header="Export"
+                        <Fluent:Button Header="Export"
                                    Command="{Binding SelectedTab.SaveLocalCommand}"
                                    SizeDefinition="Middle,Small">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
-                        </Fluent:Button.Icon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
 
-                    <Fluent:Button Header="Next Page"
+                        <Fluent:Button Header="Next Page"
                                    Command="{Binding SelectedTab.GoToNextPageCommand}"
                                    SizeDefinition="Middle,Small">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource NextPageIcon}" FontSize="16" />
-                        </Fluent:Button.Icon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource NextPageIcon}" FontSize="16" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="Q" Header="Import"
+                    <Fluent:RibbonGroupBox KeyTip="Q" Header="Import"
                                        Visibility="{Binding IsImportTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:Button Header="Import"
+                        <Fluent:Button Header="Import"
                                    Command="{Binding SelectedTab.ExecuteCommand}"
                                    SizeDefinition="Large">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
 
-                    <Fluent:Button Header="Open Document"
+                        <Fluent:Button Header="Open Document"
                                    Command="{Binding SelectedTab.OpenFileCommand}"
                                    SizeDefinition="Large">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
-                </Fluent:RibbonGroupBox>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
+                    <Fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
                                        Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"
                                        Grid.IsSharedSizeScope="False">
 
-                    <Fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
+                        <Fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
                                     Value="{Binding SelectedTab.MaxItemCount, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxItemCount, Converter={StaticResource nullToVisibilityConverter}}"
                                     InputWidth="60" Margin="-1"
                                     Size="Large">
-                        <Fluent:Spinner.ToolTip>
-                            <Fluent:ScreenTip Title="Max Item Count"
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Item Count"
                                               Text="Sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service."
                                               Width="190" />
-                        </Fluent:Spinner.ToolTip>
-                    </Fluent:Spinner>
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
 
-                    <Fluent:Spinner Header="Max Concurrency" Minimum="-1" Format="N0" Increment="1"
+                        <Fluent:Spinner Header="Max Concurrency" Minimum="-1" Format="N0" Increment="1"
                                     Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
                                     InputWidth="60" Margin="-1"
                                     Size="Large">
-                        <Fluent:Spinner.ToolTip>
-                            <Fluent:ScreenTip Title="Max Concurrency"
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Concurrency"
                                               Text="Gets or sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
                                               Width="190" />
-                        </Fluent:Spinner.ToolTip>
-                    </Fluent:Spinner>
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
 
-                    <Fluent:Spinner Header="Max Buffer" Minimum="-1" Format="N0" Increment="100"                  
+                        <Fluent:Spinner Header="Max Buffer" Minimum="-1" Format="N0" Increment="100"                  
                                     Value="{Binding SelectedTab.MaxBufferItem, UpdateSourceTrigger=PropertyChanged}" 
                                     Visibility="{Binding SelectedTab.MaxBufferItem, Converter={StaticResource nullToVisibilityConverter}}"
                                     InputWidth="60" Margin="-1"
                                     Size="Large" >
-                        <Fluent:Spinner.ToolTip>
-                            <Fluent:ScreenTip Title="Max Buffer Item Count"
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Buffer Item Count"
                                               Text="Gets or sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
                                               Width="190" />
-                        </Fluent:Spinner.ToolTip>
-                    </Fluent:Spinner>
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
 
                         <Fluent:CheckBox Header="Enable Scan In Query" Icon="{x:Null}" FlowDirection="RightToLeft"
                                      IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -510,185 +514,187 @@
                                     InputWidth="150"/>
 
                     </Fluent:RibbonGroupBox>
-                
-                <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
+
+                    <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
                                        Visibility="{Binding IsSystemPropertiesVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
-                    <Fluent:ToggleButton Header="Hide System Properties" 
+                        <Fluent:ToggleButton Header="Hide System Properties" 
                                          ToolTip="Show or Hide System Properties"
                                          IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          LargeIcon="{StaticResource ShowSystemPropertiesIcon}"/>
-                </Fluent:RibbonGroupBox>
-                                       
+                    </Fluent:RibbonGroupBox>
 
-            </Fluent:RibbonTabItem>
 
-            <Fluent:RibbonTabItem Header="Tools" 
-                                  Group="{Binding ElementName=connectionGroup, Mode=OneWay}">
+                </Fluent:RibbonTabItem>
 
-                <Fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
-                    <Fluent:Button Command="{Binding RefreshCommand}"
+                <Fluent:RibbonTabItem Header="Tools" 
+                                      Group="{Binding Source={x:Reference connectionGroup}}">
+
+                    <Fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
+                        <Fluent:Button Command="{Binding RefreshCommand}"
                                    Header="Refresh">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" />
-                        </Fluent:Button.Icon>
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1"
+                    <Fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1"
                                        IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}">
-                    <Fluent:Button Header="New" 
+                        <Fluent:Button Header="New" 
                                    Command="{Binding Database.AddNewCollectionCommand}"
                                    LargeIcon="{StaticResource DatabaseIcon}"/>
 
-                    <Fluent:Button Header="Delete" 
+                        <Fluent:Button Header="Delete" 
                                    Command="{Binding Database.DeleteDatabaseCommand}">
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
-                </Fluent:RibbonGroupBox>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
+                    <Fluent:RibbonGroupBox KeyTip="O" x:Name="Collection" TabIndex="2"
                                        Header="Collection"
-                                       IsEnabled="{Binding Collection, Converter={StaticResource isNotNullToBooleanConverter}}">
+                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}">
 
-                    <Fluent:SplitButton x:Name="CreateButton"
+                        <Fluent:SplitButton x:Name="CreateButton"
                                         KeyTip="A"
                                         Header="Add Item"
                                         LargeIcon="{StaticResource CreateIcon}"
                                         SizeDefinition="Large">
-                        <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
-                        <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
-                        <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
-                    </Fluent:SplitButton>
+                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Collection.NewStoredProcedureCommand}" />
+                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Collection.NewUdfCommand}" />
+                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Collection.NewTriggerCommand}"/>
+                        </Fluent:SplitButton>
 
-                    <Fluent:Button Header="SQL Query" 
+                        <Fluent:Button Header="SQL Query" 
                                    Icon="{StaticResource SqlQueryIcon}" 
                                    SizeDefinition="Middle,Small"
                                    Command="{Binding Collection.OpenSqlQueryCommand}"
                                    KeyTip="Q"/>
 
-                    <Fluent:Button Header="Import" x:Name="ImportDocuments"
+                        <Fluent:Button Header="Import" x:Name="ImportDocuments"
                                    Command="{Binding Collection.OpenImportDocumentCommand}"
                                    SizeDefinition="Middle,Small"
                                    KeyTip="I">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource ImportDocumentIcon}" />
-                        </Fluent:Button.Icon>
-                    </Fluent:Button>
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource ImportDocumentIcon}" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
 
-                    <Fluent:SplitButton KeyTip="D" Header="Delete"
+                        <Fluent:SplitButton KeyTip="D" Header="Delete"
                                         SizeDefinition="Middle,Small">
-                        <Fluent:SplitButton.Icon>
-                            <TextBlock Style="{StaticResource DeleteIcon}" />
-                        </Fluent:SplitButton.Icon>
-
-                        <Fluent:MenuItem Header="Delete Collection" 
-                                   Command="{Binding Collection.DeleteCollectionCommand}">
-                            <Fluent:MenuItem.Icon>
+                            <Fluent:SplitButton.Icon>
                                 <TextBlock Style="{StaticResource DeleteIcon}" />
-                            </Fluent:MenuItem.Icon>
-                        </Fluent:MenuItem>
+                            </Fluent:SplitButton.Icon>
 
-                        <Fluent:MenuItem Header="Remove All Documents (Delete)" 
+                            <Fluent:MenuItem Header="Delete Collection" 
+                                   Command="{Binding Collection.DeleteCollectionCommand}">
+                                <Fluent:MenuItem.Icon>
+                                    <TextBlock Style="{StaticResource DeleteIcon}" />
+                                </Fluent:MenuItem.Icon>
+                            </Fluent:MenuItem>
+
+                            <Fluent:MenuItem Header="Remove All Documents (Delete)" 
                                    Icon="{StaticResource RemoveAllIcon}" 
                                    Command="{Binding Collection.ClearAllDocumentsCommand}"
                                    />
-                        <Fluent:MenuItem Header="Remove All Documents (Recreate)" 
+                            <Fluent:MenuItem Header="Remove All Documents (Recreate)" 
                                    Icon="{StaticResource RemoveAllIcon}" 
                                    Command="{Binding Collection.RecreateAsEmptyCommand}"
                                    />
-                    </Fluent:SplitButton>
+                        </Fluent:SplitButton>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox Header="Users" KeyTip="U" TabIndex="3"
+                    <Fluent:RibbonGroupBox Header="Users" KeyTip="U" TabIndex="3"
                                        IsEnabled="{Binding Users, Converter={StaticResource isNotNullToBooleanConverter}}">
 
-                    <Fluent:Button Header="Add User" 
+                        <Fluent:Button Header="Add User" 
                                    Command="{Binding Users.AddUserCommand}"
                                    LargeIcon="{StaticResource UserIcon}">
-                    </Fluent:Button>
-                        
+                        </Fluent:Button>
 
-                </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox Header="Permissions" KeyTip="U" TabIndex="3"
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox Header="Permissions" KeyTip="U" TabIndex="3"
                                        IsEnabled="{Binding UserNode, Converter={StaticResource isNotNullToBooleanConverter}}">
 
-                    <Fluent:Button Header="Add Permission" 
+                        <Fluent:Button Header="Add Permission" 
                                    Command="{Binding UserNode.AddPermissionCommand}"
                                    LargeIcon="{StaticResource PermissionIcon}">
-                    </Fluent:Button>
+                        </Fluent:Button>
 
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
 
-            </Fluent:RibbonTabItem>
+                </Fluent:RibbonTabItem>
 
-            <Fluent:RibbonTabItem Header="Request Options"
-                                  Group="{Binding ElementName=optionsGroup, Mode=OneWay}">
+                <Fluent:RibbonTabItem Header="Request Options" 
+                                      Group="{Binding Source={x:Reference optionsGroup}}"
+                                      Visibility="Visible">
 
-                <Fluent:RibbonGroupBox KeyTip="R" Header="Reset">
-                    <Fluent:Button Header="Reset Options"
+                    <Fluent:RibbonGroupBox KeyTip="R" Header="Reset">
+                        <Fluent:Button Header="Reset Options"
                                    Command="{Binding SelectedTab.ResetRequestOptionsCommand}">
-                        <Fluent:Button.Icon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" />
-                        </Fluent:Button.Icon>
-                        <Fluent:Button.LargeIcon>
-                            <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
-                </Fluent:RibbonGroupBox>
-                
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
+
+                    <Fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
                                        Grid.IsSharedSizeScope="True">
-                    <!--<Fluent:ComboBox Header="Indexing Directive" Width="250" Margin="1" 
+                        <!--<Fluent:ComboBox Header="Indexing Directive" Width="250" Margin="1" 
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexingDirective}}}"
                                      SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      IsEditable="False"/>-->
 
-                    <!--<Fluent:ComboBox Header="Consistency Level" Width="250" Margin="1"
+                        <!--<Fluent:ComboBox Header="Consistency Level" Width="250" Margin="1"
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:ConsistencyLevel}}}"
                                      SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      IsEditable="False"/>-->
 
-                    <Fluent:TextBox Header="Partition Key" Width="250" Margin="1"
+                        <Fluent:TextBox Header="Partition Key" Width="250" Margin="1"
                                     Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
 
-                <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
-                    <!--<Fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
+                    <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
+                        <!--<Fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type clientSdk:AccessConditionType}}}"
                                      SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      IsEditable="False"/>-->
 
-                    <Fluent:TextBox Header="ETag" Margin="1"
+                        <Fluent:TextBox Header="ETag" Margin="1"
                                     Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                </Fluent:RibbonGroupBox>
+                    </Fluent:RibbonGroupBox>
 
-                <Fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
+                    <Fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
                                        Grid.IsSharedSizeScope="True">
-                    <Fluent:TextBox Header="Pre-Trigger" Width="220" Margin="1"
+                        <Fluent:TextBox Header="Pre-Trigger" Width="220" Margin="1"
                                     Text="{Binding SelectedTab.PreTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Fluent:TextBox Header="Post-Trigger" Width="220" Margin="1" 
+                        <Fluent:TextBox Header="Post-Trigger" Width="220" Margin="1" 
                                     Text="{Binding SelectedTab.PostTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                </Fluent:RibbonGroupBox>
-                
-            </Fluent:RibbonTabItem>
+                    </Fluent:RibbonGroupBox>
+
+                </Fluent:RibbonTabItem>
             </Fluent:Ribbon>
+
             <controls:SplitView
                 Grid.Row="1"
                 x:Name="splitView"
@@ -759,6 +765,7 @@
                     </DockingManager>
                 </controls:SplitView.Content>
             </controls:SplitView>
+
             <Fluent:StatusBar Grid.Row="2" Grid.ColumnSpan="4" VerticalAlignment="Center" 
                           ItemsSource="{Binding SelectedTab.StatusBarItems}"
                           ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
@@ -776,7 +783,6 @@
                 </Fluent:StatusBar.ItemContainerStyle>
 
             </Fluent:StatusBar>
-
 
         </Grid>
     </controls:MetroWindow.Content>

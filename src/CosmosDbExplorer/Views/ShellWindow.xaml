@@ -224,11 +224,11 @@
                 <Fluent:Ribbon.ContextualGroups>
                     <Fluent:RibbonContextualTabGroup x:Name="optionsGroup" Header="Options"
                                                      Background="Green" BorderBrush="Green"
-                    Visibility="{Binding IsRequestOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}"/>
+                    Visibility="{Binding IsRequestOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}"/>
 
                     <Fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
                                                      Background="Violet" BorderBrush="Violet"
-                    Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapse}" />
+                    Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}" />
                 </Fluent:Ribbon.ContextualGroups>
 
                 <!--Tabs-->

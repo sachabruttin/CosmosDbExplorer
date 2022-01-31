@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,6 +10,7 @@ using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -19,7 +21,7 @@ namespace CosmosDbExplorer.ViewModels
     {
         private AsyncRelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
-        private AsyncRelayCommand _openFileCommand;
+        private RelayCommand _openFileCommand;
         private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
@@ -115,38 +117,44 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand CancelCommand => _cancelCommand ??= new (() => _cancellationToken.Cancel(), () => IsRunning);
 
-        public AsyncRelayCommand OpenFileCommand => _openFileCommand ??= new(OpenFileCommandExecuteAsync);
+        public RelayCommand OpenFileCommand => _openFileCommand ??= new(OpenFileCommandExecuteAsync);
 
-        private Task OpenFileCommandExecuteAsync()
+        private void OpenFileCommandExecuteAsync()
         {
-            throw new NotImplementedException();
-            //var settings = new OpenFileDialogSettings
-            //                    {
-            //                        DefaultExt = "json",
-            //                        Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-            //                        AddExtension = true,
-            //                        CheckFileExists = true,
-            //                        Multiselect = false,
-            //                        Title = "Open document"
-            //                    };
-            //                    await _dialogService.ShowOpenFileDialog(settings,
-            //                        async (confirm, result) =>
-            //                        {
-            //                            if (confirm)
-            //                            {
-            //                                await DispatcherHelper.RunAsync(async () =>
-            //                                {
-            //                                    using (var reader = File.OpenText(result.FileName))
-            //                                    {
-            //                                        Content.FileName = result.FileName;
-            //                                        Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
-            //                                    }
-            //                                });
-            //                            }
-            //                        }).ConfigureAwait(false);
-            //                }
-        }
+            var settings = new OpenFileDialogSettings
+            {
+                DefaultExt = "json",
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                AddExtension = true,
+                CheckFileExists = true,
+                Multiselect = false,
+                Title = "Open document"
+            };
 
+            async void OnDialogClose(bool confirm, FileDialogResult result)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+
+                try
+                {
+                    using (var reader = File.OpenText(result.FileName))
+                    {
+                        //Content.FileName = result.FileName;
+                        //Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
+                        Content = await reader.ReadToEndAsync().ConfigureAwait(true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, $"Error during container {Container.Id} deletion");
+                }
+            }
+
+            _dialogService.ShowOpenFileDialog(settings, OnDialogClose);
+        }
 
         //public IndexingDirective? IndexingDirective { get; set; }
         //public ConsistencyLevel? ConsistencyLevel { get; set; }

@@ -5,12 +5,39 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Services.DialogSettings;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Win32;
 
 namespace CosmosDbExplorer.Services
 {
-    public class MetroDialogService : IDialogService
+    public class FileDialogService : IFileDialogService
+    {
+        public void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)
+        {
+            var dialog = new OpenFileDialog
+            {
+                AddExtension = settings.AddExtension,
+                CheckFileExists = settings.CheckFileExists,
+                CheckPathExists = settings.CheckPathExists,
+                DefaultExt = settings.DefaultExt,
+                FileName = settings.FileName,
+                Filter = settings.Filter,
+                FilterIndex = settings.FilterIndex,
+                InitialDirectory = settings.InitialDirectory,
+                Multiselect = settings.Multiselect,
+                Title = settings.Title,
+            };
+
+            var result = dialog.ShowDialog(Application.Current.MainWindow);
+            var confirmed = result.GetValueOrDefault();
+
+            afterHideCallback?.Invoke(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames));
+        }
+    }
+
+    public class MetroDialogService : FileDialogService, IDialogService
     {
         private static MetroWindow MainWindow => (MetroWindow)Application.Current.MainWindow;
 
@@ -46,7 +73,7 @@ namespace CosmosDbExplorer.Services
         }
     }
 
-    public class DialogService : IDialogService
+    public class DialogService : FileDialogService, IDialogService
     {
         public Task ShowError(string message, string title, Action? afterHideCallback = null)
         {

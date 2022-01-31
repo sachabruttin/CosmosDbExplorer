@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CosmosDbExplorer.Services.DialogSettings;
 
 namespace CosmosDbExplorer.Contracts.Services
 {
-    public interface IDialogService
+    public interface IFileDialogService
+    {
+        void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null);
+    }
+
+    public interface IDialogService : IFileDialogService
     {
         Task ShowError(string message, string title, Action? afterHideCallback = null);
         Task ShowError(Exception error, string title, Action? afterHideCallback = null);

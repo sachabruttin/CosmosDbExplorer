@@ -21,7 +21,7 @@ using Validar;
 namespace CosmosDbExplorer.ViewModels
 {
     [InjectValidation]
-    public class DatabasePropertyViewModel : ObservableRecipient, INavigationAware
+    public class DatabasePropertyViewModel : UIViewModelBase, INavigationAware
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
@@ -29,6 +29,7 @@ namespace CosmosDbExplorer.ViewModels
         private AsyncRelayCommand _saveCommand;
 
         public DatabasePropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
+            : base(uiServices)
         {
             //IsFixedStorage = true;
             Throughput = 400;

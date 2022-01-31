@@ -49,7 +49,6 @@ namespace CosmosDbExplorer.ViewModels
 
         public virtual void OnIsActiveChanged()
         {
-            //DispatcherHelper.RunAsync(() => MessengerInstance.Send(new ActivePaneChangedMessage(this)));
             Messenger.Send(new ActivePaneChangedMessage(this));
         }
 

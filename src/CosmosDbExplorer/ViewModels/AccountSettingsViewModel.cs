@@ -20,22 +20,20 @@ using Validar;
 namespace CosmosDbExplorer.ViewModels
 {
     [InjectValidation]
-    public class AccountSettingsViewModel : ObservableRecipient, INavigationAware
+    public class AccountSettingsViewModel : UIViewModelBase, INavigationAware
     {
         private CosmosConnection? _connection = default;
         private RelayCommand _saveAccountCommand;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
 
-        public AccountSettingsViewModel(IPersistAndRestoreService persistAndRestoreService)
+        public AccountSettingsViewModel(IPersistAndRestoreService persistAndRestoreService, IUIServices uiServices)
+            : base(uiServices)
         {
             _persistAndRestoreService = persistAndRestoreService;
         }
 
         public string Title => "Account Settings";
         public object Icon => App.Current.FindResource("AddConnectionIcon");
-
-
-        public bool IsBusy { get; set; } = false;
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
         public string? AccountEndpoint { get; set; }

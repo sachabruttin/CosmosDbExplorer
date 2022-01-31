@@ -20,7 +20,7 @@ using Validar;
 namespace CosmosDbExplorer.ViewModels
 {
     [InjectValidation]
-    public class ContainerPropertyViewModel : ObservableRecipient, INavigationAware
+    public class ContainerPropertyViewModel : UIViewModelBase, INavigationAware
     {
         //private readonly IDocumentDbService _dbService;
         private readonly IServiceProvider _serviceProvider;
@@ -30,6 +30,7 @@ namespace CosmosDbExplorer.ViewModels
         private AsyncRelayCommand _saveCommand;
 
         public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
+            : base(uiServices)
         {
             IsFixedStorage = true;
             Throughput = 400;
@@ -93,7 +94,7 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecuteAsync()
         {
-            //IsBusy = true;
+            IsBusy = true;
 
             try
             {
@@ -114,7 +115,7 @@ namespace CosmosDbExplorer.ViewModels
             }
             finally
             {
-                //IsBusy = false;
+                IsBusy = false;
             }
         }
 

@@ -25,6 +25,7 @@
     MinHeight="350"
     d:Width="1800"
     WindowState="Maximized"
+    Cursor="{Binding IsBusy, Converter={markup:CursorExtensionConverter}}"
     Title="{x:Static properties:Resources.AppDisplayName}">
     
     <controls:MetroWindow.TitleTemplate>

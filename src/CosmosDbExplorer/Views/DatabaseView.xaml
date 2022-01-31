@@ -74,7 +74,7 @@
                         <ContextMenu>
                             <MenuItem Header="Refresh Collections" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New Collection" Command="{Binding AddNewCollectionCommand}" />
+                            <MenuItem Header="New Collection" Command="{Binding AddNewContainerCommand}" />
                             <MenuItem Header="Delete Database" Command="{Binding DeleteDatabaseCommand}" Icon="{StaticResource DeleteIconText}" />
                             <Separator />
                             <MenuItem Header="Copy">
@@ -82,8 +82,8 @@
                                     <Image Source="{StaticResource CopyIcon}" />
                                 </MenuItem.Icon>
                                 <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
-                                <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
-                                <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
+                                <!--<MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />-->
+                                <!--<MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />-->
                             </MenuItem>
                         </ContextMenu>
                     </StackPanel.ContextMenu>

@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CosmosDbExplorer.Views" xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
+             xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:cosmos="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core" 
+             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ContainerScaleSettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+
+    <Grid Margin="{StaticResource MediumLeftTopRightBottomMargin}">
         <TabControl>
             <TabItem Header="Scale">
                 <StackPanel x:Name="ThroughputPanel">
@@ -26,6 +32,7 @@
                         <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
                                        Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
                                        Interval="100"
+                                           Width="250" HorizontalAlignment="Left"
                                        Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Margin="{StaticResource XSmallTopMargin}"
                                TextWrapping="Wrap"
@@ -36,30 +43,59 @@
                            Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
                 </StackPanel>
             </TabItem>
-            
+
             <TabItem Header="Settings">
                 <StackPanel>
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                         <TextBlock Text="Time to live" Style="{StaticResource BodyTextStyle}"/>
-                        <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Off" IsChecked="{Binding TimeToLive}"  Margin="{StaticResource XSmallTopMargin}"/>
-                            <RadioButton Content="On (Default)" IsChecked="{Binding TimeToLive}" Margin="{StaticResource XSmallTopMargin}"/>
-                            <RadioButton Content="On"   IsChecked="{Binding TimeToLive}"  Margin="{StaticResource XSmallTopMargin}"/>
-                        </StackPanel>
+                        <ListBox ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type viewmodels:TimeToLiveType}}}"
+                                     SelectedItem="{Binding TimeToLive}"     >
+                            <ListBox.Resources>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <RadioButton
+                                                        Content="{TemplateBinding ContentPresenter.Content}"
+                                                        IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                                                        Margin="{StaticResource XSmallTopMargin}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
 
                         <StackPanel Orientation="Horizontal"
+                                    Margin="{StaticResource XSmallTopMargin}"
                                     Visibility="{Binding IsTimeLiveInSecondVisible, Converter={StaticResource boolToVisibilityConverter}}">
                             <mah:NumericUpDown Value="{Binding TimeToLiveInSecond}" 
                                         Width="150" Height="22" VerticalContentAlignment="Center"
                                         Minimum="1" Interval="1" />
                             <TextBlock Text="second(s)" Margin="3,0" VerticalAlignment="Center" />
                         </StackPanel>
+
                     </StackPanel>
 
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                         <TextBlock Text="Geospatial Configuration" Style="{StaticResource BodyTextStyle}"/>
-                        <RadioButton Content="Geography" IsChecked="{Binding TimeToLive}"  Margin="{StaticResource XSmallTopMargin}"/>
-                        <RadioButton Content="Geometry" IsChecked="{Binding TimeToLive}" Margin="{StaticResource XSmallTopMargin}" />
+                        <ListBox ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type cosmos:CosmosGeospatialType}}}"
+                                 SelectedItem="{Binding GeoType}">
+                            <ListBox.Resources>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <RadioButton
+                                                        Content="{TemplateBinding ContentPresenter.Content}"
+                                                        IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                                                        Margin="{StaticResource XSmallTopMargin}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
                     </StackPanel>
 
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}"
@@ -68,7 +104,7 @@
                         <TextBox VerticalContentAlignment="Center"
                                  IsReadOnly="True" 
                                  IsEnabled="False"
-                                 Text="{Binding PartitionKey}" />
+                                 Text="{Binding Container.PartitionKeyPath}" />
                     </StackPanel>
 
                 </StackPanel>
@@ -76,11 +112,24 @@
             </TabItem>
 
             <TabItem Header="Indexing Policy">
-                <local:JsonEditorView />
+                <avalonedit:TextEditor x:Name="editor" 
+                                           SyntaxHighlighting="JSON"  
+                                           ShowLineNumbers="True"
+                                       Style="{StaticResource CosmosEditor}"
+                                       BorderThickness="1"
+                                       BorderBrush="{StaticResource Fluent.Ribbon.Brushes.Control.BorderBrush}"
+                                           IsModified="{Binding IsChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                    <i:Interaction.Behaviors>
+                        <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                        <behaviors:AvalonTextEditorBehavior UseSearch="True" />
+                        <behaviors:AvalonTextEditorBindingBehavior Text="{Binding IndexingPolicy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </i:Interaction.Behaviors>
+                </avalonedit:TextEditor>
             </TabItem>
         </TabControl>
-    </StackPanel>
-    
-    
-    
+    </Grid>
+
+
+
 </UserControl>

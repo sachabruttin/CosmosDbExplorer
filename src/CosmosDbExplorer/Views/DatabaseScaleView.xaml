@@ -26,9 +26,10 @@
                                    Text="Database Max RU/s" />
 
             <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
-                                       Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                                       Interval="100"
-                                       Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+                               Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
+                               Interval="100"
+                               Width="250" HorizontalAlignment="Left"
+                               Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
             <TextBlock Margin="{StaticResource XSmallTopMargin}"
                                TextWrapping="Wrap"

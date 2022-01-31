@@ -23,8 +23,10 @@
                    Grid.Row="0"
                    Style="{StaticResource PageTitleStyle}" />
 
-        <ScrollViewer Grid.Row="1">
-            <StackPanel Margin="{StaticResource MediumLeftMargin}" >
+        <ScrollViewer Grid.Row="1" 
+                      HorizontalScrollBarVisibility="Disabled" 
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{StaticResource MediumLeftRightMargin}" >
 
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                     <TextBlock

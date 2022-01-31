@@ -62,6 +62,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                 var containers = await _containerService.GetContainersAsync(token);
 
                 // TODO: Handle cancellation
+                if (Database.Throughput != null)
+                {
+                    Children.Add(new DatabaseScaleNodeViewModel(this));
+                }
 
                 Children.Add(new UsersNodeViewModel(Database, this));
 

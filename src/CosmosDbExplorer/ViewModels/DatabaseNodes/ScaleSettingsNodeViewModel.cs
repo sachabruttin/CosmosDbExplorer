@@ -7,7 +7,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class ScaleSettingsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
-        private RelayCommand _openCommand;
+        private RelayCommand? _openCommand;
 
         public ScaleSettingsNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)
@@ -19,7 +19,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string ContentId => Parent.Container.SelfLink + "/ScaleSettings";
 
-        public RelayCommand OpenCommand => new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container)));
+        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container)));
 
         public ContainerNodeViewModel ContainerNode => Parent;
     }

@@ -157,7 +157,9 @@ namespace CosmosDbExplorer.ViewModels
             Messenger.Register<ShellViewModel, OpenDocumentsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, ContainerNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, ContainerNodeViewModel>(msg));
-            //Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ScaleAndSettingsTabViewModel, ScaleSettingsNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ContainerScaleSettingsViewModel, ScaleSettingsNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenDatabaseScaleViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DatabaseScaleViewModel, DatabaseScaleNodeViewModel>(msg));
+
             //Messenger.Register<ShellViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
             //Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenMetricsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<MetricsTabViewModel, MetricsNodeViewModel>(msg));

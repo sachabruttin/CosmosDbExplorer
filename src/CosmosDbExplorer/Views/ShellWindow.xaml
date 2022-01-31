@@ -87,11 +87,16 @@
                     <views:TriggerTabView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.TriggerViewTemplate>
-            <!--<selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>
+            <selector:TabContentTemplateSelector.ContainerScaleSettingsTemplate>
                 <DataTemplate>
-                    <views:ScaleAndSettingsTabView />
+                    <views:ContainerScaleSettingsView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.ScaleAndSettingsTemplate>-->
+            </selector:TabContentTemplateSelector.ContainerScaleSettingsTemplate>
+            <selector:TabContentTemplateSelector.DatabaseScaleTemplate>
+                <DataTemplate>
+                    <views:DatabaseScaleView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.DatabaseScaleTemplate>
             <!--<selector:TabContentTemplateSelector.UserEditTempalate>
                 <DataTemplate>
                     <views:UserEditView />
@@ -633,8 +638,6 @@
                                    Command="{Binding Users.AddUserCommand}"
                                    LargeIcon="{StaticResource UserIcon}">
                         </Fluent:Button>
-
-
                     </Fluent:RibbonGroupBox>
 
                     <Fluent:RibbonGroupBox Header="Permissions" KeyTip="U" TabIndex="3"
@@ -724,7 +727,7 @@
                         NavigationUIVisibility="Hidden"
                         Background="{DynamicResource MahApps.Brushes.Control.Background}"
                         BorderBrush="{DynamicResource MahApps.Brushes.Controls.Border}"
-                        BorderThickness="1,1,0,0" />
+                        BorderThickness="1,1,0,1" />
                 </controls:SplitView.Pane>
                 <controls:SplitView.Content>
                     <!--<Frame

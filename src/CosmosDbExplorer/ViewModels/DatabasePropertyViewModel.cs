@@ -47,16 +47,13 @@ namespace CosmosDbExplorer.ViewModels
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string DatabaseId { get; set; }
 
-        //[AlsoNotifyFor(nameof(IsThroughputAutoscale))]
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public bool ProvisionThroughput { get; set; } = true;
 
         public bool IsThroughputAutoscale { get; set; } = true;
 
-        //[DependsOn(nameof(IsThroughputAutoscale))]
         public int MaxThroughput => IsThroughputAutoscale ? 10000 : 100000;
 
-        //[DependsOn(nameof(IsThroughputAutoscale))]
         public int MinThroughput => IsThroughputAutoscale ? 400 : 1000;
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]

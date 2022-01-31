@@ -98,6 +98,16 @@
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
+                DataType="{x:Type vm:DatabaseScaleNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ScaleSettingsIcon}" />
+
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:ContainerNodeViewModel}"
                 ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal">

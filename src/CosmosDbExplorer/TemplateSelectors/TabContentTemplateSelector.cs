@@ -14,7 +14,8 @@ namespace CosmosDbExplorer.TemplateSelectors
         public DataTemplate? StoredProcedureViewTemplate { get; set; }
         public DataTemplate? UserDefFuncViewTemplate { get; set; }
         public DataTemplate? TriggerViewTemplate { get; set; }
-        public DataTemplate? ScaleAndSettingsTemplate { get; set; }
+        public DataTemplate? ContainerScaleSettingsTemplate { get; set; }
+        public DataTemplate? DatabaseScaleTemplate { get; set; }
         public DataTemplate? UserEditTempalate { get; set; }
         public DataTemplate? PermissionEditTemplate { get; set; }
         public DataTemplate? MetricsTemplate { get; set; }
@@ -56,10 +57,15 @@ namespace CosmosDbExplorer.TemplateSelectors
                 return TriggerViewTemplate;
             }
 
-            //if (item is ScaleAndSettingsTabViewModel)
-            //{
-            //    return ScaleAndSettingsTemplate;
-            //}
+            if (item is ContainerScaleSettingsViewModel)
+            {
+                return ContainerScaleSettingsTemplate;
+            }
+
+            if (item is DatabaseScaleViewModel)
+            {
+                return DatabaseScaleTemplate;
+            }
 
             //if (item is UserEditViewModel)
             //{

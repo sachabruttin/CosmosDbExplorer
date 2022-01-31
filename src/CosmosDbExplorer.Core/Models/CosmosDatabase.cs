@@ -10,16 +10,17 @@ namespace CosmosDbExplorer.Core.Models
             Id = id;
         }
 
-        public CosmosDatabase(DatabaseProperties properties)
+        public CosmosDatabase(DatabaseProperties properties, int? throughput)
         {
             Id = properties.Id;
             ETag = properties.ETag;
             SelfLink = properties.SelfLink;
+            Throughput = throughput;
         }
 
         public string Id { get; }
         public string ETag { get; }
         public string SelfLink { get; }
-        
+        public int? Throughput { get; } // Null value indicates a container with no throughput provisioned.
     }
 }

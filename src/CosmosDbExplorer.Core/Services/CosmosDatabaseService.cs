@@ -28,7 +28,14 @@ namespace CosmosDbExplorer.Core.Services
             while (properties.HasMoreResults)
             {
                 var response = await properties.ReadNextAsync(cancellationToken);
-                result.AddRange(response.Select(properties => new CosmosDatabase(properties)));
+
+                foreach (var item in response)
+                {
+                    var db = _client.GetDatabase(item.Id);
+                    var throughput = await db.ReadThroughputAsync(cancellationToken);
+
+                    result.Add(new CosmosDatabase(item, throughput));
+                }
             }
 
             return result;
@@ -45,12 +52,12 @@ namespace CosmosDbExplorer.Core.Services
                         : ThroughputProperties.CreateManualThroughput(throughput.Value);
 
                     var result = await _client.CreateDatabaseAsync(database.Id, throughputProperties, requestOptions: null, cancellationToken: cancellationToken);
-                    return new CosmosDatabase(result.Resource);
+                    return new CosmosDatabase(result.Resource, throughput);
                 }
                 else
                 {
                     var result = await _client.CreateDatabaseAsync(database.Id, throughput, requestOptions: null, cancellationToken: cancellationToken);
-                    return new CosmosDatabase(result.Resource);
+                    return new CosmosDatabase(result.Resource, throughput);
                 }
             }
             catch (CosmosException ex)

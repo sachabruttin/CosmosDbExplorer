@@ -11,17 +11,63 @@ namespace CosmosDbExplorer.Core.Helpers
         {
             try
             {
-                var regex = new Regex(@"Message: ({.*})", RegexOptions.Multiline);
+                if (TryGetQueryException(exception, out var queryException))
+                {
+                    return queryException;
+                }
 
-                var match = regex.Match(exception.ResponseBody);
+                if (TryGetResponseException(exception, out var responseException))
+                {
+                    return responseException;
+                }
 
-                var json = match.Captures.First().Value.Replace("Message:", string.Empty);
-                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
-                return string.Join(Environment.NewLine, obj["Errors"]?.Values<string>());
+                return exception.Message;
             }
             catch
             {
                 return exception.Message;
+            }
+        }
+
+        private static bool TryGetResponseException(CosmosException exception, out string? message)
+        {
+            var regex = new Regex(@"Message:: ({.*})");
+            var match = regex.Match(exception.Message);
+
+            if (match.Success)
+            {
+                var json = match.Captures.First().Value.Replace("Message::", string.Empty);
+
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
+
+                message = string.Join(Environment.NewLine, obj["Errors"]?.Values<string>());
+                return true;
+            }
+            else
+            {
+                message = null;
+                return false;
+            }
+        }
+
+        private static bool TryGetQueryException(CosmosException exception, out string? message)
+        {
+            var regex = new Regex(@"Microsoft.Azure.Cosmos.Query.Core.Exceptions.ExpectedQueryPartitionProviderException: ({.*})");
+            var match = regex.Match(exception.Message);
+
+            if (match.Success)
+            {
+                var json = match.Captures.First().Value.Replace("Microsoft.Azure.Cosmos.Query.Core.Exceptions.ExpectedQueryPartitionProviderException:", string.Empty);
+
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
+
+                message = string.Join(Environment.NewLine, obj["errors"]);
+                return true;
+            }
+            else
+            {
+                message = null;
+                return false;
             }
         }
     }

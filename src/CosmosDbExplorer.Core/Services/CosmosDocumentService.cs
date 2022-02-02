@@ -216,22 +216,29 @@ namespace CosmosDbExplorer.Core.Services
                 //ConsistencyLevel = ConsistencyLevel.Strong
             };
 
-            using (var resultSet = _container.GetItemQueryIterator<JObject>(
-                queryText: query.QueryText,
-                continuationToken: query.ContinuationToken,
-                requestOptions: options))
+            try
             {
-                var response = await resultSet.ReadNextAsync(cancellationToken);
+                using (var resultSet = _container.GetItemQueryIterator<JObject>(
+                    queryText: query.QueryText,
+                    continuationToken: query.ContinuationToken,
+                    requestOptions: options))
+                {
+                    var response = await resultSet.ReadNextAsync(cancellationToken);
 
-                result.RequestCharge = response.RequestCharge;
-                result.ContinuationToken = response.ContinuationToken;
-                result.Items = response.Resource.ToArray();
-                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
-                //result.Diagnostics = response.Diagnostics.ToString;
-                result.IndexMetrics = response.IndexMetrics;
+                    result.RequestCharge = response.RequestCharge;
+                    result.ContinuationToken = response.ContinuationToken;
+                    result.Items = response.Resource.ToArray();
+                    result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                    //result.Diagnostics = response.Diagnostics.ToString;
+                    result.IndexMetrics = response.IndexMetrics;
+                }
+
+                return result;
             }
-
-            return result;
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
         }
 
 

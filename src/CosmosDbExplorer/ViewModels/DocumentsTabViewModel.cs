@@ -4,25 +4,29 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
-using CosmosDbExplorer.Models;
-using CosmosDbExplorer.Validar;
-using CosmosDbExplorer.ViewModels;
-using CosmosDbExplorer.ViewModels.DatabaseNodes;
-using CosmosDbExplorer.Core.Models;
-using FluentValidation;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
-using Microsoft.Extensions.DependencyInjection;
-using Validar;
-using CosmosDbExplorer.Core.Contracts.Services;
-using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Core.Contracts;
-using System.Threading;
-using Newtonsoft.Json.Linq;
+using CosmosDbExplorer.Core.Contracts.Services;
+using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Extensions;
+using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Properties;
+using CosmosDbExplorer.Services.DialogSettings;
+using CosmosDbExplorer.ViewModels.DatabaseNodes;
+
+using FluentValidation;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+
+using Newtonsoft.Json.Linq;
+
+using Validar;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -31,7 +35,6 @@ namespace CosmosDbExplorer.ViewModels
         , IHaveRequestOptions
         , IHaveSystemProperties
     {
-        //private readonly IDialogService _dialogService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
@@ -44,7 +47,7 @@ namespace CosmosDbExplorer.ViewModels
         private AsyncRelayCommand _refreshLoadCommand;
         private RelayCommand _newDocumentCommand;
         private RelayCommand _resetRequestOptionsCommand;
-        private AsyncRelayCommand _saveLocalCommand;
+        private RelayCommand _saveLocalCommand;
         private RelayCommand _closeFilterCommand;
         private AsyncRelayCommand _applyFilterCommand;
         private RelayCommand _editFilterCommand;
@@ -164,7 +167,6 @@ namespace CosmosDbExplorer.ViewModels
             _progessBarStatusBarItem.DataContext.IsVisible = IsRunning;
             _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
         }
-        //public string? PartitionKeyValue { get; set; }
 
         public CosmosIndexingDirectives? IndexingDirective
         {
@@ -237,7 +239,7 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;
+        public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
         public bool HideSystemProperties { get; set; }
 
@@ -268,7 +270,7 @@ namespace CosmosDbExplorer.ViewModels
 
                 var result = await _cosmosDocumentService.GetDocumentsAsync(
                     Filter,
-                    50, // MaxDocumentToRetrieve
+                    Settings.Default.MaxDocumentToRetrieve,
                     ContinuationToken, cancellationToken);
 
                 HasMore = result.HasMore;
@@ -279,18 +281,6 @@ namespace CosmosDbExplorer.ViewModels
                 {
                     Documents.Add(new CheckedItem<ICosmosDocument>(document));
                 }
-
-
-                //    RaisePropertyChanged(() => ItemsCount);
-                //}
-                //catch (DocumentClientException clientEx)
-                //{
-                //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
-                //}
-                //catch (Exception ex)
-                //{
-                //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-                //}
             }
             catch (Exception ex)
             {
@@ -434,101 +424,129 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand CloseFilterCommand => _closeFilterCommand ??= new(() => IsEditingFilter = false);
 
-        public AsyncRelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveDocumentCommandExecute, () => !IsRunning && SelectedDocument != null && IsValid);
+        public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, () => !IsRunning && SelectedDocument != null && IsValid);
 
-        private async Task SaveLocalCommandExecute()
+        private void SaveLocalCommandExecute()
         {
-            //var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
+            var selectedDocuments = Documents.Where(doc => doc.IsChecked).ToList();
 
-            //if (selectedDocuments.Count == 1)
-            //{
-            //    await SaveLocalSingleDocumentAsync().ConfigureAwait(false);
-            //}
-            //else
-            //{
-            //    await SaveLocalMultipleDocumentsAsync(selectedDocuments).ConfigureAwait(false);
-            //}
+            if (selectedDocuments.Count == 1)
+            {
+                SaveLocalSingleDocument();
+            }
+            else
+            {
+                SaveLocalMultipleDocuments(selectedDocuments.Select(doc => doc.Item).ToList());
+            }
         }
 
-        //private Task SaveLocalMultipleDocumentsAsync(List<DocumentDescription> selectedDocuments)
-        //{
-        //    var settings = new FolderBrowserDialogSettings
-        //    {
-        //        ShowNewFolderButton = true,
-        //        Description = "Select output folder...",
-        //        SelectedPath = Settings.Default.GetExportFolder()
-        //    };
+        private void SaveLocalMultipleDocuments(List<ICosmosDocument> selectedDocuments)
+        {
+            var settings = new FolderBrowserDialogSettings
+            {
+                ShowNewFolderButton = true,
+                Description = "Select output folder...",
+                SelectedPath = Settings.Default.GetExportFolder()
+            };
 
-        //    return _dialogService.ShowFolderBrowserDialog(settings, async (confirm, result) =>
-        //    {
-        //        if (confirm)
-        //        {
-        //            try
-        //            {
-        //                IsRunning = true;
+            async void saveFile(bool confirm, FolderDialogResult result)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+                try
+                {
+                    IsRunning = true;
 
-        //                // Save path for future use
-        //                Settings.Default.ExportFolder = result.Path;
-        //                Settings.Default.Save();
+                    // Save path for future use
+                    Settings.Default.ExportFolder = result.Path;
+                    Settings.Default.Save();
 
-        //                var tasks = selectedDocuments.Select(doc => _dbService.GetDocumentAsync(Connection, doc));
-        //                await Task.WhenAll(tasks).ConfigureAwait(false);
+                    var tasks = new List<Task<CosmosQueryResult<JObject>>>(selectedDocuments.Count());
 
-        //                foreach (var item in tasks)
-        //                {
-        //                    var document = item.Result;
-        //                    File.WriteAllText(Path.Combine(result.Path, $"{document.Resource.Id}.json"), document.Resource.ToString());
-        //                }
-        //           }
-        //            catch (Exception ex)
-        //            {
-        //                await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
-        //            }
-        //            finally
-        //            {
-        //                IsRunning = false;
-        //            }
-        //        }
-        //    });
-        //}
+                    foreach (var document in selectedDocuments)
+                    {
+                        tasks.Add(_cosmosDocumentService.GetDocumentAsync(document, _documentRequestOptions, new CancellationToken())
+                            .ContinueWith<CosmosQueryResult<JObject>>(requestResult =>
+                            {
+                                if (requestResult.IsCompletedSuccessfully)
+                                {
+                                    var path = document.HasPartitionKey
+                                        ? Path.Combine(result.Path, $"{document.PartitionKey}-{document.Id}.json".SafeForFilename())
+                                        : Path.Combine(result.Path, $"{document.Id}.json".SafeForFilename());
 
-        //private Task SaveLocalSingleDocumentAsync()
-        //{
-        //    var settings = new SaveFileDialogSettings
-        //    {
-        //        DefaultExt = "json",
-        //        Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-        //        AddExtension = true,
-        //        FileName = $"{SelectedDocument.Id}.json",
-        //        OverwritePrompt = true,
-        //        CheckFileExists = false,
-        //        Title = "Save document locally"
-        //    };
+                                    File.WriteAllTextAsync(path, requestResult.Result.Items.ToString());
+                                }
 
-        //    return _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-        //    {
-        //        if (confirm)
-        //        {
-        //            try
-        //            {
-        //                IsRunning = true;
+                                return requestResult.Result;
+                            }));
+                    }
+                        //selectedDocuments.Select(doc => 
 
-        //                Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
-        //                Settings.Default.Save();
 
-        //                await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                await _dialogService.ShowError(ex, "Error", null, null).ConfigureAwait(false);
-        //            }
-        //            finally
-        //            {
-        //                IsRunning = false;
-        //            }
-        //        }
-        //    });
-        //}
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                    //foreach (var item in tasks)
+                    //{
+                    //    var document = item.Result;
+                    //    File.WriteAllText(Path.Combine(result.Path, $"{document.Items.Id}.json"), document.Items.ToString());
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, "Error");
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
+            }
+
+            _dialogService.ShowFolderBrowserDialog(settings, saveFile);
+        }
+
+        private void SaveLocalSingleDocument()
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                DefaultExt = "json",
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                AddExtension = true,
+                FileName = $"{SelectedDocument?.Id}.json",
+                OverwritePrompt = true,
+                CheckFileExists = false,
+                Title = "Save document locally"
+            };
+
+            async void saveFile(bool confirm, FileDialogResult result)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+
+                try
+                {
+                    IsRunning = true;
+
+                    Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
+                    Settings.Default.Save();
+
+                    await File.WriteAllTextAsync(result.FileName, EditorViewModel.Text);
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, "Error");
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
+            }
+
+            _dialogService.ShowSaveFileDialog(settings, saveFile);
+        }
 
         public RelayCommand ResetRequestOptionsCommand => _resetRequestOptionsCommand ??= new(ResetRequestOptionCommandExecute);
 

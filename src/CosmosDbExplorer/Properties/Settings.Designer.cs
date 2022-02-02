@@ -8,8 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-
 namespace CosmosDbExplorer.Properties {
     
     
@@ -72,20 +70,17 @@ namespace CosmosDbExplorer.Properties {
                 this["ExportFolder"] = value;
             }
         }
-
-
-    }
-
-    internal sealed partial class Settings
-    {
-        public string GetExportFolder()
-        {
-            if (string.IsNullOrEmpty(Default.ExportFolder) || string.IsNullOrWhiteSpace(Default.ExportFolder))
-            {
-                return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int MaxDocumentToRetrieve {
+            get {
+                return ((int)(this["MaxDocumentToRetrieve"]));
             }
-
-            return Default.ExportFolder;
+            set {
+                this["MaxDocumentToRetrieve"] = value;
+            }
         }
     }
 }

@@ -316,7 +316,8 @@ namespace CosmosDbExplorer.ViewModels
         {
             SelectedDocument = null;
             SetStatusBar(null);
-            EditorViewModel.SetText(new CosmosDocument { Id = "replace_with_the_new_document_id" }, HideSystemProperties);
+
+            EditorViewModel.SetText(JObject.Parse("{\"id\": \"replace_with_the_new_document_id\"}"), HideSystemProperties);
         }
 
         private bool NewDocumentCommandCanExecute()
@@ -482,16 +483,8 @@ namespace CosmosDbExplorer.ViewModels
                                 return requestResult.Result;
                             }));
                     }
-                        //selectedDocuments.Select(doc => 
-
 
                     await Task.WhenAll(tasks).ConfigureAwait(false);
-
-                    //foreach (var item in tasks)
-                    //{
-                    //    var document = item.Result;
-                    //    File.WriteAllText(Path.Combine(result.Path, $"{document.Items.Id}.json"), document.Items.ToString());
-                    //}
                 }
                 catch (Exception ex)
                 {

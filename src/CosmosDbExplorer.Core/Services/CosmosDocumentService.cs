@@ -64,7 +64,7 @@ namespace CosmosDbExplorer.Core.Services
             return result;
         }
 
-        public async Task<CosmosQueryResult<JObject>> GetDocumentAsync(ICosmosDocument document, IDocumentRequestOptions options, CancellationToken cancellation)
+        public async Task<CosmosQueryResult<JObject>> GetDocumentAsync(ICosmosDocument document, IDocumentRequestOptions options, CancellationToken cancellationToken)
         {
             var result = new CosmosQueryResult<JObject>();
 
@@ -83,7 +83,7 @@ namespace CosmosDbExplorer.Core.Services
                 var response = await _container.ReadItemAsync<JObject>(document.Id,
                     partitionKey: PartitionKeyHelper.Get(document.PartitionKey),
                     requestOptions: requestOptions,
-                    cancellation);
+                    cancellationToken);
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = response.Resource;
@@ -98,7 +98,7 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
-        public async Task<CosmosQueryResult<JObject>> SaveDocumentAsync(string content, IDocumentRequestOptions options, CancellationToken cancellation)
+        public async Task<CosmosQueryResult<JObject>> SaveDocumentAsync(string content, IDocumentRequestOptions options, CancellationToken cancellationToken)
         {
             var result = new CosmosQueryResult<JObject>();
 
@@ -116,7 +116,7 @@ namespace CosmosDbExplorer.Core.Services
             {
                 var document = GetDocuments(content, _cosmosContainer.PartitionKeyJsonPath).First();
 
-                var response = await _container.UpsertItemAsync<JToken>(document.Resource, PartitionKeyHelper.Get(document.PK), requestOptions, cancellation);
+                var response = await _container.UpsertItemAsync<JToken>(document.Resource, PartitionKeyHelper.Get(document.PK), requestOptions, cancellationToken);
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = (JObject)response.Resource;
@@ -129,6 +129,44 @@ namespace CosmosDbExplorer.Core.Services
             {
                 return result;
             }
+        }
+
+        public async Task<CosmosResult> DeleteDocumentsAsync(IEnumerable<ICosmosDocument> documents, CancellationToken cancellationToken)
+        {
+            var tasks = new List<Task<ItemResponse<ICosmosDocument>>>(documents.Count());
+
+            foreach (var item in documents)
+            {
+                tasks.Add(_container.DeleteItemAsync<ICosmosDocument>(item.Id, PartitionKeyHelper.Get(item.PartitionKey), cancellationToken: cancellationToken)
+                    .ContinueWith<ItemResponse<ICosmosDocument>>(itemResponse =>
+                    {
+                        if (!itemResponse.IsCompletedSuccessfully)
+                        {
+                            var innerExceptions = itemResponse.Exception.Flatten();
+                            if (innerExceptions.InnerExceptions.FirstOrDefault(innerEx => innerEx is CosmosException) is CosmosException cosmosException)
+                            {
+                                throw new Exception(cosmosException.GetMessage());
+                            }
+                            else
+                            {
+                                throw new Exception($"Exception {innerExceptions.InnerExceptions.FirstOrDefault()}.");
+                            }
+                        }
+                        else
+                        {
+                            return itemResponse.Result;
+                        }
+                    }));
+            }
+
+            await Task.WhenAll(tasks);
+
+            var result = new CosmosResult
+            {
+                RequestCharge = tasks.Where(t => t.IsCompletedSuccessfully).Sum(t => t.Result.RequestCharge)
+            };
+
+            return result;
         }
 
         public async Task<int> ImportDocumentsAsync(string content, CancellationToken cancellationToken)
@@ -196,6 +234,8 @@ namespace CosmosDbExplorer.Core.Services
             return result;
         }
 
+
+
         private Document[] GetDocuments(string content, string? pkPath)
         {
             if (pkPath is null)
@@ -212,36 +252,24 @@ namespace CosmosDbExplorer.Core.Services
 
             if (token is JArray)
             {
-                return token.Select(t => new Document(token, pkPath)).ToArray();
+                return token.Children().Select(child => new Document((JObject)child, pkPath)).ToArray();
             }
             else
             {
-                return new[] { new Document(token, pkPath) };
+                return new[] { new Document((JObject)token, pkPath) };
             }
         }
     }
 
     internal class Document
     {
-        public Document(JToken resource, string pkPath)
+        public Document(JObject resource, string pkPath)
         {
-            PK = GetPrimaryKey(resource, pkPath);
+            PK = resource.SelectToken(pkPath)?.ToObject<object?>();
             Resource = resource;
         }
 
-        private static string GetPrimaryKey(JToken resource, string pkPath)
-        {
-            var pk = resource.SelectToken(pkPath)?.Value<string>();
-
-            if (pk is null)
-            {
-                throw new Exception("Document doesn't contains a valid partition key.");
-            }
-
-            return pk;
-        }
-
-        public string PK { get; set; }
+        public object? PK { get; set; }
         public JToken Resource { get; set; }
     }
 }

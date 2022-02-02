@@ -22,6 +22,11 @@ namespace CosmosDbExplorer.Models
             ResponseHeaders = response.Headers;
         }
 
+        public StatusBarInfo(CosmosResult response)
+        {
+            RequestCharge = response.RequestCharge;
+        }
+
         public StatusBarInfo(IEnumerable<CosmosQueryResult<IReadOnlyCollection<JObject>>> response)
         {
             RequestCharge = response.Sum(r => r.RequestCharge);

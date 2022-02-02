@@ -93,7 +93,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public string PartitionKey { get; set; }
 
-        public ObservableCollection<ICosmosDocument> Documents { get; } = new();
+        public ObservableCollection<CheckedItem<ICosmosDocument>> Documents { get; } = new();
 
         public ICosmosDocument? SelectedDocument { get; set; }
 
@@ -277,8 +277,9 @@ namespace CosmosDbExplorer.ViewModels
 
                 foreach (var document in result.Items)
                 {
-                    Documents.Add(document);
+                    Documents.Add(new CheckedItem<ICosmosDocument>(document));
                 }
+
 
                 //    RaisePropertyChanged(() => ItemsCount);
                 //}
@@ -351,8 +352,6 @@ namespace CosmosDbExplorer.ViewModels
                 _documentRequestOptions.ETag = SelectedDocument?.ETag;
 
                 var response = await _cosmosDocumentService.SaveDocumentAsync(EditorViewModel.Text, _documentRequestOptions, new CancellationToken());
-                //var response = await _dbService.UpdateDocumentAsync(Connection, Collection.AltLink, EditorViewModel.Content.Text, this).ConfigureAwait(true);
-                //    var document = response.Resource;
 
                 SetStatusBar(new StatusBarInfo(response));
 
@@ -360,11 +359,11 @@ namespace CosmosDbExplorer.ViewModels
 
                 if (SelectedDocument == null)
                 {
-                    Documents.Add(_currentCosmosDocument);
+                    Documents.Add(new CheckedItem<ICosmosDocument>(_currentCosmosDocument));
                 }
                 else
                 {
-                    Documents.Replace(SelectedDocument, _currentCosmosDocument);
+                    Documents.Select(d => d.Item).Replace(SelectedDocument, _currentCosmosDocument);
                 }
 
                 SelectedDocument = _currentCosmosDocument;
@@ -372,11 +371,6 @@ namespace CosmosDbExplorer.ViewModels
                 EditorViewModel.SetText(response.Items, HideSystemProperties);
                 HeaderViewModel.SetText(response.Headers, HideSystemProperties);
             }
-            //catch (DocumentClientException ex)
-            //{
-            //    var message = ex.Parse();
-            //    await _dialogService.ShowError(message, "Error", null, null).ConfigureAwait(false);
-            //}
             catch (Exception ex)
             {
                 await _dialogService.ShowError(ex.Message, "Error saving document");
@@ -385,39 +379,53 @@ namespace CosmosDbExplorer.ViewModels
             {
                 IsRunning = false;
             }
-
         }
 
-        public AsyncRelayCommand DeleteDocumentCommand => _deleteDocumentCommand ??= new(DeleteDocumentCommandExecute, () => true/*!IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid*/);
+        public AsyncRelayCommand DeleteDocumentCommand => _deleteDocumentCommand ??= new(DeleteDocumentCommandExecute, () => !IsRunning && SelectedDocument != null && !EditorViewModel.IsNewDocument && IsValid);
 
         private async Task DeleteDocumentCommandExecute()
         {
-            //var selectedDocuments = Documents.Where(doc => doc.IsSelected).ToList();
-            //var message = selectedDocuments.Count == 1
-            //            ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
-            //            : $"Are you sure that you want to delete these {selectedDocuments.Count} documents?";
+            var selectedDocuments = Documents.Where(doc => doc.IsChecked).Select(doc => doc.Item).ToList();
+            var message = selectedDocuments.Count == 1
+                        ? $"Are you sure that you want to delete document '{selectedDocuments[0].Id}'?"
+                        : $"Are you sure that you want to delete these {selectedDocuments.Count} documents?";
 
-            //await _dialogService.ShowMessage(message, "Delete Document(s)", null, null, async confirm =>
-            //{
-            //    if (confirm)
-            //    {
-            //        IsRunning = true;
-            //        var response = await _dbService.DeleteDocumentsAsync(Node.Parent.Parent.Parent.Connection, selectedDocuments).ConfigureAwait(false);
-            //        IsRunning = false;
-            //        SetStatusBar(new StatusBarInfo(response));
+            async void deleteDocument(bool confirm)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+                    
+                IsRunning = true;
 
-            //        await DispatcherHelper.RunAsync(() =>
-            //        {
-            //            SelectedDocument = null;
-            //            foreach (var item in selectedDocuments)
-            //            {
-            //                Documents.Remove(item);
-            //            }
+                try
+                {
+                    var response = await _cosmosDocumentService.DeleteDocumentsAsync(selectedDocuments, new CancellationToken());
+                    SetStatusBar(new StatusBarInfo(response));
 
-            //            EditorViewModel.SetText(new { result = "Delete operation succeeded!" }, HideSystemProperties);
-            //        });
-            //    }
-            //}).ConfigureAwait(false);
+                    var toRemove = Documents.Where(doc => doc.IsChecked).ToList();
+                    SelectedDocument = null;
+
+                    foreach (var item in toRemove)
+                    {
+                        Documents.Remove(item);
+                    }
+
+                    EditorViewModel.Clear();
+                    HeaderViewModel.Clear();
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, "Unable to delete document");
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
+            }
+
+            await _dialogService.ShowQuestion(message, "Delete Document(s)", deleteDocument);
         }
 
         public RelayCommand EditFilterCommand => _editFilterCommand ??= new(() => IsEditingFilter = true);

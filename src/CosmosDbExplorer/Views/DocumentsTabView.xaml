@@ -84,17 +84,18 @@
                                 </Grid>
 
                                 <controls:ListBoxMore Grid.Row="1"
-                                                   ItemsSource="{Binding Documents}"
-                                                   SelectedValue="{Binding SelectedDocument}"
-                                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                                   SelectionMode="Extended"
-                                                   HorizontalContentAlignment="Stretch">
+                                                      ItemsSource="{Binding Documents}"
+                                                      SelectedValue="{Binding SelectedDocument}"
+                                                      SelectedValuePath="Item"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                      SelectionMode="Extended"
+                                                      HorizontalContentAlignment="Stretch">
 
                                     <controls:ListBoxMore.ItemTemplateSelector>
                                         <template:DocumentDescriptionTemplateSelector>
                                             <template:DocumentDescriptionTemplateSelector.DefaultTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                    <TextBlock Text="{Binding Item.Id}" ToolTip="{Binding Item.Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                                                 </DataTemplate>
                                             </template:DocumentDescriptionTemplateSelector.DefaultTemplate>
                                             <template:DocumentDescriptionTemplateSelector.PartitionTemplate>
@@ -105,8 +106,8 @@
                                                             <ColumnDefinition Width="0.5*" />
                                                         </Grid.ColumnDefinitions>
 
-                                                        <TextBlock Grid.Column="0" Text="{Binding Id}" ToolTip="{Binding Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                        <TextBlock Grid.Column="0" Text="{Binding Item.Id}" ToolTip="{Binding Item.Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding Item.PartitionKey}" ToolTip="{Binding Item.PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
                                                     </Grid>
                                                 </DataTemplate>
 
@@ -154,11 +155,11 @@
                                         </Style>
                                     </controls:ListBoxMore.Style>
 
-                                    <!--<controls:ListBoxMore.ItemContainerStyle>
+                                    <controls:ListBoxMore.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListBoxItem}">
-                                            <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                                            <Setter Property="IsSelected" Value="{Binding IsChecked}" />
                                         </Style>
-                                    </controls:ListBoxMore.ItemContainerStyle>-->
+                                    </controls:ListBoxMore.ItemContainerStyle>
                                 </controls:ListBoxMore>
 
                             </Grid>

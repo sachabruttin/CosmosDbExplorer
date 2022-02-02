@@ -27,6 +27,13 @@ namespace CosmosDbExplorer.ViewModels
             IsDirty = false;
         }
 
+        public void Clear()
+        {
+            Text = null;
+            OnPropertyChanged(nameof(HasContent));
+            IsDirty = false;
+        }
+
         protected abstract string? GetDocumentContent(object? content, bool removeSystemProperties);
 
         public bool HasContent => Text?.Length != 0; //Content.TextLength != 0;

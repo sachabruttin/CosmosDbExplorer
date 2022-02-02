@@ -1,17 +1,18 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using CosmosDbExplorer.Core.Contracts;
+using CosmosDbExplorer.Models;
 
 namespace CosmosDbExplorer.TemplateSelectors
 {
     public class DocumentDescriptionTemplateSelector : DataTemplateSelector
     {
-        public DataTemplate DefaultTemplate { get; set; }
-        public DataTemplate PartitionTemplate { get; set; }
+        public DataTemplate? DefaultTemplate { get; set; }
+        public DataTemplate? PartitionTemplate { get; set; }
 
-        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
-            var dd = (ICosmosDocument)item;
+            var dd = ((CheckedItem<ICosmosDocument>)item).Item;
 
             return dd.HasPartitionKey
                 ? PartitionTemplate

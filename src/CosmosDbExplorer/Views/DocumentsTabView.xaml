@@ -7,7 +7,8 @@
              xmlns:controls="clr-namespace:CosmosDbExplorer.Controls" 
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
              xmlns:template="clr-namespace:CosmosDbExplorer.TemplateSelectors" 
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:DocumentsTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Style="{DynamicResource CosmosUserControl}">
@@ -153,11 +154,11 @@
                                         </Style>
                                     </controls:ListBoxMore.Style>
 
-                                    <controls:ListBoxMore.ItemContainerStyle>
+                                    <!--<controls:ListBoxMore.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListBoxItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
-                                    </controls:ListBoxMore.ItemContainerStyle>
+                                    </controls:ListBoxMore.ItemContainerStyle>-->
                                 </controls:ListBoxMore>
 
                             </Grid>

@@ -5,9 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace CosmosDbExplorer.Core.Contracts
 {
-    public interface ICosmosDocument : ICosmosResource
+    public interface ICosmosDocument : ICosmosResource, IEquatable<ICosmosDocument?>
     {  
-        string Attachments { get; }
+        string? Attachments { get; }
         long TimeStamp { get; }
         object? PartitionKey { get; }
         bool HasPartitionKey { get; }

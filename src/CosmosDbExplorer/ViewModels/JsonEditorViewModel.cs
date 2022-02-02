@@ -113,7 +113,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             get
             {
-                return _document != null && _document?.Property("_self")?.Value<string>() == null;
+                return _document != null && _document.GetValue("_self")?.Value<string?>() == null;
             }
         }
     }

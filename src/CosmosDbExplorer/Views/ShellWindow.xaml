@@ -15,6 +15,7 @@
     xmlns:Fluent="urn:fluent-ribbon"
     xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
     xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+    xmlns:coremodels="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
     d:DataContext="{d:DesignInstance Type=viewmodels:ShellViewModel}"
     ShowSystemMenuOnRightClick="False"
     Loaded="OnLoaded"
@@ -673,27 +674,27 @@
 
                     <Fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
                                        Grid.IsSharedSizeScope="True">
-                        <!--<Fluent:ComboBox Header="Indexing Directive" Width="250" Margin="1" 
-                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:IndexingDirective}}}"
+                        <Fluent:ComboBox Header="Indexing Directive" Width="250" Margin="1" 
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosIndexingDirectives}}}"
                                      SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEditable="False"/>-->
+                                     IsEditable="False"/>
 
-                        <!--<Fluent:ComboBox Header="Consistency Level" Width="250" Margin="1"
-                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type sdk:ConsistencyLevel}}}"
+                        <Fluent:ComboBox Header="Consistency Level" Width="250" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosConsistencyLevels}}}"
                                      SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                     IsEditable="False"/>-->
+                                     IsEditable="False"/>
 
-                        <Fluent:TextBox Header="Partition Key" Width="250" Margin="1"
-                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <!--<Fluent:TextBox Header="Partition Key" Width="250" Margin="1"
+                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>-->
 
                     </Fluent:RibbonGroupBox>
 
 
                     <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
-                        <!--<Fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
-                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type clientSdk:AccessConditionType}}}"
+                        <Fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosAccessConditionType}}}"
                                      SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEditable="False"/>-->
+                                     IsEditable="False"/>
 
                         <Fluent:TextBox Header="ETag" Margin="1"
                                     Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

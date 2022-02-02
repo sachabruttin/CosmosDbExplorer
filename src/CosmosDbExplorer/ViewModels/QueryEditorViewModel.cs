@@ -433,11 +433,7 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService.ShowOpenFileDialog(settings, openFile);
         }
 
-        public bool HideSystemProperties
-        {
-            get { return _query.HideSystemProperties; }
-            set { _query.HideSystemProperties = value; }
-        }
+        public bool HideSystemProperties { get; set; }
 
         public void OnHideSystemPropertiesChanged()
         {

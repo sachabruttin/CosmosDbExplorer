@@ -17,7 +17,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>, IHaveRequestOptions
+    public class ImportDocumentViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>//, IHaveRequestOptions
     {
         private AsyncRelayCommand _executeCommand;
         private readonly IDialogService _dialogService;

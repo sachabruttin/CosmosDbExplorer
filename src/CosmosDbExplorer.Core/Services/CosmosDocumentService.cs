@@ -64,24 +64,62 @@ namespace CosmosDbExplorer.Core.Services
             return result;
         }
 
-        public async Task<CosmosQueryResult<JObject>> GetDocumentAsync(ICosmosDocument document, CancellationToken cancellation)
+        public async Task<CosmosQueryResult<JObject>> GetDocumentAsync(ICosmosDocument document, IDocumentRequestOptions options, CancellationToken cancellation)
         {
             var result = new CosmosQueryResult<JObject>();
 
-            var options = new ItemRequestOptions
+            var requestOptions = new ItemRequestOptions
             {
-                
+                IndexingDirective = options.IndexingDirective is not null ? Enum.Parse<IndexingDirective>(options.IndexingDirective.ToString()) : null,
+                ConsistencyLevel = options.ConsistencyLevel is not null ? Enum.Parse<ConsistencyLevel>(options.ConsistencyLevel.ToString()) : null,
+                IfMatchEtag = options.AccessCondition == CosmosAccessConditionType.IfMatch ? options.ETag : null,
+                IfNoneMatchEtag = options.AccessCondition == CosmosAccessConditionType.IfNotMatch ? options.ETag : null,
+                PreTriggers = options.PreTriggers,
+                PostTriggers = options.PostTriggers
             };
 
             try
             {
                 var response = await _container.ReadItemAsync<JObject>(document.Id,
                     partitionKey: PartitionKeyHelper.Get(document.PartitionKey),
-                    requestOptions: options,
+                    requestOptions: requestOptions,
                     cancellation);
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = response.Resource;
+                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
+
+                return result;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return result;
+            }
+        }
+
+        public async Task<CosmosQueryResult<JObject>> SaveDocumentAsync(string content, IDocumentRequestOptions options, CancellationToken cancellation)
+        {
+            var result = new CosmosQueryResult<JObject>();
+
+            var requestOptions = new ItemRequestOptions
+            {
+                IndexingDirective = options.IndexingDirective is not null ? Enum.Parse<IndexingDirective>(options.IndexingDirective.ToString()) : null,
+                ConsistencyLevel = options.ConsistencyLevel is not null ? Enum.Parse<ConsistencyLevel>(options.ConsistencyLevel.ToString()) : null,
+                IfMatchEtag = options.AccessCondition == CosmosAccessConditionType.IfMatch && options.ETag != null ? options.ETag : null,
+                IfNoneMatchEtag = options.AccessCondition == CosmosAccessConditionType.IfNotMatch && options.ETag != null ? options.ETag : null,
+                PreTriggers = options.PreTriggers,
+                PostTriggers = options.PostTriggers
+            };
+
+            try
+            {
+                var document = GetDocuments(content, _cosmosContainer.PartitionKeyJsonPath).First();
+
+                var response = await _container.UpsertItemAsync<JToken>(document.Resource, PartitionKeyHelper.Get(document.PK), requestOptions, cancellation);
+
+                result.RequestCharge = response.RequestCharge;
+                result.Items = (JObject)response.Resource;
                 result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
                 //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
 
@@ -158,8 +196,13 @@ namespace CosmosDbExplorer.Core.Services
             return result;
         }
 
-        private Document[] GetDocuments(string content, string pkPath)
+        private Document[] GetDocuments(string content, string? pkPath)
         {
+            if (pkPath is null)
+            {
+                throw new ArgumentNullException(nameof(pkPath));
+            }
+
             var token = JToken.Parse(content);
 
             if (token == null)
@@ -169,18 +212,36 @@ namespace CosmosDbExplorer.Core.Services
 
             if (token is JArray)
             {
-                return token.Select(t => new Document { PK = t.SelectToken(pkPath).Value<string>(), Resource = t }).ToArray();
+                return token.Select(t => new Document(token, pkPath)).ToArray();
             }
             else
             {
-                return new[] { new Document { PK = token.SelectToken(pkPath).Value<string>(), Resource = token } };
+                return new[] { new Document(token, pkPath) };
             }
         }
+    }
 
-        internal class Document
+    internal class Document
+    {
+        public Document(JToken resource, string pkPath)
         {
-            public string PK { get; set; }
-            public JToken Resource { get; set; }
+            PK = GetPrimaryKey(resource, pkPath);
+            Resource = resource;
         }
+
+        private static string GetPrimaryKey(JToken resource, string pkPath)
+        {
+            var pk = resource.SelectToken(pkPath)?.Value<string>();
+
+            if (pk is null)
+            {
+                throw new Exception("Document doesn't contains a valid partition key.");
+            }
+
+            return pk;
+        }
+
+        public string PK { get; set; }
+        public JToken Resource { get; set; }
     }
 }

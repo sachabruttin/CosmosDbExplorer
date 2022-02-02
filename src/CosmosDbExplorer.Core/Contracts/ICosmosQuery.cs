@@ -1,4 +1,5 @@
-﻿using CosmosDbExplorer.Core.Models;
+﻿using System;
+using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Core.Contracts
 {
@@ -7,7 +8,6 @@ namespace CosmosDbExplorer.Core.Contracts
         string QueryText { get; set; }
         int MaxItemCount { get; set;  }
         string? ContinuationToken { get; set; }  
-        bool HideSystemProperties { get; set; }
         bool EnableScanInQuery { get; set; }
         bool EnableCrossPartitionQuery { get; set; }
         int MaxDOP { get; set; }

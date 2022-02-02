@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+
 namespace CosmosDbExplorer.Properties {
     
     
@@ -57,6 +59,33 @@ namespace CosmosDbExplorer.Properties {
             set {
                 this["Theme"] = value;
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ExportFolder {
+            get {
+                return ((string)(this["ExportFolder"]));
+            }
+            set {
+                this["ExportFolder"] = value;
+            }
+        }
+
+
+    }
+
+    internal sealed partial class Settings
+    {
+        public string GetExportFolder()
+        {
+            if (string.IsNullOrEmpty(Default.ExportFolder) || string.IsNullOrWhiteSpace(Default.ExportFolder))
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            }
+
+            return Default.ExportFolder;
         }
     }
 }

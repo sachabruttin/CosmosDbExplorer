@@ -22,7 +22,7 @@ namespace CosmosDbExplorer.Core.Models
         public long TimeStamp { get; set; }
 
         [JsonProperty("_partitionKey")]
-        public string? PartitionKey { get; set; } 
+        public object? PartitionKey { get; set; } 
 
         [JsonProperty("_hasPartitionKey")]
         public bool HasPartitionKey { get; set; }

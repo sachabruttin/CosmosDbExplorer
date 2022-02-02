@@ -22,13 +22,13 @@
   <Color name="Light.Punctuation" foreground="Black" />
 
   <!-- Dark -->
-  <Color name="Dark.Bool" foreground="Blue" exampleText="true | false"  />
-  <Color name="Dark.Number" foreground="LightGreen" exampleText="3.14" />
-  <Color name="Dark.String" foreground="Tan" exampleText="" />
-  <Color name="Dark.Null" foreground="Blue" exampleText="" />
-  <Color name="Dark.FieldName" foreground="LightBlue" />
-  <Color name="Dark.Object" foreground="Pink" />
-  <Color name="Dark.Array" foreground="Gold" />
+  <Color name="Dark.Bool" foreground="#569cd6" exampleText="true | false"  />
+  <Color name="Dark.Number" foreground="#b5cea8" exampleText="3.14" />
+  <Color name="Dark.String" foreground="#ce9178" exampleText="" />
+  <Color name="Dark.Null" foreground="#569cd6" exampleText="" />
+  <Color name="Dark.FieldName" foreground="#9cdcfe" />
+  <Color name="Dark.Object" foreground="#da70d6" />
+  <Color name="Dark.Array" foreground="#f1d700" />
   <Color name="Dark.Punctuation" foreground="White" />
 
   <!-- Dracula -->

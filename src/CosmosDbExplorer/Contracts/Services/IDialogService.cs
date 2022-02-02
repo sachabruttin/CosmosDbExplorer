@@ -10,6 +10,9 @@ namespace CosmosDbExplorer.Contracts.Services
     public interface IFileDialogService
     {
         void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null);
+        void ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null);
+        void ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult>? afterHideCallback = null);
+
     }
 
     public interface IDialogService : IFileDialogService

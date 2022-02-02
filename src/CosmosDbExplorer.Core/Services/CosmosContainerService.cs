@@ -73,6 +73,22 @@ namespace CosmosDbExplorer.Core.Services
                 throw new Exception(ex.GetMessage());
             }
         }
+        
+        //public async Task<CosmosContainer> UpdateContainerAsync(CosmosContainer cosmosContainer)
+        //{
+        //    var db = _client.GetDatabase(_cosmosDatabase.Id);
+        //    var containerProperties = new ContainerProperties();
+
+        //    try
+        //    {
+        //        db.r
+        //    }
+        //    catch (CosmosException ex)
+        //    {
+        //        throw new Exception(ex.GetMessage());
+        //    }
+        //}
+
 
         public async Task DeleteContainserAsync(CosmosContainer container, CancellationToken cancellationToken)
         {

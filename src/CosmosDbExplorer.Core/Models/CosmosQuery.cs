@@ -12,8 +12,26 @@ namespace CosmosDbExplorer.Core.Models
         public bool EnableCrossPartitionQuery { get; set; } = false;
         public int MaxDOP { get; set; } = -1;
         public int MaxBufferItem { get; set; } = -1;
-        public string? PartitionKeyValue { get; set; }
+        public Optional<object?> PartitionKeyValue { get; set; } = new Optional<object?>(null);
     }
 
+    public class Optional<T>
+    {
+        public Optional(T value)
+        {
+            Value = value;
+            IsSome = true;
+        }
+
+        public Optional()
+        {
+            Value = default;
+            IsSome = false;
+        }
+
+        public T? Value { get; }
+        
+        public bool IsSome { get; }
+    }
 
 }

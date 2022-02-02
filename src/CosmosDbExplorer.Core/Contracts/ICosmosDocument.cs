@@ -9,7 +9,7 @@ namespace CosmosDbExplorer.Core.Contracts
     {  
         string Attachments { get; }
         long TimeStamp { get; }
-        string? PartitionKey { get; }
+        object? PartitionKey { get; }
         bool HasPartitionKey { get; }
     }
 }

@@ -14,6 +14,21 @@ namespace CosmosDbExplorer.Services
 {
     public class FileDialogService : IFileDialogService
     {
+        public void ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult>? afterHideCallback)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                SelectedPath = settings.SelectedPath,
+                ShowNewFolderButton = settings.ShowNewFolderButton,
+                Description = settings.Description
+            };
+
+            var result = dialog.ShowDialog();/* TODO: Get Handle */
+            var confirmed = result == System.Windows.Forms.DialogResult.OK;
+
+            afterHideCallback?.Invoke(confirmed, new FolderDialogResult(dialog.SelectedPath));
+        }
+
         public void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)
         {
             var dialog = new OpenFileDialog
@@ -28,6 +43,29 @@ namespace CosmosDbExplorer.Services
                 InitialDirectory = settings.InitialDirectory,
                 Multiselect = settings.Multiselect,
                 Title = settings.Title,
+            };
+
+            var result = dialog.ShowDialog(Application.Current.MainWindow);
+            var confirmed = result.GetValueOrDefault();
+
+            afterHideCallback?.Invoke(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames));
+        }
+
+        public void ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)
+        {
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = settings.AddExtension,
+                CheckFileExists = settings.CheckFileExists,
+                CheckPathExists = settings.CheckPathExists,
+                CreatePrompt = settings.CreatePrompt,
+                DefaultExt = settings.DefaultExt,
+                FileName = settings.FileName,
+                Filter = settings.Filter,
+                FilterIndex = settings.FilterIndex,
+                InitialDirectory = settings.InitialDirectory,
+                OverwritePrompt = settings.OverwritePrompt,
+                Title = settings.Title
             };
 
             var result = dialog.ShowDialog(Application.Current.MainWindow);

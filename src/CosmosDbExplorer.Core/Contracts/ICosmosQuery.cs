@@ -1,4 +1,6 @@
-﻿namespace CosmosDbExplorer.Core.Contracts
+﻿using CosmosDbExplorer.Core.Models;
+
+namespace CosmosDbExplorer.Core.Contracts
 {
     public interface ICosmosQuery
     {
@@ -10,6 +12,6 @@
         bool EnableCrossPartitionQuery { get; set; }
         int MaxDOP { get; set; }
         int MaxBufferItem { get; set; }
-        string? PartitionKeyValue { get; set; }
+        Optional<object?> PartitionKeyValue { get; set; }
     }
 }

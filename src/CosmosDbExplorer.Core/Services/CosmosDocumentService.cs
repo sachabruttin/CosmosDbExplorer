@@ -68,11 +68,16 @@ namespace CosmosDbExplorer.Core.Services
         {
             var result = new CosmosQueryResult<JObject>();
 
+            var options = new ItemRequestOptions
+            {
+                
+            };
+
             try
             {
                 var response = await _container.ReadItemAsync<JObject>(document.Id,
                     partitionKey: PartitionKeyHelper.Get(document.PartitionKey),
-                    requestOptions: null,
+                    requestOptions: options,
                     cancellation);
 
                 result.RequestCharge = response.RequestCharge;
@@ -90,6 +95,7 @@ namespace CosmosDbExplorer.Core.Services
 
         public async Task<int> ImportDocumentsAsync(string content, CancellationToken cancellationToken)
         {
+            // TODO: https://docs.microsoft.com/en-us/azure/cosmos-db/sql/how-to-migrate-from-bulk-executor-library
             var itemsToInsert = GetDocuments(content, _cosmosContainer.PartitionKeyJsonPath);
             var tasks = new List<Task>(itemsToInsert.Length);
 
@@ -125,13 +131,13 @@ namespace CosmosDbExplorer.Core.Services
 
             var options = new QueryRequestOptions
             {
-                // TODO: Handle Partition key and other IHaveRequestOptions values
-                PartitionKey = string.IsNullOrEmpty(query.PartitionKeyValue) ? null : PartitionKeyHelper.Get(query.PartitionKeyValue),
+                PartitionKey = query.PartitionKeyValue.IsSome ? PartitionKeyHelper.Get(query.PartitionKeyValue.Value) : null,
                 EnableScanInQuery = query.EnableScanInQuery,
                 MaxItemCount = query.MaxItemCount,
                 MaxBufferedItemCount = query.MaxBufferItem,
                 MaxConcurrency = query.MaxDOP,
                 PopulateIndexMetrics = true,
+                //ConsistencyLevel = ConsistencyLevel.Strong
             };
 
             using (var resultSet = _container.GetItemQueryIterator<JObject>(
@@ -171,7 +177,7 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
-        public class Document
+        internal class Document
         {
             public string PK { get; set; }
             public JToken Resource { get; set; }

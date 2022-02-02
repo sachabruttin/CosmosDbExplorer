@@ -34,7 +34,7 @@ namespace CosmosDbExplorer.ViewModels
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
-        
+        private readonly IDialogService _dialogService;
         private JObject _currentDocument;
 
         private ICosmosDocumentService _cosmosDocumentService;
@@ -50,11 +50,11 @@ namespace CosmosDbExplorer.ViewModels
         private AsyncRelayCommand _saveDocumentCommand;
         private RelayCommand _discardCommand;
 
-        public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
+        public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
             : base(uiServices)
         {
             _serviceProvider = serviceProvider;
-
+            _dialogService = dialogService;
             Title = "Documents";
             Header = Title;
             IconSource = App.Current.FindResource("DocumentIcon");
@@ -109,28 +109,24 @@ namespace CosmosDbExplorer.ViewModels
                 if (_currentDocument == null || (_currentDocument.SelectToken("_self").Value<string>() != SelectedDocument.SelfLink))
                 {
 
-                    //try
-                    //{
-                    var response = await _cosmosDocumentService.GetDocumentAsync(SelectedDocument, new CancellationToken());
-                    _currentDocument = response.Items;
-                    //}
-                    //catch (DocumentClientException clientEx)
-                    //{
-                    //    await _dialogService.ShowError(clientEx.Parse(), "Error", null, null).ConfigureAwait(false);
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-                    //}
+                    try
+                    {
+                        var response = await _cosmosDocumentService.GetDocumentAsync(SelectedDocument, new CancellationToken());
+                        _currentDocument = response.Items;
+                        SetStatusBar(new StatusBarInfo(response));
 
-                    SetStatusBar(new StatusBarInfo(response));
-
-                    EditorViewModel.SetText(_currentDocument, HideSystemProperties);
-                    HeaderViewModel.SetText(response?.Headers, HideSystemProperties);
-
-                    IsRunning = false;
+                        EditorViewModel.SetText(_currentDocument, HideSystemProperties);
+                        HeaderViewModel.SetText(response?.Headers, HideSystemProperties);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error");
+                    }
+                    finally
+                    {
+                        IsRunning = false;
+                    }
                 }
-
             }
             else
             {

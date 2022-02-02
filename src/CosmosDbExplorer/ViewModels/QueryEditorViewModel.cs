@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,8 @@ using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Properties;
+using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,20 +35,22 @@ namespace CosmosDbExplorer.ViewModels
         private readonly StatusBarItem _progessBarStatusBarItem;
         private CancellationTokenSource? _cancellationTokenSource;
 
-        private AsyncRelayCommand _saveLocalCommand;
-        private AsyncRelayCommand<string> _saveQueryCommand;
-        private AsyncRelayCommand _openQueryCommand;
+        private RelayCommand _saveLocalCommand;
+        private RelayCommand<string> _saveQueryCommand;
+        private RelayCommand _openQueryCommand;
 
         private ICosmosDocumentService _documentService;
 
-        private ICosmosQuery _query;
+        private readonly ICosmosQuery _query;
         private AsyncRelayCommand _goToNextPageCommand;
+        private AsyncRelayCommand _executeCommand;
+        private RelayCommand _cancelCommand;
 
-        public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
+        public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
             : base(uiServices)
         {
             _serviceProvider = serviceProvider;
-
+            _dialogService = dialogService;
             EditorViewModel = new JsonViewerViewModel { IsReadOnly = true };
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
             IconSource = App.Current.FindResource("SqlQueryIcon");
@@ -134,6 +139,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDialogService _dialogService;
 
         public JsonViewerViewModel EditorViewModel { get; set; }
 
@@ -159,10 +165,9 @@ namespace CosmosDbExplorer.ViewModels
 
         //public Dictionary<string, QueryMetrics> QueryMetrics { get; set; }
 
-        public RelayCommand ExecuteCommand => new(async () => await ExecuteQueryAsync(null).ConfigureAwait(false),
-                                                         () => !IsRunning && !string.IsNullOrEmpty(Content) && IsValid);
+        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new(() => ExecuteQueryAsync(null), () => !IsRunning && !string.IsNullOrEmpty(Content) && IsValid);
 
-        public RelayCommand CancelCommand => new(() => _cancellationTokenSource?.Cancel(), () => IsRunning);
+        public RelayCommand CancelCommand => _cancelCommand ??= new(() => _cancellationTokenSource?.Cancel(), () => IsRunning);
 
         private async Task ExecuteQueryAsync(string? token)
         {
@@ -175,6 +180,7 @@ namespace CosmosDbExplorer.ViewModels
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
                 _query.QueryText= string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
+                _query.PartitionKeyValue = GetPartitionKey();
                 _query.ContinuationToken = token;
 
                 _queryResult = await _documentService.ExecuteQueryAsync(_query, _cancellationTokenSource.Token);
@@ -224,15 +230,40 @@ namespace CosmosDbExplorer.ViewModels
             //    Clean();
             //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
             //}
-            //catch (Exception ex)
-            //{
-            //    Clean();
-            //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //}
+            catch (Exception ex)
+            {
+                Clean();
+                await _dialogService.ShowError(ex, "Error").ConfigureAwait(false);
+            }
             finally
             {
                 IsRunning = false;
             }
+        }
+
+        private Optional<object?> GetPartitionKey()
+        { 
+            if (string.IsNullOrEmpty(PartitionKeyValue))
+            {
+                return new Optional<object?>();
+            }
+
+            if (double.TryParse(PartitionKeyValue, out var numeric))
+            {
+                return new Optional<object?>(numeric);
+            }
+
+            if (bool.TryParse(PartitionKeyValue, out var boolean))
+            {
+                return new Optional<object?>(boolean);
+            }
+
+            if (PartitionKeyValue.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                return new Optional<object?>(null);
+            }
+
+            return new Optional<object?>(PartitionKeyValue);
         }
 
         private void Clean()
@@ -268,129 +299,138 @@ namespace CosmosDbExplorer.ViewModels
         }
 
 
-        public AsyncRelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Text));
+        public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Text));
         
-        private Task SaveLocalCommandExecute()
+        private void SaveLocalCommandExecute()
         {
-            throw new NotImplementedException();
-            //var settings = new SaveFileDialogSettings
-            //{
-            //    DefaultExt = "json",
-            //    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-            //    AddExtension = true,
-            //    OverwritePrompt = true,
-            //    CheckFileExists = false,
-            //    Title = "Save document locally",
-            //    InitialDirectory = Settings.Default.GetExportFolder()
-            //};
+            var settings = new SaveFileDialogSettings
+            {
+                DefaultExt = "json",
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                AddExtension = true,
+                OverwritePrompt = true,
+                CheckFileExists = false,
+                Title = "Save document locally",
+                InitialDirectory = Settings.Default.GetExportFolder()
+            };
 
-            //await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-            //{
-            //    if (confirm)
-            //    {
-            //        try
-            //        {
-            //            IsRunning = true;
+            async void saveFileAsyc(bool confirm, FileDialogResult result) 
+            {
+                if (!confirm)
+                {
+                    return;
+                }
 
-            //            Settings.Default.ExportFolder = (new FileInfo(result.FileName)).DirectoryName;
-            //            Settings.Default.Save();
+                IsRunning = true;
 
-            //            await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, EditorViewModel.Content.Text));
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //        }
-            //        finally
-            //        {
-            //            IsRunning = false;
-            //        }
-            //    }
-            //}).ConfigureAwait(false);
+                try
+                {
+                    Settings.Default.ExportFolder = Path.GetDirectoryName(result.FileName);
+                    Settings.Default.Save();
+
+                    await File.WriteAllTextAsync(result.FileName, EditorViewModel.Text);
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, "An error during saving file");
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
+            };
+
+            _dialogService?.ShowSaveFileDialog(settings, saveFileAsyc);
         }
 
         public string FileName { get; set; }
 
-        public AsyncRelayCommand<string> SaveQueryCommand => _saveQueryCommand ??= new(SaveQueryCommandExecute, param => !IsRunning && !string.IsNullOrEmpty(Content));
+        public RelayCommand<string> SaveQueryCommand => _saveQueryCommand ??= new(SaveQueryCommandExecute, param => !IsRunning && !string.IsNullOrEmpty(Content));
 
-        private Task SaveQueryCommandExecute(string param)
+        private async void SaveQueryCommandExecute(string param)
         {
-            throw new NotImplementedException();
-            //if (FileName == null || param == "SaveAs")
-            //{
-            //    var settings = new SaveFileDialogSettings
-            //    {
-            //        DefaultExt = "sql",
-            //        Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
-            //        AddExtension = true,
-            //        OverwritePrompt = true,
-            //        CheckFileExists = false,
-            //        Title = "Save Query"
-            //    };
+            if (FileName == null || param == "SaveAs")
+            {
+                var settings = new SaveFileDialogSettings
+                {
+                    DefaultExt = "sql",
+                    Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                    AddExtension = true,
+                    OverwritePrompt = true,
+                    CheckFileExists = false,
+                    Title = "Save Query"
+                };
 
-            //    await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-            //    {
-            //        if (confirm)
-            //        {
-            //            try
-            //            {
-            //                IsRunning = true;
-            //                FileName = result.FileName;
+                async void saveFile(bool confirm, FileDialogResult result)
+                {
+                    if (!confirm)
+                    {
+                        return;
+                    }
 
-            //                await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, Content.Text));
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //            }
-            //            finally
-            //            {
-            //                IsRunning = false;
-            //            }
-            //        }
-            //    }).ConfigureAwait(false);
-            //}
-            //else
-            //{
-            //    await DispatcherHelper.RunAsync(() => File.WriteAllText(FileName, Content.Text));
-            //}
+                    try
+                    {
+                        IsRunning = true;
+                        FileName = result.FileName;
+
+                        await File.WriteAllTextAsync(result.FileName, Content);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error");
+                    }
+                    finally
+                    {
+                        IsRunning = false;
+                    }
+
+                }
+
+                _dialogService.ShowSaveFileDialog(settings, saveFile);
+            }
+            else
+            {
+                await File.WriteAllTextAsync(FileName, Content);
+            }
         }
 
-        public AsyncRelayCommand OpenQueryCommand => _openQueryCommand ??= new(OpenQueryCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(Content));
+        public RelayCommand OpenQueryCommand => _openQueryCommand ??= new(OpenQueryCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(Content));
         
-        private Task OpenQueryCommandExecute()
+        private void OpenQueryCommandExecute()
         {
-            throw new NotImplementedException();
-            //var settings = new OpenFileDialogSettings
-            //{
-            //    DefaultExt = "sql",
-            //    Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
-            //    AddExtension = true,
-            //    CheckFileExists = false,
-            //    Title = "Save Query"
-            //};
+            var settings = new OpenFileDialogSettings
+            {
+                DefaultExt = "sql",
+                Filter = "SQL Query (*.sql)|*.sql|All files (*.*)|*.*",
+                AddExtension = true,
+                CheckFileExists = true,
+                Title = "Open Query"
+            };
 
-            //await _dialogService.ShowOpenFileDialog(settings, async (confirm, result) =>
-            //{
-            //    if (confirm)
-            //    {
-            //        try
-            //        {
-            //            IsRunning = true;
-            //            FileName = result.FileName;
-            //            var txt = File.ReadAllText(result.FileName);
-            //            await DispatcherHelper.RunAsync(() => Content.Text = txt);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //        }
-            //        finally
-            //        {
-            //            IsRunning = false;
-            //        }
-            //    }
-            //}).ConfigureAwait(false);
+            async void openFile(bool confirm, FileDialogResult result)
+            {
+                if (!confirm)
+                {
+                    return;
+                }
+
+                IsRunning = true;
+
+                try
+                {
+                    Content = await File.ReadAllTextAsync(result.FileName);
+                }
+                catch (Exception ex)
+                {
+                    await _dialogService.ShowError(ex, "An error occured");
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
+            }
+
+            _dialogService.ShowOpenFileDialog(settings, openFile);
         }
 
         public bool HideSystemProperties
@@ -436,11 +476,7 @@ namespace CosmosDbExplorer.ViewModels
             set { _query.MaxBufferItem = value; }
         }
         
-        public string? PartitionKeyValue
-        {
-            get { return _query.PartitionKeyValue; }
-            set { _query.PartitionKeyValue = value; }
-        }
+        public string? PartitionKeyValue { get; set; }
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;
 
@@ -449,15 +485,6 @@ namespace CosmosDbExplorer.ViewModels
             Clean();
             base.OnClose();
         }
-
-        //public override void Cleanup()
-        //{
-        //    SimpleIoc.Default.Unregister(EditorViewModel);
-        //    SimpleIoc.Default.Unregister(HeaderViewModel);
-
-        //    base.Cleanup();
-        //}
-
     }
 
     public class QueryEditorViewModelValidator : AbstractValidator<QueryEditorViewModel>

@@ -14,6 +14,9 @@ namespace CosmosDbExplorer.Core.Helpers
                 null => PartitionKey.Null,
                 string s => new PartitionKey(s),
                 double d => new PartitionKey(d),
+                float f => new PartitionKey((double)f),
+                int i => new PartitionKey((double)i),
+                long l => new PartitionKey((double)l),
                 bool b => new PartitionKey(b),
                 _ => throw new ArgumentException("Partition Key type not supported")
             };

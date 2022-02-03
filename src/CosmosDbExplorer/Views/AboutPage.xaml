@@ -9,13 +9,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600"
              >
-    <Page.Resources>
-        <Style x:Key="valueText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BodyTextStyle}">
-            <Setter Property="Margin" Value="5,0" />
-            <Setter Property="FontStyle" Value="Italic" />
-        </Style>
-    </Page.Resources>
-
     <ScrollViewer>
         <Grid Margin="{StaticResource SmallTopBottomMargin}">
             <Grid.RowDefinitions>
@@ -37,9 +30,9 @@
                     Style="{StaticResource SubtitleTextStyle}"
                     Text="{x:Static properties:Resources.SettingsPageAboutTitle}" />
 
-                <Grid Margin="10,20" >
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120px" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -50,34 +43,34 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Product:" Style="{StaticResource BodyTextStyle}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Title}" Style="{StaticResource valueText}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Product:" Margin="{StaticResource SmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Title}" Margin="{StaticResource SmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Style="{StaticResource BodyTextStyle}"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Style="{StaticResource valueText}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Contributors:" Style="{StaticResource BodyTextStyle}"/>
-                    <ItemsControl Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Authors}">
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Contributors:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"/>
+                    <ItemsControl Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Authors}" Margin="{StaticResource XSmallTopMargin}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Style="{StaticResource valueText}">
-                            <Hyperlink NavigateUri="{Binding Profile}" RequestNavigate="Hyperlink_RequestNavigate_Github">
-                                <TextBlock Text="{Binding Name}" />
-                            </Hyperlink>
-                        </TextBlock>
+                                <TextBlock  Style="{StaticResource BodyTextStyle}">
+                                    <Hyperlink NavigateUri="{Binding Profile}" RequestNavigate="Hyperlink_RequestNavigate_Github">
+                                        <TextBlock Text="{Binding Name}" />
+                                    </Hyperlink>
+                                </TextBlock>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" Style="{StaticResource BodyTextStyle}" />
-                    <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource valueText}">
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
                         <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
                             <TextBlock Text="{Binding ProjectUrl}" />
                         </Hyperlink>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="License Url:" Style="{StaticResource BodyTextStyle}" />
-                    <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource valueText}">
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="License Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
                         <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
                             <TextBlock Text="{Binding LicenseUrl}" />
                         </Hyperlink>
@@ -85,14 +78,14 @@
                 </Grid>
 
                 <TextBlock Text="External Packages" 
-                       Margin="{StaticResource SmallTopMargin}"
+                       Margin="{StaticResource MediumTopMargin}"
                        Style="{StaticResource SubtitleTextStyle}"/>
 
-                <ItemsControl Margin="10" ItemsSource="{Binding ExternalComponents}" 
+                <ItemsControl Margin="{StaticResource SmallTopMargin}" ItemsSource="{Binding ExternalComponents}" 
                            Grid.IsSharedSizeScope="True">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnOne" />
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnTwo" />
@@ -107,20 +100,20 @@
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Style="{StaticResource BodyTextStyle}" Margin="0,0,10,0"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Project Url:" Style="{StaticResource BodyTextStyle}" />
-                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource valueText}">
+                                <TextBlock Grid.Row="0" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
                                     <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
                                         <TextBlock Text="{Binding ProjectUrl}" />
                                     </Hyperlink>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="License Url:" Style="{StaticResource BodyTextStyle}" />
-                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource valueText}">
+                                <TextBlock Grid.Row="1" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
                                     <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
                                         <TextBlock Text="{Binding LicenseUrl}" />
                                     </Hyperlink>
                                  </TextBlock>
 
-                                <Separator Grid.Row="2" Grid.ColumnSpan="3" />
+                                <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="{StaticResource XSmallTopMargin}" />
                             </Grid>
 
                         </DataTemplate>

@@ -41,9 +41,10 @@
                             <LayoutAnchorablePane>
                                 <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
                                     <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
-                                           ShowLineNumbers="True"
-                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                                                           ShowLineNumbers="True"
+                                                           Style="{StaticResource CosmosEditor}"
+                                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
                                         <i:Interaction.Behaviors>
                                             <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
                                             <bhv:AvalonTextEditorBehavior UseSearch="True" />

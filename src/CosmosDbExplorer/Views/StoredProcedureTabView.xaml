@@ -40,7 +40,7 @@
                         <LayoutAnchorablePaneGroup>
                             <LayoutAnchorablePane>
                                 <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
-                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode" 
                                                            ShowLineNumbers="True"
                                                            Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

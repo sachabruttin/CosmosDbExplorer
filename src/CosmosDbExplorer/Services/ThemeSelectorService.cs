@@ -7,6 +7,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Models;
 using ICSharpCode.AvalonEdit.Highlighting;
 using MahApps.Metro.Theming;
+using CosmosDbExplorer.Styles;
 
 namespace CosmosDbExplorer.Services
 {
@@ -63,6 +64,7 @@ namespace CosmosDbExplorer.Services
 
             UpdateHighlightingColor(HighlightingManager.Instance.GetDefinition("JSON"), theme);
             UpdateHighlightingColor(HighlightingManager.Instance.GetDefinition("DocumentDbSql"), theme);
+            UpdateHighlightingColor(HighlightingManager.Instance.GetDefinition("JavaScript-Mode"), theme);
         }
 
         private static void UpdateHighlightingColor(IHighlightingDefinition definition, AppTheme theme)

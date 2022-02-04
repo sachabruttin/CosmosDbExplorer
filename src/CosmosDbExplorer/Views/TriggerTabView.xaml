@@ -37,11 +37,12 @@
 
         </StackPanel>
 
-        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
+        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode"
                                ShowLineNumbers="True"
                                Style="{StaticResource CosmosEditor}"
                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                ContextMenu="{StaticResource JsonEditorContextMenu}">
+
             <i:Interaction.Behaviors>
                 <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
                 <bhv:AvalonTextEditorBehavior UseSearch="True" />

@@ -3,14 +3,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"
-    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-    xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
     Startup="OnStartup"
     Exit="OnExit"
+    xmlns:theming="clr-namespace:CosmosDbExplorer.Styles"
     DispatcherUnhandledException="OnDispatcherUnhandledException">
 
     <Application.Resources>
         <ResourceDictionary>
+            <theming:CosmosDbExplorerThemeProvider x:Key="{x:Static theming:CosmosDbExplorerThemeProvider.DefaultInstance}" />
+
             <!-- Converters -->
             <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
@@ -22,57 +23,7 @@
             <converters:BytesToGigaBytesConverter x:Key="BytesToGigaBytesConverter" />
             <!--<converters:QueryMetricsToStringConverter x:Key="queryMetricsToStringConverter" />-->
             <!--<converters:QueryMetricsToDocumentConverter x:Key="queryMetricsToDocumentConverter" />-->
-
-            <DataTemplate x:Key="AvalonDockHeaderTemplate">
-                <StackPanel Orientation="Horizontal" Margin="0,3" VerticalAlignment="Center">
-                    <Canvas Height="10" Width="10" Margin="3,0" Visibility="{Binding Content.AccentColor, Converter={StaticResource nullToVisibilityConverter}, FallbackValue=Collapsed}">
-                        <Ellipse Fill="{Binding Content.AccentColor, Converter={StaticResource colorToBrushConverter}}" Width="10" Height="10" />
-                    </Canvas>
-
-                    <Image Source="{Binding IconSource}" Margin="0,0,5,0" />
-                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
-                </StackPanel>
-            </DataTemplate>
-
-            <ControlTemplate x:Key="ValidationTemplate">
-                <StackPanel Orientation="Horizontal">
-                    <Border BorderBrush="DarkRed" BorderThickness="0,0,0,1.5">
-                        <AdornedElementPlaceholder />
-                    </Border>
-                    <TextBlock Foreground="DarkRed" FontFamily="Segoe MDL2 Assets" Text="" VerticalAlignment="Top" Margin="-2,4,0,0" />
-                </StackPanel>
-            </ControlTemplate>
-
-            <ContextMenu x:Key="JsonEditorContextMenu">
-                <MenuItem Header="Cut" Command="ApplicationCommands.Cut">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource CutIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Copy" Command="ApplicationCommands.Copy">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource CopyIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Paste" Command="ApplicationCommands.Paste">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource PasteIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator />
-                <MenuItem Header="Find..." Command="ApplicationCommands.Find">
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource SearchIcon}" Height="16" Width="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </ContextMenu>
-
-            <Style x:Key="CosmosEditor" TargetType="{x:Type avalonEdit:TextEditor}">
-                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Text}" />
-                <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName}" />
-                <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontSize}" />
-            </Style>
-
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/_FontSizes.xaml" />
                 <ResourceDictionary Source="/Styles/_Thickness.xaml" />
@@ -89,8 +40,10 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Generic.xaml" />
-                <!--<ResourceDictionary Source="pack://application:,,,/AvalonDock.Themes.VS2013;component/DarkBrushs.xaml" />-->
-                <ResourceDictionary Source="/Styles/CosmosControls.xaml" />
+                <!-- Cosmos resource dictionaries -->
+                <ResourceDictionary Source="pack://application:,,,/CosmosDbExplorer;component/Styles/CosmosControls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/CosmosDbExplorer;component/Styles/Themes/Dark.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/CosmosDbExplorer;component/Styles/Themes/Light.Blue.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

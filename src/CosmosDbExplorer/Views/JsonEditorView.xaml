@@ -12,8 +12,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
-    <!--<UserControl.Resources>
-        <Style TargetType="{x:Type avalonEdit:TextEditor}">
+    <UserControl.Resources>
+        <!--<Style TargetType="{x:Type avalonEdit:TextEditor}">
             <Setter Property="FontSize" Value="10pt" />
             <Setter Property="FontFamily" Value="Consolas,Courrier New" />
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
@@ -24,8 +24,14 @@
                     <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
                 </Trigger>
             </Style.Triggers>
+        </Style>-->
+
+        <Style TargetType="{x:Type avalonEdit:TextView}">
+            <!--<Setter Property="LinkTextBackgroundBrush" Value="CornflowerBlue" />-->
+            <!--<Setter Property="LinkTextForegroundBrush" Value="#9b6d5a" />-->
+            <Setter Property="LinkTextForegroundBrush" Value="{StaticResource CosmosDbExplorer.AvalonEdit.LinkTextForegroundBrush}" />
         </Style>
-    </UserControl.Resources>-->
+    </UserControl.Resources>
 
     
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 
@@ -35,7 +41,6 @@
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            ContextMenu="{StaticResource JsonEditorContextMenu}" HorizontalScrollBarVisibility="Auto" >
 
-        
         <i:Interaction.Behaviors>
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />

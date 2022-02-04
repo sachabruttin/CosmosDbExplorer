@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AvalonEdit\DocumentDbSql.xshd" />
+    <None Remove="AvalonEdit\JavaScript-Mode.xshd" />
     <None Remove="AvalonEdit\JSON.xshd" />
     <None Remove="Images\loading.gif" />
   </ItemGroup>
@@ -20,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AvalonEdit\DocumentDbSql.xshd" />
+    <EmbeddedResource Include="AvalonEdit\JavaScript-Mode.xshd" />
     <EmbeddedResource Include="AvalonEdit\JSON.xshd" />
   </ItemGroup>
   <ItemGroup>
@@ -82,5 +84,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Styles\Themes\Light.Blue.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

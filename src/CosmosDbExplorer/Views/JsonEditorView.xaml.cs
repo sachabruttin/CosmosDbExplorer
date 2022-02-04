@@ -23,7 +23,7 @@ namespace CosmosDbExplorer.Views
         public JsonEditorView()
         {
             InitializeComponent();
-        }
+         }
 
         public static readonly DependencyProperty ZoomLevelProperty =
             DependencyProperty.Register("ZoomLevel", typeof(double), typeof(JsonEditorView), new PropertyMetadata(0.5d, OnZoomLevelChanged));

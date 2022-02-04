@@ -54,7 +54,7 @@ namespace CosmosDbExplorer.Services
 
         public void RestoreData()
         {
-            Properties.Settings.Default.Reload();
+            Properties.Settings.Default.Reset();
         }
 
         public List<CosmosConnection> GetConnections()

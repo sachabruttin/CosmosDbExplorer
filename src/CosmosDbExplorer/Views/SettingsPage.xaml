@@ -11,6 +11,9 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
     xmlns:componentmodel="clr-namespace:System.ComponentModel;assembly=WindowsBase" 
+    xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+    xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800">
     <Page.Resources>
@@ -59,7 +62,7 @@
                         Style="{StaticResource BodyTextStyle}"
                         Text="{x:Static properties:Resources.SettingsPageChooseThemeText}" />
                     <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                        <RadioButton
+                        <!--<RadioButton
                             GroupName="AppTheme"
                             Content="{x:Static properties:Resources.SettingsPageRadioButtonLightTheme}"
                             FontSize="{StaticResource MediumFontSize}"
@@ -93,7 +96,26 @@
                                     <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Default" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
-                        </RadioButton>
+                        </RadioButton>-->
+
+                        <ListBox ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type models:AppTheme}}}"
+                                 SelectedItem="{Binding Theme}"     >
+                            <ListBox.Resources>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <RadioButton
+                                                        FontSize="{StaticResource MediumFontSize}"
+                                                        Content="{TemplateBinding ContentPresenter.Content}"
+                                                        IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                                                        Margin="{StaticResource XSmallTopMargin}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
                     </StackPanel>
                 </StackPanel>
 
@@ -139,6 +161,10 @@
                     </StackPanel>
                 </StackPanel>
 
+                <Button Width="150" HorizontalAlignment="Left" 
+                        Content="Use Default Settings" 
+                        Command="{Binding ResetSettingsCommand}"
+                        Margin="{StaticResource SmallTopBottomMargin}" />
             </StackPanel>
         </Grid>
     </ScrollViewer>

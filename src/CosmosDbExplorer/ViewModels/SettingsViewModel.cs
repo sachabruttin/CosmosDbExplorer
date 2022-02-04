@@ -14,50 +14,43 @@ namespace CosmosDbExplorer.ViewModels
     // TODO WTS: Change the URL for your privacy policy in the appsettings.json file, currently set to https://YourPrivacyUrlGoesHere
     public class SettingsViewModel : ObservableObject, INavigationAware
     {
-        private readonly AppConfig _appConfig;
+        private readonly IPersistAndRestoreService _persistAndRestoreService;
         private readonly IThemeSelectorService _themeSelectorService;
-        private readonly ISystemService _systemService;
-        private readonly IApplicationInfoService _applicationInfoService;
-        private ICommand _setThemeCommand;
-        private ICommand _privacyStatementCommand;
+        private RelayCommand? _resetSettingsCommand;
 
         public AppTheme Theme { get; set; }
 
         public string VersionDescription { get; set; }
 
-        public ICommand SetThemeCommand => _setThemeCommand ??= new RelayCommand<string>(OnSetTheme);
+        public RelayCommand ResetSettingsCommand => _resetSettingsCommand ??= new(OnResetSettingsCommand);
 
-        public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
-
-        public string SampleText => @"abcdefghijklmnopqrstuvwxyz
-            ABCDEFGHIJKLMNOPQRSTUVWXYZ
-            oO08 iIlL1 {} [] g9qcGQ ~-+=>";
-
-        public SettingsViewModel(IOptions<AppConfig> appConfig, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService)
+        public SettingsViewModel(IPersistAndRestoreService persistAndRestoreService, IThemeSelectorService themeSelectorService, IApplicationInfoService applicationInfoService)
         {
-            _appConfig = appConfig.Value;
+            _persistAndRestoreService = persistAndRestoreService;
             _themeSelectorService = themeSelectorService;
-            _systemService = systemService;
-            _applicationInfoService = applicationInfoService;
+
+            VersionDescription = $"{Properties.Resources.AppDisplayName} - {applicationInfoService.GetVersion()}";
+            Theme = _themeSelectorService.GetCurrentTheme();
         }
 
         public void OnNavigatedTo(object parameter)
         {
-            VersionDescription = $"{Properties.Resources.AppDisplayName} - {_applicationInfoService.GetVersion()}";
-            Theme = _themeSelectorService.GetCurrentTheme();
         }
 
         public void OnNavigatedFrom()
         {
+            _persistAndRestoreService.PersistData();
         }
 
-        private void OnSetTheme(string themeName)
+        protected void OnThemeChanged()
         {
-            var theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);
-            _themeSelectorService.SetTheme(theme);
+            _themeSelectorService.SetTheme(Theme);
         }
 
-        private void OnPrivacyStatement()
-            => _systemService.OpenInWebBrowser(_appConfig.PrivacyStatement);
+        private void OnResetSettingsCommand()
+        {
+            _persistAndRestoreService.RestoreData();
+            Theme = _themeSelectorService.GetCurrentTheme();
+        }
     }
 }

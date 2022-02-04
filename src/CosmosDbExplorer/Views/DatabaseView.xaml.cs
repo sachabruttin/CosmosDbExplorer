@@ -24,13 +24,6 @@ namespace CosmosDbExplorer.Views
         public DatabaseView()
         {
             InitializeComponent();
-            DataContextChanged += DatabaseView_DataContextChanged;
-        }
-
-        private void DatabaseView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            var vm = (DatabaseViewModel)DataContext;
-            vm.LoadNodes();
         }
     }
 }

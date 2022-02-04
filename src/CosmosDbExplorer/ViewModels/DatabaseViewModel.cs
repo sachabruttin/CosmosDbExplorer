@@ -16,8 +16,9 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ICosmosClientService _cosmosClientService;
+        private readonly IPersistAndRestoreService _persistAndRestoreService;
 
-        public DatabaseViewModel(IServiceProvider serviceProvider, IUIServices uiServices, ICosmosClientService cosmosClientService) 
+        public DatabaseViewModel(IServiceProvider serviceProvider, IUIServices uiServices, ICosmosClientService cosmosClientService, IPersistAndRestoreService persistAndRestoreService)
             : base(uiServices)
         {
             Header = "Connections";
@@ -26,7 +27,8 @@ namespace CosmosDbExplorer.ViewModels
             IsVisible = true;
             _serviceProvider = serviceProvider;
             _cosmosClientService = cosmosClientService;
-
+            _persistAndRestoreService = persistAndRestoreService;
+            LoadNodes();
             RegisterMessages();
         }
 
@@ -39,9 +41,10 @@ namespace CosmosDbExplorer.ViewModels
 
         public ObservableCollection<ConnectionNodeViewModel> Nodes { get; private set; }
 
-        public void LoadNodes()
+        private void LoadNodes()
         {
-            var nodes = App.Connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
+            var connections = _persistAndRestoreService.GetConnections();
+            var nodes =  connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
 
             Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }
@@ -80,7 +83,7 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public async void Drop(IDropInfo dropInfo)
+        public void Drop(IDropInfo dropInfo)
         {
             var sourceItem = dropInfo.Data as ConnectionNodeViewModel;
             var targetItem = dropInfo.TargetItem as ConnectionNodeViewModel;
@@ -122,7 +125,7 @@ namespace CosmosDbExplorer.ViewModels
             }
 
             Nodes.Move(sourceIndex, targetIndex);
-            //await _settingsService.ReorderConnections(sourceIndex, targetIndex).ConfigureAwait(false);
+            _persistAndRestoreService.ReorderConnections(sourceIndex, targetIndex);
         }
     }
 }

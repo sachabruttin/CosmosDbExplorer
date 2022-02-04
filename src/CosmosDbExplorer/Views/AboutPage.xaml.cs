@@ -27,27 +27,5 @@ namespace CosmosDbExplorer.Views
             InitializeComponent();
             DataContext = viewModel;
         }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            OpenUrl(e.Uri);
-            e.Handled = true;
-        }
-
-        private void Hyperlink_RequestNavigate_Github(object sender, RequestNavigateEventArgs e)
-        {
-            OpenUrl(new Uri($"https://github.com/{e.Uri.OriginalString}"));
-            e.Handled = true;
-        }
-
-        private static void OpenUrl(Uri uri)
-        {
-            var psi = new ProcessStartInfo(uri.AbsoluteUri)
-            {
-                UseShellExecute = true
-            };
-
-            Process.Start(psi);
-        }
     }
 }

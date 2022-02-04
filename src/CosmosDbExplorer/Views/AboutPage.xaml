@@ -5,8 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CosmosDbExplorer.Views"
-             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
-             mc:Ignorable="d" 
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties" xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AboutViewModel}"
+      mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600"
              >
     <ScrollViewer>
@@ -54,7 +54,8 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock  Style="{StaticResource BodyTextStyle}">
-                                    <Hyperlink NavigateUri="{Binding Profile}" RequestNavigate="Hyperlink_RequestNavigate_Github">
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenGitHubCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding Profile}">
                                         <TextBlock Text="{Binding Name}" />
                                     </Hyperlink>
                                 </TextBlock>
@@ -64,14 +65,14 @@
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
                     <TextBlock Grid.Row="3" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
-                        <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                        <Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="{Binding ProjectUrl}">
                             <TextBlock Text="{Binding ProjectUrl}" />
                         </Hyperlink>
                     </TextBlock>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="License Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
-                        <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                        <Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="{Binding LicenseUrl}">
                             <TextBlock Text="{Binding LicenseUrl}" />
                         </Hyperlink>
                     </TextBlock>
@@ -101,14 +102,16 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Project Url:" Style="{StaticResource BodyTextStyle}" />
                                 <TextBlock Grid.Row="0" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
-                                    <Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding ProjectUrl}">
                                         <TextBlock Text="{Binding ProjectUrl}" />
                                     </Hyperlink>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="License Url:" Style="{StaticResource BodyTextStyle}" />
                                 <TextBlock Grid.Row="1" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
-                                    <Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding LicenseUrl}">
                                         <TextBlock Text="{Binding LicenseUrl}" />
                                     </Hyperlink>
                                  </TextBlock>

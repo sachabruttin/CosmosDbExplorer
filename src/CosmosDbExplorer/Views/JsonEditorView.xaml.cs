@@ -40,5 +40,43 @@ namespace CosmosDbExplorer.Views
             var target = (JsonEditorView)d;
             target.zoomBehavior.ZoomLevel = value;
         }
+
+
+
+        public bool UseFolding
+        {
+            get { return (bool)GetValue(UseFoldingProperty); }
+            set { SetValue(UseFoldingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for UseFolding.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UseFoldingProperty =
+            DependencyProperty.Register("UseFolding", typeof(bool), typeof(JsonEditorView), new PropertyMetadata(false, OnUseFoldingChanged));
+
+        private static void OnUseFoldingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var value = (bool)e.NewValue;
+            var target = (JsonEditorView)d;
+            target.foldingBehavior.UseFolding = value;
+        }
+
+
+
+        public int FoldingInterval
+        {
+            get { return (int)GetValue(FoldingIntervalProperty); }
+            set { SetValue(FoldingIntervalProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FoldingInterval.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FoldingIntervalProperty =
+            DependencyProperty.Register("FoldingInterval", typeof(int), typeof(JsonEditorView), new PropertyMetadata(1000, OnFoldingIntervalChanged));
+
+        private static void OnFoldingIntervalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var value = (int)e.NewValue;
+            var target = (JsonEditorView)d;
+            target.foldingBehavior.Interval = value;
+        }
     }
 }

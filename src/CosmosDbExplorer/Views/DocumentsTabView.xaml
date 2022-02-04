@@ -172,12 +172,14 @@
                             <LayoutDocument Title="Raw Data" CanClose="False" IconSource="{StaticResource ResultPaneIcon}">
                                 <local:JsonEditorView x:Name="documentEditor" 
                                                       DataContext="{Binding EditorViewModel}" 
+                                                      UseFolding="True"
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
                                                       Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
                             </LayoutDocument>
                             <LayoutDocument Title="Response Headers" CanClose="False" IconSource="{StaticResource HttpIcon}">
                                 <local:JsonEditorView x:Name="headerEditor"
                                                       DataContext="{Binding HeaderViewModel}"
+                                                      UseFolding="False"
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
                                                       Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
                             </LayoutDocument>

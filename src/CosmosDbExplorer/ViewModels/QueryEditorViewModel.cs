@@ -65,30 +65,9 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-
-        //public QueryEditorViewModel(IMessenger messenger, IDocumentDbService dbService, IDialogService dialogService, IUIServices uiServices)
-        //    : base(messenger, uiServices)
-        //{
-        //    EditorViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
-        //    EditorViewModel.IsReadOnly = true;
-
-        //    HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
-        //    HeaderViewModel.IsReadOnly = true;
-
-        //    _dbService = dbService;
-        //    _dialogService = dialogService;
-
-        //    _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_requestChargeStatusBarItem);
-        //    _queryInformationStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = QueryInformation, IsVisible = IsRunning }, StatusBarItemType.SimpleText, "Information", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_queryInformationStatusBarItem);
-        //    _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_progessBarStatusBarItem);
-        //}
-
         public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
-            ContentId = contentId;
+            ContentId = Guid.NewGuid().ToString();
             Node = node;
             Header = "SQL Query";
             Connection = connection;

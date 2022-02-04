@@ -11,6 +11,8 @@ namespace CosmosDbExplorer.Contracts.Services
 
         void PersistData();
 
+        void ResetData();
+
         List<CosmosConnection> GetConnections();
 
         void PersistConnection(CosmosConnection connection);

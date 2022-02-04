@@ -57,7 +57,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
-            ContentId = contentId;
+            ContentId = Guid.NewGuid().ToString();
             Node = node;
             Header = "Import";
             Connection = connection;

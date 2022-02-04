@@ -7,7 +7,9 @@
              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
-             xmlns:avalon="clr-namespace:CosmosDbExplorer.AvalonEdit"
+             xmlns:avalon="clr-namespace:CosmosDbExplorer.AvalonEdit" 
+             xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:QueryEditorViewModel}"
              mc:Ignorable="d" 
              Style="{DynamicResource CosmosUserControl}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -102,7 +104,8 @@
                                 <LayoutAnchorable Title="Raw Data" CanClose="False" CanHide="False" CanAutoHide="False" 
                                                    IconSource="{StaticResource ResultPaneIcon}">
                                     <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                                          UseFolding="True"
+                                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
                                 </LayoutAnchorable>
                             </LayoutAnchorablePane>
                         </LayoutAnchorablePaneGroup>
@@ -147,7 +150,8 @@
 
                                 <LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">
                                     <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                                          UseFolding="False"
+                                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
 
                                 </LayoutAnchorable>
 

@@ -15,6 +15,7 @@
                            Style="{StaticResource CosmosEditor}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         <i:Interaction.Behaviors>
+            <behaviors:AvalonTextEditorBraceFoldingBehavior Interval="1000" UseFolding="True"  />
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />
             <behaviors:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

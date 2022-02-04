@@ -49,7 +49,7 @@ namespace CosmosDbExplorer.ViewModels
 
         private void OnResetSettingsCommand()
         {
-            _persistAndRestoreService.RestoreData();
+            _persistAndRestoreService.ResetData();
             Theme = _themeSelectorService.GetCurrentTheme();
         }
     }

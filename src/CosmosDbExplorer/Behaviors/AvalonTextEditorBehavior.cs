@@ -1,10 +1,14 @@
-﻿using ICSharpCode.AvalonEdit;
+﻿
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Search;
+
 using Microsoft.Xaml.Behaviors;
+
 using System.Windows;
 
 namespace CosmosDbExplorer.Behaviors
 {
+
     public class AvalonTextEditorBehavior : Behavior<TextEditor>
     {
         protected override void OnAttached()

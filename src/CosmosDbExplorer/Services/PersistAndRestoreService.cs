@@ -54,6 +54,11 @@ namespace CosmosDbExplorer.Services
 
         public void RestoreData()
         {
+            Properties.Settings.Default.Reload();
+        }
+
+        public void ResetData()
+        {
             Properties.Settings.Default.Reset();
         }
 

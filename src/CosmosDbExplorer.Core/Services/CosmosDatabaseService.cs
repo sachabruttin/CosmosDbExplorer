@@ -38,7 +38,7 @@ namespace CosmosDbExplorer.Core.Services
                 }
             }
 
-            return result;
+            return result.OrderBy(r => r.Id).ToList();
         }
 
         public async Task<CosmosDatabase> CreateDatabaseAsync(CosmosDatabase database, int? throughput, bool? isAutoscale, CancellationToken cancellationToken)

@@ -35,7 +35,7 @@ namespace CosmosDbExplorer.Core.Services
                 result.AddRange(response.Select(properties => new CosmosContainer(properties)));
             }
 
-            return result;
+            return result.OrderBy(r => r.Id).ToList();
         }
 
         public async Task<CosmosContainer> CreateContainerAsync(CosmosContainer container, int? throughput, bool? isAutoscale, CancellationToken cancellationToken)

@@ -9,36 +9,49 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:DatabaseScaleViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
-    <StackPanel x:Name="ThroughputPanel"
-                Margin="{StaticResource MediumLeftTopRightBottomMargin}">
-        <StackPanel Margin="{StaticResource SmallTopMargin}">
-            <TextBlock Text="Container throughput (autoscale)"
-                               Style="{StaticResource BodyTextStyle}"/>
 
-            <mah:ToggleSwitch OnContent="Autoscale" 
-                                          OffContent="Manual"
-                                          IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </StackPanel>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
 
-        <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-            <TextBlock Style="{StaticResource BodyTextStyle}"
-                                   Text="Database Max RU/s" />
 
-            <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
+        <StackPanel x:Name="ThroughputPanel"
+                    Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+            
+            <StackPanel Margin="{StaticResource SmallTopMargin}">
+                <TextBlock Text="Throughput"
+                           Style="{StaticResource BodyTextStyle}"/>
+
+                <mah:ToggleSwitch OnContent="Autoscale" 
+                                  OffContent="Manual"
+                                  IsEnabled="False"
+                                  IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <TextBlock Style="{StaticResource BodyTextStyle}"
+                           Text="Database Max RU/s" />
+
+                <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
                                Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                               Interval="100"
+                               Interval="{Binding Increment}"
                                Width="250" HorizontalAlignment="Left"
                                Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-            <TextBlock Margin="{StaticResource XSmallTopMargin}"
-                               TextWrapping="Wrap"
-                               Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />
+                <TextBlock Margin="{StaticResource XSmallTopMargin}"
+                           Style="{StaticResource BodyTextStyle}"
+                           TextWrapping="Wrap"
+                           Visibility="{Binding IsThroughputAutoscale, Converter={StaticResource BooleanToVisibilityConverter}}">
+                           <Run>Your container throughput will automatically scale</Run> <Run FontWeight="Bold" Text="{Binding Information, Mode=OneWay}" /> <Run>based on usage.</Run>
+                           <LineBreak />
+                           <Run>After the first</Run> <Run FontWeight="Bold" Text="{Binding DataStoredInGb, Mode=OneWay}" /> <Run> GB of data stored, the max RU/s will be automatically upgraded based on the new storage value.</Run>
+                           <Hyperlink CommandParameter="https://aka.ms/cosmos-autoscale-info"
+                                      Command="{Binding OpenUrlCommand}">Learn more.</Hyperlink>
+
+                </TextBlock>
+            </StackPanel>
+
+            <TextBlock Margin="{StaticResource XXSmallTopMargin}"
+                       Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
         </StackPanel>
-
-        <TextBlock Margin="{StaticResource XXSmallTopMargin}"
-                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
-    </StackPanel>
-
-
+    </ScrollViewer>
 </UserControl>

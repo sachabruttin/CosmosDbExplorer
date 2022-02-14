@@ -36,7 +36,7 @@ namespace CosmosDbExplorer.Services
         {
             if (theme == AppTheme.Default)
             {
-                ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
+                ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncWithAppMode | ThemeSyncMode.SyncWithHighContrast;
                 ThemeManager.Current.SyncTheme();
             }
             else

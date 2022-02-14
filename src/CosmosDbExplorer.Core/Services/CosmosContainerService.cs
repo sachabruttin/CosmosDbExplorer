@@ -89,6 +89,21 @@ namespace CosmosDbExplorer.Core.Services
         //    }
         //}
 
+        public async Task<CosmosThroughput?> GetThroughputAsync(CosmosContainer container)
+        {
+            try
+            {
+                var ct = _client.GetContainer(_cosmosDatabase.Id, container.Id);
+                var response = await ct.ReadThroughputAsync(requestOptions: null);
+
+                return new CosmosThroughput(response);
+            }
+            catch (CosmosException ce) when (ce.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+        }
+
 
         public async Task DeleteContainserAsync(CosmosContainer container, CancellationToken cancellationToken)
         {

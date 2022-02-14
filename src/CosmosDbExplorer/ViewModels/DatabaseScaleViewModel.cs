@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -24,7 +26,19 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosConnection Connection { get; private set; }
         public CosmosDatabase Database { get; private set; }
 
-        public override void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public bool ProvisionThroughput { get; set; } = true;
+
+        public bool IsThroughputAutoscale { get; set; } = true;
+
+        public int MaxThroughput => IsThroughputAutoscale ? 10000 : 100000;
+
+        public int MinThroughput => IsThroughputAutoscale ? 400 : 1000;
+
+        //[OnChangedMethod(nameof(UpdateSaveCommandStatus))]
+        public int? Throughput { get; set; }
+
+
+        public override async void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
             ContentId = contentId;
             Node = node;
@@ -34,6 +48,11 @@ namespace CosmosDbExplorer.ViewModels
             Database = node.Parent.Database;
 
             AccentColor = connection.AccentColor;
+
+            var service = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, connection);
+            var throughput = await service.GetThroughputAsync(Database);
+
+            Throughput = throughput.AutoscaleMaxThroughput ?? throughput.Throughput; 
         }
     }
 }

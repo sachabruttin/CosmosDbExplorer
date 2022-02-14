@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.DependencyInjection;
+
 using Validar;
 
 namespace CosmosDbExplorer.ViewModels
@@ -38,7 +42,11 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsIndexingPolicyChanged { get; set; }
 
-        public override void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+
+        public int? Throughput { get; set; }
+
+
+        public override async void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
             //IsLoading = true;
 
@@ -54,22 +62,28 @@ namespace CosmosDbExplorer.ViewModels
 
             AccentColor = Connection.AccentColor;
 
-            TimeToLiveInSecond = container.DefaultTimeToLive;
-            TimeToLive = container.DefaultTimeToLive switch
+
+            TimeToLiveInSecond = Container.DefaultTimeToLive;
+            TimeToLive = Container.DefaultTimeToLive switch
             {
                 null => TimeToLiveType.Off,
                 -1 => TimeToLiveType.Default,
                 _ => TimeToLiveType.On,
             };
 
-            GeoType = container.GeospatialType;
-            IndexingPolicy = container.IndexingPolicy;
-            //SetInformation();
+            GeoType = Container.GeospatialType;
+            IndexingPolicy = Container.IndexingPolicy;
+
+            var service = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, node.Parent.Parent.Database);
+            var response = await service.GetThroughputAsync(container);
+
+            if (response is not null)
+            {
+                Throughput = response.AutoscaleMaxThroughput ?? response.Throughput;
+            }
 
             //IsLoading = false;
         }
-
-
 
     }
 

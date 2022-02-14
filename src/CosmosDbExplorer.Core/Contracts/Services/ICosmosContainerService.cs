@@ -13,5 +13,6 @@ namespace CosmosDbExplorer.Core.Contracts.Services
         Task DeleteContainserAsync(CosmosContainer container, CancellationToken cancellationToken);
         Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken);
         Task<IList<CosmosContainer>> GetContainersAsync(CancellationToken cancellationToken);
+        Task<CosmosThroughput?> GetThroughputAsync(CosmosContainer container);
     }
 }

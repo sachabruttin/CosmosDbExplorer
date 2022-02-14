@@ -12,12 +12,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public ScaleSettingsNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)
         {
-            Name = "Scale & Settings";
+            Name = "Settings";
         }
 
         public string Name { get; private set; }
 
-        public string ContentId => Parent.Container.SelfLink + "/ScaleSettings";
+        public string ContentId => Parent.Container.SelfLink + "/Settings";
 
         public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container)));
 

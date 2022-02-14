@@ -84,5 +84,12 @@ namespace CosmosDbExplorer.Core.Services
         {
             return await _client.ReadAccountAsync();
         }
+
+        public async Task<CosmosThroughput> GetThroughputAsync(CosmosDatabase database)
+        {
+            var db = _client.GetDatabase(database.Id);
+            var result = await db.ReadThroughputAsync(requestOptions: null);
+            return new CosmosThroughput(result);
+        }
     }
 }

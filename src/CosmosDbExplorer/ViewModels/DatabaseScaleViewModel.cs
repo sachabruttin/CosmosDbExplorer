@@ -48,6 +48,7 @@ namespace CosmosDbExplorer.ViewModels
             Database = node.Parent.Database;
 
             AccentColor = connection.AccentColor;
+            ToolTip = $"{Connection.Label}/{Database.Id}";
 
             var service = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, connection);
             var throughput = await service.GetThroughputAsync(Database);

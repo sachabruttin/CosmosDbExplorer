@@ -60,8 +60,8 @@ namespace CosmosDbExplorer.ViewModels
 
             _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, node.Parent.Parent.Database);
 
-            var split = _container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{split[3]}";
+            //var split = _container.SelfLink.Split(new char[] { '/' });
+            ToolTip = $"{connection.Label}/{node.Parent.Parent.Database.Id}/{container.Id}";
             AccentColor = _connection.AccentColor;
 
             await LoadMetrics().ConfigureAwait(false);

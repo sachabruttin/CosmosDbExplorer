@@ -57,8 +57,9 @@ namespace CosmosDbExplorer.ViewModels
             Connection = connection;
             Container = container;
 
-            var split = Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{split[3]}";
+            //var split = Container.SelfLink.Split(new char[] { '/' });
+            //ToolTip = $"{split[1]}>{split[3]}";
+            ToolTip = $"{Connection.Label}/{node.Parent.Parent.Database.Id}/{Container.Id}";
 
             AccentColor = Connection.AccentColor;
 

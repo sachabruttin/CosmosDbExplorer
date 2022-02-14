@@ -60,6 +60,10 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             if (node != null)
             {
+                //var split = value.SelfLink.Split(new char[] { '/' });
+                //ToolTip = $"{split[1]}>{split[3]}";
+                var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)node.Parent.Parent.Parent);
+                ToolTip = $"{Connection.Label}/{databaseNode.Database.Id}/{Container.Id}";
                 SetInformation(node.Resource);
             }
         }
@@ -80,16 +84,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public CosmosConnection Connection { get; set; }
 
-        public CosmosContainer Container
-        {
-            get { return _container; }
-            set
-            {
-                _container = value;
-                var split = value.SelfLink.Split(new char[] { '/' });
-                ToolTip = $"{split[1]}>{split[3]}";
-            }
-        }
+        public CosmosContainer Container { get; set; }
 
         public string? Id { get; set; }
 

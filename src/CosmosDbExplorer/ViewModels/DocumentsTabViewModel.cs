@@ -83,8 +83,10 @@ namespace CosmosDbExplorer.ViewModels
             Connection = connection;
             Container = container;
             PartitionKey = container.PartitionKeyPath;
-            var split = Node.Parent.Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{split[1]}>{split[3]}";
+
+            //var split = Node.Parent.Container.SelfLink.Split(new char[] { '/' });
+            ToolTip = $"{Connection.Label}/{node.Parent.Parent.Database.Id}/{Container.Id}";
+
             AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
 
             _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, node.Parent.Parent.Database, container);

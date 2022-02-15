@@ -14,37 +14,7 @@
 
     <Grid Margin="{StaticResource MediumLeftTopRightBottomMargin}">
         <TabControl>
-            <TabItem Header="Scale" Visibility="{Binding Throughput, Converter={StaticResource nullToVisibilityConverter}}">
-                <StackPanel x:Name="ThroughputPanel">
-                    <StackPanel Margin="{StaticResource SmallTopMargin}">
-                        <TextBlock Text="Container throughput (autoscale)"
-                               Style="{StaticResource BodyTextStyle}"/>
-                        <mah:ToggleSwitch OnContent="Autoscale" 
-                                          OffContent="Manual"
-                                          IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    </StackPanel>
-
-                    <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                        <TextBlock
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="Container Max RU/s" />
-                        <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
-                                       Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                                       Interval="100"
-                                           Width="250" HorizontalAlignment="Left"
-                                       Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Margin="{StaticResource XSmallTopMargin}"
-                               TextWrapping="Wrap"
-                               Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />
-                    </StackPanel>
-
-                    <TextBlock Margin="{StaticResource XXSmallTopMargin}"
-                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
-                </StackPanel>
-            </TabItem>
-
-            <TabItem Header="Settings">
+            <TabItem Header="Settings" IsSelected="True">
                 <StackPanel>
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                         <TextBlock Text="Time to live" Style="{StaticResource BodyTextStyle}"/>
@@ -110,7 +80,6 @@
                 </StackPanel>
 
             </TabItem>
-
             <TabItem Header="Indexing Policy">
                 <avalonedit:TextEditor x:Name="editor" 
                                            SyntaxHighlighting="JSON"  
@@ -127,6 +96,35 @@
                     </i:Interaction.Behaviors>
                 </avalonedit:TextEditor>
             </TabItem>
+            <TabItem Header="Scale" Visibility="{Binding Throughput, Converter={StaticResource nullToVisibilityConverter}}">
+                <StackPanel x:Name="ThroughputPanel">
+                    <StackPanel Margin="{StaticResource SmallTopMargin}">
+                        <TextBlock Text="Container throughput (autoscale)"
+                               Style="{StaticResource BodyTextStyle}"/>
+                        <mah:ToggleSwitch OnContent="Autoscale" 
+                                          OffContent="Manual"
+                                          IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    </StackPanel>
+
+                    <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                        <TextBlock
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="Container Max RU/s" />
+                        <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
+                                       Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
+                                       Interval="100"
+                                           Width="250" HorizontalAlignment="Left"
+                                       Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Margin="{StaticResource XSmallTopMargin}"
+                               TextWrapping="Wrap"
+                               Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />
+                    </StackPanel>
+
+                    <TextBlock Margin="{StaticResource XXSmallTopMargin}"
+                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
+                </StackPanel>
+            </TabItem>        
         </TabControl>
     </Grid>
 

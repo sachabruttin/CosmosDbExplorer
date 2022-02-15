@@ -36,18 +36,33 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService = dialogService;
         }
 
-        public ScaleSettingsNodeViewModel Node { get; private set; }
-        public CosmosConnection Connection { get; private set; }
-        public CosmosContainer Container { get; private set; }
+        public ScaleSettingsNodeViewModel? Node { get; private set; }
+        public CosmosConnection? Connection { get; private set; }
+        public CosmosContainer? Container { get; private set; }
 
         public bool? IsTimeLiveInSecondVisible => TimeToLive == TimeToLiveType.On;
 
+        [OnChangedMethod(nameof(UpdateCommandStatus))] 
         public int? TimeToLiveInSecond { get; set; }
 
         public TimeToLiveType? TimeToLive { get; set; }
 
+        protected void OnTimeToLiveChanged()
+        {
+            TimeToLiveInSecond = TimeToLive switch
+            {
+                TimeToLiveType.On => TimeToLiveInSecond,
+                TimeToLiveType.Default => -1,
+                _ => null,
+            };
+
+            UpdateCommandStatus();
+        }
+
+        [OnChangedMethod(nameof(UpdateCommandStatus))] 
         public CosmosGeospatialType GeoType { get; set; }
 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string? IndexingPolicy { get; set; }
 
         public bool IsIndexingPolicyChanged { get; set; }
@@ -62,13 +77,13 @@ namespace CosmosDbExplorer.ViewModels
 
         public int Increment => IsThroughputAutoscale ? 1000 : 100;
 
-        public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged || HasSettingsChanged);
+        public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged.GetValueOrDefault(false) || HasSettingsChanged);
 
-        public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged || HasSettingsChanged);
+        public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged.GetValueOrDefault(false) || HasSettingsChanged);
 
         private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
-        private bool HasSettingsChanged => true; // TODO: Check
-        private bool HasIndexingPolicyChanged => true; // TODO check;
+        private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
+        private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
         public override async void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
@@ -93,36 +108,41 @@ namespace CosmosDbExplorer.ViewModels
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, node.Parent.Parent.Database);
             var response = await _containerService.GetThroughputAsync(container);
 
-            if (response is not null)
-            {
-                SetThroughputInfo(response);
-            }
+            SetThroughputInfo(response);
 
             //IsLoading = false;
         }
 
         private void SetSettings()
         {
-            TimeToLiveInSecond = Container.DefaultTimeToLive;
-            TimeToLive = TimeToLiveTypeExtensions.Get(Container.DefaultTimeToLive);
+            TimeToLiveInSecond = Container?.DefaultTimeToLive;
+            TimeToLive = TimeToLiveTypeExtensions.Get(Container?.DefaultTimeToLive);
             GeoType = Container.GeospatialType;
             IndexingPolicy = Container.IndexingPolicy;
         }
 
-        private void SetThroughputInfo(CosmosThroughput throughput)
+        private void SetThroughputInfo(CosmosThroughput? throughput)
         {
             _originalThroughput = throughput;
 
-            MinThroughput = _originalThroughput.MinThroughtput;
-            MaxThroughput = int.MaxValue - (int.MaxValue % 1000);
-            IsThroughputAutoscale = _originalThroughput.AutoscaleMaxThroughput.HasValue;
-            Throughput = _originalThroughput.AutoscaleMaxThroughput ?? _originalThroughput.Throughput;
+            if (throughput != null)
+            {
+                MinThroughput = _originalThroughput.MinThroughtput;
+                MaxThroughput = int.MaxValue - (int.MaxValue % 1000);
+                IsThroughputAutoscale = _originalThroughput.AutoscaleMaxThroughput.HasValue;
+                Throughput = _originalThroughput.AutoscaleMaxThroughput ?? _originalThroughput.Throughput;
+            }
         }
 
         private async Task SaveCommandExecute()
         {
             try
             {
+                if (Container == null)
+                {
+                    throw new Exception("Container not defined!");
+                }
+
                 IsBusy = true;
 
                 if (HasThroughputChanged && Throughput is not null)
@@ -131,7 +151,7 @@ namespace CosmosDbExplorer.ViewModels
                     SetThroughputInfo(throughput);
                 }
 
-                if (HasSettingsChanged || HasIndexingPolicyChanged)
+                if (HasSettingsChanged || HasIndexingPolicyChanged.GetValueOrDefault(false))
                 {
                     var container = new CosmosContainer(Container.Id, Container.IsLargePartitionKey.GetValueOrDefault())
                     {

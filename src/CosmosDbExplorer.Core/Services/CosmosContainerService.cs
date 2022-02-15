@@ -10,6 +10,8 @@ using CosmosDbExplorer.Core.Helpers;
 using CosmosDbExplorer.Core.Models;
 using Microsoft.Azure.Cosmos;
 
+using Newtonsoft.Json;
+
 namespace CosmosDbExplorer.Core.Services
 {
     public class CosmosContainerService : ICosmosContainerService
@@ -82,6 +84,7 @@ namespace CosmosDbExplorer.Core.Services
                 PartitionKeyPath = container.PartitionKeyPath,
                 DefaultTimeToLive = container.DefaultTimeToLive,
                 PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion,
+                IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(container.IndexingPolicy),
                 GeospatialConfig = new GeospatialConfig(container.GeospatialType.FromLocalType())
             };
 

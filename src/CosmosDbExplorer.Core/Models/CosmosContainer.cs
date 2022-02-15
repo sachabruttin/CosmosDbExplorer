@@ -34,8 +34,8 @@ namespace CosmosDbExplorer.Core.Models
         public bool? IsLargePartitionKey => PartitionKeyDefVersion > PartitionKeyDefinitionVersion.V1;
         public int? DefaultTimeToLive { get; set; } // null = off, -1 = Default
         public PartitionKeyDefinitionVersion? PartitionKeyDefVersion { get; }
-        public string IndexingPolicy { get; }
-        public CosmosGeospatialType GeospatialType { get; }
+        public string IndexingPolicy { get; set; }
+        public CosmosGeospatialType GeospatialType { get; set; }
     }
 
     public enum CosmosGeospatialType
@@ -52,6 +52,15 @@ namespace CosmosDbExplorer.Core.Models
             {
                 GeospatialType.Geometry => CosmosGeospatialType.Geometry,
                 _ => CosmosGeospatialType.Geography,
+            };
+        }
+
+        public static GeospatialType FromLocalType(this CosmosGeospatialType geospatialType)
+        {
+            return geospatialType switch
+            {
+                CosmosGeospatialType.Geography => GeospatialType.Geography,
+                _ => GeospatialType.Geometry,
             };
         }
     }

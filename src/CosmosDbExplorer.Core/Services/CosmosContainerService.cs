@@ -52,7 +52,6 @@ namespace CosmosDbExplorer.Core.Services
 
             try
             {
-
                 if (throughput.HasValue)
                 {
                     var throughputProperties = isAutoscale.GetValueOrDefault(true)
@@ -73,21 +72,29 @@ namespace CosmosDbExplorer.Core.Services
                 throw new Exception(ex.GetMessage());
             }
         }
-        
-        //public async Task<CosmosContainer> UpdateContainerAsync(CosmosContainer cosmosContainer)
-        //{
-        //    var db = _client.GetDatabase(_cosmosDatabase.Id);
-        //    var containerProperties = new ContainerProperties();
 
-        //    try
-        //    {
-        //        db.r
-        //    }
-        //    catch (CosmosException ex)
-        //    {
-        //        throw new Exception(ex.GetMessage());
-        //    }
-        //}
+        public async Task<CosmosContainer> UpdateContainerAsync(CosmosContainer container)
+        {
+            var ct = _client.GetContainer(_cosmosDatabase.Id, container.Id);
+            var containerProperties = new ContainerProperties
+            {
+                Id = container.Id,
+                PartitionKeyPath = container.PartitionKeyPath,
+                DefaultTimeToLive = container.DefaultTimeToLive,
+                PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion,
+                GeospatialConfig = new GeospatialConfig(container.GeospatialType.FromLocalType())
+            };
+
+            try
+            {
+                var result = await ct.ReplaceContainerAsync(containerProperties);
+                return new CosmosContainer(result.Resource);
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
+        }
 
         public async Task<CosmosThroughput?> GetThroughputAsync(CosmosContainer container)
         {
@@ -102,6 +109,18 @@ namespace CosmosDbExplorer.Core.Services
             {
                 return null;
             }
+        }
+
+        public async Task<CosmosThroughput> UpdateThroughputAsync(CosmosContainer container, int throughput, bool isAutoscale)
+        {
+            var ct = _client.GetContainer(_cosmosDatabase.Id, container.Id);
+
+            var properties = isAutoscale
+                ? ThroughputProperties.CreateAutoscaleThroughput(throughput)
+                : ThroughputProperties.CreateManualThroughput(throughput);
+
+            var result = await ct.ReplaceThroughputAsync(properties);
+            return new CosmosThroughput(result);
         }
 
 

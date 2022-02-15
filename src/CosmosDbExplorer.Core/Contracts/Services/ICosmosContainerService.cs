@@ -14,5 +14,7 @@ namespace CosmosDbExplorer.Core.Contracts.Services
         Task<CosmosContainerMetric> GetContainerMetricsAsync(CosmosContainer container, CancellationToken cancellationToken);
         Task<IList<CosmosContainer>> GetContainersAsync(CancellationToken cancellationToken);
         Task<CosmosThroughput?> GetThroughputAsync(CosmosContainer container);
+        Task<CosmosContainer> UpdateContainerAsync(CosmosContainer container);
+        Task<CosmosThroughput> UpdateThroughputAsync(CosmosContainer container, int throughput, bool isAutoscale);
     }
 }

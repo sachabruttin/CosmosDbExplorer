@@ -67,6 +67,7 @@ namespace CosmosDbExplorer.ViewModels
         public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, () => HasThroughputChanged);
 
         public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged);
+        private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
 
         public override async void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
@@ -137,7 +138,6 @@ namespace CosmosDbExplorer.ViewModels
             DiscardCommand.NotifyCanExecuteChanged();
         }
 
-        private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
 
     }
 

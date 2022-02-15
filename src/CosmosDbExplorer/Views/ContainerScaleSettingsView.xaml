@@ -14,7 +14,7 @@
 
     <Grid Margin="{StaticResource MediumLeftTopRightBottomMargin}">
         <TabControl>
-            <TabItem Header="Scale">
+            <TabItem Header="Scale" Visibility="{Binding Throughput, Converter={StaticResource nullToVisibilityConverter}}">
                 <StackPanel x:Name="ThroughputPanel">
                     <StackPanel Margin="{StaticResource SmallTopMargin}">
                         <TextBlock Text="Container throughput (autoscale)"

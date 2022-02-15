@@ -73,7 +73,7 @@ namespace CosmosDbExplorer.ViewModels
         public void OnSelectedTabChanged()
         {
             IsTabDocumentsVisible = SelectedTab is DocumentsTabViewModel;
-            //IsSettingsTabVisible = SelectedTab is ScaleAndSettingsTabViewModel;
+            IsSettingsTabVisible = SelectedTab is ContainerScaleSettingsViewModel || SelectedTab is DatabaseScaleViewModel;
             IsAssetTabVisible = SelectedTab is IAssetTabCommand;
             IsQueryTabVisible = SelectedTab is QueryEditorViewModel || SelectedTab is StoredProcedureTabViewModel;
             IsImportTabVisible = SelectedTab is ImportDocumentViewModel;

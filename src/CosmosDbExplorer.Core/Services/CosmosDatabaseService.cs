@@ -91,5 +91,17 @@ namespace CosmosDbExplorer.Core.Services
             var result = await db.ReadThroughputAsync(requestOptions: null);
             return new CosmosThroughput(result);
         }
+
+        public async Task<CosmosThroughput> UpdateThroughputAsync(CosmosDatabase database, int throughput, bool isAutoscale)
+        {
+            var db = _client.GetDatabase(database.Id);
+
+            var properties = isAutoscale
+                ? ThroughputProperties.CreateAutoscaleThroughput(throughput)
+                : ThroughputProperties.CreateManualThroughput(throughput);
+
+            var result = await db.ReplaceThroughputAsync(properties);
+            return new CosmosThroughput(result);
+        }
     }
 }

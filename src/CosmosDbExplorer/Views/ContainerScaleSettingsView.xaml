@@ -39,8 +39,8 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource XSmallTopMargin}"
                                     Visibility="{Binding IsTimeLiveInSecondVisible, Converter={StaticResource boolToVisibilityConverter}}">
-                            <mah:NumericUpDown Value="{Binding TimeToLiveInSecond}" 
-                                        Width="150" Height="22" VerticalContentAlignment="Center"
+                            <mah:NumericUpDown Value="{Binding TimeToLiveInSecond, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        Width="150" VerticalContentAlignment="Center"
                                         Minimum="1" Interval="1" />
                             <TextBlock Text="second(s)" Margin="3,0" VerticalAlignment="Center" />
                         </StackPanel>
@@ -112,10 +112,10 @@
                         Style="{StaticResource BodyTextStyle}"
                         Text="Container Max RU/s" />
                         <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
-                                       Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                                       Interval="100"
+                                           Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
+                                           Interval="100"
                                            Width="250" HorizontalAlignment="Left"
-                                       Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                           Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Margin="{StaticResource XSmallTopMargin}"
                                TextWrapping="Wrap"
                                Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />

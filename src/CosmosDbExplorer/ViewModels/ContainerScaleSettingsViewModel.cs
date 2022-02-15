@@ -10,6 +10,9 @@ using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
+
+using FluentValidation;
+
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -20,6 +23,7 @@ using Validar;
 
 namespace CosmosDbExplorer.ViewModels
 {
+    [InjectValidation]
     public class ContainerScaleSettingsViewModel : PaneWithZoomViewModel<ScaleSettingsNodeViewModel>
     {
         private readonly IServiceProvider _serviceProvider;
@@ -222,6 +226,27 @@ namespace CosmosDbExplorer.ViewModels
             };
         }
     }
-        
 
+    public class ContainerScaleSettingsViewModelValidator : AbstractValidator<ContainerScaleSettingsViewModel>
+    {
+        public ContainerScaleSettingsViewModelValidator()
+        {
+            RuleFor(x => x.Throughput)
+                .NotEmpty()
+                .GreaterThanOrEqualTo(x => x.MinThroughput)
+                .LessThanOrEqualTo(x => x.MaxThroughput)
+                .Custom((throughput, context) =>
+                {
+                    if (throughput % context.InstanceToValidate.Increment != 0)
+                    {
+                        context.AddFailure($"Value must be a multiple of {context.InstanceToValidate.Increment}.");
+                    }
+                });
+
+            RuleFor(x => x.TimeToLiveInSecond)
+                .GreaterThan(0).NotEmpty().When(x => x.TimeToLive == TimeToLiveType.On)
+                .Equal(0).When(x => x.TimeToLive == TimeToLiveType.Default)
+                .Equal(-1).When(x => x.TimeToLive == TimeToLiveType.Off);
+        }
+    }
 }

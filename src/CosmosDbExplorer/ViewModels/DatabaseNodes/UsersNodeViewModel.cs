@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -22,7 +24,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosDatabase Database { get; }
 
-        public RelayCommand RefreshCommand => _refreshCommand;
+        public ICommand RefreshCommand => _refreshCommand;
         //{
         //    get
         //    {

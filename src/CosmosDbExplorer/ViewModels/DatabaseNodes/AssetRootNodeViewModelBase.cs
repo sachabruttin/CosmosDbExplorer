@@ -1,7 +1,11 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Models;
+
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -10,7 +14,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public abstract class AssetRootNodeViewModelBase<TResource> : TreeViewItemViewModel<ContainerNodeViewModel>, ICanRefreshNode, IHaveContainerNodeViewModel
         where TResource : ICosmosResource
     {
-        private RelayCommand _refreshCommand;
+        private AsyncRelayCommand _refreshCommand;
+        private RelayCommand _openNewCommand;
 
         protected AssetRootNodeViewModelBase(ContainerNodeViewModel parent)
             : base(parent, true)
@@ -25,19 +30,17 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             get { return base.Parent; }
         }
 
-        public RelayCommand RefreshCommand
+        public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
+
+        private Task RefreshCommandExecute()
         {
-            get
-            {
-                return _refreshCommand
-                    ?? (_refreshCommand = new RelayCommand(
-                        async () =>
-                        {
-                            Children.Clear();
-                            await LoadChildren(new System.Threading.CancellationToken()).ConfigureAwait(false);
-                        }));
-            }
+            Children.Clear();
+            return LoadChildren(new System.Threading.CancellationToken());
         }
+
+        public RelayCommand OpenNewCommand => _openNewCommand ??= new(OpenNewCommandExecute);
+
+        protected abstract void OpenNewCommandExecute();
 
         public ContainerNodeViewModel ContainerNode => Parent;
 

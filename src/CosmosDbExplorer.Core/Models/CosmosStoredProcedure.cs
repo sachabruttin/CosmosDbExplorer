@@ -6,9 +6,11 @@ namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosStoredProcedure : ICosmosScript
     {
-        public CosmosStoredProcedure(string body) 
+        public CosmosStoredProcedure(string id, string body, string? selfLink)
         {
+            Id = id;
             Body = body;
+            SelfLink = selfLink;
         }
 
         public CosmosStoredProcedure(StoredProcedureProperties properties)

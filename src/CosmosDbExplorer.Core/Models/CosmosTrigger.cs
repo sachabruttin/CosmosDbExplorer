@@ -6,9 +6,11 @@ namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosTrigger : ICosmosScript
     {
-        public CosmosTrigger(string body)
+        public CosmosTrigger(string id, string body, string? selfLink)
         {
+            Id = id;
             Body = body;
+            SelfLink = selfLink;
         }
 
         public CosmosTrigger(TriggerProperties properties)

@@ -1,5 +1,4 @@
 ﻿using CosmosDbExplorer.Core.Contracts;
-using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Messages
 {

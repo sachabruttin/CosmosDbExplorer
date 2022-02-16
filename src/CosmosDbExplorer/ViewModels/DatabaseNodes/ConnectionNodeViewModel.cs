@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts.Services;
@@ -130,7 +132,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _rightPaneService.OpenInRightPane(vmName, Connection);
         }
 
-        public RelayCommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecuteAsync);
+        public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecuteAsync);
 
         private async void RefreshCommandExecuteAsync()
         {
@@ -140,10 +142,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override void NotifyCanExecuteChanged()
         {
-            AddNewDatabaseCommand?.NotifyCanExecuteChanged();
-            RefreshCommand?.NotifyCanExecuteChanged();
-            RemoveConnectionCommand?.NotifyCanExecuteChanged();
-            EditConnectionCommand?.NotifyCanExecuteChanged();
+            AddNewDatabaseCommand.NotifyCanExecuteChanged();
+            ((RelayCommand)RefreshCommand).NotifyCanExecuteChanged();
+            RemoveConnectionCommand.NotifyCanExecuteChanged();
+            EditConnectionCommand.NotifyCanExecuteChanged();
         }
     }
 }

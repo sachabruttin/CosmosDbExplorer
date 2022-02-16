@@ -1,11 +1,11 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using System.Windows.Input;
 
 namespace CosmosDbExplorer.Contracts.ViewModels
 {
     public interface IAssetTabCommand
     {
-        RelayCommand SaveCommand { get; }
-        RelayCommand DiscardCommand { get; }
-        RelayCommand DeleteCommand { get; }
+        ICommand SaveCommand { get; }
+        ICommand DiscardCommand { get; }
+        ICommand DeleteCommand { get; }
     }
 }

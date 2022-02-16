@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -21,7 +23,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public string Name => Resource?.Id ?? "Unknown";
         public string? ContentId => Resource?.SelfLink;
 
-        public RelayCommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
+        public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
 
         private async void RefreshCommandExecute()
         {

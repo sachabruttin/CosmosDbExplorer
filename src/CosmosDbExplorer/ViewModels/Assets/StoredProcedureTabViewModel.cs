@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Validar;
 
@@ -20,12 +25,11 @@ namespace CosmosDbExplorer.ViewModels.Assets
         private RelayCommand<object> _browseParameterCommand;
         private RelayCommand _saveLocalCommand;
         private RelayCommand _goToNextPageCommand;
-        //private readonly IDialogService _dialogService;
-        //private readonly IDocumentDbService _dbService;
         private readonly StatusBarItem _requestChargeStatusBarItem;
+        private readonly IServiceProvider _serviceProvider;
 
-        public StoredProcedureTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) 
-            : base(serviceProvider, uiServices)
+        public StoredProcedureTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
+            : base(uiServices, dialogService)
         {
             ResultViewModel = new JsonViewerViewModel { IsReadOnly = true };
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
@@ -33,6 +37,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
+            _serviceProvider = serviceProvider;
         }
 
 
@@ -56,21 +61,29 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected override string GetDefaultTitle() => "Stored Procedure"; 
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
-        public override void Load(string contentId, StoredProcedureNodeViewModel node, CosmosConnection connection, CosmosContainer collection)
+        public override void Load(string contentId, StoredProcedureNodeViewModel node, CosmosConnection connection, CosmosContainer container)
         {
-            IsCollectionPartitioned = !string.IsNullOrEmpty(collection.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
-            base.Load(contentId, node, connection, collection);
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, node.Parent.Parent.Parent.Database, container);
+
+            IsCollectionPartitioned = !string.IsNullOrEmpty(container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
+            base.Load(contentId, node, connection, container);
         }
 
-        //protected override Task<CosmosStoredProcedure> SaveAsyncImpl()
-        //{
-        //    return dbService.SaveStoredProcedureAsync(Connection, Collection, Id, Content.Text, AltLink);
-        //}
+        protected override Task<CosmosStoredProcedure> SaveAsyncImpl()
+        {
+            if (Id is null)
+            {
+                throw new Exception("Asset Id is null!");
+            }
 
-        //protected override Task DeleteAsyncImpl(IDocumentDbService dbService)
-        //{
-        //    return dbService.DeleteStoredProcedureAsync(Connection, AltLink);
-        //}
+            var resource = new CosmosStoredProcedure(Id, Content, Node?.Resource?.SelfLink);
+            return _scriptService.SaveStoredProcedureAsync(resource);
+        }
+
+        protected override Task<CosmosResult> DeleteAsyncImpl()
+        {
+            return _scriptService.DeleteStoredProcedureAsync(Node.Resource);
+        }
 
         public string Log { get; protected set; }
 
@@ -91,13 +104,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             base.OnIsBusyChanged();
         }
-
-        protected override void DiscardCommandExecute()
-        {
-            throw new NotImplementedException();
-        }
-
         public string PartitionKey { get; set; }
+
+        private CosmosScriptService _scriptService;
 
         public bool IsCollectionPartitioned { get; protected set; }
 

@@ -39,23 +39,27 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             IsLoading = false;
         }
 
+        protected override void OpenNewCommandExecute()
+        {
+            Parent.NewTriggerCommand.Execute(this);
+        }
+
         protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosTrigger, ContainerNodeViewModel> message)
         {
-            throw new System.NotImplementedException();
-            //if (message.IsNewResource)
-            //{
-            //    var item = new TriggerNodeViewModel(this, message.Resource);
-            //    DispatcherHelper.RunAsync(() => Children.Add(item));
-            //}
-            //else
-            //{
-            //    var item = Children.Cast<TriggerNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+            if (message.IsNewResource)
+            {
+                var item = new TriggerNodeViewModel(this, message.Resource);
+                Children.Add(item);
+            }
+            else
+            {
+                var item = Children.Cast<TriggerNodeViewModel>().FirstOrDefault(i => i.Resource.SelfLink == message.OldAltLink);
 
-            //    if (item != null)
-            //    {
-            //        item.Resource = message.Resource;
-            //    }
-            //}
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
+            }
         }
     }
 

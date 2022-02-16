@@ -26,7 +26,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             IsLoading = true;
 
             var service = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
-            
+
             var function = await service.GetUserDefinedFunctionsAsync(token);
 
             foreach (var func in function)
@@ -38,23 +38,27 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             IsLoading = false;
         }
 
+        protected override void OpenNewCommandExecute()
+        {
+            Parent.NewUdfCommand.Execute(this);
+        }
+
         protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosUserDefinedFunction, ContainerNodeViewModel> message)
         {
-            throw new System.NotImplementedException();
-            //if (message.IsNewResource)
-            //{
-            //    var item = new UserDefFuncNodeViewModel(this, message.Resource);
-            //    DispatcherHelper.RunAsync(() => Children.Add(item));
-            //}
-            //else
-            //{
-            //    var item = Children.Cast<UserDefFuncNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+            if (message.IsNewResource)
+            {
+                var item = new UserDefFuncNodeViewModel(this, message.Resource);
+                Children.Add(item);
+            }
+            else
+            {
+                var item = Children.Cast<UserDefFuncNodeViewModel>().FirstOrDefault(i => i.Resource.SelfLink == message.OldAltLink);
 
-            //    if (item != null)
-            //    {
-            //        item.Resource = message.Resource;
-            //    }
-            //}
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
+            }
         }
     }
 

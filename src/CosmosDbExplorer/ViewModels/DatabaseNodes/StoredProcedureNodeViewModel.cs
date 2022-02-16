@@ -38,22 +38,27 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             IsLoading = false;
         }
 
+        protected override void OpenNewCommandExecute()
+        {
+            Parent.NewStoredProcedureCommand.Execute(this);
+        }
+
         protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosStoredProcedure, ContainerNodeViewModel> message)
         {
-            //if (message.IsNewResource)
-            //{
-            //    var item = new StoredProcedureNodeViewModel(this, message.Resource);
-            //    DispatcherHelper.RunAsync(() => Children.Add(item));
-            //}
-            //else
-            //{
-            //    var item = Children.Cast<StoredProcedureNodeViewModel>().FirstOrDefault(i => i.Resource.AltLink == message.OldAltLink);
+            if (message.IsNewResource)
+            {
+                var item = new StoredProcedureNodeViewModel(this, message.Resource);
+                Children.Add(item);
+            }
+            else
+            {
+                var item = Children.Cast<StoredProcedureNodeViewModel>().FirstOrDefault(i => i.Resource.SelfLink == message.OldAltLink);
 
-            //    if (item != null)
-            //    {
-            //        item.Resource = message.Resource;
-            //    }
-            //}
+                if (item != null)
+                {
+                    item.Resource = message.Resource;
+                }
+            }
         }
     }
 

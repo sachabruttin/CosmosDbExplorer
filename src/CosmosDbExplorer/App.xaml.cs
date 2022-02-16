@@ -84,7 +84,7 @@ namespace CosmosDbExplorer
             services.AddSingleton<ICosmosClientService, CosmosClientService>();
             services.AddTransient(provider =>
             {
-                return new Func<CosmosConnection, CosmosDatabaseService>(connection =>
+                return new Func<CosmosConnection, CosmosDatabaseService>((connection) =>
                                 new CosmosDatabaseService(provider.GetRequiredService<ICosmosClientService>(), connection));
             });
 

@@ -1,16 +1,32 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CosmosDbExplorer.ViewModels.Assets
 {
     public class TriggerTabViewModel : AssetTabViewModelBase<TriggerNodeViewModel, CosmosTrigger>
     {
-        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) : base(serviceProvider, uiServices)
+        private readonly IServiceProvider _serviceProvider;
+        private CosmosScriptService _scriptService;
+
+        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService) 
+            : base(uiServices, dialogService)
         {
             IconSource = App.Current.FindResource("TriggerIcon");
+            _serviceProvider = serviceProvider;
+        }
+
+        public override void Load(string contentId, TriggerNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        {
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, node.Parent.Parent.Parent.Database, container);
+
+            base.Load(contentId, node, connection, container);
         }
 
         //private TriggerType _triggerType;
@@ -20,6 +36,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected override string GetDefaultTitle() => "Trigger";
         protected override string GetDefaultContent() => "function trigger(){}";
 
+
         protected override void SetInformationImpl(CosmosTrigger resource)
         {
             //TriggerOperation = resource.TriggerOperation;
@@ -27,9 +44,25 @@ namespace CosmosDbExplorer.ViewModels.Assets
             base.SetInformationImpl(resource);
         }
 
-        protected override void DiscardCommandExecute()
+        protected override Task<CosmosTrigger> SaveAsyncImpl()
         {
-            throw new NotImplementedException();
+            if (Id is null)
+            {
+                throw new Exception("Asset Id is null!");
+            }
+
+            var resource = new CosmosTrigger(Id, Content, Node?.Resource?.SelfLink)
+            {
+                //Operation = Microsoft.Azure.Cosmos.Scripts.TriggerOperation.All
+                //Type = Microsoft.Azure.Cosmos.Scripts.TriggerType.Pre
+            };
+
+            return _scriptService.SaveTriggerAsync(resource);
+        }
+
+        protected override Task<CosmosResult> DeleteAsyncImpl()
+        {
+            return _scriptService.DeleteTriggerAsync(Node.Resource);
         }
 
         //public TriggerType TriggerType
@@ -60,14 +93,5 @@ namespace CosmosDbExplorer.ViewModels.Assets
         //    }
         //}
 
-        //protected override Task<Trigger> SaveAsyncImpl(IDocumentDbService dbService)
-        //{
-        //    return dbService.SaveTriggerAsync(Connection, Collection, Id, Content.Text, TriggerType, TriggerOperation, AltLink);
-        //}
-
-        //protected override Task DeleteAsyncImpl(IDocumentDbService dbService)
-        //{
-        //    return dbService.DeleteTriggerAsync(Connection, AltLink);
-        //}
     }
 }

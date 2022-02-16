@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.Services;
-using CosmosDbExplorer.Extensions;
-using CosmosDbExplorer.Models;
-using CosmosDbExplorer.Messages;
-using CosmosDbExplorer.Services;
-using ICSharpCode.AvalonEdit.Document;
-using Microsoft.Azure.Documents;
-using Microsoft.Toolkit.Mvvm.Input;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.ViewModels.DatabaseNodes;
+
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
+
+using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels.Assets
 {
@@ -20,17 +22,16 @@ namespace CosmosDbExplorer.ViewModels.Assets
     {
         //private readonly IDialogService _dialogService;
         private readonly IServiceProvider _serviceProvider;
-        private CosmosContainer _container;
+        private readonly IDialogService _dialogService;
         private RelayCommand _discardCommand;
-        private RelayCommand _saveCommand;
-        private RelayCommand _deleteCommand;
+        private AsyncRelayCommand _saveCommand;
+        private AsyncRelayCommand _deleteCommand;
 
-        protected AssetTabViewModelBase(IServiceProvider serviceProvider, IUIServices uiServices)
+        protected AssetTabViewModelBase(IUIServices uiServices, IDialogService dialogService)
             : base(uiServices)
         {
             Content = GetDefaultContent();
-            //_dialogService = dialogService;
-            _serviceProvider = serviceProvider;
+            _dialogService = dialogService;
             Header = GetDefaultHeader();
             Title = GetDefaultTitle();
             ContentId = Guid.NewGuid().ToString();
@@ -43,25 +44,23 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             SetText(resource.Body);
         }
-        //protected abstract Task<TResource> SaveAsyncImpl(IDocumentDbService dbService);
-        //protected abstract Task DeleteAsyncImpl(IDocumentDbService dbService);
 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         protected string AltLink { get; set; }
 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string Content { get; set; }
 
-        public override void Load(string contentId, TNode node, CosmosConnection connection, CosmosContainer collection)
+        public override void Load(string contentId, TNode node, CosmosConnection connection, CosmosContainer container)
         {
             ContentId = contentId;
             Node = node;
             Connection = connection;
-            Container = collection;
+            Container = container;
             AccentColor = connection.AccentColor;
 
             if (node != null)
             {
-                //var split = value.SelfLink.Split(new char[] { '/' });
-                //ToolTip = $"{split[1]}>{split[3]}";
                 var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)node.Parent.Parent.Parent);
                 ToolTip = $"{Connection.Label}/{databaseNode.Database.Id}/{Container.Id}";
                 SetInformation(node.Resource);
@@ -88,67 +87,79 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public string? Id { get; set; }
 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         public bool IsDirty { get; set; }
 
         public bool IsNewDocument => AltLink == null;
 
         protected void SetText(string content)
         {
-            //DispatcherHelper.RunAsync(() =>
-            //{
-                Content = content;
-                IsDirty = false;
-            //});
+            Content = content;
+            IsDirty = false;
         }
 
-        public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, DiscardCommandCanExecute);
+        public ICommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, DiscardCommandCanExecute);
 
-        protected abstract void DiscardCommandExecute();
+        protected virtual void DiscardCommandExecute()
+        {
+            if (IsNewDocument)
+            {
+                SetText(GetDefaultContent());
+            }
+            else
+            {
+                SetInformation(Node.Resource);
+            }
+        }
 
         protected virtual bool DiscardCommandCanExecute()
         {
             return IsDirty;
         }
 
-        public RelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, SaveCommandCanExecute);
+        public ICommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, SaveCommandCanExecute);
 
-        protected virtual void SaveCommandExecute()
+        protected virtual async Task SaveCommandExecute()
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    var resource = await SaveAsyncImpl(_dbService).ConfigureAwait(false);
-            //    MessengerInstance.Send(new UpdateOrCreateNodeMessage<TResource>(resource, Collection, AltLink));
-            //    SetInformation(resource);
-            //}
-            //catch (DocumentClientException clientEx)
-            //{
-            //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //}
+            try
+            {
+                var resource = await SaveAsyncImpl();
+                Messenger.Send(new UpdateOrCreateNodeMessage<TResource, ContainerNodeViewModel>(resource, (ContainerNodeViewModel)Node.Parent, AltLink));
+                SetInformation(resource);
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error");
+            }
         }
 
         protected virtual bool SaveCommandCanExecute() => IsDirty;
 
-        public RelayCommand DeleteCommand => _deleteCommand ??= new(DeleteCommandExecute, DeleteCommandCanExecute);
+        protected abstract Task<TResource> SaveAsyncImpl();
 
-        protected virtual void DeleteCommandExecute()
+        public ICommand DeleteCommand => _deleteCommand ??= new(DeleteCommandExecute, DeleteCommandCanExecute);
+
+        protected virtual async Task DeleteCommandExecute()
         {
-            throw new NotImplementedException();
-            //await _dialogService.ShowMessage("Are you sure...", "Delete", null, null, async confirm =>
-            //{
-            //    if (confirm)
-            //    {
-            //        await DeleteAsyncImpl(_dbService).ConfigureAwait(false);
-            //        MessengerInstance.Send(new RemoveNodeMessage(AltLink));
-            //        MessengerInstance.Send(new CloseDocumentMessage(this));
-            //    }
-            //}).ConfigureAwait(false);
+            await _dialogService.ShowQuestion("Are you sure...", "Delete", async confirm =>
+            {
+                if (confirm)
+                {
+                    await DeleteAsyncImpl();
+                    Messenger.Send(new RemoveNodeMessage(AltLink));
+                    Messenger.Send(new CloseDocumentMessage(this));
+                }
+            }).ConfigureAwait(false);
         }
 
+        protected abstract Task<CosmosResult> DeleteAsyncImpl();
         protected virtual bool DeleteCommandCanExecute() => !IsNewDocument;
+
+        protected void UpdateCommandStatus()
+        {
+            ((AsyncRelayCommand)SaveCommand).NotifyCanExecuteChanged();
+            ((AsyncRelayCommand)DeleteCommand).NotifyCanExecuteChanged();
+            ((RelayCommand)DiscardCommand).NotifyCanExecuteChanged();
+        }
     }
 }

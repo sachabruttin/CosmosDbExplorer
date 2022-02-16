@@ -5,9 +5,11 @@ namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosUserDefinedFunction : ICosmosScript
     {
-        public CosmosUserDefinedFunction(string body)
+        public CosmosUserDefinedFunction(string id, string body, string? selfLink)
         {
+            Id = id;
             Body = body;
+            SelfLink = selfLink;
         }
 
         public CosmosUserDefinedFunction(UserDefinedFunctionProperties properties)

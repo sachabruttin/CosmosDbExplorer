@@ -51,7 +51,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string Content { get; set; }
 
-        public override void Load(string contentId, TNode node, CosmosConnection connection, CosmosContainer container)
+        public override void Load(string contentId, TNode? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
             ContentId = contentId;
             Node = node;
@@ -62,7 +62,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             if (node != null)
             {
                 var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)node.Parent.Parent.Parent);
-                ToolTip = $"{Connection.Label}/{databaseNode.Database.Id}/{Container.Id}";
+                ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
                 SetInformation(node.Resource);
             }
         }
@@ -124,7 +124,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             try
             {
                 var resource = await SaveAsyncImpl();
-                Messenger.Send(new UpdateOrCreateNodeMessage<TResource, ContainerNodeViewModel>(resource, (ContainerNodeViewModel)Node.Parent, AltLink));
+                Messenger.Send(new UpdateOrCreateNodeMessage<TResource, CosmosContainer>(resource, Container, AltLink));
                 SetInformation(resource);
             }
             catch (Exception ex)

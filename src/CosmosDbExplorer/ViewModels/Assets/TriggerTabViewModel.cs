@@ -22,11 +22,11 @@ namespace CosmosDbExplorer.ViewModels.Assets
             _serviceProvider = serviceProvider;
         }
 
-        public override void Load(string contentId, TriggerNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override void Load(string contentId, TriggerNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, node.Parent.Parent.Parent.Database, container);
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, database, container);
 
-            base.Load(contentId, node, connection, container);
+            base.Load(contentId, node, connection, database, container);
         }
 
         //private TriggerType _triggerType;
@@ -51,7 +51,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
                 throw new Exception("Asset Id is null!");
             }
 
-            var resource = new CosmosTrigger(Id, Content, Node?.Resource?.SelfLink)
+            var resource = new CosmosTrigger(Id, Content, AltLink)
             {
                 //Operation = Microsoft.Azure.Cosmos.Scripts.TriggerOperation.All
                 //Type = Microsoft.Azure.Cosmos.Scripts.TriggerType.Pre

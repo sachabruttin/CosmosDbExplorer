@@ -19,6 +19,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string ContentId => Parent.Database.SelfLink + "/Scale";
 
-        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenDatabaseScaleViewMessage(this, Parent.Parent.Connection, null)));
+        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenDatabaseScaleViewMessage(this, Parent.Parent.Connection, Parent.Database, null)));
     }
 }

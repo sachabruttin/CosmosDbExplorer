@@ -76,7 +76,7 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-        public override async void Load(string contentId, DocumentNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override async void Load(string contentId, DocumentNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
             ContentId = contentId;
             Node = node;
@@ -85,11 +85,11 @@ namespace CosmosDbExplorer.ViewModels
             PartitionKey = container.PartitionKeyPath;
 
             //var split = Node.Parent.Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{Connection.Label}/{node.Parent.Parent.Database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
 
-            AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
+            AccentColor = Connection.AccentColor;
 
-            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, node.Parent.Parent.Database, container);
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
 
             await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false);
         }

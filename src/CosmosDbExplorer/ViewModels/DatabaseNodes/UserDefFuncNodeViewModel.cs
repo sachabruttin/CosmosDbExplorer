@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -31,7 +32,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
             foreach (var func in function)
             {
-                //await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
                 Children.Add(new UserDefFuncNodeViewModel(this, func));
             }
 
@@ -43,12 +43,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Parent.NewUdfCommand.Execute(this);
         }
 
-        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosUserDefinedFunction, ContainerNodeViewModel> message)
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosUserDefinedFunction, CosmosContainer> message)
         {
             if (message.IsNewResource)
             {
                 var item = new UserDefFuncNodeViewModel(this, message.Resource);
-                Children.Add(item);
+                Children.AddSorted(item, i => ((UserDefFuncNodeViewModel)i).Name);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            Messenger.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
+            Messenger.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));   
             return Task.CompletedTask;
         }
     }

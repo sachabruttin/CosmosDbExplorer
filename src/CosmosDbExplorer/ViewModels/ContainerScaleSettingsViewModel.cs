@@ -89,7 +89,7 @@ namespace CosmosDbExplorer.ViewModels
         private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
         private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
-        public override async void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override async void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
             //IsLoading = true;
 
@@ -102,14 +102,14 @@ namespace CosmosDbExplorer.ViewModels
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
             //ToolTip = $"{split[1]}>{split[3]}";
-            ToolTip = $"{Connection.Label}/{node.Parent.Parent.Database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
 
             AccentColor = Connection.AccentColor;
 
 
             SetSettings();
 
-            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, node.Parent.Parent.Database);
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
             var response = await _containerService.GetThroughputAsync(container);
 
             SetThroughputInfo(response);

@@ -26,7 +26,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private void ExecuteOpenCommand()
         {
             IsSelected = false;
-            Messenger.Send(new OpenMetricsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container));
+            Messenger.Send(new OpenMetricsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container));
         }
     }
 }

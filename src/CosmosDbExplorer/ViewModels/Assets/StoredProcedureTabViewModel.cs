@@ -61,12 +61,12 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected override string GetDefaultTitle() => "Stored Procedure"; 
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
-        public override void Load(string contentId, StoredProcedureNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override void Load(string contentId, StoredProcedureNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, node.Parent.Parent.Parent.Database, container);
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, database, container);
 
             IsCollectionPartitioned = !string.IsNullOrEmpty(container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
-            base.Load(contentId, node, connection, container);
+            base.Load(contentId, node, connection, database, container);
         }
 
         protected override Task<CosmosStoredProcedure> SaveAsyncImpl()
@@ -76,7 +76,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
                 throw new Exception("Asset Id is null!");
             }
 
-            var resource = new CosmosStoredProcedure(Id, Content, Node?.Resource?.SelfLink);
+            var resource = new CosmosStoredProcedure(Id, Content, AltLink);
             return _scriptService.SaveStoredProcedureAsync(resource);
         }
 

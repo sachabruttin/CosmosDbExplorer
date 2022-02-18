@@ -69,14 +69,14 @@ namespace CosmosDbExplorer.ViewModels
         public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged);
         private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
 
-        public override async void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override async void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
             ContentId = contentId;
             Node = node;
             Title = node.Name;
             Header = node.Name;
             Connection = connection;
-            Database = node.Parent.Database;
+            Database = database;
 
             AccentColor = connection.AccentColor;
             ToolTip = $"{Connection.Label}/{Database.Id}";

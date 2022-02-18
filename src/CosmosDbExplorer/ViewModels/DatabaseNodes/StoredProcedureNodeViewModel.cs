@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -43,12 +44,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Parent.NewStoredProcedureCommand.Execute(this);
         }
 
-        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosStoredProcedure, ContainerNodeViewModel> message)
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosStoredProcedure, CosmosContainer> message)
         {
             if (message.IsNewResource)
             {
                 var item = new StoredProcedureNodeViewModel(this, message.Resource);
-                Children.Add(item);
+                Children.AddSorted(item, i => ((StoredProcedureNodeViewModel)i).Name);
             }
             else
             {
@@ -86,7 +87,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
+            Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));  
             return Task.CompletedTask;
         }
     }

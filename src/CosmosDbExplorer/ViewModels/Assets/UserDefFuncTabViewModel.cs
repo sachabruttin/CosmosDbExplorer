@@ -23,11 +23,11 @@ namespace CosmosDbExplorer.ViewModels.Assets
             _serviceProvider = serviceProvider;
         }
 
-        public override void Load(string contentId, UserDefFuncNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override void Load(string contentId, UserDefFuncNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, node.Parent.Parent.Parent.Database, container);
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, database, container);
 
-            base.Load(contentId, node, connection, container);
+            base.Load(contentId, node, connection, database, container);
         }
 
         protected override string GetDefaultHeader() => "New User Defined Function";
@@ -41,7 +41,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
                 throw new Exception("Asset Id is null!");
             }
 
-            var resource = new CosmosUserDefinedFunction(Id, Content, Node?.Resource?.SelfLink);
+            var resource = new CosmosUserDefinedFunction(Id, Content, AltLink);
             return _scriptService.SaveUserDefinedFunctionAsync(resource);
         }
 

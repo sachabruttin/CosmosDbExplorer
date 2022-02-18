@@ -241,7 +241,7 @@ namespace CosmosDbExplorer.ViewModels
 
                 if (content != null)
                 {
-                    content.Load(contentId, message.Node, message.Connection, message.Container);
+                    content.Load(contentId, message.Node, message.Connection, message.Database, message.Container);
 
                     Tabs.Add(content);
                     SelectedTab = content;

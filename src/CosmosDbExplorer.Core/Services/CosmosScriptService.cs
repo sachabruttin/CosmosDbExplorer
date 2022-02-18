@@ -36,7 +36,7 @@ namespace CosmosDbExplorer.Core.Services
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync(cancellationToken);
-                result.AddRange(response.Select(r => new CosmosStoredProcedure(r)));
+                result.AddRange(response.OrderBy(r => r.Id).Select(r => new CosmosStoredProcedure(r)));
             }
 
             return result;
@@ -91,7 +91,7 @@ namespace CosmosDbExplorer.Core.Services
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync(cancellationToken);
-                result.AddRange(response.Select(r => new CosmosUserDefinedFunction(r)));
+                result.AddRange(response.OrderBy(r => r.Id).Select(r => new CosmosUserDefinedFunction(r)));
             }
 
             return result;
@@ -150,7 +150,7 @@ namespace CosmosDbExplorer.Core.Services
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync(cancellationToken);
-                result.AddRange(response.Select(r => new CosmosTrigger(r)));
+                result.AddRange(response.OrderBy(r => r.Id).Select(r => new CosmosTrigger(r)));
             }
 
             return result;

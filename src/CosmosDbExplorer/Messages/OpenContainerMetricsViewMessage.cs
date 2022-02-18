@@ -5,8 +5,8 @@ namespace CosmosDbExplorer.Messages
 {
     public class OpenContainerMetricsViewMessage : OpenTabMessageBase<MetricsNodeViewModel>
     {
-        public OpenContainerMetricsViewMessage(MetricsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
-            : base(node, connection, container)
+        public OpenContainerMetricsViewMessage(MetricsNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer container)
+            : base(node, connection, database, container)
         {
         }
     }

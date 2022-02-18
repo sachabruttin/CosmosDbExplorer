@@ -5,8 +5,8 @@ namespace CosmosDbExplorer.Messages
 {
     public class EditUserMessage : OpenTabMessageBase<UserNodeViewModel>
     {
-        public EditUserMessage(UserNodeViewModel node, CosmosConnection connection, CosmosContainer container)
-            : base(node, connection, container)
+        public EditUserMessage(UserNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer container)
+            : base(node, connection, database, container)
         {
         }
     }

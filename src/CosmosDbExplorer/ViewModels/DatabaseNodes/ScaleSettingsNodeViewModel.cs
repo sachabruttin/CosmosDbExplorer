@@ -19,7 +19,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public string ContentId => Parent.Container.SelfLink + "/Settings";
 
-        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Container)));
+        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new OpenScaleAndSettingsViewMessage(this, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container)));
 
         public ContainerNodeViewModel ContainerNode => Parent;
     }

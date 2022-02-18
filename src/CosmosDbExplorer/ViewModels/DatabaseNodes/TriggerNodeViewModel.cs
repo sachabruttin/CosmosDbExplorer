@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
 using Microsoft.Azure.Documents;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,12 +45,12 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Parent.NewTriggerCommand.Execute(this);
         }
 
-        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosTrigger, ContainerNodeViewModel> message)
+        protected override void OnUpdateOrCreateNodeMessage(UpdateOrCreateNodeMessage<CosmosTrigger, CosmosContainer> message)
         {
             if (message.IsNewResource)
             {
                 var item = new TriggerNodeViewModel(this, message.Resource);
-                Children.Add(item);
+                Children.AddSorted(item, i => ((TriggerNodeViewModel)i).Name);
             }
             else
             {
@@ -87,7 +88,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            Messenger.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Container));
+            Messenger.Send(new EditTriggerMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));   
             return Task.CompletedTask;
         }
     }

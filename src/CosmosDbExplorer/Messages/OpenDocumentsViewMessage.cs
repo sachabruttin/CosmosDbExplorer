@@ -5,8 +5,8 @@ namespace CosmosDbExplorer.Messages
 {
     public class OpenDocumentsViewMessage : OpenTabMessageBase<DocumentNodeViewModel>
     {
-        public OpenDocumentsViewMessage(DocumentNodeViewModel node, CosmosConnection connection, CosmosContainer container)
-            : base(node, connection, container)
+        public OpenDocumentsViewMessage(DocumentNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer container)
+            : base(node, connection, database, container)
         {
         }
     }

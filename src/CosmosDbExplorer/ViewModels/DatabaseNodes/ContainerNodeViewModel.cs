@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
@@ -25,6 +26,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private RelayCommand _openSqlQueryCommand;
         private AsyncRelayCommand _deleteContainerCommand;
 
+        private readonly StoredProcedureRootNodeViewModel _storedProcedureNode;
+        private readonly UserDefFuncRootNodeViewModel _userDefFuncNode;
+        private readonly TriggerRootNodeViewModel _triggerNode;
+
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
         {
@@ -33,15 +38,19 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
             _dialogService = _serviceProvider.GetRequiredService<IDialogService>();
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Parent.Connection, Parent.Database);
+
+            _storedProcedureNode = new StoredProcedureRootNodeViewModel(this, _serviceProvider);
+            _userDefFuncNode = new UserDefFuncRootNodeViewModel(this, _serviceProvider);
+            _triggerNode = new TriggerRootNodeViewModel(this, _serviceProvider);
         }
 
         protected override Task LoadChildren(CancellationToken token)
         {
             Children.Add(new DocumentNodeViewModel(this));
             Children.Add(new ScaleSettingsNodeViewModel(this));
-            Children.Add(new StoredProcedureRootNodeViewModel(this, _serviceProvider));
-            Children.Add(new UserDefFuncRootNodeViewModel(this, _serviceProvider));
-            Children.Add(new TriggerRootNodeViewModel(this, _serviceProvider));
+            Children.Add(_storedProcedureNode);
+            Children.Add(_userDefFuncNode);
+            Children.Add(_triggerNode);
             Children.Add(new MetricsNodeViewModel(this));
 
             return Task.CompletedTask;
@@ -49,7 +58,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosContainer Container { get; }
 
-        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??=  new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Container)));
+        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??=  new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
 
         //public RelayCommand ClearAllDocumentsCommand
         //{
@@ -100,13 +109,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        public RelayCommand OpenImportDocumentCommand => _openImportDocumentCommand ??= new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Container)));
+        public RelayCommand OpenImportDocumentCommand => _openImportDocumentCommand ??= new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
 
-        public RelayCommand NewStoredProcedureCommand => _newStoredProcedureCommand ??= new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewStoredProcedureCommand => _newStoredProcedureCommand ??= new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Parent.Database, Container)));
 
-        public RelayCommand NewUdfCommand => _newUdfCommand ??= new(() => Messenger.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewUdfCommand => _newUdfCommand ??= new(() => Messenger.Send(new EditUserDefFuncMessage(null, Parent.Parent.Connection, Parent.Database, Container)));
 
-        public RelayCommand NewTriggerCommand => _newTriggerCommand ??= new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Container)));
+        public RelayCommand NewTriggerCommand => _newTriggerCommand ??= new(() => Messenger.Send(new EditTriggerMessage(null, Parent.Parent.Connection, Parent.Database, Container)));
 
         public AsyncRelayCommand DeleteContainerCommand => _deleteContainerCommand ??= new(DeleteContainerCommandExecute);
 

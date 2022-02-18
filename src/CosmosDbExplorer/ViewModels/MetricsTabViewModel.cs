@@ -52,19 +52,19 @@ namespace CosmosDbExplorer.ViewModels
             base.OnIsBusyChanged();
         }
 
-        public override async void Load(string contentId, MetricsNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override async void Load(string contentId, MetricsNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
             ContentId = contentId;
             _connection = connection;
             _container = container;
 
-            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, node.Parent.Parent.Database);
+            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
 
             //var split = _container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{connection.Label}/{node.Parent.Parent.Database.Id}/{container.Id}";
+            ToolTip = $"{connection.Label}/{database.Id}/{container.Id}";
             AccentColor = _connection.AccentColor;
 
-            await LoadMetrics().ConfigureAwait(false);
+            await LoadMetrics();
         }
 
         public ICommand RefreshCommand => _refreshCommand ??= new AsyncRelayCommand(LoadMetrics, () => !IsBusy);

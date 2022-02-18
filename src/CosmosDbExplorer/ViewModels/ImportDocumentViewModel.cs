@@ -55,7 +55,7 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosContainer container)
+        public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
             ContentId = Guid.NewGuid().ToString();
             Node = node;
@@ -64,10 +64,10 @@ namespace CosmosDbExplorer.ViewModels
             Container = container;
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{Connection.Label}/{node.Parent.Database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
             AccentColor = Connection.AccentColor;
 
-            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, node.Parent.Database, container);
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
         }
 
         public ContainerNodeViewModel Node { get; protected set; }

@@ -91,7 +91,7 @@ namespace CosmosDbExplorer.ViewModels
 
         }
 
-        public abstract void Load(string contentId, TNodeViewModel node, CosmosConnection connection, CosmosContainer container);
+        public abstract void Load(string contentId, TNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container);
     }
 
     public abstract class PaneWithZoomViewModel<TNodeViewModel> : PaneViewModel<TNodeViewModel>

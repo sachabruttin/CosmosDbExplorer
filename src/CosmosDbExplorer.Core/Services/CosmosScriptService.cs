@@ -162,8 +162,8 @@ namespace CosmosDbExplorer.Core.Services
             {
                 Body = asset.Body,
                 Id = asset.Id,
-                TriggerOperation = TriggerOperation.All,
-                TriggerType = TriggerType.Pre
+                TriggerOperation = (TriggerOperation)(int)asset.Operation,
+                TriggerType = (TriggerType)(int)asset.Type
             };
 
             try

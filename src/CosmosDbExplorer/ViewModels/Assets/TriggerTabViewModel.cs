@@ -8,6 +8,8 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using PropertyChanged;
+
 namespace CosmosDbExplorer.ViewModels.Assets
 {
     public class TriggerTabViewModel : AssetTabViewModelBase<TriggerNodeViewModel, CosmosTrigger>
@@ -29,8 +31,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
             base.Load(contentId, node, connection, database, container);
         }
 
-        //private TriggerType _triggerType;
-        //private TriggerOperation _triggerOperation;
+        public CosmosTriggerType TriggerType { get; set; }
+
+        public CosmosTriggerOperation TriggerOperation { get; set; }
 
         protected override string GetDefaultHeader() => "New Trigger";
         protected override string GetDefaultTitle() => "Trigger";
@@ -39,8 +42,8 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         protected override void SetInformationImpl(CosmosTrigger resource)
         {
-            //TriggerOperation = resource.TriggerOperation;
-            //TriggerType = resource.TriggerType;
+            TriggerOperation = resource.Operation;
+            TriggerType = resource.Type;
             base.SetInformationImpl(resource);
         }
 
@@ -53,8 +56,8 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             var resource = new CosmosTrigger(Id, Content, AltLink)
             {
-                //Operation = Microsoft.Azure.Cosmos.Scripts.TriggerOperation.All
-                //Type = Microsoft.Azure.Cosmos.Scripts.TriggerType.Pre
+                Operation = TriggerOperation,
+                Type = TriggerType
             };
 
             return _scriptService.SaveTriggerAsync(resource);
@@ -64,34 +67,5 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             return _scriptService.DeleteTriggerAsync(Node.Resource);
         }
-
-        //public TriggerType TriggerType
-        //{
-        //    get { return _triggerType; }
-        //    set
-        //    {
-        //        if (value != _triggerType)
-        //        {
-        //            _triggerType = value;
-        //            IsDirty = true;
-        //            RaisePropertyChanged(() => TriggerType);
-        //        }
-        //    }
-        //}
-
-        //public TriggerOperation TriggerOperation
-        //{
-        //    get { return _triggerOperation; }
-        //    set
-        //    {
-        //        if (value != _triggerOperation)
-        //        {
-        //            _triggerOperation = value;
-        //            IsDirty = true;
-        //            RaisePropertyChanged(() => TriggerOperation);
-        //        }
-        //    }
-        //}
-
     }
 }

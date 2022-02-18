@@ -10,6 +10,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:core="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
              d:DataContext="{d:DesignInstance Type=assets:TriggerTabViewModel}"
              Style="{DynamicResource CosmosUserControl}"
              mc:Ignorable="d" 
@@ -25,13 +26,13 @@
             </TextBox>
 
             <Label Content="Trigger Type"/>
-            <!--<ComboBox SelectedValue="{Binding TriggerType}" Margin="10,0" 
-                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type db:TriggerType}}}"/>-->
+            <ComboBox SelectedValue="{Binding TriggerType}" Margin="10,0" 
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type core:CosmosTriggerType}}}"/>
 
 
             <Label Content="Trigger Operation"/>
-            <!--<ComboBox SelectedValue="{Binding TriggerOperation}" Margin="10,0"
-                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type db:TriggerOperation}}}" />-->
+            <ComboBox SelectedValue="{Binding TriggerOperation}" Margin="10,0"
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type core:CosmosTriggerOperation}}}" />
 
             <Label Content="Trigger Body"/>
 

@@ -106,8 +106,7 @@ namespace CosmosDbExplorer.Services
 
         private void SaveConnections()
         {
-            var json = JsonConvert.SerializeObject(_connections, Formatting.Indented);
-            _fileService.Save(_configurationFilePath, ConfigurationFileName, json);
+            _fileService.Save(_localAppData, ConfigurationFileName, _connections);
         }
     }
 }

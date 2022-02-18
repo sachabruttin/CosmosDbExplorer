@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 
@@ -20,10 +19,10 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
-        private CosmosConnection _connection;
-        private CosmosContainer _container;
-        private CosmosContainerService _cosmosContainerService;
-        private AsyncRelayCommand _refreshCommand;
+        private CosmosConnection? _connection;
+        private CosmosContainer? _container;
+        private CosmosContainerService? _cosmosContainerService;
+        private AsyncRelayCommand? _refreshCommand;
 
         public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) 
             : base(uiServices)
@@ -36,9 +35,9 @@ namespace CosmosDbExplorer.ViewModels
             _serviceProvider = serviceProvider;
         }
 
-        public CosmosContainerMetric Metrics { get; set; }
+        public CosmosContainerMetric? Metrics { get; private set; }
 
-        public string RequestCharge { get; set; }
+        public string? RequestCharge { get; private set; }
 
         public void OnRequestChargeChanged()
         {
@@ -52,15 +51,29 @@ namespace CosmosDbExplorer.ViewModels
             base.OnIsBusyChanged();
         }
 
-        public override async void Load(string contentId, MetricsNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override async void Load(string contentId, MetricsNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (container is null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
             ContentId = contentId;
             _connection = connection;
             _container = container;
 
             _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
 
-            //var split = _container.SelfLink.Split(new char[] { '/' });
             ToolTip = $"{connection.Label}/{database.Id}/{container.Id}";
             AccentColor = _connection.AccentColor;
 
@@ -71,6 +84,16 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task LoadMetrics()
         {
+            if (_container is null)
+            {
+                throw new NullReferenceException(nameof(_container));
+            }
+
+            if (_cosmosContainerService is null)
+            {
+                throw new NullReferenceException(nameof(_cosmosContainerService));
+            }
+
             IsBusy = true;
 
             try
@@ -79,6 +102,8 @@ namespace CosmosDbExplorer.ViewModels
 
                 Metrics = await _cosmosContainerService.GetContainerMetricsAsync(_container, tokenSource.Token).ConfigureAwait(false);
                 RequestCharge = $"Request Charge: {Metrics.RequestCharge:N2}";
+
+                OnPropertyChanged(nameof(Metrics));
 
                 //await DispatcherHelper.RunAsync(() =>
                 //{

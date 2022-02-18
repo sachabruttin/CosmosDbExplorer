@@ -13,9 +13,8 @@ namespace CosmosDbExplorer.TemplateSelectors
         {
             return (StoredProcParameterKind)item switch
             {
-                StoredProcParameterKind.Json => JsonDataTemplate,
                 StoredProcParameterKind.File => FileDataTemplate,
-                _ => base.SelectTemplate(item, container),
+                _ => JsonDataTemplate,
             };
         }
     }

@@ -14,23 +14,23 @@ namespace CosmosDbExplorer.Core.Services
 {
     public class CosmosScriptService : ICosmosScriptService
     {
-        private readonly CosmosDatabase _cosmosDatabase;
-        private readonly CosmosContainer _cosmosContainer;
-        private readonly CosmosClient _cosmosClient;
-        private readonly Container _container;
+        //private readonly CosmosDatabase _cosmosDatabase;
+        //private readonly CosmosContainer _cosmosContainer;
+        //private readonly CosmosClient _cosmosClient;
+        //private readonly Container _container;
+
+        private readonly Scripts _scripts;
 
         public CosmosScriptService(ICosmosClientService clientService, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
         {
-            _cosmosClient = clientService.GetClient(connection);
-            _cosmosDatabase = database;
-            _cosmosContainer = container;
+            var cosmosClient = clientService.GetClient(connection);
 
-            _container = _cosmosClient.GetContainer(_cosmosDatabase.Id, _cosmosContainer.Id);
+            _scripts = cosmosClient.GetContainer(database.Id, container.Id).Scripts;
         }
 
         public async Task<IReadOnlyList<CosmosStoredProcedure>> GetStoredProceduresAsync(CancellationToken cancellationToken)
         {
-            var iterator = _container.Scripts.GetStoredProcedureQueryIterator<StoredProcedureProperties>();
+            var iterator = _scripts.GetStoredProcedureQueryIterator<StoredProcedureProperties>();
             var result = new List<CosmosStoredProcedure>();
 
             while (iterator.HasMoreResults)
@@ -50,12 +50,12 @@ namespace CosmosDbExplorer.Core.Services
             {
                 if (asset.SelfLink != null)
                 {
-                    var updatedobject = await _container.Scripts.ReplaceStoredProcedureAsync(properties);
+                    var updatedobject = await _scripts.ReplaceStoredProcedureAsync(properties);
                     return new CosmosStoredProcedure(updatedobject);
                 }
                 else
                 {
-                    var newobject = await _container.Scripts.CreateStoredProcedureAsync(properties);
+                    var newobject = await _scripts.CreateStoredProcedureAsync(properties);
                     return new CosmosStoredProcedure(newobject);
                 }
             }
@@ -65,11 +65,25 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
+        public async Task<CosmosStoredProcedureResult> ExecuteStoredProcedureAsync(string storedProcedureId, object partitionKey, dynamic[] parameters)
+        {
+            var pk = PartitionKeyHelper.Get(partitionKey);
+
+            var options = new StoredProcedureRequestOptions
+            {
+                EnableScriptLogging = true,
+            };
+
+            var response = await _scripts.ExecuteStoredProcedureAsync<string>(storedProcedureId, pk, parameters, options);
+
+            return new CosmosStoredProcedureResult(response);
+        }
+
         public async Task<CosmosResult> DeleteStoredProcedureAsync(CosmosStoredProcedure asset)
         {
             try
             {
-                var response = await _container.Scripts.DeleteStoredProcedureAsync(asset.Id);
+                var response = await _scripts.DeleteStoredProcedureAsync(asset.Id);
 
                 return new CosmosResult
                 {
@@ -85,7 +99,7 @@ namespace CosmosDbExplorer.Core.Services
 
         public async Task<IReadOnlyList<CosmosUserDefinedFunction>> GetUserDefinedFunctionsAsync(CancellationToken cancellationToken)
         {
-            var iterator = _container.Scripts.GetUserDefinedFunctionQueryIterator<UserDefinedFunctionProperties>();
+            var iterator = _scripts.GetUserDefinedFunctionQueryIterator<UserDefinedFunctionProperties>();
             var result = new List<CosmosUserDefinedFunction>();
 
             while (iterator.HasMoreResults)
@@ -109,12 +123,12 @@ namespace CosmosDbExplorer.Core.Services
             {
                 if (asset.SelfLink != null)
                 {
-                    var updatedobject = await _container.Scripts.ReplaceUserDefinedFunctionAsync(properties);
+                    var updatedobject = await _scripts.ReplaceUserDefinedFunctionAsync(properties);
                     return new CosmosUserDefinedFunction(updatedobject);
                 }
                 else
                 {
-                    var newobject = await _container.Scripts.CreateUserDefinedFunctionAsync(properties);
+                    var newobject = await _scripts.CreateUserDefinedFunctionAsync(properties);
                     return new CosmosUserDefinedFunction(newobject);
                 }
             }
@@ -128,7 +142,7 @@ namespace CosmosDbExplorer.Core.Services
         {
             try
             {
-                var response = await _container.Scripts.DeleteUserDefinedFunctionAsync(asset.Id);
+                var response = await _scripts.DeleteUserDefinedFunctionAsync(asset.Id);
 
                 return new CosmosResult
                 {
@@ -144,7 +158,7 @@ namespace CosmosDbExplorer.Core.Services
 
         public async Task<IReadOnlyList<CosmosTrigger>> GetTriggersAsync(CancellationToken cancellationToken)
         {
-            var iterator = _container.Scripts.GetTriggerQueryIterator<TriggerProperties>();
+            var iterator = _scripts.GetTriggerQueryIterator<TriggerProperties>();
             var result = new List<CosmosTrigger>();
 
             while (iterator.HasMoreResults)
@@ -170,12 +184,12 @@ namespace CosmosDbExplorer.Core.Services
             {
                 if (asset.SelfLink != null)
                 {
-                    var updatedobject = await _container.Scripts.ReplaceTriggerAsync(properties);
+                    var updatedobject = await _scripts.ReplaceTriggerAsync(properties);
                     return new CosmosTrigger(updatedobject);
                 }
                 else
                 {
-                    var newobject = await _container.Scripts.CreateTriggerAsync(properties);
+                    var newobject = await _scripts.CreateTriggerAsync(properties);
                     return new CosmosTrigger(newobject);
                 }
             }
@@ -189,7 +203,7 @@ namespace CosmosDbExplorer.Core.Services
         {
             try
             {
-                var response = await _container.Scripts.DeleteTriggerAsync(asset.Id);
+                var response = await _scripts.DeleteTriggerAsync(asset.Id);
 
                 return new CosmosResult
                 {

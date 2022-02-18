@@ -155,7 +155,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected abstract Task<CosmosResult> DeleteAsyncImpl();
         protected virtual bool DeleteCommandCanExecute() => !IsNewDocument;
 
-        protected void UpdateCommandStatus()
+        protected virtual void UpdateCommandStatus()
         {
             ((AsyncRelayCommand)SaveCommand).NotifyCanExecuteChanged();
             ((AsyncRelayCommand)DeleteCommand).NotifyCanExecuteChanged();

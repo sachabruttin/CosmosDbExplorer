@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 
@@ -19,54 +22,55 @@ namespace CosmosDbExplorer.ViewModels.Assets
     [InjectValidation]
     public class StoredProcedureTabViewModel : AssetTabViewModelBase<StoredProcedureNodeViewModel, CosmosStoredProcedure>
     {
-        private RelayCommand _executeCommand;
-        private RelayCommand<StoredProcParameterViewModel> _removeParameterCommand;
-        private RelayCommand _addParameterCommand;
-        private RelayCommand<object> _browseParameterCommand;
-        private RelayCommand _saveLocalCommand;
-        private RelayCommand _goToNextPageCommand;
+        private AsyncRelayCommand? _executeCommand;
+        private RelayCommand<StoredProcParameterViewModel>? _removeParameterCommand;
+        private RelayCommand? _addParameterCommand;
+        private RelayCommand<object>? _browseParameterCommand;
+        private RelayCommand? _saveLocalCommand;
+        private RelayCommand? _goToNextPageCommand;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDialogService _dialogService;
 
         public StoredProcedureTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
             : base(uiServices, dialogService)
         {
-            ResultViewModel = new JsonViewerViewModel { IsReadOnly = true };
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
             IconSource = App.Current.FindResource("StoredProcedureIcon");
 
             _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
             _serviceProvider = serviceProvider;
+            _dialogService = dialogService;
         }
-
-
-        //public StoredProcedureTabViewModel(IMessenger messenger, IDialogService dialogService, IDocumentDbService dbService, IUIServices uiServices)
-        //    : base(messenger, dialogService, dbService, uiServices)
-        //{
-        //    _dialogService = dialogService;
-        //    _dbService = dbService;
-
-        //    ResultViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<JsonViewerViewModel>();
-        //    ResultViewModel.IsReadOnly = true;
-
-        //    HeaderViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<HeaderEditorViewModel>();
-        //    HeaderViewModel.IsReadOnly = true;
-
-        //    _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
-        //    StatusBarItems.Add(_requestChargeStatusBarItem);
-        //}
 
         protected override string GetDefaultHeader() => "New Stored Procedure"; 
         protected override string GetDefaultTitle() => "Stored Procedure"; 
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
-        public override void Load(string contentId, StoredProcedureNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override void Load(string contentId, StoredProcedureNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
+            if (container is null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
             _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, database, container);
 
             IsCollectionPartitioned = !string.IsNullOrEmpty(container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
             base.Load(contentId, node, connection, database, container);
+
+            UpdateCommandStatus();
         }
 
         protected override Task<CosmosStoredProcedure> SaveAsyncImpl()
@@ -87,7 +91,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public string Log { get; protected set; }
 
-        public JsonViewerViewModel ResultViewModel { get; set; }
+        public string? QueryResult { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
 
@@ -112,9 +116,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public ObservableCollection<StoredProcParameterViewModel> Parameters { get; } = new ObservableCollection<StoredProcParameterViewModel>();
 
-        public RelayCommand AddParameterCommand => _addParameterCommand ??= new(() => Parameters.Add(new StoredProcParameterViewModel()), () => !IsBusy && !IsDirty);
+        public RelayCommand AddParameterCommand => _addParameterCommand ??= new(() => Parameters.Add(new StoredProcParameterViewModel())/*, () => !IsBusy && !IsDirty*/);
 
-        public RelayCommand<StoredProcParameterViewModel> RemoveParameterCommand => _removeParameterCommand ??= new(RemoveParameterCommandExecute, RemoveParameterCommandCanExecute);
+        public RelayCommand<StoredProcParameterViewModel> RemoveParameterCommand => _removeParameterCommand ??= new(RemoveParameterCommandExecute/*, RemoveParameterCommandCanExecute*/);
 
         private void RemoveParameterCommandExecute(StoredProcParameterViewModel? item)
         {
@@ -129,7 +133,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
 
-        public RelayCommand<object> BrowseParameterCommand => _browseParameterCommand ??= new(BrowseParameterCommandExecute, BrowseParameterCommandCanExecute);
+        public RelayCommand<object> BrowseParameterCommand => _browseParameterCommand ??= new(BrowseParameterCommandExecute/*, BrowseParameterCommandCanExecute*/);
 
         private void BrowseParameterCommandExecute(object? item)
         {
@@ -154,76 +158,91 @@ namespace CosmosDbExplorer.ViewModels.Assets
         private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
 
 
-        public RelayCommand ExecuteCommand => _executeCommand ??= new(ExecuteCommandExecute, ExecuteCommandCanExecute);
+        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute/*, ExecuteCommandCanExecute*/);
 
-        private void ExecuteCommandExecute()
+        private async Task ExecuteCommandExecute()
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    IsBusy = true;
-            //    var result = await _dbService.ExecuteStoreProcedureAsync(Connection, AltLink, Parameters.Select(p => p.GetValue()).ToArray(), PartitionKey).ConfigureAwait(false);
-            //    RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
+            if (Id is null)
+            {
+                throw new NullReferenceException(nameof(Id));
+            }
 
-            //    Log += $"{DateTime.Now:T} : {WebUtility.UrlDecode(result.ScriptLog)}{Environment.NewLine}";
+            QueryResult = null;
+            Log = null;
+            HeaderViewModel.SetText(null, false);
 
-            //    ResultViewModel.SetText(result.Response, false);
-            //    HeaderViewModel.SetText(result.ResponseHeaders, false);
-            //}
+            try
+            {
+                IsBusy = true;
+
+                var result = await _scriptService.ExecuteStoredProcedureAsync(Id, PartitionKey, Parameters.Select(p => p.GetValue()).ToArray());
+                RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
+
+                Log = result.ScriptLog;
+                QueryResult = result.Result;
+                HeaderViewModel.SetText(result.Headers, false);
+            }
             //catch (DocumentClientException clientEx)
             //{
             //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
             //}
-            //catch (Exception ex)
-            //{
-            //    await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //}
-            //finally
-            //{
-            //    IsBusy = false;
-            //}
+            catch (Exception ex)
+            {
+                await _dialogService.ShowError(ex, "Error");
+            }
+            finally
+            {
+                IsBusy = false;
+                UpdateCommandStatus();
+            }
+        }
+
+        protected override void UpdateCommandStatus()
+        {
+            base.UpdateCommandStatus();
+            ExecuteCommand.NotifyCanExecuteChanged();
+            SaveLocalCommand.NotifyCanExecuteChanged();
+            AddParameterCommand.NotifyCanExecuteChanged();
         }
 
         private bool ExecuteCommandCanExecute() => !IsBusy && !IsDirty && IsValid;
 
-        public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, SaveLocalCommandCanExecute);
+        public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute/*, SaveLocalCommandCanExecute*/);
 
         private void SaveLocalCommandExecute()
         {
-            throw new NotImplementedException();
-            //var settings = new SaveFileDialogSettings
-            //{
-            //    DefaultExt = "json",
-            //    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-            //    AddExtension = true,
-            //    OverwritePrompt = true,
-            //    CheckFileExists = false,
-            //    Title = "Save document locally"
-            //};
+            var settings = new SaveFileDialogSettings
+            {
+                //DefaultExt = "json",
+                //Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                //AddExtension = true,
+                OverwritePrompt = true,
+                CheckFileExists = false,
+                Title = "Save document locally"
+            };
 
-            //await _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
-            //{
-            //    if (confirm)
-            //    {
-            //        try
-            //        {
-            //            IsBusy = true;
-
-            //            await DispatcherHelper.RunAsync(() => File.WriteAllText(result.FileName, ResultViewModel.Content.Text));
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            await _dialogService.ShowError(ex, "Error", "ok", null).ConfigureAwait(false);
-            //        }
-            //        finally
-            //        {
-            //            IsBusy = false;
-            //        }
-            //    }
-            //}).ConfigureAwait(false);
+            _dialogService.ShowSaveFileDialog(settings, async (confirm, result) =>
+            {
+                if (confirm)
+                {
+                    try
+                    {
+                        IsBusy = true;
+                        System.IO.File.WriteAllText(result.FileName, QueryResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowError(ex, "Error");
+                    }
+                    finally
+                    {
+                        IsBusy = false;
+                    }
+                }
+            });
         }
 
-        private bool SaveLocalCommandCanExecute() => !IsBusy && !string.IsNullOrEmpty(ResultViewModel.Text);
+        private bool SaveLocalCommandCanExecute() => !IsBusy && QueryResult is not null;
 
         public RelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(() => throw new NotImplementedException(), () => false);
 

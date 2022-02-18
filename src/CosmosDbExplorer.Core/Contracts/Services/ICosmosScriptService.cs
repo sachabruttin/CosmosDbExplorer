@@ -12,6 +12,7 @@ namespace CosmosDbExplorer.Core.Contracts.Services
         Task<CosmosResult> DeleteStoredProcedureAsync(CosmosStoredProcedure asset);
         Task<CosmosResult> DeleteTriggerAsync(CosmosTrigger asset);
         Task<CosmosResult> DeleteUserDefinedFunctionAsync(CosmosUserDefinedFunction asset);
+        Task<CosmosStoredProcedureResult> ExecuteStoredProcedureAsync(string storedProcedureId, object partitionKey, dynamic[] parameters);
         Task<IReadOnlyList<CosmosStoredProcedure>> GetStoredProceduresAsync(CancellationToken cancellationToken);
         Task<IReadOnlyList<CosmosTrigger>> GetTriggersAsync(CancellationToken cancellationToken);
         Task<IReadOnlyList<CosmosUserDefinedFunction>> GetUserDefinedFunctionsAsync(CancellationToken cancellationToken);

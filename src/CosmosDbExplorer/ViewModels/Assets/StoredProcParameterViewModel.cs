@@ -18,7 +18,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         public StoredProcParameterViewModel()
         {
             Document = string.Empty;
-            Kind = StoredProcParameterKind.Json;
+            Kind = StoredProcParameterKind.Array;
 
             //_textChangedObservable = Observable.FromEventPattern<EventArgs>(Document, nameof(Document.TextChanged))
             //                          .Select(evt => ((TextDocument)evt.Sender).Text)
@@ -41,15 +41,13 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public object GetValue()
         {
-            switch (Kind)
+            return Kind switch 
             {
-                case StoredProcParameterKind.Json:
-                    return JToken.Parse(Document);
-                case StoredProcParameterKind.File:
-                    return JToken.Parse(File.ReadAllText(FileName));
-                default:
-                    return null;
-            }
+                StoredProcParameterKind.Object => JToken.Parse(Document),
+                StoredProcParameterKind.Array => JArray.Parse(Document),
+                StoredProcParameterKind.File => JToken.Parse(File.ReadAllText(FileName)),
+                _ => null
+            };
         }
 
         #region IDisposable Support
@@ -86,7 +84,18 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             //RuleFor(x => x.Value).NotEmpty();
             When(x => x.Kind == StoredProcParameterKind.File, () => RuleFor(x => x.FileName).Must(obj => File.Exists(obj as string)).WithMessage("File not found!"));
-            When(x => x.Kind == StoredProcParameterKind.Json, () => RuleFor(x => x.Document).Custom((doc, ctx) =>
+            When(x => x.Kind == StoredProcParameterKind.Array, () => RuleFor(x => x.Document).Custom((doc, ctx) =>
+            {
+                try
+                {
+                    JArray.Parse(doc);
+                }
+                catch (Exception ex)
+                {
+                    ctx.AddFailure(ex.Message);
+                }
+            }));
+            When(x => x.Kind == StoredProcParameterKind.Object, () => RuleFor(x => x.Document).Custom((doc, ctx) =>
             {
                 try
                 {
@@ -102,7 +111,8 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
     public enum StoredProcParameterKind
     {
-        Json,
+        Object,
+        Array,
         File,
     }
 }

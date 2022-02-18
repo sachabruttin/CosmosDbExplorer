@@ -5,10 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CosmosDbExplorer.Views"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors" 
              xmlns:templateselectors="clr-namespace:CosmosDbExplorer.TemplateSelectors"
+             xmlns:assets="clr-namespace:CosmosDbExplorer.ViewModels.Assets" 
+             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModels.Assets"
+             d:DataContext="{d:DesignInstance Type=assets:StoredProcedureTabViewModel}"
              mc:Ignorable="d" 
              Style="{DynamicResource CosmosUserControl}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -40,7 +44,7 @@
                         <LayoutAnchorablePaneGroup>
                             <LayoutAnchorablePane>
                                 <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
-                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode" 
+                                    <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode" 
                                                            ShowLineNumbers="True"
                                                            Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -50,7 +54,7 @@
                                             <bhv:AvalonTextEditorBehavior UseSearch="True" />
                                             <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </i:Interaction.Behaviors>
-                                    </avalonedit:TextEditor>
+                                    </avalonEdit:TextEditor>
                                 </LayoutAnchorable>
                             </LayoutAnchorablePane>
                         </LayoutAnchorablePaneGroup>
@@ -103,26 +107,27 @@
                                                                         <ColumnDefinition Width="Auto"/>
                                                                     </Grid.ColumnDefinitions>
 
-                                                                    <!--<ComboBox SelectedItem="{Binding Kind, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
+                                                                    <ComboBox SelectedItem="{Binding Kind, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,7,2"
                                                                               ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type vm:StoredProcParameterKind}}}"
                                                                               x:Name="_item"
-                                                                              Grid.Column="0" VerticalAlignment="Top"/>-->
+                                                                              Grid.Column="0" VerticalAlignment="Top"/>
 
                                                                     <ContentControl Grid.Column="1" Content="{Binding Kind}" Margin="2,2,7,2" >
                                                                         <ContentControl.ContentTemplateSelector>
                                                                             <templateselectors:StoredProcParameterTemplateSelector>
                                                                                 <templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
                                                                                     <DataTemplate>
-                                                                                        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                                                                        <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 
                                                                                                                BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                                                                                                               Style="{StaticResource CosmosEditor}"
                                                                                                                ShowLineNumbers="True" Padding="2"
                                                                                                                ContextMenu="{StaticResource JsonEditorContextMenu}">
                                                                                             <i:Interaction.Behaviors>
                                                                                                 <bhv:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
                                                                                                 <bhv:AvalonTextEditorBehavior UseSearch="True" />
-                                                                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Path=DataContext.Document, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}" />
+                                                                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Path=DataContext.Document, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}" />
                                                                                             </i:Interaction.Behaviors>
-                                                                                        </avalonedit:TextEditor>
+                                                                                        </avalonEdit:TextEditor>
 
                                                                                     </DataTemplate>
                                                                                 </templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
@@ -223,8 +228,22 @@
 
                                     <LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource ResultPaneIcon}">
-                                        <local:JsonEditorView DataContext="{Binding ResultViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                        <!--<local:JsonEditorView DataContext="{Binding ResultViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />-->
+
+                                        <avalonEdit:TextEditor x:Name="resultViewer" 
+                                                               ShowLineNumbers="True"
+                                                               IsReadOnly="True"
+                                                               Style="{StaticResource CosmosEditor}">
+                                            <avalonEdit:TextEditor.InputBindings>
+                                                <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
+                                            </avalonEdit:TextEditor.InputBindings>
+
+                                            <i:Interaction.Behaviors>
+                                                <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}" x:Name="zoomBehavior"/>
+                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding QueryResult, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </i:Interaction.Behaviors>
+                                        </avalonEdit:TextEditor>
                                     </LayoutAnchorable>
 
                                     <LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="True"

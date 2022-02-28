@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
+
 using Microsoft.Azure.Cosmos;
 
 namespace CosmosDbExplorer.Core.Services
 {
     public class CosmosClientService : ICosmosClientService
     {
-        private readonly ConcurrentDictionary<Guid, CosmosClient> _client = new ConcurrentDictionary<Guid, CosmosClient>();
+        private readonly ConcurrentDictionary<Guid, CosmosClient> _client = new();
 
         public CosmosClient GetClient(CosmosConnection connection)
         {
@@ -33,7 +35,7 @@ namespace CosmosDbExplorer.Core.Services
                 EnableTcpConnectionEndpointRediscovery = connection.EnableEndpointDiscovery
             };
 
-            return new CosmosClient(accountEndpoint: connection.DatabaseUri.ToString(), authKeyOrResourceToken: connection.AuthenticationKey, options);
+            return new CosmosClient(accountEndpoint: connection.DatabaseUri?.ToString(), authKeyOrResourceToken: connection.AuthenticationKey, options);
         }
     }
 }

@@ -18,6 +18,7 @@
 
         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}" x:Key="ProgressBarText">
             <Setter Property="Margin" Value="10,0" />
+            <Setter Property="Foreground" Value="Black" />
         </Style>
 
         <Style TargetType="{x:Type ProgressBar}">

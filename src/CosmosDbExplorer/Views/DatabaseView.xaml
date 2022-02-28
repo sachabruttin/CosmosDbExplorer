@@ -72,9 +72,9 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Refresh Collections" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <MenuItem Header="Refresh Containers" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New Collection" Command="{Binding AddNewContainerCommand}" />
+                            <MenuItem Header="New Container" Command="{Binding AddNewContainerCommand}" />
                             <MenuItem Header="Delete Database" Command="{Binding DeleteDatabaseCommand}" Icon="{StaticResource DeleteIconText}" />
                             <Separator />
                             <MenuItem Header="Copy">

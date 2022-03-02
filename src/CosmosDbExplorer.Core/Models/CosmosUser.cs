@@ -4,14 +4,23 @@ using System.Text;
 
 using CosmosDbExplorer.Core.Contracts;
 
+using Microsoft.Azure.Cosmos;
+
 namespace CosmosDbExplorer.Core.Models
 {
     public class CosmosUser : ICosmosResource
     {
-        public string Id => throw new NotImplementedException();
+        public CosmosUser(UserProperties properties)
+        {
+            Id = properties.Id;
+            ETag = properties.ETag;
+            SelfLink = properties.SelfLink;
+        }
 
-        public string ETag => throw new NotImplementedException();
+        public CosmosUser() { }
 
-        public string SelfLink => throw new NotImplementedException();
+        public string? Id { get; set; }
+        public string? ETag { get; }
+        public string? SelfLink { get; }
     }
 }

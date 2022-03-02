@@ -4,20 +4,26 @@ using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Messages;
+
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class UserNodeViewModel : TreeViewItemViewModel<UsersNodeViewModel>, ICanRefreshNode, IContent
     {
-        private RelayCommand _refreshCommand;
-        private RelayCommand _openCommand;
-        private RelayCommand _addPermissionCommand;
+        private AsyncRelayCommand? _refreshCommand;
+        private RelayCommand? _openCommand;
+        private RelayCommand? _addPermissionCommand;
+        private readonly CosmosUserService _cosmosUserService;
 
-        public UserNodeViewModel(CosmosUser user, UsersNodeViewModel parent)
+        public UserNodeViewModel(CosmosUser user, UsersNodeViewModel parent, CosmosUserService cosmosUserService)
             : base(parent, true)
         {
             User = user;
+            _cosmosUserService = cosmosUserService;
         }
 
         public string Name => User.Id;
@@ -28,55 +34,29 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             IsLoading = true;
 
-            //var permissions = await _dbService.GetPermissionAsync(Parent.Parent.Parent.Connection, User).ConfigureAwait(false);
+            var permissions = await _cosmosUserService.GetPermissionsAsync(User, token);
 
-            //await DispatcherHelper.RunAsync(() =>
-            //{
-            //    foreach (var permission in permissions)
-            //    {
-            //        Children.Add(new PermissionNodeViewModel(permission, this));
-            //    }
-            //});
+            foreach (var permission in permissions)
+            {
+                Children.Add(new PermissionNodeViewModel(permission, this));
+            }
 
             IsLoading = false;
         }
 
-        public ICommand RefreshCommand => _refreshCommand;
-        //{
-        //    get
-        //    {
-        //        return _refreshCommand
-        //            ?? (_refreshCommand = new RelayCommand(
-        //                async () =>
-        //                {
-        //                    await DispatcherHelper.RunAsync(async () =>
-        //                    {
-        //                        Children.Clear();
-        //                        await LoadChildren().ConfigureAwait(false);
-        //                    });
-        //                }));
-        //    }
-        //}
+        public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
 
-        //public RelayCommand OpenCommand
-        //{
-        //    get
-        //    {
-        //        return _openCommand
-        //            ?? (_openCommand = new RelayCommand(
-        //                () => MessengerInstance.Send(new EditUserMessage(this, Parent.Parent.Parent.Connection, null))));
-        //    }
-        //}
+        private Task RefreshCommandExecute()
+        {
+            Children.Clear();
+            return LoadChildren(new CancellationToken());
+        }
 
-        //public RelayCommand AddPermissionCommand
-        //{
-        //    get
-        //    {
-        //        return _addPermissionCommand ?? (_addPermissionCommand = new RelayCommand(
-        //            () => MessengerInstance.Send(new EditPermissionMessage(new PermissionNodeViewModel(null, this), Parent.Parent.Parent.Connection, null)
-        //            )));
-        //    }
-        //}
+
+        public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new EditUserMessage(this, Parent.Parent.Parent.Connection, Parent.Database)));
+
+
+        public RelayCommand AddPermissionCommand => _addPermissionCommand ??= new(() => Messenger.Send(new EditPermissionMessage(new PermissionNodeViewModel(new CosmosPermission(), this), Parent.Parent.Parent.Connection, null)));
 
         public CosmosUser User { get; set; }
     }

@@ -67,7 +67,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
                     Children.Add(new DatabaseScaleNodeViewModel(this));
                 }
 
-                Children.Add(new UsersNodeViewModel(Database, this));
+                Children.Add(new UsersNodeViewModel(_serviceProvider, Database, this));
 
                 foreach (var container in containers.OrderBy(c => c.Id))
                 {

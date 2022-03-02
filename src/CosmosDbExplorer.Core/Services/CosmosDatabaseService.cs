@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Helpers;
 using CosmosDbExplorer.Core.Models;
+
 using Microsoft.Azure.Cosmos;
 
 namespace CosmosDbExplorer.Core.Services

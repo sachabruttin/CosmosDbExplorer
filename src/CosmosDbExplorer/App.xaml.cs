@@ -137,6 +137,8 @@ namespace CosmosDbExplorer
             services.AddTransient<ImportDocumentViewModel>();
             services.AddTransient<DatabaseScaleViewModel>();
             services.AddTransient<ContainerScaleSettingsViewModel>();
+            services.AddTransient<UserEditViewModel>();
+            services.AddTransient<PermissionEditViewModel>();
 
             services.AddTransient<ViewModels.Assets.TriggerTabViewModel>();
             services.AddTransient<ViewModels.Assets.StoredProcedureTabViewModel>();

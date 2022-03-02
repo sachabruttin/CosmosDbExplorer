@@ -98,16 +98,16 @@
                     <views:DatabaseScaleView />
                 </DataTemplate>
             </selector:TabContentTemplateSelector.DatabaseScaleTemplate>
-            <!--<selector:TabContentTemplateSelector.UserEditTempalate>
+            <selector:TabContentTemplateSelector.UserEditTempalate>
                 <DataTemplate>
                     <views:UserEditView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.UserEditTempalate>-->
-            <!--<selector:TabContentTemplateSelector.PermissionEditTemplate>
+            </selector:TabContentTemplateSelector.UserEditTempalate>
+            <selector:TabContentTemplateSelector.PermissionEditTemplate>
                 <DataTemplate>
                     <views:PermissionEditView />
                 </DataTemplate>
-            </selector:TabContentTemplateSelector.PermissionEditTemplate>-->
+            </selector:TabContentTemplateSelector.PermissionEditTemplate>
             <selector:TabContentTemplateSelector.MetricsTemplate>
                 <DataTemplate>
                     <views:MetricsTabView />

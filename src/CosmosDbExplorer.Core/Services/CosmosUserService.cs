@@ -73,5 +73,15 @@ namespace CosmosDbExplorer.Core.Services
 
             return result;
         }
+
+        public Task<CosmosQueryResult<CosmosPermission>> SavePermissionAsync(CosmosUser user, CosmosPermission permission, CancellationToken cancellationToken)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<CosmosResult> DeletePermissionAsync(CosmosPermission permission, CancellationToken cancellationToken)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace CosmosDbExplorer.Core.Models
         {
         }
 
-        public string? Id { get; }
+        public string? Id { get; set; }
         public string? ETag { get; }
         public string? SelfLink { get; }
         public CosmosPermissionMode PermissionMode { get; set; }

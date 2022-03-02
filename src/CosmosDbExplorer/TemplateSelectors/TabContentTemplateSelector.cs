@@ -22,67 +22,22 @@ namespace CosmosDbExplorer.TemplateSelectors
 
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
-            if (item is DatabaseViewModel)
+            return item switch
             {
-                return DatabaseViewTemplate;
-            }
-
-            if (item is DocumentsTabViewModel)
-            {
-                return DocumentsTemplate;
-            }
-
-            if (item is QueryEditorViewModel)
-            {
-                return QueryEditorTemplate;
-            }
-
-            if (item is ImportDocumentViewModel)
-            {
-                return ImportDocumentTemplate;
-            }
-
-            if (item is StoredProcedureTabViewModel)
-            {
-                return StoredProcedureViewTemplate;
-            }
-
-            if (item is UserDefFuncTabViewModel)
-            {
-                return UserDefFuncViewTemplate;
-            }
-
-            if (item is TriggerTabViewModel)
-            {
-                return TriggerViewTemplate;
-            }
-
-            if (item is ContainerScaleSettingsViewModel)
-            {
-                return ContainerScaleSettingsTemplate;
-            }
-
-            if (item is DatabaseScaleViewModel)
-            {
-                return DatabaseScaleTemplate;
-            }
-
-            //if (item is UserEditViewModel)
-            //{
-            //    return UserEditTempalate;
-            //}
-
-            //if (item is PermissionEditViewModel)
-            //{
-            //    return PermissionEditTemplate;
-            //}
-
-            if (item is MetricsTabViewModel)
-            {
-                return MetricsTemplate;
-            }
-
-            return base.SelectTemplate(item, container);
+                DatabaseViewModel => DatabaseViewTemplate,
+                DocumentsTabViewModel => DocumentsTemplate,
+                QueryEditorViewModel => QueryEditorTemplate,
+                ImportDocumentViewModel => ImportDocumentTemplate,
+                StoredProcedureTabViewModel => StoredProcedureViewTemplate,
+                UserDefFuncTabViewModel => UserDefFuncViewTemplate,
+                TriggerTabViewModel => TriggerViewTemplate,
+                ContainerScaleSettingsViewModel => ContainerScaleSettingsTemplate,
+                DatabaseScaleViewModel => DatabaseScaleTemplate,
+                UserEditViewModel => UserEditTempalate,
+                MetricsTabViewModel => MetricsTemplate,
+                PermissionEditViewModel => PermissionEditTemplate,
+                _ => base.SelectTemplate(item, container)
+            };
         }
     }
 }

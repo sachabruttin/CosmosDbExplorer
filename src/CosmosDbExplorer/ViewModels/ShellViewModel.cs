@@ -160,8 +160,8 @@ namespace CosmosDbExplorer.ViewModels
             Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ContainerScaleSettingsViewModel, ScaleSettingsNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenDatabaseScaleViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DatabaseScaleViewModel, DatabaseScaleNodeViewModel>(msg));
 
-            //Messenger.Register<ShellViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
-            //Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
             Messenger.Register<ShellViewModel, OpenMetricsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<MetricsTabViewModel, MetricsNodeViewModel>(msg));
 
             Messenger.Register<ShellViewModel, EditStoredProcedureMessage>(this, static (r, msg) => r.OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
@@ -246,6 +246,11 @@ namespace CosmosDbExplorer.ViewModels
                     Tabs.Add(content);
                     SelectedTab = content;
                 }
+                else
+                {
+                    var type = typeof(TTabViewModel);
+                    throw new Exception($"Don't forget to register type {type.Name} in IoC.");
+                }      
             }
         }
 

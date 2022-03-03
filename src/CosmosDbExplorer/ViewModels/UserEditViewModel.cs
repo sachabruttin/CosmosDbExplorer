@@ -40,7 +40,7 @@ namespace CosmosDbExplorer.ViewModels
             Title = "User";
         }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         public void OnUserIdChanged()
         {
@@ -49,7 +49,12 @@ namespace CosmosDbExplorer.ViewModels
 
         private void SetInformation()
         {
-            UserId = Node?.User?.Id;
+            if (Node is null)
+            {
+                throw new NullReferenceException("Node should not be null");
+            }
+
+            UserId = Node.User.Id;
 
             IsDirty = false;
         }
@@ -58,8 +63,23 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, UserNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override void Load(string contentId, UserNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
             ContentId = contentId;
             Node = node;
             Connection = connection;
@@ -98,7 +118,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var result = await _userService.SaveUserAsync(user, new System.Threading.CancellationToken());
 
-                Header = result.Items.Id;
+                Header = result.Items.Id ?? string.Empty;
                 Node.User = user;
                 ContentId = Node.ContentId;
 
@@ -139,6 +159,13 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         public bool IsDirty { get; private set; }
+
+        protected void OnIsDirtyChanged()
+        {
+            _saveCommand?.NotifyCanExecuteChanged();
+            _deleteCommand?.NotifyCanExecuteChanged();
+            _discardCommand?.NotifyCanExecuteChanged();
+        }
     }
 
     public class UserEditViewModelValidator : AbstractValidator<UserEditViewModel>

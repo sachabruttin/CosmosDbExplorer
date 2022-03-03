@@ -17,6 +17,8 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 
+using PropertyChanged;
+
 using Validar;
 
 namespace CosmosDbExplorer.ViewModels
@@ -39,13 +41,21 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService = dialogService;
             Header = "New Permission";
             Title = "Permission";
-            PropertyChanged += (s, e) => IsDirty = IsEntityChanged();
+            PropertyChanged += (s, e) =>
+            {
+                var properties = new[] { nameof(PermissionId), nameof(PermissionMode), nameof(ResourceLink), nameof(ResourcePartitionKey) };
+
+                if (properties.Contains(e.PropertyName))
+                {
+                    IsDirty = IsEntityChanged();
+                }
+            };
         }
 
-        public string PermissionId { get; set; }
+        public string? PermissionId { get; set; }
         public CosmosPermissionMode PermissionMode { get; set; }
         public string ResourceLink { get; set; }
-        public string ResourcePartitionKey { get; set; }
+        public string? ResourcePartitionKey { get; set; }
 
         public CosmosPermission Permission { get; protected set; }
 
@@ -79,10 +89,15 @@ namespace CosmosDbExplorer.ViewModels
 
         private void SetInformation()
         {
-            PermissionId = Permission?.Id;
-            PermissionMode = Permission?.PermissionMode ?? CosmosPermissionMode.Read;
-            ResourceLink = Permission?.ResourceUri;
-            ResourcePartitionKey = Permission?.PartitionKey?.ToString();
+            if (Permission is null)
+            {
+                throw new NullReferenceException("Permission should not be null");
+            }
+
+            PermissionId = Permission.Id;
+            PermissionMode = Permission.PermissionMode;
+            ResourceLink = Permission.ResourceUri;
+            ResourcePartitionKey = Permission.PartitionKey;
 
             IsDirty = false;
         }
@@ -91,8 +106,23 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, PermissionNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override void Load(string contentId, PermissionNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
             ContentId = contentId;
             Node = node;
             Permission = node?.Permission ?? new CosmosPermission();
@@ -180,6 +210,13 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         public bool IsDirty { get; private set; }
+
+        protected void OnIsDirtyChanged()
+        {
+            _saveCommand?.NotifyCanExecuteChanged();
+            _deleteCommand?.NotifyCanExecuteChanged();
+            _discardCommand?.NotifyCanExecuteChanged();
+        }
     }
 
     public class PermissionEditViewModelValidator : AbstractValidator<PermissionEditViewModel>

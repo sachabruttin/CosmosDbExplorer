@@ -25,7 +25,7 @@
             <TextBlock Text="Mode"
                        Margin="{StaticResource SmallTopMargin}"
                        Style="{StaticResource BodyTextStyle}"/>
-            
+
             <ComboBox SelectedValue="{Binding PermissionMode, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Source={mkup:EnumBindingSource {x:Type core:CosmosPermissionMode}}}"
                   Margin="{StaticResource SmallTopBottomMargin}"/>
@@ -33,7 +33,7 @@
             <TextBlock Text="Resource Link" 
                        Margin="{StaticResource SmallTopMargin}"
                        Style="{StaticResource BodyTextStyle}"/>
-            
+
             <TextBox Text="{Binding ResourceLink, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      Margin="{StaticResource SmallTopBottomMargin}">
                 <mah:TextBoxHelper.Watermark>SelfLink of the resource</mah:TextBoxHelper.Watermark>

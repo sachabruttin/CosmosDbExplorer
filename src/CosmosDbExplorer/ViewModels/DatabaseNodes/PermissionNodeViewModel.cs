@@ -14,7 +14,10 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
-    public class PermissionNodeViewModel : TreeViewItemViewModel<UserNodeViewModel>, ICanRefreshNode, IContent
+    public class PermissionNodeViewModel : TreeViewItemViewModel<UserNodeViewModel>
+        , ICanRefreshNode
+        , IContent
+        , IHaveOpenCommand
     {
         private AsyncRelayCommand _refreshCommand;
         private RelayCommand _openCommand;

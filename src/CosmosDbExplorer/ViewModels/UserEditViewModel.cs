@@ -83,8 +83,7 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecute()
         {
-            CosmosUser? user = null;
-
+            CosmosUser? user;
             if (IsNewDocument)
             {
                 user = new CosmosUser { Id = UserId };

@@ -156,7 +156,7 @@ namespace CosmosDbExplorer.ViewModels
                 }
             }
 
-            await _dialogService.ShowQuestion("Do you want to delete this ", "Delete User", deleteUser);
+            await _dialogService.ShowQuestion($"Do you want to delete the user '{Node.User.Id}' ?", "Delete User", deleteUser);
         }
 
         public bool IsDirty { get; private set; }

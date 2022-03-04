@@ -4,6 +4,7 @@ using System.Windows.Input;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Properties;
 
 using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -19,6 +20,12 @@ namespace CosmosDbExplorer.ViewModels
         private RelayCommand? _resetSettingsCommand;
 
         public AppTheme Theme { get; set; }
+
+        public DialogStyles DialogStyle
+        {
+            get { return Enum.Parse<DialogStyles>(Settings.Default.DialogService); }
+            set { Settings.Default.DialogService = value.ToString(); }
+        }
 
         public string VersionDescription { get; set; }
 

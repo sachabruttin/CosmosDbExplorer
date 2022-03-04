@@ -6,4 +6,10 @@
         Light,
         Dark
     }
+
+    public enum DialogStyles
+    {
+        Default,
+        Metro
+    }
 }

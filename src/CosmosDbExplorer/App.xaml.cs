@@ -12,6 +12,7 @@ using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Properties;
 using CosmosDbExplorer.Services;
 using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.Views;
@@ -79,6 +80,9 @@ namespace CosmosDbExplorer
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IDialogService, MetroDialogService>();
+
+            services.AddSingleton<IDialogService>(GetDialogService());
+
             services.AddSingleton<IUIServices, UIServices>();
 
             // Cosmos Services
@@ -198,6 +202,15 @@ Error: {details}";
             {
                 MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private static IDialogService GetDialogService()
+        {
+            return Settings.Default.DialogService switch
+            {
+                "Metro" => new MetroDialogService(),
+                _ => new DialogService(),
+            };
         }
     }
 }

@@ -58,7 +58,7 @@ namespace CosmosDbExplorer.Core.Services
                 result.RequestCharge = response.RequestCharge;
                 result.ContinuationToken = response.ContinuationToken;
                 result.Items = response.Resource.ToArray();
-                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                result.Headers = response.Headers.ToDictionary();
             }
 
             return result;
@@ -87,7 +87,7 @@ namespace CosmosDbExplorer.Core.Services
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = response.Resource;
-                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                result.Headers = response.Headers.ToDictionary();
                 //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
 
                 return result;
@@ -120,7 +120,7 @@ namespace CosmosDbExplorer.Core.Services
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = (JObject)response.Resource;
-                result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                result.Headers = response.Headers.ToDictionary();
                 //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
 
                 return result;
@@ -228,7 +228,7 @@ namespace CosmosDbExplorer.Core.Services
                     result.RequestCharge = response.RequestCharge;
                     result.ContinuationToken = response.ContinuationToken;
                     result.Items = response.Resource.ToArray();
-                    result.Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+                    result.Headers = response.Headers.ToDictionary();
                     //result.Diagnostics = response.Diagnostics.ToString;
                     result.IndexMetrics = response.IndexMetrics;
                 }

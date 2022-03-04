@@ -15,6 +15,7 @@
                        Style="{StaticResource BodyTextStyle}"/>
             
             <TextBox Text="{Binding UserId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     IsEnabled="{Binding IsNewDocument}"
                      Margin="{StaticResource SmallTopBottomMargin}" >
                 <mah:TextBoxHelper.Watermark>Unique user identifier</mah:TextBoxHelper.Watermark>
                 <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>

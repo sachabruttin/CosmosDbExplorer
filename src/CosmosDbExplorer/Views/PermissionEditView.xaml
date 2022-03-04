@@ -7,7 +7,9 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mkup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
              xmlns:databasenodes="clr-namespace:CosmosDbExplorer.ViewModels.DatabaseNodes" 
-             xmlns:core="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
+             xmlns:core="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core" 
+             xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:PermissionEditViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer>
@@ -17,7 +19,8 @@
                        Style="{StaticResource BodyTextStyle}"/>
             
             <TextBox Text="{Binding PermissionId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                     Margin="{StaticResource SmallTopBottomMargin}">
+                     Margin="{StaticResource SmallTopBottomMargin}"
+                     IsEnabled="{Binding IsNewDocument}">
                 <mah:TextBoxHelper.Watermark>Unique permission identifier</mah:TextBoxHelper.Watermark>
                 <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
             </TextBox>
@@ -30,27 +33,31 @@
                   ItemsSource="{Binding Source={mkup:EnumBindingSource {x:Type core:CosmosPermissionMode}}}"
                   Margin="{StaticResource SmallTopBottomMargin}"/>
 
-            <TextBlock Text="Resource Link" 
+            <TextBlock Text="Container" 
                        Margin="{StaticResource SmallTopMargin}"
                        Style="{StaticResource BodyTextStyle}"/>
 
-            <TextBox Text="{Binding ResourceLink, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                     Margin="{StaticResource SmallTopBottomMargin}">
-                <mah:TextBoxHelper.Watermark>SelfLink of the resource</mah:TextBoxHelper.Watermark>
-                <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
-            </TextBox>
+            <ComboBox ItemsSource="{Binding Containers}"
+                      SelectedItem="{Binding Container, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                      Margin="{StaticResource SmallTopBottomMargin}" />
 
-            <TextBlock Text="Resource Partition Key:"
+            <!--<TextBox Text="{Binding Container, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     Margin="{StaticResource SmallTopBottomMargin}">
+                <mah:TextBoxHelper.Watermark>SelfLink to the container (dbs/[DB Name]/colls/[Container Name])</mah:TextBoxHelper.Watermark>
+                <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
+            </TextBox>-->
+
+            <TextBlock Text="Resource Partition Key"
                        Margin="{StaticResource SmallTopMargin}"
                        Style="{StaticResource BodyTextStyle}"/>
             
             <TextBox Text="{Binding ResourcePartitionKey, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      Margin="{StaticResource SmallTopBottomMargin}">
-                <mah:TextBoxHelper.Watermark>Partition key of the resource (collection, document and attachement)</mah:TextBoxHelper.Watermark>
+                <mah:TextBoxHelper.Watermark>Partition if needed (Supports: null, float (decimal must be set), boolean (true/false), string) </mah:TextBoxHelper.Watermark>
                 <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
             </TextBox>
 
-            <TextBlock Text="Token:"
+            <TextBlock Text="Token"
                        Margin="{StaticResource SmallTopMargin}"
                        Style="{StaticResource BodyTextStyle}" />
 
@@ -61,8 +68,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Text="{Binding Permission.Token, Mode=OneWay}"
-                         IsReadOnly="True" 
-                         Background="{StaticResource MahApps.Brushes.Control.Disabled}"
+                         IsEnabled="False" 
                          Grid.Column="0"/>
 
                 <Button Grid.Column="1"  Command="{Binding CopyToClipboardCommand}"

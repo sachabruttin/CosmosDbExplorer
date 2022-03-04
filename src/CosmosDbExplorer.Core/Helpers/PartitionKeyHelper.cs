@@ -21,5 +21,40 @@ namespace CosmosDbExplorer.Core.Helpers
                 _ => throw new ArgumentException("Partition Key type not supported")
             };
         }
+
+        public static PartitionKey? Parse(string? partitionKey)
+        {
+            if (string.IsNullOrWhiteSpace(partitionKey))
+            {
+                //return PartitionKey.None;
+                return null;
+            }
+
+            if (bool.TryParse(partitionKey, out var boolResult))
+            {
+                return new PartitionKey(boolResult);
+            }
+
+            if (float.TryParse(partitionKey, out var floatResult))
+            {
+                var x = floatResult - Math.Truncate(floatResult);
+
+                if (x != 0)
+                {
+                    return new PartitionKey(floatResult);
+                }
+                else
+                {
+                    return new PartitionKey(partitionKey);
+                }
+            }
+
+            if (string.Compare(partitionKey, "null", true) == 0)
+            {
+                return PartitionKey.Null;
+            }
+
+            return new PartitionKey(partitionKey);
+        }
     }
 }

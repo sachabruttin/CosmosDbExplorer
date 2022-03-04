@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+
 using Microsoft.Azure.Cosmos;
 
 namespace CosmosDbExplorer.Core.Helpers

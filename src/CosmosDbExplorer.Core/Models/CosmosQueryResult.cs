@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using CosmosDbExplorer.Core.Helpers;
+
 using Microsoft.Azure.Cosmos.Scripts;
 
 using Newtonsoft.Json.Linq;
@@ -33,7 +35,7 @@ namespace CosmosDbExplorer.Core.Models
         {
             RequestCharge = response.RequestCharge;
             ScriptLog = response.ScriptLog;
-            Headers = response.Headers.AllKeys().ToDictionary(key => key, key => response.Headers.GetValueOrDefault(key));
+            Headers = response.Headers.ToDictionary();
             Result = response.Resource;
         }
 

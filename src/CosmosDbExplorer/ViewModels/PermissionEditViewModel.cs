@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -43,18 +44,21 @@ namespace CosmosDbExplorer.ViewModels
             Title = "Permission";
             PropertyChanged += (s, e) =>
             {
-                var properties = new[] { nameof(PermissionId), nameof(PermissionMode), nameof(ResourceLink), nameof(ResourcePartitionKey) };
+                var properties = new[] { nameof(PermissionId), nameof(PermissionMode), nameof(Container), nameof(ResourcePartitionKey) };
 
                 if (properties.Contains(e.PropertyName))
                 {
                     IsDirty = IsEntityChanged();
                 }
+
+                OnIsDirtyChanged();
             };
         }
 
+        public bool CanEditName { get; protected set; }
         public string? PermissionId { get; set; }
         public CosmosPermissionMode PermissionMode { get; set; }
-        public string ResourceLink { get; set; }
+        public string Container { get; set; }
         public string? ResourcePartitionKey { get; set; }
 
         public CosmosPermission Permission { get; protected set; }
@@ -73,7 +77,7 @@ namespace CosmosDbExplorer.ViewModels
                     return true;
                 }
 
-                if (ResourceLink != Permission.ResourceUri)
+                if (Container != Permission.ResourceUri)
                 {
                     return true;
                 }
@@ -96,7 +100,7 @@ namespace CosmosDbExplorer.ViewModels
 
             PermissionId = Permission.Id;
             PermissionMode = Permission.PermissionMode;
-            ResourceLink = Permission.ResourceUri;
+            Container = Permission.ResourceUri;
             ResourcePartitionKey = Permission.PartitionKey;
 
             IsDirty = false;
@@ -131,11 +135,15 @@ namespace CosmosDbExplorer.ViewModels
             AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
             ToolTip = $"{connection.Label}/{database.Id}/{node.Name}";
 
+            Containers = new ObservableCollection<string>(Node.Parent.Parent.Parent.Children.OfType<ContainerNodeViewModel>().Select(c => c.Name));
+
             _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, connection, database);
             SetInformation();
         }
 
         public PermissionNodeViewModel Node { get; protected set; }
+
+        public ObservableCollection<string>? Containers { get; protected set; }
 
         public RelayCommand CopyToClipboardCommand => _copyToClipboardCommand ??= new(() => System.Windows.Clipboard.SetText(Permission?.Token), () => !string.IsNullOrEmpty(Permission?.Token));
 
@@ -145,8 +153,7 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecute()
         {
-            CosmosPermission permission = null;
-
+            CosmosPermission permission;
             if (IsNewDocument)
             {
                 permission = new CosmosPermission
@@ -160,13 +167,12 @@ namespace CosmosDbExplorer.ViewModels
             }
 
             permission.Id = PermissionId;
-            permission.ResourceUri = ResourceLink;
             permission.PermissionMode = PermissionMode;
             permission.PartitionKey = ResourcePartitionKey;
 
             try
             {
-                var result = await _userService.SavePermissionAsync(Node.Parent.User, permission, new System.Threading.CancellationToken());
+                var result = await _userService.SavePermissionAsync(Node.Parent.User, permission, Container, new System.Threading.CancellationToken());
 
                 Header = result.Items.Id;
                 Node.Permission = result.Items;
@@ -196,7 +202,7 @@ namespace CosmosDbExplorer.ViewModels
 
                 try
                 {
-                    var result = await _userService.DeletePermissionAsync(Node.Permission, new System.Threading.CancellationToken());
+                    var result = await _userService.DeletePermissionAsync(Node.Parent.User, Node.Permission, new System.Threading.CancellationToken());
                     Node.Parent.RefreshCommand.Execute(null); // Send Message?
                     CloseCommand.Execute(null);
                 }
@@ -206,10 +212,10 @@ namespace CosmosDbExplorer.ViewModels
                 }
             }
 
-            await _dialogService.ShowQuestion("Do you want to delete this ", "Delete Permission", deleteUser);
+            await _dialogService.ShowQuestion($"Do you want to delete the permission '{PermissionId}' ?", "Delete Permission", deleteUser);
         }
 
-        public bool IsDirty { get; private set; }
+        public bool IsDirty { get; protected set; }
 
         protected void OnIsDirtyChanged()
         {
@@ -224,7 +230,8 @@ namespace CosmosDbExplorer.ViewModels
         public PermissionEditViewModelValidator()
         {
             RuleFor(x => x.PermissionId).NotEmpty();
-            RuleFor(x => x.ResourceLink).NotEmpty();
+            RuleFor(x => x.Container).NotEmpty();
+                //.Matches(@"dbs\/(\w|\s)*\/colls\/(\w|\s)*").WithMessage("Must be in the format 'dbs/[db id]/colls/[container id]");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Linq;
 
 using CosmosDbExplorer.Core.Contracts;
 
@@ -15,14 +16,15 @@ namespace CosmosDbExplorer.Core.Models
             ETag = properties.ETag;
             SelfLink = properties.SelfLink;
             PermissionMode = (CosmosPermissionMode)properties.PermissionMode;
-            PartitionKey = properties.ResourcePartitionKey?.ToString();
-            ResourceUri = properties.ResourceUri;
+            PartitionKey = properties.ResourcePartitionKey?.ToString().Trim('[', '"', ']');
+            ResourceUri = properties.ResourceUri.Split('/').Last();
             Token = properties.Token;
             LastModifed = properties.LastModified;
         }
 
         public CosmosPermission()
         {
+            PermissionMode = CosmosPermissionMode.Read;
         }
 
         public string? Id { get; set; }

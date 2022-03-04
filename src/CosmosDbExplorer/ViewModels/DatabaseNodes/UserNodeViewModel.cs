@@ -59,7 +59,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public RelayCommand OpenCommand => _openCommand ??= new(() => Messenger.Send(new EditUserMessage(this, Parent.Parent.Parent.Connection, Parent.Database)));
 
 
-        public RelayCommand AddPermissionCommand => _addPermissionCommand ??= new(() => Messenger.Send(new EditPermissionMessage(new PermissionNodeViewModel(new CosmosPermission(), this), Parent.Parent.Parent.Connection, null)));
+        public RelayCommand AddPermissionCommand => _addPermissionCommand ??= new(() => Messenger.Send(new EditPermissionMessage(new PermissionNodeViewModel(new CosmosPermission(), this), Parent.Parent.Parent.Connection, Parent.Database)));
 
         public CosmosUser User { get; set; }
     }

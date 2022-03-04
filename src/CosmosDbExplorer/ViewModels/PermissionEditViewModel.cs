@@ -42,6 +42,7 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService = dialogService;
             Header = "New Permission";
             Title = "Permission";
+            IconSource = App.Current.FindResource("PermissionIcon");
             PropertyChanged += (s, e) =>
             {
                 var properties = new[] { nameof(PermissionId), nameof(PermissionMode), nameof(Container), nameof(ResourcePartitionKey) };

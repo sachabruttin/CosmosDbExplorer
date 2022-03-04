@@ -38,6 +38,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
+            IconSource = App.Current.FindResource("ScaleSettingsIcon");
         }
 
         public ScaleSettingsNodeViewModel? Node { get; private set; }

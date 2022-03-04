@@ -38,6 +38,7 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService = dialogService;
             Header = "New User";
             Title = "User";
+            IconSource = App.Current.FindResource("UserIcon");
         }
 
         public string? UserId { get; set; }

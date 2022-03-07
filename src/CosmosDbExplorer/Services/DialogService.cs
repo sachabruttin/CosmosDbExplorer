@@ -88,7 +88,7 @@ namespace CosmosDbExplorer.Services
 
         public Task ShowError(Exception error, string title, Action? afterHideCallback = null)
         {
-            return ShowError(error.GetBaseException().Message, title, afterHideCallback);
+            return ShowError(error.Message, title, afterHideCallback);
         }
 
         public Task ShowMessage(string message, string title, Action? afterHideCallback = null)
@@ -122,7 +122,7 @@ namespace CosmosDbExplorer.Services
 
         public Task ShowError(Exception error, string title, Action? afterHideCallback = null)
         {
-            return ShowError(error.GetBaseException().Message, title, afterHideCallback);
+            return ShowError(error.Message, title, afterHideCallback);
         }
 
         public Task ShowMessage(string message, string title, Action? afterHideCallback = null)

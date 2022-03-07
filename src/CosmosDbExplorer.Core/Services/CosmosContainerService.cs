@@ -116,14 +116,21 @@ namespace CosmosDbExplorer.Core.Services
 
         public async Task<CosmosThroughput> UpdateThroughputAsync(CosmosContainer container, int throughput, bool isAutoscale)
         {
-            var ct = _client.GetContainer(_cosmosDatabase.Id, container.Id);
+            try
+            {
+                var ct = _client.GetContainer(_cosmosDatabase.Id, container.Id);
 
-            var properties = isAutoscale
-                ? ThroughputProperties.CreateAutoscaleThroughput(throughput)
-                : ThroughputProperties.CreateManualThroughput(throughput);
+                var properties = isAutoscale
+                    ? ThroughputProperties.CreateAutoscaleThroughput(throughput)
+                    : ThroughputProperties.CreateManualThroughput(throughput);
 
-            var result = await ct.ReplaceThroughputAsync(properties);
-            return new CosmosThroughput(result);
+                var result = await ct.ReplaceThroughputAsync(properties);
+                return new CosmosThroughput(result);
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage(), ex);
+            }
         }
 
 

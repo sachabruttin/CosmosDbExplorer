@@ -14,12 +14,17 @@ namespace CosmosDbExplorer.Core.Helpers
             {
                 if (TryGetQueryException(exception, out var queryException))
                 {
-                    return queryException;
+                    return queryException ?? string.Empty;
                 }
 
                 if (TryGetResponseException(exception, out var responseException))
                 {
-                    return responseException;
+                    return responseException ?? string.Empty;
+                }
+
+                if (TryGetUpdatingOfferException(exception, out var offerException))
+                {
+                    return offerException ?? string.Empty;
                 }
 
                 return exception.Message;
@@ -28,6 +33,28 @@ namespace CosmosDbExplorer.Core.Helpers
             {
                 return exception.Message;
             }
+        }
+
+        private static bool TryGetUpdatingOfferException(CosmosException exception, out string? message)
+        {
+            try
+            {
+                var index = exception.ResponseBody.IndexOf(Environment.NewLine);
+                var start = "Message: ".Length;
+
+                var json = exception.ResponseBody.Substring(start, index-start);
+
+                var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
+
+                message = string.Join(Environment.NewLine, obj["Errors"]?.Values<string>());
+                return true;
+            }
+            catch
+            {
+                message = null;
+                return false;
+            }
+
         }
 
         private static bool TryGetResponseException(CosmosException exception, out string? message)

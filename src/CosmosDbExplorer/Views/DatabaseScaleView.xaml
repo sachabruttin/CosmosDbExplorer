@@ -41,7 +41,7 @@
                            Style="{StaticResource BodyTextStyle}"
                            TextWrapping="Wrap"
                            Visibility="{Binding IsThroughputAutoscale, Converter={StaticResource BooleanToVisibilityConverter}}">
-                           <Run>Your container throughput will automatically scale</Run> <Run FontWeight="Bold" Text="{Binding Information, Mode=OneWay}" /> <Run>based on usage.</Run>
+                           <Run>Your container throughput will automatically scale from</Run> <Run FontWeight="Bold" Text="{Binding Information, Mode=OneWay}" /> <Run>based on usage.</Run>
                            <LineBreak />
                            <Run>After the first</Run> <Run FontWeight="Bold" Text="{Binding DataStoredInGb, Mode=OneWay}" /> <Run> GB of data stored, the max RU/s will be automatically upgraded based on the new storage value.</Run>
                            <Hyperlink CommandParameter="https://aka.ms/cosmos-autoscale-info"

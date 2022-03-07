@@ -28,16 +28,19 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private ICosmosContainerService _containerService;
-        private AsyncRelayCommand _saveCommand;
-        private RelayCommand _discardCommand;
-        private CosmosThroughput _originalThroughput;
+        private readonly ISystemService _systemService;
+        private ICosmosContainerService? _containerService;
+        private AsyncRelayCommand? _saveCommand;
+        private RelayCommand? _discardCommand;
+        private RelayCommand<string>? _openUrlCommand;
+        private CosmosThroughput? _originalThroughput;
 
-        public ContainerScaleSettingsViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
+        public ContainerScaleSettingsViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, ISystemService systemService)
             : base(uiServices)
         {
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
+            _systemService = systemService;
             IconSource = App.Current.FindResource("ScaleSettingsIcon");
         }
 
@@ -71,27 +74,76 @@ namespace CosmosDbExplorer.ViewModels
         public string? IndexingPolicy { get; set; }
 
         public bool IsIndexingPolicyChanged { get; set; }
+
         public bool IsThroughputAutoscale { get; set; } = true;
 
         public int MaxThroughput { get; set; }
 
         public int? MinThroughput { get; set; }
 
+        public bool IsFixedStorage { get; set; }
+
+        public void OnIsFixedStorageChanged()
+        {
+            if (Throughput > 10000)
+            {
+                Throughput = 10000;
+            }
+        }
+
+        public bool IsUnlimitedStorage { get; set; }
+
+        public void OnIsUnlimitedStorageChanged()
+        {
+            if (Throughput < 1000)
+            {
+                Throughput = 1000;
+            }
+        }
+
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public int? Throughput { get; set; }
 
         public int Increment => IsThroughputAutoscale ? 1000 : 100;
 
+        [DependsOn(nameof(IsThroughputAutoscale), nameof(Throughput))]
+        public string Information => $"{Throughput * 0.1} RU/s (10 % of max RU/s) - {Throughput} RU/s";
+
+        [DependsOn(nameof(IsThroughputAutoscale), nameof(Throughput))]
+        public string DataStoredInGb => $"{Throughput * 0.01}";
+
         public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged.GetValueOrDefault(false) || HasSettingsChanged);
 
         public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged || HasIndexingPolicyChanged.GetValueOrDefault(false) || HasSettingsChanged);
+
+        public RelayCommand<string> OpenUrlCommand => _openUrlCommand ??= new RelayCommand<string>(OpenUrl);
 
         private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
         private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
         private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
-        public override async void Load(string contentId, ScaleSettingsNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override async void Load(string contentId, ScaleSettingsNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
+            if (container is null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
             //IsLoading = true;
 
             ContentId = contentId;
@@ -122,16 +174,16 @@ namespace CosmosDbExplorer.ViewModels
         {
             TimeToLiveInSecond = Container?.DefaultTimeToLive;
             TimeToLive = TimeToLiveTypeExtensions.Get(Container?.DefaultTimeToLive);
-            GeoType = Container.GeospatialType;
-            IndexingPolicy = Container.IndexingPolicy;
+            GeoType = Container?.GeospatialType ?? CosmosGeospatialType.Geography ;
+            IndexingPolicy = Container?.IndexingPolicy;
         }
 
         private void SetThroughputInfo(CosmosThroughput? throughput)
         {
-            _originalThroughput = throughput;
-
-            if (throughput != null)
+            if (throughput is not null)
             {
+                _originalThroughput = throughput;
+
                 MinThroughput = _originalThroughput.MinThroughtput;
                 MaxThroughput = int.MaxValue - (int.MaxValue % 1000);
                 IsThroughputAutoscale = _originalThroughput.AutoscaleMaxThroughput.HasValue;
@@ -179,6 +231,14 @@ namespace CosmosDbExplorer.ViewModels
             finally
             {
                 IsBusy = false;
+            }
+        }
+
+        private void OpenUrl(string? url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                _systemService.OpenInWebBrowser(url);
             }
         }
 

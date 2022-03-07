@@ -24,14 +24,14 @@ namespace CosmosDbExplorer.ViewModels
     [InjectValidation]
     public class DatabaseScaleViewModel : PaneWithZoomViewModel<DatabaseScaleNodeViewModel>
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private ICosmosDatabaseService _cosmosDatabaseService;
         private readonly ISystemService _systemService;
-        private ICommand _openUrlCommand;
-        private AsyncRelayCommand _saveCommand;
-        private RelayCommand _discardCommand;
-        private CosmosThroughput _originalThroughput;
+        private ICosmosDatabaseService? _cosmosDatabaseService;
+        private ICommand? _openUrlCommand;
+        private AsyncRelayCommand? _saveCommand;
+        private RelayCommand? _discardCommand;
+        private CosmosThroughput? _originalThroughput;
 
         public DatabaseScaleViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, ISystemService systemService)
             : base(uiServices)
@@ -42,9 +42,9 @@ namespace CosmosDbExplorer.ViewModels
             IconSource = App.Current.FindResource("ScaleSettingsIcon");
         }
 
-        public DatabaseScaleNodeViewModel Node { get; private set; }
-        public CosmosConnection Connection { get; private set; }
-        public CosmosDatabase Database { get; private set; }
+        public DatabaseScaleNodeViewModel? Node { get; private set; }
+        public CosmosConnection? Connection { get; private set; }
+        public CosmosDatabase? Database { get; private set; }
 
         public bool IsThroughputAutoscale { get; set; } = true;
 
@@ -58,7 +58,7 @@ namespace CosmosDbExplorer.ViewModels
         public int Increment => IsThroughputAutoscale ? 1000 : 100;
 
         [DependsOn(nameof(IsThroughputAutoscale), nameof(Throughput))]
-        public string Information => $"{Throughput * 0.1} RU / s(10 % of max RU/s) - {Throughput} RU/s";
+        public string Information => $"{Throughput * 0.1} RU/s (10 % of max RU/s) - {Throughput} RU/s";
 
         [DependsOn(nameof(IsThroughputAutoscale), nameof(Throughput))]
         public string DataStoredInGb => $"{Throughput * 0.01}";
@@ -70,8 +70,23 @@ namespace CosmosDbExplorer.ViewModels
         public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged);
         private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
 
-        public override async void Load(string contentId, DatabaseScaleNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override async void Load(string contentId, DatabaseScaleNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
         {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (connection is null)
+            {
+                throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
             ContentId = contentId;
             Node = node;
             Title = node.Name;
@@ -88,8 +103,13 @@ namespace CosmosDbExplorer.ViewModels
             SetThroughputInfo(throughput);
         }
 
-        private void SetThroughputInfo(CosmosThroughput throughput)
+        private void SetThroughputInfo(CosmosThroughput? throughput)
         {
+            if (throughput is null)
+            {
+                throw new ArgumentNullException(nameof(throughput));
+            }
+
             _originalThroughput = throughput;
 
             MinThroughput = _originalThroughput.MinThroughtput;
@@ -108,6 +128,16 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecute()
         {
+            if (_cosmosDatabaseService is null)
+            {
+                throw new NullReferenceException("Database service should not be null!");
+            }
+
+            if (Database is null)
+            {
+                throw new NullReferenceException("Database propery should not be null!");
+            }
+
             try
             {
                 IsBusy = true;
@@ -138,8 +168,6 @@ namespace CosmosDbExplorer.ViewModels
             SaveCommand.NotifyCanExecuteChanged();
             DiscardCommand.NotifyCanExecuteChanged();
         }
-
-
     }
 
     public class DatabaseScaleViewModelValidator : AbstractValidator<DatabaseScaleViewModel>

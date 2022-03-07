@@ -7,12 +7,16 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
              xmlns:cosmos="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core" 
-             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
+             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
              d:DataContext="{d:DesignInstance Type=viewmodels:ContainerScaleSettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+
         <TabControl>
             <TabItem Header="Settings" IsSelected="True">
                 <StackPanel>
@@ -48,8 +52,8 @@
                     </StackPanel>
 
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                        <TextBlock Text="Geospatial Configuration" Style="{StaticResource BodyTextStyle}"/>
-                        <ListBox ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type cosmos:CosmosGeospatialType}}}"
+                        <TextBlock Text="Geospatial Configuration" Style="{StaticResource BodyTextStyle}" />
+                        <ListBox ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type cosmos:CosmosGeospatialType}}}" 
                                  SelectedItem="{Binding GeoType}">
                             <ListBox.Resources>
                                 <Style TargetType="{x:Type ListBoxItem}">
@@ -69,9 +73,9 @@
                     </StackPanel>
 
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}"
-                                Visibility="{Binding PartitionKey, Converter={StaticResource nullToVisibilityConverter}}">
-                        <TextBlock Text="Partition Key" Style="{StaticResource BodyTextStyle}"/>
-                        <TextBox VerticalContentAlignment="Center"
+                                Visibility="{Binding Container.PartitionKeyPath, Converter={StaticResource nullToVisibilityConverter}}">
+                        <TextBlock Text="Partition Key" Style="{StaticResource BodyTextStyle}" />
+                        <TextBox VerticalContentAlignment="Center" 
                                  IsReadOnly="True" 
                                  IsEnabled="False"
                                  Text="{Binding Container.PartitionKeyPath}" />
@@ -82,13 +86,13 @@
             </TabItem>
             <TabItem Header="Indexing Policy">
                 <avalonedit:TextEditor x:Name="editor" 
-                                           SyntaxHighlighting="JSON"  
-                                           ShowLineNumbers="True"
+                                       SyntaxHighlighting="JSON"  
+                                       ShowLineNumbers="True"
                                        Style="{StaticResource CosmosEditor}"
                                        BorderThickness="1"
                                        BorderBrush="{StaticResource Fluent.Ribbon.Brushes.Control.BorderBrush}"
-                                           IsModified="{Binding IsChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                                       IsModified="{Binding IsChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                       ContextMenu="{StaticResource JsonEditorContextMenu}">
                     <i:Interaction.Behaviors>
                         <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
                         <behaviors:AvalonTextEditorBehavior UseSearch="True" />
@@ -97,12 +101,15 @@
                 </avalonedit:TextEditor>
             </TabItem>
             <TabItem Header="Scale" Visibility="{Binding Throughput, Converter={StaticResource nullToVisibilityConverter}}">
-                <StackPanel x:Name="ThroughputPanel">
+                <!-- https://stackoverflow.com/questions/23614510/error-template-get-lost-when-changing-tab-in-mahapps-metro -->
+                <AdornerDecorator>
+                    <StackPanel x:Name="ThroughputPanel">
                     <StackPanel Margin="{StaticResource SmallTopMargin}">
-                        <TextBlock Text="Container throughput (autoscale)"
+                        <TextBlock Text="Container throughput"
                                Style="{StaticResource BodyTextStyle}"/>
                         <mah:ToggleSwitch OnContent="Autoscale" 
                                           OffContent="Manual"
+                                          IsEnabled="False"
                                           IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </StackPanel>
@@ -112,19 +119,29 @@
                         Style="{StaticResource BodyTextStyle}"
                         Text="Container Max RU/s" />
                         <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
-                                           Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
-                                           Interval="100"
-                                           Width="250" HorizontalAlignment="Left"
-                                           Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Margin="{StaticResource XSmallTopMargin}"
-                               TextWrapping="Wrap"
-                               Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />
-                    </StackPanel>
+                               Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
+                               Interval="{Binding Increment}"
+                               Width="250" HorizontalAlignment="Left"
+                               Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-                    <TextBlock Margin="{StaticResource XXSmallTopMargin}"
-                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
+                            <TextBlock Margin="{StaticResource XSmallTopMargin}"
+                               Style="{StaticResource BodyTextStyle}"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding IsThroughputAutoscale, Converter={StaticResource BooleanToVisibilityConverter}}">
+                               <Run>Your container throughput will automatically scale from</Run> <Run FontWeight="Bold" Text="{Binding Information, Mode=OneWay}" /> <Run>based on usage.</Run>
+                               <LineBreak />
+                               <Run>After the first</Run> <Run FontWeight="Bold" Text="{Binding DataStoredInGb, Mode=OneWay}" /> <Run> GB of data stored, the max RU/s will be automatically upgraded based on the new storage value.</Run>
+                               <Hyperlink CommandParameter="https://aka.ms/cosmos-autoscale-info"
+                                          Command="{Binding OpenUrlCommand}">Learn more.</Hyperlink>
+
+                            </TextBlock>
+                        </StackPanel>
+
+                    <!--<TextBlock Margin="{StaticResource XXSmallTopMargin}"
+                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />-->
                 </StackPanel>
-            </TabItem>        
+                </AdornerDecorator>
+            </TabItem>
         </TabControl>
     </Grid>
 

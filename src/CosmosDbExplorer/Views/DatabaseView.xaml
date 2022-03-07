@@ -137,9 +137,9 @@
 
                             <Separator />
 
-                            <MenuItem Header="Delete Collection" Command="{Binding DeleteCollectionCommand}" Icon="{StaticResource DeleteIconText}" />
+                            <MenuItem Header="Delete Container" Command="{Binding DeleteContainerCommand}" Icon="{StaticResource DeleteIconText}" />
 
-                            <Separator />
+                            <!--<Separator />
                             <MenuItem Header="Remove All Documents (Delete)" Command="{Binding ClearAllDocumentsCommand}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource RemoveAllIcon}" />
@@ -149,7 +149,7 @@
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource RemoveAllIcon}" />
                                 </MenuItem.Icon>
-                            </MenuItem>
+                            </MenuItem>-->
 
                             <!--<Separator />
                             <MenuItem Header="Copy">

@@ -2,11 +2,21 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"
+                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:properties="clr-namespace:CosmosDbExplorer.Properties">
 
     <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
     <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
 
+    <Style BasedOn="{StaticResource {x:Type mah:MetroProgressBar}}" TargetType="{x:Type mah:MetroProgressBar}"
+           x:Key="TreeViewProgress">
+        <Setter Property="Foreground" Value="{StaticResource Fluent.Ribbon.Brushes.LabelTextBrush}" />
+        <Setter Property="Margin" Value="0,0,0,-4" />
+        <Setter Property="IsIndeterminate" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="IsEnabled" Value="True" />
+    </Style>
+    
     <Style BasedOn="{StaticResource {x:Type UserControl}}"
            TargetType="{x:Type UserControl}"
            x:Key="CosmosUserControl">

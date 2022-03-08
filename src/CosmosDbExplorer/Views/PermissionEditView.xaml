@@ -53,7 +53,7 @@
             
             <TextBox Text="{Binding ResourcePartitionKey, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      Margin="{StaticResource SmallTopBottomMargin}">
-                <mah:TextBoxHelper.Watermark>Partition if needed (Supports: null, float (decimal must be set), boolean (true/false), string) </mah:TextBoxHelper.Watermark>
+                <mah:TextBoxHelper.Watermark>Partition if needed (Supports: null, double, boolean (true/false), string)</mah:TextBoxHelper.Watermark>
                 <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
             </TextBox>
 

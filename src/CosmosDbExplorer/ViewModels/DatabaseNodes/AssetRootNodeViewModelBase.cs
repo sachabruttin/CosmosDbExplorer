@@ -70,9 +70,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Resource = resource;
         }
 
-        public string Name => Resource.Id;
+        public string Name => Resource.Id ?? "New";
 
-        public string ContentId => Resource.Id;
+        public string ContentId => Resource.SelfLink ?? "New";
 
         public System.Drawing.Color? AccentColor => Parent.Parent.Parent.Parent.Connection.AccentColor;
 

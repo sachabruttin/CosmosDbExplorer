@@ -26,7 +26,6 @@ namespace CosmosDbExplorer.Core.Helpers
         {
             if (string.IsNullOrWhiteSpace(partitionKey))
             {
-                //return PartitionKey.None;
                 return null;
             }
 
@@ -35,18 +34,9 @@ namespace CosmosDbExplorer.Core.Helpers
                 return new PartitionKey(boolResult);
             }
 
-            if (float.TryParse(partitionKey, out var floatResult))
+            if (double.TryParse(partitionKey, out var doubleResult))
             {
-                var x = floatResult - Math.Truncate(floatResult);
-
-                if (x != 0)
-                {
-                    return new PartitionKey(floatResult);
-                }
-                else
-                {
-                    return new PartitionKey(partitionKey);
-                }
+                return new PartitionKey(doubleResult);
             }
 
             if (string.Compare(partitionKey, "null", true) == 0)

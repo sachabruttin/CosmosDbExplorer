@@ -65,9 +65,9 @@ namespace CosmosDbExplorer.Core.Services
             }
         }
 
-        public async Task<CosmosStoredProcedureResult> ExecuteStoredProcedureAsync(string storedProcedureId, object partitionKey, dynamic[] parameters)
+        public async Task<CosmosStoredProcedureResult> ExecuteStoredProcedureAsync(string storedProcedureId, string? partitionKey, dynamic[] parameters)
         {
-            var pk = PartitionKeyHelper.Get(partitionKey);
+            var pk = PartitionKeyHelper.Parse(partitionKey) ?? PartitionKey.None;
 
             var options = new StoredProcedureRequestOptions
             {

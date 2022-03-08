@@ -168,7 +168,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             }
 
             QueryResult = null;
-            Log = null;
+            Log = string.Empty;
             HeaderViewModel.SetText(null, false);
 
             try

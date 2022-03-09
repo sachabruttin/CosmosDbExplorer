@@ -129,6 +129,10 @@ namespace CosmosDbExplorer.Core.Services
             {
                 return result;
             }
+            catch (CosmosException ce)
+            {
+                throw new Exception(ce.GetMessage());
+            }
         }
 
         public async Task<CosmosResult> DeleteDocumentsAsync(IEnumerable<ICosmosDocument> documents, CancellationToken cancellationToken)

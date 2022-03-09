@@ -12,6 +12,11 @@ namespace CosmosDbExplorer.Core.Helpers
         {
             try
             {
+                if (TryGetErrors(exception, out var errors))
+                {
+                    return errors ?? string.Empty;
+                }
+
                 if (TryGetQueryException(exception, out var queryException))
                 {
                     return queryException ?? string.Empty;
@@ -32,6 +37,27 @@ namespace CosmosDbExplorer.Core.Helpers
             catch
             {
                 return exception.Message;
+            }
+        }
+
+        private static bool TryGetErrors(CosmosException exception, out string? message)
+        {
+            var regex = new Regex(@"Errors : (\[.*\])");
+            var match = regex.Match(exception.Message.Replace(Environment.NewLine, string.Empty));
+
+            if (match.Success)
+            {
+                var json = match.Groups.Last().Value;
+
+                var obj = Newtonsoft.Json.Linq.JArray.Parse(json);
+
+                message = string.Join(Environment.NewLine, obj?.Values<string>());
+                return true;
+            }
+            else
+            {
+                message = null;
+                return false;
             }
         }
 

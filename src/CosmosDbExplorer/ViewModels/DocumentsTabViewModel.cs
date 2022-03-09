@@ -342,8 +342,6 @@ namespace CosmosDbExplorer.ViewModels
             IsRunning = true;
             try
             {
-                _documentRequestOptions.ETag = SelectedDocument?.ETag;
-
                 var response = await _cosmosDocumentService.SaveDocumentAsync(EditorViewModel.Text, _documentRequestOptions, new CancellationToken());
 
                 SetStatusBar(new StatusBarInfo(response));

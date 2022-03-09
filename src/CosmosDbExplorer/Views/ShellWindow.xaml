@@ -418,15 +418,21 @@
                         </Fluent:SplitButton>
                     </Fluent:RibbonGroupBox>
 
-                    <Fluent:RibbonGroupBox KeyTip="Q" Header="Query"
+                    <Fluent:RibbonGroupBox Fluent:KeyTip.Keys="Q" Header="Query"
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
                         <Fluent:Button Header="Run"
-                                   Command="{Binding SelectedTab.ExecuteCommand}"
-                                   SizeDefinition="Large">
+                                       Command="{Binding SelectedTab.ExecuteCommand}"
+                                       Fluent:KeyTip.Keys="R"
+                                       SizeDefinition="Large">
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
                             </Fluent:Button.LargeIcon>
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="{Binding Source={x:Static properties:Settings.Default}, Path=ExecuteGesture, Mode=OneWay, StringFormat=Run ({0})}"
+                                              Text="Execute the Query"
+                                              Width="190" />
+                            </Fluent:Button.ToolTip>
                         </Fluent:Button>
 
                         <Fluent:Button Header="Export"

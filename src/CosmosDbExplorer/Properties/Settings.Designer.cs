@@ -94,5 +94,17 @@ namespace CosmosDbExplorer.Properties {
                 this["DialogService"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("F5")]
+        public string ExecuteGesture {
+            get {
+                return ((string)(this["ExecuteGesture"]));
+            }
+            set {
+                this["ExecuteGesture"] = value;
+            }
+        }
     }
 }

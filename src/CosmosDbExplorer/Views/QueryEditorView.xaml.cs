@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using CosmosDbExplorer.Properties;
+
 namespace CosmosDbExplorer.Views
 {
     /// <summary>
@@ -23,6 +25,25 @@ namespace CosmosDbExplorer.Views
         public QueryEditorView()
         {
             InitializeComponent();
+
+            Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
+            DefineGestures();
+        }
+
+        private void Default_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            DefineGestures();
+        }
+
+        private static KeyGesture? GetGesture(string gesture)
+        {
+            var converter = new KeyGestureConverter();
+            return converter.ConvertFromString(gesture) as KeyGesture;
+        }
+
+        private void DefineGestures()
+        {
+            ExecuteKeyBinding.Gesture = GetGesture(Properties.Settings.Default.ExecuteGesture);
         }
     }
 }

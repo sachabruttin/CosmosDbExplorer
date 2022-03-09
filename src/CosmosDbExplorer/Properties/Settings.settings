@@ -20,5 +20,8 @@
     <Setting Name="DialogService" Type="System.String" Scope="User">
       <Value Profile="(Default)">Metro</Value>
     </Setting>
+    <Setting Name="ExecuteGesture" Type="System.String" Scope="User">
+      <Value Profile="(Default)">F5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

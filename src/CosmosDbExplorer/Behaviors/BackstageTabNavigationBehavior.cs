@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
@@ -38,6 +39,18 @@ namespace CosmosDbExplorer.Behaviors
 
         private void OnSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is BackstageTabItem oldItem)
+            {
+                var content = oldItem.Content as Frame;
+                if (content?.Content is FrameworkElement element)
+                {
+                    if (element.DataContext is INavigationAware navigationAware)
+                    {
+                        navigationAware.OnNavigatedFrom();
+                    }
+                }
+            }
+
             if (e.AddedItems.Count > 0 && e.AddedItems[0] is BackstageTabItem tabItem)
             {
                 var frame = new Frame()
@@ -45,6 +58,7 @@ namespace CosmosDbExplorer.Behaviors
                     Focusable = false,
                     NavigationUIVisibility = NavigationUIVisibility.Hidden
                 };
+
                 frame.Navigated += OnNavigated;
                 tabItem.Content = frame;
                 var page = _pageService.GetPage(tabItem.Tag as string);

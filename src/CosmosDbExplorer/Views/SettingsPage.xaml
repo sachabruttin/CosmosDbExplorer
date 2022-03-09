@@ -15,7 +15,7 @@
     xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="800">
+    d:DesignHeight="850" d:DesignWidth="800">
     <Page.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="models:AppTheme" />
         <converters:FontToSupportedGliphConverter x:Key="FontToSupportedGliphConverter" />
@@ -154,7 +154,33 @@
                     </StackPanel>
                 </StackPanel>
 
-                
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="Shortcuts" />
+                    <StackPanel>
+                        <Grid Margin="{StaticResource XSmallTopMargin}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100px" />
+                                <ColumnDefinition Width="310px" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Style="{StaticResource BodyTextStyle}" 
+                                   Grid.Column="0" Grid.Row="0"
+                                   VerticalAlignment="Center"
+                                   Text="Excute Query:" />
+                            <!--<ComboBox Grid.Column="1" Grid.Row="0"
+                                      ItemTemplate="{StaticResource FontTemplate}"
+                                      ItemsSource="{Binding Source={StaticResource MyFonts}}"
+                                      SelectedValue="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName, Mode=TwoWay, Converter={StaticResource StringToFontFamillyConverter}}">
+                            </ComboBox>-->
+                            <TextBox Grid.Row="0" Grid.Column="1" KeyDown="TextBox_KeyDown" 
+                                     Text="{Binding Source={x:Static properties:Settings.Default}, Path=ExecuteGesture, Mode=TwoWay}"  />
+
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
                 <Button Width="150" HorizontalAlignment="Left" 
                         Content="Use Default Settings" 
                         Command="{Binding ResetSettingsCommand}"

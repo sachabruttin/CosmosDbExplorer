@@ -9,6 +9,7 @@
              xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
              xmlns:avalon="clr-namespace:CosmosDbExplorer.AvalonEdit" 
              xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
              d:DataContext="{d:DesignInstance Type=viewmodels:QueryEditorViewModel}"
              mc:Ignorable="d" 
              Style="{DynamicResource CosmosUserControl}"
@@ -35,7 +36,7 @@
                                                            Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                         <avalonEdit:TextEditor.InputBindings>
-                                            <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
+                                            <KeyBinding Gesture="F5" x:Name="ExecuteKeyBinding"  Command="{Binding ExecuteCommand}" />
                                             <KeyBinding Key="K" Modifiers="Ctrl" Command="avalon:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" />
                                             <KeyBinding Key="U" Modifiers="Ctrl" Command="avalon:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" />
                                         </avalonEdit:TextEditor.InputBindings>

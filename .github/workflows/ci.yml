@@ -3,7 +3,7 @@ name: Build CosmosDbExplorer
 on: 
   push:
     branches:
-      - master
+      - "**"
   pull_request:
     branches:
       - master
@@ -27,19 +27,37 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
-      with: 
-        nuget-version: '5.7.x'
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
 
-    - name: Restore NuGet Packages
-      run: nuget restore $env:Solution_Name
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
 
     - name: Build Application
-      run: msbuild $env:Solution_Name /p:Configuration=Release
+      run: dotnet build $env:Solution_Name --no-restore --configuration Release #/p:Version=0.9.3.12
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
         name: CosmosDbExplorer
-        path: src\CosmosDbExplorer\bin\Release\
+        path: src\CosmosDbExplorer\bin\Release\net6.0-windows   
+
+    # - name: Setup NuGet
+    #   uses: nuget/setup-nuget@v1
+    #   with: 
+    #     nuget-version: '6.0.x'
+
+    # - name: Restore NuGet Packages
+    #   run: nuget restore $env:Solution_Name
+
+    # - name: Build Application
+    #   run: msbuild $env:Solution_Name /p:Configuration=Release
+
+    # - name: Upload build artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: CosmosDbExplorer
+    #     path: src\CosmosDbExplorer\bin\Release\

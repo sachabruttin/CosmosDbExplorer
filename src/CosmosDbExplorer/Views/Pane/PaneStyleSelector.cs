@@ -6,8 +6,8 @@ namespace CosmosDbExplorer.Views.Pane
 {
     public class PaneStyleSelector : StyleSelector
     {
-        public Style ToolStyle { get; set; }
-        public Style DocumentStyle { get; set; }
+        public Style? ToolStyle { get; set; }
+        public Style? DocumentStyle { get; set; }
 
         public override Style SelectStyle(object item, DependencyObject container)
         {

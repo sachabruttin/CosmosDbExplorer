@@ -124,6 +124,6 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        public new TParent Parent => base.Parent as TParent;
+        public new TParent? Parent => base.Parent as TParent;
     }
 }

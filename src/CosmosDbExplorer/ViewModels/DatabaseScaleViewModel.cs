@@ -1,23 +1,20 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
-
 using FluentValidation;
-
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.Toolkit.Mvvm.Input;
 using PropertyChanged;
-using System.Windows.Input;
 using Validar;
-using CosmosDbExplorer.Core.Contracts.Services;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -48,8 +45,8 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsThroughputAutoscale { get; set; } = true;
 
-        public int MaxThroughput { get; set; } 
-        
+        public int MaxThroughput { get; set; }
+
         public int? MinThroughput { get; set; }
 
         [OnChangedMethod(nameof(UpdateCommandStatus))]
@@ -180,7 +177,7 @@ namespace CosmosDbExplorer.ViewModels
                 .LessThanOrEqualTo(x => x.MaxThroughput)
                 .Custom((throughput, context) =>
                 {
-                    if (throughput%context.InstanceToValidate.Increment != 0)
+                    if (throughput % context.InstanceToValidate.Increment != 0)
                     {
                         context.AddFailure($"Value must be a multiple of {context.InstanceToValidate.Increment}.");
                     }

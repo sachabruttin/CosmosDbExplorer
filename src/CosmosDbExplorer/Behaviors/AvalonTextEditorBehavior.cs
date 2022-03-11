@@ -1,10 +1,8 @@
 ﻿
+using System.Windows;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Search;
-
 using Microsoft.Xaml.Behaviors;
-
-using System.Windows;
 
 namespace CosmosDbExplorer.Behaviors
 {

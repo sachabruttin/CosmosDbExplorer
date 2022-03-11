@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Models;
-using CosmosDbExplorer.Core.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -42,7 +42,7 @@ namespace CosmosDbExplorer.ViewModels
         public bool IsSelected { get; set; }
 
         [DoNotSetChanged]
-        public bool IsActive { get; set; }
+        public new bool IsActive { get; set; }
 
         [DoNotSetChanged]
         public bool IsClosed { get; set; }

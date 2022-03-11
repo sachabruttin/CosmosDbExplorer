@@ -4,17 +4,16 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
-
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
+using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.ViewModels.Assets;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using Microsoft.Extensions.DependencyInjection;
-using CosmosDbExplorer.ViewModels.Assets;
-using CosmosDbExplorer.Core.Models;
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels
@@ -127,7 +126,7 @@ namespace CosmosDbExplorer.ViewModels
             }
 
             return CanRefreshNodeViewModel.RefreshCommand.CanExecute(null);
-        }); 
+        });
 
         public ICommand ExitCommand => _exitCommand ??= new RelayCommand(Close);
 
@@ -250,7 +249,7 @@ namespace CosmosDbExplorer.ViewModels
                 {
                     var type = typeof(TTabViewModel);
                     throw new Exception($"Don't forget to register type {type.Name} in IoC.");
-                }      
+                }
             }
         }
 

@@ -15,7 +15,7 @@ namespace CosmosDbExplorer.Behaviors
     // See how to add new Tabs and new groups in Home Tab from your pages https://github.com/microsoft/WindowsTemplateStudio/blob/release/docs/WPF/projectTypes/ribbon.md
     public class RibbonTabsBehavior : Behavior<Ribbon>
     {
-        private INavigationService _navigationService;
+        private INavigationService? _navigationService;
 
         public static readonly DependencyProperty IsHomeTabProperty = DependencyProperty.RegisterAttached(
             "IsHomeTab", typeof(bool), typeof(RibbonTabsBehavior), new PropertyMetadata(default(bool)));

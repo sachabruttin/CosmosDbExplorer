@@ -18,7 +18,7 @@ namespace CosmosDbExplorer.Core.Models
             GeospatialType = properties.GeospatialConfig.GeospatialType.ToLocalType();
         }
 
-        public CosmosContainer(string id, bool isLargePartition) 
+        public CosmosContainer(string id, bool isLargePartition)
         {
             Id = id;
             PartitionKeyDefVersion = isLargePartition

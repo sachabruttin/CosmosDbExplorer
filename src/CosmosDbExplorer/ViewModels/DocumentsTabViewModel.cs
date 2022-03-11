@@ -66,7 +66,7 @@ namespace CosmosDbExplorer.ViewModels
             IconSource = App.Current.FindResource("DocumentIcon");
 
             EditorViewModel = new DocumentEditorViewModel();
-            EditorViewModel.PropertyChanged += (s, e) => NotifyCanExecuteChanged(); 
+            EditorViewModel.PropertyChanged += (s, e) => NotifyCanExecuteChanged();
 
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
 
@@ -173,8 +173,8 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosIndexingDirectives? IndexingDirective
         {
             get { return _documentRequestOptions.IndexingDirective; }
-            set 
-            { 
+            set
+            {
                 _documentRequestOptions.IndexingDirective = value;
                 OnPropertyChanged();
             }
@@ -182,8 +182,8 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosConsistencyLevels? ConsistencyLevel
         {
             get { return _documentRequestOptions.ConsistencyLevel; }
-            set 
-            { 
+            set
+            {
                 _documentRequestOptions.ConsistencyLevel = value;
                 OnPropertyChanged();
             }
@@ -192,8 +192,8 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosAccessConditionType AccessConditionType
         {
             get { return _documentRequestOptions.AccessCondition; }
-            set 
-            { 
+            set
+            {
                 _documentRequestOptions.AccessCondition = value;
                 OnPropertyChanged();
             }
@@ -210,7 +210,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         public string? PreTrigger
-        { 
+        {
             get { return string.Join("; ", _documentRequestOptions.PreTriggers); }
             set
             {
@@ -224,7 +224,7 @@ namespace CosmosDbExplorer.ViewModels
                 }
             }
         }
-        
+
         public string? PostTrigger
         {
             get { return string.Join("; ", _documentRequestOptions.PostTriggers); }
@@ -335,8 +335,8 @@ namespace CosmosDbExplorer.ViewModels
         private async Task SaveDocumentCommandExecute()
         {
             if (EditorViewModel?.Text is null)
-            { 
-                return; 
+            {
+                return;
             }
 
             IsRunning = true;
@@ -387,7 +387,7 @@ namespace CosmosDbExplorer.ViewModels
                 {
                     return;
                 }
-                    
+
                 IsRunning = true;
 
                 try

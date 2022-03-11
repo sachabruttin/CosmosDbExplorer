@@ -24,7 +24,7 @@ namespace CosmosDbExplorer.Controls
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
             var item = (e.OriginalSource as UIElement)?.GetAncestorOrSelf<TreeViewItemEx>();
-            
+
             if (item != this)
             {
                 return;

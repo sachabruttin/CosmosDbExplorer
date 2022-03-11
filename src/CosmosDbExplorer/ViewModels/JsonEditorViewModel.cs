@@ -80,10 +80,10 @@ namespace CosmosDbExplorer.ViewModels
 
     public class DocumentEditorViewModel : JsonViewerViewModel
     {
-        private static readonly string[] SystemResourceNames = new [] { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
+        private static readonly string[] SystemResourceNames = new[] { "_rid", "_etag", "_ts", "_self", "_id", "_attachments", "_docs", "_sprocs", "_triggers", "_udfs", "_conflicts", "_colls", "_users" };
         private JObject? _document;
 
-        public DocumentEditorViewModel() 
+        public DocumentEditorViewModel()
         {
         }
 
@@ -96,7 +96,7 @@ namespace CosmosDbExplorer.ViewModels
 
             _document = (JObject)content;
 
-            return removeSystemProperties 
+            return removeSystemProperties
                 ? RemoveCosmosSystemProperties(_document)
                 : _document.ToString(Formatting.Indented);
         }

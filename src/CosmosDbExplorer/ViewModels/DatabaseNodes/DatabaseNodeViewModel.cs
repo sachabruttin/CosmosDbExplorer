@@ -89,7 +89,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private void AddNewContainerCommandExecute()
         {
             var vmName = typeof(ContainerPropertyViewModel).FullName;
-            
+
             if (string.IsNullOrEmpty(vmName))
             {
                 return;

@@ -7,8 +7,8 @@ using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using GongSolutions.Wpf.DragDrop;
-using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -44,7 +44,7 @@ namespace CosmosDbExplorer.ViewModels
         private void LoadNodes()
         {
             var connections = _persistAndRestoreService.GetConnections();
-            var nodes =  connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
+            var nodes = connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
 
             Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }

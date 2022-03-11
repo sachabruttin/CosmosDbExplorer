@@ -9,7 +9,7 @@ namespace CosmosDbExplorer.Behaviors
 {
     public class WatermarkBehavior : Behavior<ComboBox>
     {
-        private WaterMarkAdorner _adorner;
+        private WaterMarkAdorner? _adorner;
 
         public string Text
         {

@@ -50,7 +50,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public string Version { get; set; }
 
-        public string Title { get; set; } 
+        public string Title { get; set; }
 
         public static List<Author> Authors => new() { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace") };
 

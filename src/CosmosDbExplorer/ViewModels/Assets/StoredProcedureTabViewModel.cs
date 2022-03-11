@@ -44,8 +44,8 @@ namespace CosmosDbExplorer.ViewModels.Assets
             _dialogService = dialogService;
         }
 
-        protected override string GetDefaultHeader() => "New Stored Procedure"; 
-        protected override string GetDefaultTitle() => "Stored Procedure"; 
+        protected override string GetDefaultHeader() => "New Stored Procedure";
+        protected override string GetDefaultTitle() => "Stored Procedure";
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
         public override void Load(string contentId, StoredProcedureNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)

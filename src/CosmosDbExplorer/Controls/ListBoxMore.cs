@@ -7,7 +7,7 @@ namespace CosmosDbExplorer.Controls
     public class ListBoxMore : ListBox
     {
         private const string PartMoreButtonName = "PART_MoreButton";
-        private Button _moreButton;
+        private Button? _moreButton;
 
         public override void OnApplyTemplate()
         {

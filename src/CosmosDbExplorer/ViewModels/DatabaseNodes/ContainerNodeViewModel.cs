@@ -58,7 +58,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosContainer Container { get; }
 
-        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??=  new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
+        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??= new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
 
         //public RelayCommand ClearAllDocumentsCommand
         //{
@@ -109,7 +109,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         //    }
         //}
 
-        public RelayCommand OpenImportDocumentCommand => _openImportDocumentCommand ??= new (() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
+        public RelayCommand OpenImportDocumentCommand => _openImportDocumentCommand ??= new(() => Messenger.Send(new OpenImportDocumentViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
 
         public RelayCommand NewStoredProcedureCommand => _newStoredProcedureCommand ??= new(() => Messenger.Send(new EditStoredProcedureMessage(null, Parent.Parent.Connection, Parent.Database, Container)));
 

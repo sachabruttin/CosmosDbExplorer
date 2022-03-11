@@ -15,7 +15,7 @@
         }
 
         public T? Value { get; }
-        
+
         public bool IsSome { get; }
     }
 

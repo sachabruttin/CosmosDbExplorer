@@ -26,7 +26,7 @@ namespace CosmosDbExplorer.Services
             _pageService = pageService;
         }
 
-        public void OpenInNewWindow(string key, object parameter = null)
+        public void OpenInNewWindow(string key, object? parameter = null)
         {
             var window = GetWindow(key);
             if (window != null)
@@ -55,7 +55,7 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        public bool? OpenInDialog(string key, object parameter = null)
+        public bool? OpenInDialog(string key, object? parameter = null)
         {
             var shellWindow = _serviceProvider.GetService(typeof(IShellDialogWindow)) as Window;
             var frame = ((IShellDialogWindow)shellWindow).GetDialogFrame();
@@ -66,7 +66,7 @@ namespace CosmosDbExplorer.Services
             return shellWindow.ShowDialog();
         }
 
-        public Window GetWindow(string key)
+        public Window? GetWindow(string key)
         {
             foreach (Window window in Application.Current.Windows)
             {

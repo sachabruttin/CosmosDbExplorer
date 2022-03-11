@@ -68,7 +68,7 @@ namespace CosmosDbExplorer.Core.Helpers
                 var index = exception.ResponseBody.IndexOf(Environment.NewLine);
                 var start = "Message: ".Length;
 
-                var json = exception.ResponseBody.Substring(start, index-start);
+                var json = exception.ResponseBody.Substring(start, index - start);
 
                 var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
 

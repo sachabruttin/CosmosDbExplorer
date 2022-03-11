@@ -18,7 +18,7 @@ namespace CosmosDbExplorer.Core.Models
 
     public class CosmosQueryResult<T> : CosmosResult
     {
-        public T Items { get; internal set; }
+        public T? Items { get; internal set; }
         public Exception? Error { get; internal set; }
         public string? ContinuationToken { get; internal set; }
         public IEnumerable<string> Warnings { get; internal set; } = Array.Empty<string>();

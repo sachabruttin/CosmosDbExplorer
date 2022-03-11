@@ -17,7 +17,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         private readonly IServiceProvider _serviceProvider;
         private CosmosScriptService _scriptService;
 
-        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService) 
+        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
             : base(uiServices, dialogService)
         {
             IconSource = App.Current.FindResource("TriggerIcon");

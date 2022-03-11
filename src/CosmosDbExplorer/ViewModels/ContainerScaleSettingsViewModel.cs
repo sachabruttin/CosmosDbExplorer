@@ -50,7 +50,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool? IsTimeLiveInSecondVisible => TimeToLive == TimeToLiveType.On;
 
-        [OnChangedMethod(nameof(UpdateCommandStatus))] 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         public int? TimeToLiveInSecond { get; set; }
 
         public TimeToLiveType? TimeToLive { get; set; }
@@ -67,7 +67,7 @@ namespace CosmosDbExplorer.ViewModels
             UpdateCommandStatus();
         }
 
-        [OnChangedMethod(nameof(UpdateCommandStatus))] 
+        [OnChangedMethod(nameof(UpdateCommandStatus))]
         public CosmosGeospatialType GeoType { get; set; }
 
         [OnChangedMethod(nameof(UpdateCommandStatus))]
@@ -174,7 +174,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             TimeToLiveInSecond = Container?.DefaultTimeToLive;
             TimeToLive = TimeToLiveTypeExtensions.Get(Container?.DefaultTimeToLive);
-            GeoType = Container?.GeospatialType ?? CosmosGeospatialType.Geography ;
+            GeoType = Container?.GeospatialType ?? CosmosGeospatialType.Geography;
             IndexingPolicy = Container?.IndexingPolicy;
         }
 

@@ -40,7 +40,7 @@ namespace CosmosDbExplorer.Services
             return pageType;
         }
 
-        public Page GetPage(string key)
+        public Page? GetPage(string key)
         {
             var pageType = GetPageType(key);
             return _serviceProvider.GetService(pageType) as Page;

@@ -24,7 +24,7 @@ namespace CosmosDbExplorer.ViewModels
         private CosmosContainerService? _cosmosContainerService;
         private AsyncRelayCommand? _refreshCommand;
 
-        public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices) 
+        public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
             : base(uiServices)
         {
             Title = "Collection Metrics";

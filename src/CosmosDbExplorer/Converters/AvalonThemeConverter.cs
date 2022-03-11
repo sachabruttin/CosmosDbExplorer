@@ -31,7 +31,7 @@ namespace CosmosDbExplorer.Converters
         private object GetDarkTheme() => _darkTheme ??= new AvalonDock.Themes.Vs2013DarkTheme();
 
         private object GetLightTheme() => _lightTheme ??= new AvalonDock.Themes.GenericTheme();
-        
+
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

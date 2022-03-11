@@ -78,7 +78,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public TResource Resource { get; set; }
 
-        public RelayCommand OpenCommand => _openCommand ??=  new(async () => await OpenCommandImp().ConfigureAwait(false));
+        public RelayCommand OpenCommand => _openCommand ??= new(async () => await OpenCommandImp().ConfigureAwait(false));
 
         protected abstract Task OpenCommandImp();
 

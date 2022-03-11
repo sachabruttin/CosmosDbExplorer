@@ -8,7 +8,7 @@ namespace CosmosDbExplorer.Core.Contracts
         CosmosConsistencyLevels? ConsistencyLevel { get; set; }
         CosmosAccessConditionType AccessCondition { get; set; }
         string? ETag { get; set; }
-        string[] PreTriggers { get; set; } 
+        string[] PreTriggers { get; set; }
         string[] PostTriggers { get; set; }
     }
 }

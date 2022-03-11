@@ -39,7 +39,7 @@ namespace CosmosDbExplorer.Services
             _splitView.PaneClosed -= OnPaneClosed;
         }
 
-        public void OpenInRightPane(string pageKey, object parameter = null)
+        public void OpenInRightPane(string pageKey, object? parameter = null)
         {
             var pageType = _pageService.GetPageType(pageKey);
             if (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed)))

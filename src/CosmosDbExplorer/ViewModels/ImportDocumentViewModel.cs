@@ -86,7 +86,7 @@ namespace CosmosDbExplorer.ViewModels
         public bool IsDirty { get; set; }
 
         public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new(ExecuteCommandAsync, () => !IsRunning && !string.IsNullOrEmpty(Content));
-        
+
         private async Task ExecuteCommandAsync()
         {
             if (string.IsNullOrEmpty(Content))
@@ -115,7 +115,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
 
-        public RelayCommand CancelCommand => _cancelCommand ??= new (() => _cancellationToken.Cancel(), () => IsRunning);
+        public RelayCommand CancelCommand => _cancelCommand ??= new(() => _cancellationToken.Cancel(), () => IsRunning);
 
         public RelayCommand OpenFileCommand => _openFileCommand ??= new(OpenFileCommandExecuteAsync);
 
@@ -165,7 +165,7 @@ namespace CosmosDbExplorer.ViewModels
         public string? PostTrigger { get; set; }
 
         public RelayCommand ResetRequestOptionsCommand => _resetRequestOptionsCommand ??= new(ResetRequestOptionsCommandExecute);
-        
+
         private void ResetRequestOptionsCommandExecute()
         {
             //IndexingDirective = null;

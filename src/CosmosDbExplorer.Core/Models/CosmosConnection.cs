@@ -14,7 +14,7 @@ namespace CosmosDbExplorer.Core.Models
         }
 
         [JsonConstructor]
-        public CosmosConnection(Guid? id, string? label, Uri? endpoint, string ?secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
+        public CosmosConnection(Guid? id, string? label, Uri? endpoint, string? secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
         {
             Id = id ?? Guid.NewGuid();
             Label = label;

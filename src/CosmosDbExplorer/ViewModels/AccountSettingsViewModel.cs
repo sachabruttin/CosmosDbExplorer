@@ -35,21 +35,21 @@ namespace CosmosDbExplorer.ViewModels
         public string Title => "Account Settings";
         public object Icon => App.Current.FindResource("AddConnectionIcon");
 
-        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string? AccountEndpoint { get; set; }
-        
-        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
+
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string? AccountSecret { get; set; }
-        
-        [OnChangedMethod(nameof(UpdateSaveCommandStatus))] 
+
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string? Label { get; set; }
-        
+
         public ConnectionType ConnectionType { get; set; }
-        
+
         public bool EnableEndpointDiscovery { get; set; }
-        
-        public Color? AccentColor { get; set; } 
-        
+
+        public Color? AccentColor { get; set; }
+
         public Action<bool?>? SetResult { get; set; }
 
         protected void OnAccentColorChanged()
@@ -89,7 +89,7 @@ namespace CosmosDbExplorer.ViewModels
 
             IsBusy = true;
 
-            var accentColor = AccentColor is null 
+            var accentColor = AccentColor is null
                 ? System.Drawing.Color.Transparent
                 : System.Drawing.Color.FromArgb(AccentColor.Value.A, AccentColor.Value.R, AccentColor.Value.G, AccentColor.Value.B);
 
@@ -111,7 +111,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnNavigatedFrom()
         {
-           
+
         }
 
         private void SetConnection(CosmosConnection connection)

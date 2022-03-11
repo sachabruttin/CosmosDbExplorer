@@ -232,7 +232,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             RuleFor(x => x.PermissionId).NotEmpty();
             RuleFor(x => x.Container).NotEmpty();
-                //.Matches(@"dbs\/(\w|\s)*\/colls\/(\w|\s)*").WithMessage("Must be in the format 'dbs/[db id]/colls/[container id]");
+            //.Matches(@"dbs\/(\w|\s)*\/colls\/(\w|\s)*").WithMessage("Must be in the format 'dbs/[db id]/colls/[container id]");
         }
     }
 }

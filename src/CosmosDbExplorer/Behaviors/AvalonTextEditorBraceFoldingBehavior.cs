@@ -1,13 +1,10 @@
-﻿using CosmosDbExplorer.AvalonEdit;
-
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Folding;
-
-using Microsoft.Xaml.Behaviors;
-
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using CosmosDbExplorer.AvalonEdit;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Folding;
+using Microsoft.Xaml.Behaviors;
 
 namespace CosmosDbExplorer.Behaviors
 {
@@ -73,9 +70,9 @@ namespace CosmosDbExplorer.Behaviors
         // Using a DependencyProperty as the backing store for UseFolding.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseFoldingProperty =
             DependencyProperty.Register(
-                "UseFolding", 
-                typeof(bool), 
-                typeof(AvalonTextEditorBraceFoldingBehavior), 
+                "UseFolding",
+                typeof(bool),
+                typeof(AvalonTextEditorBraceFoldingBehavior),
                 new PropertyMetadata(false, OnUseFoldingPropertyChanged));
 
         private static void OnUseFoldingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

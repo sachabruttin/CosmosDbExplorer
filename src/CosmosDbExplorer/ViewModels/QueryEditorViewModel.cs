@@ -158,7 +158,7 @@ namespace CosmosDbExplorer.ViewModels
 
                 ((StatusBarItemContextCancellableCommand)_progessBarStatusBarItem.DataContext).IsCancellable = true;
 
-                _query.QueryText= string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
+                _query.QueryText = string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
                 _query.PartitionKeyValue = GetPartitionKey();
                 _query.ContinuationToken = token;
 
@@ -221,7 +221,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         private Optional<object?> GetPartitionKey()
-        { 
+        {
             if (string.IsNullOrEmpty(PartitionKeyValue))
             {
                 return new Optional<object?>();
@@ -279,7 +279,7 @@ namespace CosmosDbExplorer.ViewModels
 
 
         public RelayCommand SaveLocalCommand => _saveLocalCommand ??= new(SaveLocalCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(EditorViewModel.Text));
-        
+
         private void SaveLocalCommandExecute()
         {
             var settings = new SaveFileDialogSettings
@@ -293,7 +293,7 @@ namespace CosmosDbExplorer.ViewModels
                 InitialDirectory = Settings.Default.GetExportFolder()
             };
 
-            async void saveFileAsyc(bool confirm, FileDialogResult result) 
+            async void saveFileAsyc(bool confirm, FileDialogResult result)
             {
                 if (!confirm)
                 {
@@ -374,7 +374,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
         public RelayCommand OpenQueryCommand => _openQueryCommand ??= new(OpenQueryCommandExecute, () => !IsRunning && !string.IsNullOrEmpty(Content));
-        
+
         private void OpenQueryCommandExecute()
         {
             var settings = new OpenFileDialogSettings
@@ -450,7 +450,7 @@ namespace CosmosDbExplorer.ViewModels
             get { return _query.MaxBufferItem; }
             set { _query.MaxBufferItem = value; }
         }
-        
+
         public string? PartitionKeyValue { get; set; }
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);//!((INotifyDataErrorInfo)this).HasErrors;

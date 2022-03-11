@@ -10,7 +10,7 @@ namespace CosmosDbExplorer.Models
             Connection = connection;
         }
 
-        public NodeContext(NodeContext context, CosmosDatabase database) 
+        public NodeContext(NodeContext context, CosmosDatabase database)
             : this(context.Connection)
         {
             Database = database;
@@ -23,7 +23,7 @@ namespace CosmosDbExplorer.Models
         }
 
         public CosmosConnection Connection { get; }
-        public CosmosDatabase? Database { get;  }
+        public CosmosDatabase? Database { get; }
         public CosmosContainer? Container { get; }
         public object? Data { get; set; }
     }

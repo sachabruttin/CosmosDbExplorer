@@ -41,7 +41,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public object GetValue()
         {
-            return Kind switch 
+            return Kind switch
             {
                 StoredProcParameterKind.Object => JToken.Parse(Document),
                 StoredProcParameterKind.Array => JArray.Parse(Document),

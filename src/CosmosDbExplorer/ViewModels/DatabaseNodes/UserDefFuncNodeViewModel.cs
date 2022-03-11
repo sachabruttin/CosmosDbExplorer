@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
-using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Extensions;
+using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -86,7 +86,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            Messenger.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));   
+            Messenger.Send(new EditUserDefFuncMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));
             return Task.CompletedTask;
         }
     }

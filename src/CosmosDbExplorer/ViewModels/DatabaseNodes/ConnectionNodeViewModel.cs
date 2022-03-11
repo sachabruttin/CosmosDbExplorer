@@ -113,8 +113,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             }
 
             await _dialogService.ShowQuestion(
-                $"Are you sure that you want to delete this connection '{Connection.Label}'?", 
-                "Delete connection", 
+                $"Are you sure that you want to delete this connection '{Connection.Label}'?",
+                "Delete connection",
                 confirmed);
         }
 

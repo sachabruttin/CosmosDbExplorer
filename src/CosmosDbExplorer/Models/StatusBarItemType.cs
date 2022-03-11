@@ -10,7 +10,7 @@ namespace CosmosDbExplorer.Models
 {
     public class StatusBarItem : ObservableObject
     {
-        public StatusBarItem(StatusBarItemContext dataContext, StatusBarItemType type, string title = null, Dock dock = Dock.Left)
+        public StatusBarItem(StatusBarItemContext dataContext, StatusBarItemType type, string? title = null, Dock dock = Dock.Left)
         {
             DataContext = dataContext;
             Type = type;

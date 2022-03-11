@@ -87,7 +87,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         protected override Task OpenCommandImp()
         {
-            Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));  
+            Messenger.Send(new EditStoredProcedureMessage(this, Parent.Parent.Parent.Parent.Connection, Parent.Parent.Parent.Database, Parent.Parent.Container));
             return Task.CompletedTask;
         }
     }

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Windows;
 using System.Linq;
+using System.Windows;
 using ControlzEx.Theming;
-
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Models;
+using CosmosDbExplorer.Styles;
 using ICSharpCode.AvalonEdit.Highlighting;
 using MahApps.Metro.Theming;
-using CosmosDbExplorer.Styles;
 
 namespace CosmosDbExplorer.Services
 {

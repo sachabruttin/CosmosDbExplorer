@@ -137,7 +137,7 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task DeleteCommandExecute()
         {
-            async void deleteUser(bool confirm) 
+            async void deleteUser(bool confirm)
             {
                 if (!confirm)
                 {

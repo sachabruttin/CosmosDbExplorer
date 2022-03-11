@@ -41,7 +41,7 @@ namespace CosmosDbExplorer.ViewModels
         public Action<bool?>? SetResult { get; set; }
 
         public string Title { get; }
-        
+
         public CosmosConnection Connection { get; private set; }
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]

@@ -6,7 +6,7 @@ namespace CosmosDbExplorer.Converters
 {
     public class EnumToBooleanConverter : IValueConverter
     {
-        public Type EnumType { get; set; }
+        public Type? EnumType { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -23,7 +23,7 @@ namespace CosmosDbExplorer.Converters
             return false;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (parameter is string enumString)
             {

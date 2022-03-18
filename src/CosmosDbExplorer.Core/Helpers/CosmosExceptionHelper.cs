@@ -32,11 +32,11 @@ namespace CosmosDbExplorer.Core.Helpers
                     return offerException ?? string.Empty;
                 }
 
-                return exception.Message;
+                return exception.ResponseBody;
             }
             catch
             {
-                return exception.Message;
+                return exception.ResponseBody;
             }
         }
 

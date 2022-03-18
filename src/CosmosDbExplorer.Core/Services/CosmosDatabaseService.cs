@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,9 +35,16 @@ namespace CosmosDbExplorer.Core.Services
                 foreach (var item in response)
                 {
                     var db = _client.GetDatabase(item.Id);
-                    var throughput = await db.ReadThroughputAsync(cancellationToken);
 
-                    result.Add(new CosmosDatabase(item, throughput));
+                    try
+                    {
+                        var throughput = await db.ReadThroughputAsync(cancellationToken);
+                        result.Add(new CosmosDatabase(item, throughput, false));
+                    }
+                    catch (CosmosException ce) when (ce.StatusCode == HttpStatusCode.BadRequest && ce.ResponseBody.Contains("serverless", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        result.Add(new CosmosDatabase(item, null, true));
+                    }
                 }
             }
 
@@ -54,12 +62,18 @@ namespace CosmosDbExplorer.Core.Services
                         : ThroughputProperties.CreateManualThroughput(throughput.Value);
 
                     var result = await _client.CreateDatabaseAsync(database.Id, throughputProperties, requestOptions: null, cancellationToken: cancellationToken);
-                    return new CosmosDatabase(result.Resource, throughput);
+                    return new CosmosDatabase(result.Resource, throughput, true);
                 }
                 else
                 {
                     var result = await _client.CreateDatabaseAsync(database.Id, throughput, requestOptions: null, cancellationToken: cancellationToken);
-                    return new CosmosDatabase(result.Resource, throughput);
+
+                    // Try to get a Cosmos Thoughput instance. Serverless throw an exception and the call must return null here.
+                    var cosmosThroughput = await GetThroughputAsync(database);
+
+                    return cosmosThroughput is null
+                        ? new CosmosDatabase(result.Resource, null, true)
+                        : new CosmosDatabase(result.Resource, throughput, false);
                 }
             }
             catch (CosmosException ex)
@@ -87,11 +101,18 @@ namespace CosmosDbExplorer.Core.Services
             return await _client.ReadAccountAsync();
         }
 
-        public async Task<CosmosThroughput> GetThroughputAsync(CosmosDatabase database)
+        public async Task<CosmosThroughput?> GetThroughputAsync(CosmosDatabase database)
         {
-            var db = _client.GetDatabase(database.Id);
-            var result = await db.ReadThroughputAsync(requestOptions: null);
-            return new CosmosThroughput(result);
+            try
+            {
+                var db = _client.GetDatabase(database.Id);
+                var result = await db.ReadThroughputAsync(requestOptions: null);
+                return new CosmosThroughput(result);
+            }
+            catch (CosmosException ce) when (ce.StatusCode == HttpStatusCode.BadRequest && ce.ResponseBody.Contains("serverless", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return null;
+            }
         }
 
         public async Task<CosmosThroughput> UpdateThroughputAsync(CosmosDatabase database, int throughput, bool isAutoscale)

@@ -163,9 +163,12 @@ namespace CosmosDbExplorer.ViewModels
             SetSettings();
 
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
-            var response = await _containerService.GetThroughputAsync(container);
 
-            SetThroughputInfo(response);
+            if (!database.IsServerless)
+            {
+                var response = await _containerService.GetThroughputAsync(container);
+                SetThroughputInfo(response);
+            }
 
             //IsLoading = false;
         }

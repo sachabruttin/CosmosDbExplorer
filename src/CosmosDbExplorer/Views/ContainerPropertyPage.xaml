@@ -66,7 +66,8 @@
                 </StackPanel>
 
                 <CheckBox Margin="{StaticResource XSmallTopMargin}"
-                          IsChecked="{Binding ProvisionThroughput}">
+                          IsChecked="{Binding ProvisionThroughput}"
+                          Visibility="{Binding IsServerlessDatabase, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=true}">
                     <CheckBox.Content>
                         <TextBlock Style="{StaticResource BodyTextStyle}" 
                                    Text="Provision dedicated throughput for this container" />

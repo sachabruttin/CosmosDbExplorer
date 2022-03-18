@@ -88,6 +88,8 @@ namespace CosmosDbExplorer.ViewModels
         [AlsoNotifyFor(nameof(EstimatedPrice))]
         public int Throughput { get; set; }
 
+        public bool IsServerless { get; set; }
+
         protected void UpdateSaveCommandStatus() => SaveCommand.NotifyCanExecuteChanged();
 
         public AsyncRelayCommand SaveCommand => _saveCommand ??= new(SaveCommandExecuteAsync, SaveCommandCanExecute);
@@ -144,6 +146,8 @@ namespace CosmosDbExplorer.ViewModels
             var (connection, database) = ((CosmosConnection, CosmosDatabase))parameter;
             Connection = connection;
             Database = database;
+
+            IsServerless = database.IsServerless;
 
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Connection, Database);
         }

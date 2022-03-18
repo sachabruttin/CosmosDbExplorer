@@ -11,7 +11,7 @@ namespace CosmosDbExplorer.Core.Contracts.Services
         Task<CosmosDatabase> CreateDatabaseAsync(CosmosDatabase database, int? throughput, bool? isAutoscale, CancellationToken cancellationToken);
         Task DeleteDatabaseAsync(CosmosDatabase database, CancellationToken cancellationToken);
         Task<IList<CosmosDatabase>> GetDatabasesAsync(CancellationToken cancellationToken);
-        Task<CosmosThroughput> GetThroughputAsync(CosmosDatabase database);
+        Task<CosmosThroughput?> GetThroughputAsync(CosmosDatabase database);
         Task<CosmosThroughput> UpdateThroughputAsync(CosmosDatabase database, int throughput, bool isAutoscale);
     }
 }

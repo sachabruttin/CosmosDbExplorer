@@ -46,6 +46,12 @@ namespace CosmosDbExplorer
             AvalonEdit.AvalonSyntax.LoadHighlighting();
             var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
 
+            // Upgrade user settings in case of assembly version change
+            if (!System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal).HasFile)
+            {
+                Settings.Default.Upgrade();
+            }
+
             // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
             _host = Host.CreateDefaultBuilder(e.Args)
                     .ConfigureAppConfiguration(c =>

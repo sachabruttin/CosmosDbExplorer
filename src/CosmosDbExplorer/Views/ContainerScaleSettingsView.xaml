@@ -87,7 +87,6 @@
             <TabItem Header="Indexing Policy">
                 <avalonedit:TextEditor x:Name="editor" 
                                        SyntaxHighlighting="JSON"  
-                                       ShowLineNumbers="True"
                                        Style="{StaticResource CosmosEditor}"
                                        BorderThickness="1"
                                        BorderBrush="{StaticResource Fluent.Ribbon.Brushes.Control.BorderBrush}"

@@ -45,7 +45,6 @@
                             <LayoutAnchorablePane>
                                 <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
                                     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode" 
-                                                           ShowLineNumbers="True"
                                                            Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                            ContextMenu="{StaticResource JsonEditorContextMenu}">
@@ -120,7 +119,7 @@
                                                                                         <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 
                                                                                                                BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
                                                                                                                Style="{StaticResource CosmosEditor}"
-                                                                                                               ShowLineNumbers="True" Padding="2"
+                                                                                                               Padding="2"
                                                                                                                ContextMenu="{StaticResource JsonEditorContextMenu}">
                                                                                             <i:Interaction.Behaviors>
                                                                                                 <bhv:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
@@ -232,7 +231,6 @@
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />-->
 
                                         <avalonEdit:TextEditor x:Name="resultViewer" 
-                                                               ShowLineNumbers="True"
                                                                IsReadOnly="True"
                                                                Style="{StaticResource CosmosEditor}">
                                             <avalonEdit:TextEditor.InputBindings>

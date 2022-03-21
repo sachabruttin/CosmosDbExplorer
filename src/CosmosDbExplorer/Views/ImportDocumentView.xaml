@@ -11,7 +11,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
-                           ShowLineNumbers="True"
                            Style="{StaticResource CosmosEditor}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         <i:Interaction.Behaviors>

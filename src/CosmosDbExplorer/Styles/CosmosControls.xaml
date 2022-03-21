@@ -72,6 +72,8 @@
         <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Text}" />
         <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName}" />
         <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontSize}" />
+        <Setter Property="ShowLineNumbers" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ShowLineNumbers}" />
+        <Setter Property="WordWrap" Value="{Binding Source={x:Static properties:Settings.Default}, Path=EnableWordWrap}" />
         <!--<Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationTemplate}" />
         <Style.Triggers>
             <Trigger Property="Validation.HasError" Value="true">

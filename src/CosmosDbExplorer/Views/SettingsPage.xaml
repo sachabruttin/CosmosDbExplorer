@@ -115,8 +115,8 @@
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                     <TextBlock
                         Style="{StaticResource BodyTextStyle}"
-                        Text="Editor Font" />
-                    <StackPanel>
+                        Text="Editor" />
+                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
                       
                         <Grid Margin="{StaticResource XSmallTopMargin}">
                             <Grid.ColumnDefinitions>
@@ -151,6 +151,11 @@
                                                Value="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontSize, Mode=TwoWay}"/>
 
                         </Grid>
+
+                        <mah:ToggleSwitch Content="Show line numbers"
+                                          IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=ShowLineNumbers, Mode=TwoWay}" />
+                        <mah:ToggleSwitch Content="Enable Word Wrap" 
+                                          IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=EnableWordWrap, Mode=TwoWay}" />
                     </StackPanel>
                 </StackPanel>
 
@@ -169,11 +174,6 @@
                                    Grid.Column="0" Grid.Row="0"
                                    VerticalAlignment="Center"
                                    Text="Excute Query:" />
-                            <!--<ComboBox Grid.Column="1" Grid.Row="0"
-                                      ItemTemplate="{StaticResource FontTemplate}"
-                                      ItemsSource="{Binding Source={StaticResource MyFonts}}"
-                                      SelectedValue="{Binding Source={x:Static properties:Settings.Default}, Path=EditorFontName, Mode=TwoWay, Converter={StaticResource StringToFontFamillyConverter}}">
-                            </ComboBox>-->
                             <TextBox Grid.Row="0" Grid.Column="1" KeyDown="TextBox_KeyDown" 
                                      Text="{Binding Source={x:Static properties:Settings.Default}, Path=ExecuteGesture, Mode=TwoWay}"  />
 

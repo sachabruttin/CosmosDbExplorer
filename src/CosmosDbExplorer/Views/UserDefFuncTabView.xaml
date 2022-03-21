@@ -29,7 +29,6 @@
         </StackPanel>
 
         <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode"
-                               ShowLineNumbers="True"
                                Style="{StaticResource CosmosEditor}"
                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                ContextMenu="{StaticResource JsonEditorContextMenu}">

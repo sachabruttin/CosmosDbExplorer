@@ -14,7 +14,6 @@
 
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 
                            IsReadOnly="{Binding IsReadOnly}" 
-                           ShowLineNumbers="True"
                            Style="{StaticResource CosmosEditor}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            ContextMenu="{StaticResource JsonEditorContextMenu}" HorizontalScrollBarVisibility="Auto" >

@@ -32,7 +32,6 @@
                             <LayoutDocumentPane ShowHeader="True">
                                 <LayoutDocument CanClose="False" Title="{Binding DataContext.FileName, TargetNullValue=Query, Source={StaticResource ProxyElement}}" IconSource="{StaticResource SqlQueryIcon}">
                                     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
-                                                           ShowLineNumbers="True"
                                                            Style="{StaticResource CosmosEditor}"
                                                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                         <avalonEdit:TextEditor.InputBindings>

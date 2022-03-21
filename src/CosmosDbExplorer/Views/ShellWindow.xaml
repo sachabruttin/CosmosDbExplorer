@@ -255,6 +255,7 @@
                                        Command="Paste"
                                        Icon="{StaticResource PasteIcon}"
                                        SizeDefinition="Large"
+                                       SimplifiedSizeDefinition="Middle"
                                        FocusManager.IsFocusScope="True">
                             <Fluent:Button.ToolTip>
                                 <Fluent:ScreenTip Title="Paste (Ctrl+V)"
@@ -265,12 +266,13 @@
                         </Fluent:Button>
 
                         <Fluent:Button x:Name="cutButton"
-                                   KeyTip="X"
-                                   Header="Cut"
-                                   Icon="{StaticResource CutIcon}"
-                                   SizeDefinition="Middle,Small"
-                                   Command="Cut"
-                                   FocusManager.IsFocusScope="True">
+                                       KeyTip="X"
+                                       Header="Cut"
+                                       Icon="{StaticResource CutIcon}"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       Command="Cut"
+                                       FocusManager.IsFocusScope="True">
                             <Fluent:Button.ToolTip>
                                 <Fluent:ScreenTip Title="Cut (Ctrl+X)"
                                               Text="Cut the contents to the Clipboard."
@@ -279,12 +281,13 @@
                             </Fluent:Button.ToolTip>
                         </Fluent:Button>
                         <Fluent:Button x:Name="copyButton"
-                                   KeyTip="C"
-                                   Header="Copy"
-                                   Icon="{StaticResource CopyIcon}"
-                                   Command="Copy"
-                                   SizeDefinition="Middle,Small"
-                                   FocusManager.IsFocusScope="True">
+                                       KeyTip="C"
+                                       Header="Copy"
+                                       Icon="{StaticResource CopyIcon}"
+                                       Command="Copy"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       FocusManager.IsFocusScope="True">
                             <Fluent:Button.ToolTip>
                                 <Fluent:ScreenTip Title="Copy (Ctrl+C)"
                                               Text="Copy the contents to the Clipboard."
@@ -293,12 +296,13 @@
                             </Fluent:Button.ToolTip>
                         </Fluent:Button>
                         <Fluent:Button x:Name="findButton"
-                                   KeyTip="F"
-                                   Header="Find"
-                                   Command="ApplicationCommands.Find"
-                                   Icon="{StaticResource SearchIcon}"
-                                   SizeDefinition="Middle,Small"
-                                   FocusManager.IsFocusScope="True">
+                                       KeyTip="F"
+                                       Header="Find"
+                                       Command="ApplicationCommands.Find"
+                                       Icon="{StaticResource SearchIcon}"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       FocusManager.IsFocusScope="True">
                             <Fluent:Button.ToolTip>
                                 <Fluent:ScreenTip Title="Find (Ctrl+F)"
                                               Text="Find text in the content."
@@ -350,8 +354,8 @@
                         </Fluent:Button>
 
                         <Fluent:Button Header="Export"
-                                   Command="{Binding SelectedTab.SaveLocalCommand}"
-                                   SizeDefinition="Middle,Small">
+                                       Command="{Binding SelectedTab.SaveLocalCommand}"
+                                       SizeDefinition="Middle,Small">
                             <Fluent:Button.Icon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" />
                             </Fluent:Button.Icon>
@@ -405,8 +409,9 @@
                                        Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
 
                         <Fluent:Button Header="Open"
-                        Command="{Binding SelectedTab.OpenQueryCommand}"
-                        SizeDefinition="Large">
+                                       Command="{Binding SelectedTab.OpenQueryCommand}"
+                                       SizeDefinition="Large"
+                                       SimplifiedSizeDefinition="Middle">
                             <Fluent:Button.MediumIcon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" />
                             </Fluent:Button.MediumIcon>                            
@@ -416,9 +421,10 @@
                         </Fluent:Button>
 
                         <Fluent:SplitButton Header="Save"                       
-                                        SizeDefinition="Large"
-                                        Command="{Binding SelectedTab.SaveQueryCommand}"
-                                        LargeIcon="{StaticResource SaveDocumentIcon}">
+                                            SizeDefinition="Large"
+                                            SimplifiedSizeDefinition="Middle"
+                                            Command="{Binding SelectedTab.SaveQueryCommand}"
+                                            LargeIcon="{StaticResource SaveDocumentIcon}">
                             <Fluent:SplitButton.Items>
                                 <MenuItem Header="Save As..." Command="{Binding SelectedTab.SaveQueryCommand}" CommandParameter="SaveAs"/>
                             </Fluent:SplitButton.Items>
@@ -457,8 +463,10 @@
                         </Fluent:Button>
 
                         <Fluent:Button Header="Export"
-                                   Command="{Binding SelectedTab.SaveLocalCommand}"
-                                   SizeDefinition="Middle,Small">
+                                       ToolTip="Export"
+                                       Command="{Binding SelectedTab.SaveLocalCommand}"
+                                       SimplifiedSizeDefinition="Middle"                                       
+                                       SizeDefinition="Middle,Small">
                             <Fluent:Button.Icon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
                             </Fluent:Button.Icon>
@@ -467,6 +475,15 @@
                             </Fluent:Button.MediumIcon>
                         </Fluent:Button>
 
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
+                                       Visibility="{Binding IsSystemPropertiesVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:ToggleButton Header="Hide System Properties" 
+                                         ToolTip="Show or Hide System Properties"
+                                         IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         LargeIcon="{StaticResource ShowSystemPropertiesIcon}"/>
                     </Fluent:RibbonGroupBox>
 
                     <Fluent:RibbonGroupBox KeyTip="Q" Header="Import"
@@ -543,15 +560,6 @@
                                     Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     InputWidth="150"/>
 
-                    </Fluent:RibbonGroupBox>
-
-                    <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
-                                       Visibility="{Binding IsSystemPropertiesVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
-
-                        <Fluent:ToggleButton Header="Hide System Properties" 
-                                         ToolTip="Show or Hide System Properties"
-                                         IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         LargeIcon="{StaticResource ShowSystemPropertiesIcon}"/>
                     </Fluent:RibbonGroupBox>
 
 

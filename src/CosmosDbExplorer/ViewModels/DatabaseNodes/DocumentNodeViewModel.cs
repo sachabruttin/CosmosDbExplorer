@@ -12,7 +12,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         public DocumentNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)
         {
-            Name = "Documents";
+            Name = "Items";
         }
 
         public string Name { get; set; }

@@ -74,9 +74,15 @@ namespace CosmosDbExplorer.Core.Services
                 EnableScriptLogging = true,
             };
 
-            var response = await _scripts.ExecuteStoredProcedureAsync<string>(storedProcedureId, pk, parameters, options);
-
-            return new CosmosStoredProcedureResult(response);
+            try
+            {
+                var response = await _scripts.ExecuteStoredProcedureAsync<string>(storedProcedureId, pk, parameters, options);
+                return new CosmosStoredProcedureResult(response);
+            }
+            catch (CosmosException ex)
+            {
+                throw new Exception(ex.GetMessage());
+            }
         }
 
         public async Task<CosmosResult> DeleteStoredProcedureAsync(CosmosStoredProcedure asset)

@@ -37,21 +37,22 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
-      with: 
-        nuget-version: '5.7.x'
-
-    - name: Restore NuGet Packages
-      run: nuget restore $env:Solution_Name
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
 
     - name: Build Application
-      run: msbuild $env:Solution_Name /p:Configuration=Release
+      run: dotnet build $env:Solution_Name --no-restore --configuration Release /p:Version=${{ steps.tag.outputs.version }}
 
     - name: Zip Release folder
       uses: papeloto/action-zip@v1
       with:
-        files: src\CosmosDbExplorer\bin\Release\
+        files: src\CosmosDbExplorer\bin\Release\net6.0-windows
         dest: CosmosDbExplorer.zip
 
     - name: Automatic Release
@@ -78,35 +79,32 @@ jobs:
       with:
         tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
 
-    # TODO: run choco install checksum
-    # TODO: run checksum -t sha256 -f CosmosDbExplorer.zip
-
     - name: 'Replace tokens Chocolatey files #1' 
       uses: datamonsters/replace-action@v2
       with:
-        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
-        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME',$checksum=
+        files: './Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
 
     - name: 'Replace tokens Chocolatey files #2' 
       uses: datamonsters/replace-action@v2
       with:
-        files: './src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
+        files: './Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
         replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'    
 
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: pack ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
+        args: pack ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
 
     - name: Push Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: push ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
+        args: push ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
 
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ./src/CosmosDbExplorer/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
+        path: ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
 
   # Autoupdater
   autoupdater:

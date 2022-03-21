@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
+
+using AutoUpdaterDotNET;
 
 using CosmosDbExplorer.Behaviors;
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.Views;
+using CosmosDbExplorer.Properties;
 using CosmosDbExplorer.ViewModels;
 
 using Fluent;
 
 using MahApps.Metro.Controls;
+
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Views
 {
@@ -56,11 +62,41 @@ namespace CosmosDbExplorer.Views
             TitleBar = window.FindChild<RibbonTitleBar>("RibbonTitleBar");
             TitleBar.InvalidateArrange();
             TitleBar.UpdateLayout();
+
+            AutoUpdater.Start(Settings.Default.AutoUpdaterUrl);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             tabsBehavior.Unsubscribe();
+        }
+
+        private void SetupAutoUpdater()
+        {
+            // Allow user to be reminded to update in 1 day
+            AutoUpdater.ShowRemindLaterButton = true;
+            AutoUpdater.LetUserSelectRemindLater = false;
+            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
+            AutoUpdater.RemindLaterAt = 1;
+
+            AutoUpdater.ReportErrors = false;
+            AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.DownloadPath = Environment.CurrentDirectory;
+            AutoUpdater.ParseUpdateInfoEvent += AutoUpdateOnParseUpdateInfoEvent;
+        }
+
+        private void AutoUpdateOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
+        {
+            // Use JSON format for AutoUpdate release information file
+            dynamic json = JsonConvert.DeserializeObject(args.RemoteData);
+            args.UpdateInfo = new UpdateInfoEventArgs
+            {
+                CurrentVersion = json.version,
+                ChangelogURL = json.changelog,
+                Mandatory = new Mandatory { Value = json.mandatory },
+                DownloadURL = json.url,
+                CheckSum = json.checksum != null ? new CheckSum { Value = json.checksum } : null
+            };
         }
     }
 }

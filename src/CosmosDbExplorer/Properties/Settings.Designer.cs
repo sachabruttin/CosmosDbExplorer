@@ -130,5 +130,14 @@ namespace CosmosDbExplorer.Properties {
                 this["EnableWordWrap"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bruttin.com/CosmosDbExplorer/autoupdate.json")]
+        public string AutoUpdaterUrl {
+            get {
+                return ((string)(this["AutoUpdaterUrl"]));
+            }
+        }
     }
 }

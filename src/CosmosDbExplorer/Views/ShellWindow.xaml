@@ -200,8 +200,9 @@
             Learn more about using Fluent.Ribbon Control at
             https://fluentribbon.github.io/
             -->
-            <Fluent:Ribbon x:Name="ribbonControl" Grid.ColumnSpan="4" VerticalAlignment="Center"
-                           CanUseSimplified="False"
+            <Fluent:Ribbon x:Name="ribbonControl" Grid.ColumnSpan="4" VerticalAlignment="Center" HorizontalContentAlignment="Stretch"
+                           CanUseSimplified="True"
+                           IsSimplified="True"
                            AutomaticStateManagement="True">
                 <!--Backstage-->
                 <Fluent:Ribbon.Menu>
@@ -250,11 +251,11 @@
                                        Header="Clipboard" TabIndex="0">
 
                         <Fluent:Button Header="Paste" 
-                                   KeyTip="V"
-                                   Command="Paste"
-                                   LargeIcon="{StaticResource PasteIcon}"
-                                   Icon="{StaticResource PasteIcon}"
-                                   FocusManager.IsFocusScope="True">
+                                       KeyTip="V"
+                                       Command="Paste"
+                                       Icon="{StaticResource PasteIcon}"
+                                       SizeDefinition="Large"
+                                       FocusManager.IsFocusScope="True">
                             <Fluent:Button.ToolTip>
                                 <Fluent:ScreenTip Title="Paste (Ctrl+V)"
                                               Text="Paste the contents of the Clipboard."
@@ -313,9 +314,9 @@
                                        Visibility="{Binding IsRefreshTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
                         <Fluent:Button Command="{Binding SelectedTab.RefreshCommand}"
                                    Header="Refresh">
-                            <Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" />
-                            </Fluent:Button.Icon>
+                            </Fluent:Button.MediumIcon>
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
                             </Fluent:Button.LargeIcon>
@@ -390,8 +391,11 @@
                         <Fluent:Button Header="Delete"
                                    Command="{Binding SelectedTab.DeleteCommand}"
                                    SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:Button.MediumIcon>
                             <Fluent:Button.LargeIcon>
-                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32"/>
                             </Fluent:Button.LargeIcon>
                         </Fluent:Button>
 
@@ -403,6 +407,9 @@
                         <Fluent:Button Header="Open"
                         Command="{Binding SelectedTab.OpenQueryCommand}"
                         SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" />
+                            </Fluent:Button.MediumIcon>                            
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
                             </Fluent:Button.LargeIcon>
@@ -425,6 +432,9 @@
                                        Command="{Binding SelectedTab.ExecuteCommand}"
                                        Fluent:KeyTip.Keys="R"
                                        SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" />
+                            </Fluent:Button.MediumIcon>
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
                             </Fluent:Button.LargeIcon>
@@ -435,20 +445,26 @@
                             </Fluent:Button.ToolTip>
                         </Fluent:Button>
 
+                        <Fluent:Button Header="Next Page"
+                                   Command="{Binding SelectedTab.GoToNextPageCommand}"
+                                   SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource NextPageIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource NextPageIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
                         <Fluent:Button Header="Export"
                                    Command="{Binding SelectedTab.SaveLocalCommand}"
                                    SizeDefinition="Middle,Small">
                             <Fluent:Button.Icon>
                                 <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
                             </Fluent:Button.Icon>
-                        </Fluent:Button>
-
-                        <Fluent:Button Header="Next Page"
-                                   Command="{Binding SelectedTab.GoToNextPageCommand}"
-                                   SizeDefinition="Middle,Small">
-                            <Fluent:Button.Icon>
-                                <TextBlock Style="{StaticResource NextPageIcon}" FontSize="16" />
-                            </Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;"  />
+                            </Fluent:Button.MediumIcon>
                         </Fluent:Button>
 
                     </Fluent:RibbonGroupBox>
@@ -546,10 +562,10 @@
 
                     <Fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
                         <Fluent:Button Command="{Binding RefreshCommand}"
-                                   Header="Refresh">
-                            <Fluent:Button.Icon>
+                                       Header="Refresh">
+                            <Fluent:Button.MediumIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" />
-                            </Fluent:Button.Icon>
+                            </Fluent:Button.MediumIcon>
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
                             </Fluent:Button.LargeIcon>
@@ -605,13 +621,17 @@
                             </Fluent:Button.Icon>
                         </Fluent:Button>
 
-                        <Fluent:MenuItem Header="Delete Container" 
+                        <Fluent:Button Header="Delete Container" 
                                          IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
-                                         Command="{Binding Container.DeleteContainerCommand}">
-                            <Fluent:MenuItem.Icon>
+                                         Command="{Binding Container.DeleteContainerCommand}"
+                                       SizeDefinition="Middle,Small">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="16" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
                                 <TextBlock Style="{StaticResource DeleteIcon}" />
-                            </Fluent:MenuItem.Icon>
-                        </Fluent:MenuItem>
+                            </Fluent:Button.MediumIcon>
+                        </Fluent:Button>
 
                         <!--<Fluent:SplitButton KeyTip="D" Header="Delete"
                                         SizeDefinition="Middle,Small">
@@ -668,9 +688,9 @@
                     <Fluent:RibbonGroupBox KeyTip="R" Header="Reset">
                         <Fluent:Button Header="Reset Options"
                                    Command="{Binding SelectedTab.ResetRequestOptionsCommand}">
-                            <Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" />
-                            </Fluent:Button.Icon>
+                            </Fluent:Button.MediumIcon>
                             <Fluent:Button.LargeIcon>
                                 <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
                             </Fluent:Button.LargeIcon>
@@ -680,39 +700,36 @@
 
                     <Fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
                                        Grid.IsSharedSizeScope="True">
-                        <Fluent:ComboBox Header="Indexing Directive" Width="250" Margin="1" 
+                        <Fluent:ComboBox Header="Indexing Directive" Width="200" Margin="1" 
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosIndexingDirectives}}}"
                                      SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      IsEditable="False"/>
 
-                        <Fluent:ComboBox Header="Consistency Level" Width="250" Margin="1"
+                        <Fluent:ComboBox Header="Consistency Level" Width="200" Margin="1"
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosConsistencyLevels}}}"
                                      SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      IsEditable="False"/>
 
-                        <!--<Fluent:TextBox Header="Partition Key" Width="250" Margin="1"
-                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>-->
-
                     </Fluent:RibbonGroupBox>
 
 
-                    <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition">
-                        <Fluent:ComboBox Header="Access Condition" Width="220" Margin="1"
+                    <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition" >
+                        <Fluent:ComboBox Header="Access Condition" Width="200" Margin="1"
                                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosAccessConditionType}}}"
                                      SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      IsEditable="False"/>
 
-                        <Fluent:TextBox Header="ETag" Margin="1"
+                        <Fluent:TextBox Header="ETag" Margin="1" MinWidth="200"
                                     Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </Fluent:RibbonGroupBox>
 
                     <Fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
                                        Grid.IsSharedSizeScope="True">
-                        <Fluent:TextBox Header="Pre-Trigger" Width="220" Margin="1"
+                        <Fluent:TextBox Header="Pre-Trigger" MinWidth="200" Margin="1"
                                     Text="{Binding SelectedTab.PreTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Fluent:TextBox Header="Post-Trigger" Width="220" Margin="1" 
+                        <Fluent:TextBox Header="Post-Trigger" MinWidth="200" Margin="1" 
                                     Text="{Binding SelectedTab.PostTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </Fluent:RibbonGroupBox>

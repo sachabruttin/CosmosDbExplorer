@@ -63,7 +63,9 @@ namespace CosmosDbExplorer.ViewModels
 
         private static string RemoveCosmosSystemProperties(JArray content)
         {
-            foreach (var obj in content.Values<JObject>())
+            var innerContent = JArray.FromObject(content);
+
+            foreach (var obj in innerContent.Values<JObject>())
             {
                 if (obj != null)
                 {
@@ -74,7 +76,7 @@ namespace CosmosDbExplorer.ViewModels
                 }
             }
 
-            return content.ToString(Formatting.Indented);
+            return innerContent.ToString(Formatting.Indented);
         }
     }
 

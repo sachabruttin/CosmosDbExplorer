@@ -82,29 +82,29 @@ jobs:
     - name: 'Replace tokens Chocolatey files #1' 
       uses: datamonsters/replace-action@v2
       with:
-        files: './Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
+        files: './src/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
         replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
 
     - name: 'Replace tokens Chocolatey files #2' 
       uses: datamonsters/replace-action@v2
       with:
-        files: './Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
+        files: './src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
         replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'    
 
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: pack ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
+        args: pack ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
 
     - name: Push Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: push ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
+        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
 
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ./Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
+        path: ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
 
   # Autoupdater
   autoupdater:
@@ -122,13 +122,17 @@ jobs:
       id: tag
       with:
         tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.        
-    
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      
     - name: Create autoupdate.json file
       id: create-autoupdate-json
       uses: jsdaniell/create-json@1.1.2
       with:
         name: autoupdate.json
-        json: '{"version":"${{ steps.tag.outputs.version }}","url":"https://github.com/sachabruttin/CosmosDbExplorer/releases/download/$GIT_TAG_NAME/CosmosDbExplorer.zip","mandatory":false,"checksum":null,"changelog":null}'
+        json: '{"version":"${{ steps.tag.outputs.version }}","url":"https://github.com/sachabruttin/CosmosDbExplorer/releases/download/${{ steps.get_version.outputs.VERSION }}/CosmosDbExplorer.zip","mandatory":false,"checksum":null,"changelog":null}'
 
     - run: |
         git config user.name github-actions

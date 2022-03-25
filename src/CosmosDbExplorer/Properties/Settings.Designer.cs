@@ -12,7 +12,7 @@ namespace CosmosDbExplorer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.2.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,31 +25,37 @@ namespace CosmosDbExplorer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public int MaxDocumentToRetrieve {
+        [global::System.Configuration.DefaultSettingValueAttribute("Consolas")]
+        public string EditorFontName {
             get {
-                return ((int)(this["MaxDocumentToRetrieve"]));
+                return ((string)(this["EditorFontName"]));
             }
             set {
-                this["MaxDocumentToRetrieve"] = value;
+                this["EditorFontName"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bruttin.com/CosmosDbExplorer/autoupdate.json")]
-        public string AutoUpdaterUrl {
+        [global::System.Configuration.DefaultSettingValueAttribute("11")]
+        public int EditorFontSize {
             get {
-                return ((string)(this["AutoUpdaterUrl"]));
+                return ((int)(this["EditorFontSize"]));
+            }
+            set {
+                this["EditorFontSize"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("300")]
-        public int AutoUpdaterIntervalInSeconds {
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string Theme {
             get {
-                return ((int)(this["AutoUpdaterIntervalInSeconds"]));
+                return ((string)(this["Theme"]));
+            }
+            set {
+                this["Theme"] = value;
             }
         }
         
@@ -64,7 +70,74 @@ namespace CosmosDbExplorer.Properties {
                 this["ExportFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int MaxDocumentToRetrieve {
+            get {
+                return ((int)(this["MaxDocumentToRetrieve"]));
+            }
+            set {
+                this["MaxDocumentToRetrieve"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Metro")]
+        public string DialogService {
+            get {
+                return ((string)(this["DialogService"]));
+            }
+            set {
+                this["DialogService"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("F5")]
+        public string ExecuteGesture {
+            get {
+                return ((string)(this["ExecuteGesture"]));
+            }
+            set {
+                this["ExecuteGesture"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowLineNumbers {
+            get {
+                return ((bool)(this["ShowLineNumbers"]));
+            }
+            set {
+                this["ShowLineNumbers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableWordWrap {
+            get {
+                return ((bool)(this["EnableWordWrap"]));
+            }
+            set {
+                this["EnableWordWrap"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bruttin.com/CosmosDbExplorer/autoupdate.json")]
+        public string AutoUpdaterUrl {
+            get {
+                return ((string)(this["AutoUpdaterUrl"]));
+            }
+        }
     }
-
-
 }

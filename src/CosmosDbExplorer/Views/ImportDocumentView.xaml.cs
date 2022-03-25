@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
-using System.Xml;
-using CosmosDbExplorer.Infrastructure.AvalonEdit;
-using CosmosDbExplorer.Infrastructure.Models;
-using ICSharpCode.AvalonEdit.Folding;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
-using ICSharpCode.AvalonEdit.Indentation.CSharp;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace CosmosDbExplorer.Views
 {
@@ -17,66 +20,9 @@ namespace CosmosDbExplorer.Views
     /// </summary>
     public partial class ImportDocumentView : UserControl
     {
-        private readonly BraceFoldingStrategy _foldingStrategy = new BraceFoldingStrategy();
-        private FoldingManager _foldingManager;
-
         public ImportDocumentView()
         {
-            RegisterCustomHighlighting("JSON");
-
             InitializeComponent();
-
-            editor.TextArea.IndentationStrategy = new CSharpIndentationStrategy(editor.Options);
-
-            var foldingUpdateTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-
-            foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            foldingUpdateTimer.Start();
-        }
-
-        private void RegisterCustomHighlighting(string name)
-        {
-            // Load our custom highlighting definition
-            IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
-            {
-                if (stream == null)
-                {
-                    throw new InvalidOperationException("Could not find embedded resource");
-                }
-
-                using (var reader = new XmlTextReader(stream))
-                {
-                    customHightlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                }
-            }
-
-            // and register it in the HighlightingManager
-            HighlightingManager.Instance.RegisterHighlighting(name, new string[] { $".{name.ToLower()}" }, customHightlighting);
-        }
-
-        private void FoldingUpdateTimer_Tick(object sender, EventArgs e)
-        {
-            if (_foldingManager == null && editor.TextArea?.Document?.Text != null)
-            {
-                _foldingManager = FoldingManager.Install(editor.TextArea);
-            }
-
-            if (_foldingStrategy != null && _foldingManager != null)
-            {
-                _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
-            }
-        }
-
-        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (DataContext is PaneViewModelBase datacontext)
-            {
-                datacontext.IconSource = FindResource("ImportIcon") as TextBlock;
-            }
         }
     }
 }

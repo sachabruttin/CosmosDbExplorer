@@ -1,13 +1,12 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
-using CosmosDbExplorer.ViewModel;
-using Microsoft.Azure.Documents;
+﻿using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 namespace CosmosDbExplorer.Messages
 {
-    public class OpenImportDocumentViewMessage : OpenTabMessageBase<CollectionNodeViewModel>
+    public class OpenImportDocumentViewMessage : OpenTabMessageBase<ContainerNodeViewModel>
     {
-        public OpenImportDocumentViewMessage(CollectionNodeViewModel node, Connection connection, DocumentCollection collection) 
-            : base(node, connection, collection)
+        public OpenImportDocumentViewMessage(ContainerNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer container)
+            : base(node, connection, database, container)
         {
         }
     }

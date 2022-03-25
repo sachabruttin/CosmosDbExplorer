@@ -1,56 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml;
-using CosmosDbExplorer.Infrastructure.Models;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using CosmosDbExplorer.Properties;
 
 namespace CosmosDbExplorer.Views
 {
     /// <summary>
-    /// Interaction logic for QueryEditorView.xaml
+    /// Interaction logic for QueryEditor.xaml
     /// </summary>
     public partial class QueryEditorView : UserControl
     {
         public QueryEditorView()
         {
-            RegisterCustomHighlighting("DocumentDbSql");
             InitializeComponent();
 
-            // https://stackoverflow.com/a/1066009/20761
-            NameScope.SetNameScope(editorContextMenu, NameScope.GetNameScope(this));
+            Properties.Settings.Default.PropertyChanged += Default_PropertyChanged;
+            DefineGestures();
         }
 
-        private void RegisterCustomHighlighting(string name)
+        private void Default_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // Load our custom highlighting definition
-            IHighlightingDefinition customHightlighting;
-            using (var stream = typeof(MainWindow).Assembly.GetManifestResourceStream($"CosmosDbExplorer.Infrastructure.AvalonEdit.{name}.xshd"))
-            {
-                if (stream == null)
-                {
-                    throw new InvalidOperationException("Could not find embedded resource");
-                }
-
-                using (var reader = new XmlTextReader(stream))
-                {
-                    customHightlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                }
-            }
-
-            // and register it in the HighlightingManager
-            HighlightingManager.Instance.RegisterHighlighting(name, new string[] { $".{name.ToLower()}" }, customHightlighting);
+            DefineGestures();
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private static KeyGesture? GetGesture(string gesture)
         {
-            if (DataContext is PaneViewModelBase datacontext)
-            {
-                datacontext.IconSource = FindResource("SqlQueryIcon") as ImageSource;
-            }
+            var converter = new KeyGestureConverter();
+            return converter.ConvertFromString(gesture) as KeyGesture;
+        }
+
+        private void DefineGestures()
+        {
+            ExecuteKeyBinding.Gesture = GetGesture(Properties.Settings.Default.ExecuteGesture);
         }
     }
 }

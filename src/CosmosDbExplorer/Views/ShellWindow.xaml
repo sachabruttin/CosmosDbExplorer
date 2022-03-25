@@ -1,0 +1,839 @@
+﻿<controls:MetroWindow
+    x:Class="CosmosDbExplorer.Views.ShellWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
+    xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
+    xmlns:pane="clr-namespace:CosmosDbExplorer.Views.Pane"
+    xmlns:views="clr-namespace:CosmosDbExplorer.Views"
+    xmlns:selector="clr-namespace:CosmosDbExplorer.TemplateSelectors" 
+    xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"     
+    xmlns:Fluent="urn:fluent-ribbon"
+    xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+    xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+    xmlns:coremodels="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ShellViewModel}"
+    ShowSystemMenuOnRightClick="False"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded"
+    Style="{StaticResource CustomMetroWindow}"
+    mc:Ignorable="d"
+    MinWidth="500"
+    MinHeight="350"
+    d:Width="1800"
+    WindowState="Maximized"
+    Cursor="{Binding IsBusy, Converter={markup:CursorExtensionConverter}}"
+    Title="{x:Static properties:Resources.AppDisplayName}">
+    
+    <controls:MetroWindow.TitleTemplate>
+        <DataTemplate>
+            <Fluent:RibbonTitleBar
+                x:Name="RibbonTitleBar"
+                DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=controls:MetroWindow}}"
+                Header="{Binding Path=Title, RelativeSource={RelativeSource AncestorType=controls:MetroWindow}}" />
+        </DataTemplate>
+    </controls:MetroWindow.TitleTemplate>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding UnloadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <controls:MetroWindow.Resources>
+        <BoolToVisibilityConverter x:Key="DockBoolToVisibilityConverter" />
+        <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
+        <converters:AvalonThemeConverter x:Key="AvalonThemeConverter" />
+
+        <selector:TabContentTemplateSelector x:Key="tabContentTemplateSelector">
+            <selector:TabContentTemplateSelector.DocumentsTemplate>
+                <DataTemplate>
+                    <views:DocumentsTabView/>
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.DocumentsTemplate>
+            <selector:TabContentTemplateSelector.QueryEditorTemplate>
+                <DataTemplate>
+                    <views:QueryEditorView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.QueryEditorTemplate>
+            <selector:TabContentTemplateSelector.ImportDocumentTemplate>
+                <DataTemplate>
+                    <views:ImportDocumentView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.ImportDocumentTemplate>
+            <selector:TabContentTemplateSelector.DatabaseViewTemplate>
+                <DataTemplate>
+                    <views:DatabaseView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.DatabaseViewTemplate>
+            <selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
+                <DataTemplate>
+                    <views:StoredProcedureTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.StoredProcedureViewTemplate>
+            <selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
+                <DataTemplate>
+                    <views:UserDefFuncTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.UserDefFuncViewTemplate>
+            <selector:TabContentTemplateSelector.TriggerViewTemplate>
+                <DataTemplate>
+                    <views:TriggerTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.TriggerViewTemplate>
+            <selector:TabContentTemplateSelector.ContainerScaleSettingsTemplate>
+                <DataTemplate>
+                    <views:ContainerScaleSettingsView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.ContainerScaleSettingsTemplate>
+            <selector:TabContentTemplateSelector.DatabaseScaleTemplate>
+                <DataTemplate>
+                    <views:DatabaseScaleView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.DatabaseScaleTemplate>
+            <selector:TabContentTemplateSelector.UserEditTempalate>
+                <DataTemplate>
+                    <views:UserEditView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.UserEditTempalate>
+            <selector:TabContentTemplateSelector.PermissionEditTemplate>
+                <DataTemplate>
+                    <views:PermissionEditView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.PermissionEditTemplate>
+            <selector:TabContentTemplateSelector.MetricsTemplate>
+                <DataTemplate>
+                    <views:MetricsTabView />
+                </DataTemplate>
+            </selector:TabContentTemplateSelector.MetricsTemplate>
+        </selector:TabContentTemplateSelector>
+
+        <selector:StatusBarItemTemplateSelector x:Key="statusBarItemTemplateSelector">
+            <selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="Used memory"
+                                  Margin="5,0"
+                                  Value="{Binding DataContext.UsedMemory, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, StringFormat={}{0:##\,000} KB}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.UsedMemoryTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ZoomTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="Zoom">
+                        <Grid DataContext="{Binding DataContext.Value}" Margin="5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Slider x:Name="zoomSlider" Grid.Column="0"
+                                    Minimum="0" Maximum="1"
+                                    IsDirectionReversed="False"
+                                    Style="{DynamicResource ZoomSliderStyle}"
+                                    Value="{Binding Zoom, Mode=TwoWay}"
+                                    IsSnapToTickEnabled="True"
+                                    TickFrequency="0.01"
+                                    SmallChange="0.01"
+                                    LargeChange="0.5" />
+
+                            <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat={}{0:P0}, Converter={StaticResource logConverter}}"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ZoomTemplate>
+
+            <selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="{Binding Title}"
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}" 
+                                          Value="{Binding DataContext.Value}" />
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.SimpleTextTemplate>
+
+            <selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+                <DataTemplate>
+                    <Fluent:StatusBarItem Title="{Binding Title}" 
+                                          Margin="5,0"
+                                          Visibility="{Binding DataContext.IsVisible, Converter={StaticResource boolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <ProgressBar IsIndeterminate="True" Width="150" Height="12" VerticalAlignment="Center"/>
+                            <Button Command="{Binding DataContext.Value}" Margin="3,0" ToolTip="Stop Execution" Height="16"
+                                    BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                    Visibility="{Binding DataContext.IsCancellable, Converter={StaticResource boolToVisibilityConverter}}">
+                                <Button.Content>
+                                    <Image Source="{StaticResource StopIcon}" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Fluent:StatusBarItem>
+                </DataTemplate>
+            </selector:StatusBarItemTemplateSelector.ProgressBarTemplate>
+
+        </selector:StatusBarItemTemplateSelector>
+    </controls:MetroWindow.Resources>
+
+    <controls:MetroWindow.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="89*"/>
+                <ColumnDefinition Width="44*"/>
+                <ColumnDefinition Width="133*"/>
+                <ColumnDefinition Width="233*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            
+            <!--
+            Learn more about using Fluent.Ribbon Control at
+            https://fluentribbon.github.io/
+            -->
+            <Fluent:Ribbon x:Name="ribbonControl" Grid.ColumnSpan="4" VerticalAlignment="Center" HorizontalContentAlignment="Stretch"
+                           CanUseSimplified="True"
+                           IsSimplified="True"
+                           AutomaticStateManagement="True">
+                <!--Backstage-->
+                <Fluent:Ribbon.Menu>
+                    <Fluent:Backstage UseHighestAvailableAdornerLayer="False">
+                        <Fluent:BackstageTabControl x:Name="backstageTabControl" SelectedContentMargin="0">
+                            <i:Interaction.Behaviors>
+                                <behaviors:BackstageTabNavigationBehavior x:Name="navigationBehavior" />
+                            </i:Interaction.Behaviors>
+                            <Fluent:Button Header="Add Account" 
+                                           Command="{Binding ShowAccountSettingsCommand}"
+                                           Icon="{StaticResource AddConnectionIcon}" 
+                                           KeyTip="A"/>
+                            <Fluent:BackstageTabItem
+                                Tag="CosmosDbExplorer.ViewModels.SettingsViewModel"
+                                Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabSettingsHeader}" />
+                            <Fluent:BackstageTabItem
+                                Tag="CosmosDbExplorer.ViewModels.AboutViewModel"
+                                Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabAboutHeader}" />
+                        </Fluent:BackstageTabControl>
+                    </Fluent:Backstage>
+                </Fluent:Ribbon.Menu>
+
+                <i:Interaction.Behaviors>
+                    <behaviors:RibbonTabsBehavior x:Name="tabsBehavior" />
+                </i:Interaction.Behaviors>
+
+                <Fluent:Ribbon.ContextualGroups>
+                    <Fluent:RibbonContextualTabGroup x:Name="optionsGroup" Header="Options"
+                                                     Background="Green" BorderBrush="Green"
+                    Visibility="{Binding IsRequestOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+                    <Fluent:RibbonContextualTabGroup x:Name="connectionGroup" Header="Connections"
+                                                     Background="Violet" BorderBrush="Violet"
+                    Visibility="{Binding IsConnectionOptionsVisible, Converter={StaticResource boolToVisibilityConverter}}" />
+                </Fluent:Ribbon.ContextualGroups>
+
+                <!--Tabs-->
+                <Fluent:RibbonTabItem Header="Home" KeyTip="H" IsSelected="True">
+                    <!--<Fluent:RibbonGroupBox Header="Account" KeyTip="A"
+                                       IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}">
+                    <Fluent:Button Header="Edit" Command="{Binding Connection.EditConnectionCommand}" />
+                    <Fluent:Button Header="Remove" Command="{Binding Connection.RemoveConnectionCommand}" />
+                </Fluent:RibbonGroupBox>-->
+
+                    <Fluent:RibbonGroupBox KeyTip="C" x:Name="Clipboard"
+                                       Header="Clipboard" TabIndex="0">
+
+                        <Fluent:Button Header="Paste" 
+                                       KeyTip="V"
+                                       Command="Paste"
+                                       Icon="{StaticResource PasteIcon}"
+                                       SizeDefinition="Large"
+                                       SimplifiedSizeDefinition="Middle"
+                                       FocusManager.IsFocusScope="True">
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Paste (Ctrl+V)"
+                                              Text="Paste the contents of the Clipboard."
+                                              DisableReason="Enable it do use this function"
+                                              Width="190" />
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+
+                        <Fluent:Button x:Name="cutButton"
+                                       KeyTip="X"
+                                       Header="Cut"
+                                       Icon="{StaticResource CutIcon}"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       Command="Cut"
+                                       FocusManager.IsFocusScope="True">
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Cut (Ctrl+X)"
+                                              Text="Cut the contents to the Clipboard."
+                                              DisableReason="Cut is currently not available."
+                                              Width="190" />
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+                        <Fluent:Button x:Name="copyButton"
+                                       KeyTip="C"
+                                       Header="Copy"
+                                       Icon="{StaticResource CopyIcon}"
+                                       Command="Copy"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       FocusManager.IsFocusScope="True">
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Copy (Ctrl+C)"
+                                              Text="Copy the contents to the Clipboard."
+                                              DisableReason="Copy is currently not available."
+                                              Width="190"/>
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+                        <Fluent:Button x:Name="findButton"
+                                       KeyTip="F"
+                                       Header="Find"
+                                       Command="ApplicationCommands.Find"
+                                       Icon="{StaticResource SearchIcon}"
+                                       SizeDefinition="Middle,Small"
+                                       SimplifiedSizeDefinition="Middle"
+                                       FocusManager.IsFocusScope="True">
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="Find (Ctrl+F)"
+                                              Text="Find text in the content."
+                                              DisableReason="Find is currently not available."
+                                              Width="190"/>
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="R" x:Name="Refresh"
+                                       Header="Refresh" TabIndex="1"
+                                       Visibility="{Binding IsRefreshTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+                        <Fluent:Button Command="{Binding SelectedTab.RefreshCommand}"
+                                   Header="Refresh">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="D" x:Name="Documents" Header="Documents"
+                                       Visibility="{Binding IsTabDocumentsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveDocumentCommand}"
+                                   LargeIcon="{StaticResource SaveDocumentIcon}"/>
+
+                        <Fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}"
+                                   LargeIcon="{StaticResource DiscardIcon}"/>
+
+                        <Fluent:Button Header="New Document"
+                                   SizeDefinition="Middle,Small"
+                                   Command="{Binding SelectedTab.NewDocumentCommand}"
+                                   Icon="{StaticResource NewDocumentIcon}" />
+
+                        <Fluent:Button Header="Delete Document"
+                                   Command="{Binding SelectedTab.DeleteDocumentCommand}"
+                                   SizeDefinition="Middle,Small">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+
+                        <Fluent:Button Header="Export"
+                                       Command="{Binding SelectedTab.SaveLocalCommand}"
+                                       SizeDefinition="Middle,Small">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                                       Visibility="{Binding IsSettingsTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveCommand}"
+                                   LargeIcon="{StaticResource SaveDocumentIcon}"/>
+
+                        <Fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}" 
+                                   LargeIcon="{StaticResource DiscardIcon}" />
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="{Binding SelectedTab.Title}"
+                                       Visibility="{Binding IsAssetTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Save"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.SaveCommand}"
+                                   LargeIcon="{StaticResource SaveDocumentIcon}" />
+
+                        <Fluent:Button Header="Discard"
+                                   SizeDefinition="Large"
+                                   Command="{Binding SelectedTab.DiscardCommand}" 
+                                   LargeIcon="{StaticResource DiscardIcon}" />
+
+                        <Fluent:Button Header="Delete"
+                                   Command="{Binding SelectedTab.DeleteCommand}"
+                                   SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32"/>
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="S" Header="File"
+                                       Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Open"
+                                       Command="{Binding SelectedTab.OpenQueryCommand}"
+                                       SizeDefinition="Large"
+                                       SimplifiedSizeDefinition="Middle">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" />
+                            </Fluent:Button.MediumIcon>                            
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
+                        <Fluent:SplitButton Header="Save"                       
+                                            SizeDefinition="Large"
+                                            SimplifiedSizeDefinition="Middle"
+                                            Command="{Binding SelectedTab.SaveQueryCommand}"
+                                            LargeIcon="{StaticResource SaveDocumentIcon}">
+                            <Fluent:SplitButton.Items>
+                                <MenuItem Header="Save As..." Command="{Binding SelectedTab.SaveQueryCommand}" CommandParameter="SaveAs"/>
+                            </Fluent:SplitButton.Items>
+                        </Fluent:SplitButton>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox Fluent:KeyTip.Keys="Q" Header="Query"
+                                       Visibility="{Binding IsQueryTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Run"
+                                       Command="{Binding SelectedTab.ExecuteCommand}"
+                                       Fluent:KeyTip.Keys="R"
+                                       SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                            <Fluent:Button.ToolTip>
+                                <Fluent:ScreenTip Title="{Binding Source={x:Static properties:Settings.Default}, Path=ExecuteGesture, Mode=OneWay, StringFormat=Run ({0})}"
+                                              Text="Execute the Query"
+                                              Width="190" />
+                            </Fluent:Button.ToolTip>
+                        </Fluent:Button>
+
+                        <Fluent:Button Header="Next Page"
+                                   Command="{Binding SelectedTab.GoToNextPageCommand}"
+                                   SizeDefinition="Large">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource NextPageIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource NextPageIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
+                        <Fluent:Button Header="Export"
+                                       ToolTip="Export"
+                                       Command="{Binding SelectedTab.SaveLocalCommand}"
+                                       SimplifiedSizeDefinition="Middle"                                       
+                                       SizeDefinition="Middle,Small">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;" FontSize="16" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE78C;"  />
+                            </Fluent:Button.MediumIcon>
+                        </Fluent:Button>
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="O" Header="Other" 
+                                       Visibility="{Binding IsSystemPropertiesVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:ToggleButton Header="Hide System Properties" 
+                                         ToolTip="Show or Hide System Properties"
+                                         IsChecked="{Binding SelectedTab.HideSystemProperties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         LargeIcon="{StaticResource ShowSystemPropertiesIcon}"/>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="Q" Header="Import"
+                                       Visibility="{Binding IsImportTabVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Fluent:Button Header="Import"
+                                   Command="{Binding SelectedTab.ExecuteCommand}"
+                                   SizeDefinition="Large">
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE768;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
+                        <Fluent:Button Header="Open Document"
+                                   Command="{Binding SelectedTab.OpenFileCommand}"
+                                   SizeDefinition="Large">
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xE8E5;" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="X" Header="Query Settings"                                        
+                                       Visibility="{Binding IsQuerySettingsVisible, Mode=TwoWay, Converter={StaticResource boolToVisibilityConverter}}"
+                                       Grid.IsSharedSizeScope="False">
+
+                        <Fluent:Spinner Header="Max Items" Minimum="-1" Format="N0" Increment="100"
+                                    Value="{Binding SelectedTab.MaxItemCount, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxItemCount, Converter={StaticResource nullToVisibilityConverter}}"
+                                    InputWidth="60" Margin="-1"
+                                    Size="Large">
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Item Count"
+                                              Text="Sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service."
+                                              Width="190" />
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
+
+                        <Fluent:Spinner Header="Max Concurrency" Minimum="-1" Format="N0" Increment="1"
+                                    Value="{Binding SelectedTab.MaxDOP, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxDOP, Converter={StaticResource nullToVisibilityConverter}}"
+                                    InputWidth="60" Margin="-1"
+                                    Size="Large">
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Concurrency"
+                                              Text="Gets or sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of concurrent operations to run."
+                                              Width="190" />
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
+
+                        <Fluent:Spinner Header="Max Buffer" Minimum="-1" Format="N0" Increment="100"                  
+                                    Value="{Binding SelectedTab.MaxBufferItem, UpdateSourceTrigger=PropertyChanged}" 
+                                    Visibility="{Binding SelectedTab.MaxBufferItem, Converter={StaticResource nullToVisibilityConverter}}"
+                                    InputWidth="60" Margin="-1"
+                                    Size="Large" >
+                            <Fluent:Spinner.ToolTip>
+                                <Fluent:ScreenTip Title="Max Buffer Item Count"
+                                              Text="Gets or sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service. A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of items to buffer."
+                                              Width="190" />
+                            </Fluent:Spinner.ToolTip>
+                        </Fluent:Spinner>
+
+                        <Fluent:CheckBox Header="Enable Scan In Query" Icon="{x:Null}" FlowDirection="RightToLeft"
+                                     IsChecked="{Binding SelectedTab.EnableScanInQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding SelectedTab.EnableScanInQuery, Converter={StaticResource nullToEnabledConverter}}">
+                            <Fluent:CheckBox.ToolTip>
+                                <Fluent:ScreenTip Title="Enable Cross Partition Query"
+                                              Text="Sets the option to enable scans on the queries which couldn't be served as indexing was opted out on the requested paths in the Azure Cosmos DB service."
+                                              Width="190" />
+                            </Fluent:CheckBox.ToolTip>
+                        </Fluent:CheckBox>
+
+                        <Fluent:TextBox Header="Partition Key"
+                                    Text="{Binding SelectedTab.PartitionKeyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    InputWidth="150"/>
+
+                    </Fluent:RibbonGroupBox>
+
+
+                </Fluent:RibbonTabItem>
+
+                <Fluent:RibbonTabItem Header="Tools" 
+                                      Group="{Binding Source={x:Reference connectionGroup}}">
+
+                    <Fluent:RibbonGroupBox KeyTip="T" x:Name="Treeview" Header="Content" TabIndex="0">
+                        <Fluent:Button Command="{Binding RefreshCommand}"
+                                       Header="Refresh">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox Header="Database" KeyTip="D" TabIndex="1">
+                        
+                        <Fluent:Button Header="New" 
+                                       IsEnabled="{Binding Connection, Converter={StaticResource isNotNullToBooleanConverter}}"  
+                                   Command="{Binding Connection.AddNewDatabaseCommand}"
+                                   LargeIcon="{StaticResource DatabaseIcon}"/>
+
+                        <Fluent:Button Header="Delete" 
+                                       IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}"  
+                                   Command="{Binding Database.DeleteDatabaseCommand}">
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="O" x:Name="Container" TabIndex="2"
+                                       Header="Container"
+                                       >
+
+                        <Fluent:SplitButton x:Name="CreateButton"
+                                        KeyTip="A"
+                                        Header="Add Item"
+                                        LargeIcon="{StaticResource CreateIcon}"
+                                        SizeDefinition="Large">
+                            <Fluent:MenuItem Header="Container" Icon="{StaticResource CollectionIcon}" Command="{Binding Database.AddNewContainerCommand}" IsEnabled="{Binding Database, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="Stored Procedure" Icon="{StaticResource StoredProcedureIcon}" Command="{Binding Container.NewStoredProcedureCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="User Defined Function" Icon="{StaticResource UdfIcon}" Command="{Binding Container.NewUdfCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                            <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Container.NewTriggerCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
+                        </Fluent:SplitButton>
+
+                        <Fluent:Button Header="SQL Query" 
+                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
+                                   Icon="{StaticResource SqlQueryIcon}" 
+                                   SizeDefinition="Middle,Small"
+                                   Command="{Binding Container.OpenSqlQueryCommand}"
+                                   KeyTip="Q"/>
+
+                        <Fluent:Button Header="Import" x:Name="ImportDocuments"
+                                   Command="{Binding Container.OpenImportDocumentCommand}"
+                                   SizeDefinition="Middle,Small"
+                                       IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
+                                   KeyTip="I">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource ImportDocumentIcon}" />
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+
+                        <Fluent:Button Header="Delete Container" 
+                                         IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
+                                         Command="{Binding Container.DeleteContainerCommand}"
+                                       SizeDefinition="Middle,Small">
+                            <Fluent:Button.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="16" />
+                            </Fluent:Button.Icon>
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:Button.MediumIcon>
+                        </Fluent:Button>
+
+                        <!--<Fluent:SplitButton KeyTip="D" Header="Delete"
+                                        SizeDefinition="Middle,Small">
+                            <Fluent:SplitButton.Icon>
+                                <TextBlock Style="{StaticResource DeleteIcon}" />
+                            </Fluent:SplitButton.Icon>
+
+                            <Fluent:MenuItem Header="Delete Container" 
+                                   Command="{Binding Container.DeleteContainerCommand}">
+                                <Fluent:MenuItem.Icon>
+                                    <TextBlock Style="{StaticResource DeleteIcon}" />
+                                </Fluent:MenuItem.Icon>
+                            </Fluent:MenuItem>
+
+                            <Fluent:MenuItem Header="Remove All Documents (Delete)" 
+                                   Icon="{StaticResource RemoveAllIcon}" 
+                                   Command="{Binding Container.ClearAllDocumentsCommand}"
+                                   />
+                            <Fluent:MenuItem Header="Remove All Documents (Recreate)" 
+                                   Icon="{StaticResource RemoveAllIcon}" 
+                                   Command="{Binding Container.RecreateAsEmptyCommand}"
+                                   />
+                        </Fluent:SplitButton>-->
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox Header="Users" KeyTip="U" TabIndex="3"
+                                       IsEnabled="{Binding Users, Converter={StaticResource isNotNullToBooleanConverter}}">
+
+                        <Fluent:Button Header="Add User" 
+                                   Command="{Binding Users.AddUserCommand}"
+                                   LargeIcon="{StaticResource UserIcon}">
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox Header="Permissions" KeyTip="U" TabIndex="3"
+                                       IsEnabled="{Binding UserNode, Converter={StaticResource isNotNullToBooleanConverter}}">
+
+                        <Fluent:Button Header="Add Permission" 
+                                   Command="{Binding UserNode.AddPermissionCommand}"
+                                   LargeIcon="{StaticResource PermissionIcon}">
+                        </Fluent:Button>
+
+
+                    </Fluent:RibbonGroupBox>
+
+
+                </Fluent:RibbonTabItem>
+
+                <Fluent:RibbonTabItem Header="Request Options" 
+                                      Group="{Binding Source={x:Reference optionsGroup}}"
+                                      Visibility="Visible">
+
+                    <Fluent:RibbonGroupBox KeyTip="R" Header="Reset">
+                        <Fluent:Button Header="Reset Options"
+                                   Command="{Binding SelectedTab.ResetRequestOptionsCommand}">
+                            <Fluent:Button.MediumIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" />
+                            </Fluent:Button.MediumIcon>
+                            <Fluent:Button.LargeIcon>
+                                <TextBlock Style="{StaticResource RefreshIcon}" FontSize="32" />
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                    </Fluent:RibbonGroupBox>
+
+
+                    <Fluent:RibbonGroupBox KeyTip="O" Header="Request"                                        
+                                       Grid.IsSharedSizeScope="True">
+                        <Fluent:ComboBox Header="Indexing Directive" Width="200" Margin="1" 
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosIndexingDirectives}}}"
+                                     SelectedValue="{Binding SelectedTab.IndexingDirective, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+
+                        <Fluent:ComboBox Header="Consistency Level" Width="200" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosConsistencyLevels}}}"
+                                     SelectedValue="{Binding SelectedTab.ConsistencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEditable="False"/>
+
+                    </Fluent:RibbonGroupBox>
+
+
+                    <Fluent:RibbonGroupBox KeyTip="A" Header="Access Condition" >
+                        <Fluent:ComboBox Header="Access Condition" Width="200" Margin="1"
+                                     ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type coremodels:CosmosAccessConditionType}}}"
+                                     SelectedValue="{Binding SelectedTab.AccessConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEditable="False"/>
+
+                        <Fluent:TextBox Header="ETag" Margin="1" MinWidth="200"
+                                    Text="{Binding SelectedTab.AccessCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    </Fluent:RibbonGroupBox>
+
+                    <Fluent:RibbonGroupBox KeyTip="T" Header="Trigger"
+                                       Grid.IsSharedSizeScope="True">
+                        <Fluent:TextBox Header="Pre-Trigger" MinWidth="200" Margin="1"
+                                    Text="{Binding SelectedTab.PreTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Fluent:TextBox Header="Post-Trigger" MinWidth="200" Margin="1" 
+                                    Text="{Binding SelectedTab.PostTrigger, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    </Fluent:RibbonGroupBox>
+
+                </Fluent:RibbonTabItem>
+            </Fluent:Ribbon>
+
+            <controls:SplitView
+                Grid.Row="1"
+                x:Name="splitView"
+                PanePlacement="Right"
+                OpenPaneLength="400"
+                DisplayMode="Overlay"
+                Focusable="False" Grid.ColumnSpan="4">
+                <controls:SplitView.Pane>
+                    <Frame
+                        x:Name="rightPaneFrame"
+                        Focusable="False"
+                        NavigationUIVisibility="Hidden"
+                        Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                        BorderBrush="{DynamicResource MahApps.Brushes.Controls.Border}"
+                        BorderThickness="1,1,0,1" />
+                </controls:SplitView.Pane>
+                <controls:SplitView.Content>
+                    <!--<Frame
+                        x:Name="shellFrame"
+                        Focusable="False"
+                        NavigationUIVisibility="Hidden" />-->
+                    <DockingManager
+                        x:Name="dockManager"
+                        Grid.Row="0"
+                        DocumentsSource="{Binding Tabs}"
+                        AnchorablesSource="{Binding Tools}"
+                        DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}"
+                        ActiveContent="{Binding SelectedTab, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
+                        LayoutItemTemplateSelector="{StaticResource tabContentTemplateSelector}"
+                        Theme="{Binding Source={x:Static properties:Settings.Default}, Path=Theme, Converter={StaticResource AvalonThemeConverter}}">
+                        
+
+                        <DockingManager.LayoutItemContainerStyleSelector>
+                            <pane:PaneStyleSelector>
+                                <pane:PaneStyleSelector.ToolStyle>
+                                    <Style TargetType="{x:Type LayoutAnchorableItem}">
+                                        <Setter Property="Title" Value="{Binding Model.Header}" />
+                                        <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource DockBoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
+                                        <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                                        <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
+                                        <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+                                        <Setter Property="CanHide" Value="False" />
+                                        <Setter Property="CanClose" Value="False" />
+                                        <Setter Property="CanFloat" Value="False" />
+                                        <Setter Property="IconSource" Value="{Binding Model.IconSource}" />
+                                    </Style>
+                                </pane:PaneStyleSelector.ToolStyle>
+                                <pane:PaneStyleSelector.DocumentStyle>
+                                    <Style TargetType="{x:Type LayoutItem}">
+                                        <Setter Property="Title" Value="{Binding Model.Header}"/>
+                                        <Setter Property="ToolTip" Value="{Binding Model.ToolTip}"/>
+                                        <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
+                                        <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+                                        <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                                        <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
+                                        <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+                                    </Style>
+                                </pane:PaneStyleSelector.DocumentStyle>
+                            </pane:PaneStyleSelector>
+                        </DockingManager.LayoutItemContainerStyleSelector>
+
+                        <LayoutRoot x:Name="_layoutRoot">
+                            <LayoutPanel Orientation="Horizontal">
+                                <LayoutAnchorablePane Name="Connections" DockWidth="250" />
+                                <LayoutDocumentPane />
+                            </LayoutPanel>
+                        </LayoutRoot>
+                    </DockingManager>
+                </controls:SplitView.Content>
+            </controls:SplitView>
+
+            <Fluent:StatusBar Grid.Row="2" Grid.ColumnSpan="4" VerticalAlignment="Center" 
+                          ItemsSource="{Binding SelectedTab.StatusBarItems}"
+                          ItemTemplateSelector="{StaticResource statusBarItemTemplateSelector}"
+                          UsesItemContainerTemplate="True"  >
+                <Fluent:StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel LastChildFill="False" />
+                    </ItemsPanelTemplate>
+                </Fluent:StatusBar.ItemsPanel>
+                <Fluent:StatusBar.ItemContainerStyle>
+                    <Style TargetType="Fluent:StatusBarItem">
+                        <Setter Property="DockPanel.Dock" Value="{Binding Dock}" />
+                        <Setter Property="Title" Value="{Binding Title}" />
+                    </Style>
+                </Fluent:StatusBar.ItemContainerStyle>
+
+            </Fluent:StatusBar>
+
+        </Grid>
+    </controls:MetroWindow.Content>
+</controls:MetroWindow>

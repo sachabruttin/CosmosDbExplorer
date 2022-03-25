@@ -1,0 +1,115 @@
+﻿<Page x:Class="CosmosDbExplorer.Views.AccountSettingsPage"
+      Style="{DynamicResource MahApps.Styles.Page}"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+      xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+      xmlns:models="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core" xmlns:converters="clr-namespace:CosmosDbExplorer.Converters"
+      d:DataContext="{d:DesignInstance Type=viewmodels:AccountSettingsViewModel}"
+      mc:Ignorable="d" 
+      Width="850"
+      Height="350"
+      d:DesignHeight="350" d:DesignWidth="850"
+      Title="{Binding Title}"
+      >
+    <Page.Resources>
+        <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
+    </Page.Resources>
+    
+    <Grid Margin="{StaticResource SmallLeftTopRightBottomMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Style="{StaticResource SubtitleTextStyle}" Grid.Row="0" 
+                   Text="Please enter your Azure DocumentDB endpoint and secret key."/>
+        
+        <StackPanel Margin="{StaticResource SmallTopBottomMargin}" Grid.Row="1">
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Column="0" Text="Label" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="1" Grid.Column="0" Text="Account Endpoint"/>
+                <TextBox Grid.Row="1" Grid.Column="1" 
+                     Text="{Binding AccountEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     IsReadOnly="{Binding UseLocalEmulator}" IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"/>
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Account Secret" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     IsReadOnly="{Binding UseLocalEmulator}" IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"/>
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="3" Grid.Column="0" Text="Connection Type"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" 
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type models:ConnectionType}}}"
+                      SelectedValue="{Binding ConnectionType}" />
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="4" Grid.Column="0" Text="Accent Color" />
+                <mah:ColorPicker Grid.Row="4" Grid.Column="1" 
+                             SelectedColor="{Binding AccentColor}"/>
+            </Grid>
+
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="5" Grid.Column="0" Text="Enable Endpoint Discovery" />
+                <CheckBox Grid.Row="5" Grid.Column="1" 
+                              IsChecked="{Binding EnableEndpointDiscovery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </StackPanel>
+
+        <mah:ToggleSwitch Content="Use local emulator" Grid.Row="2" 
+                          Margin="{StaticResource XSmallTopMargin}"
+                          IsOn="{Binding UseLocalEmulator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" 
+                    Margin="{StaticResource SmallTopBottomMargin}" Grid.Row="3">
+            <Button Content="Save" IsDefault="True" Width="80" Command="{Binding SaveAccountCommand}"  />
+            <Button Content="Cancel" IsCancel="True" Width="80" Margin="20,0,0,0" />
+        </StackPanel>
+    </Grid>
+</Page>

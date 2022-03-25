@@ -1,0 +1,130 @@
+﻿<Page x:Class="CosmosDbExplorer.Views.AboutPage"
+             Style="{DynamicResource MahApps.Styles.Page}"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties" xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AboutViewModel}"
+      mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="600"
+             >
+    <ScrollViewer>
+        <Grid Margin="{StaticResource SmallTopBottomMargin}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="{x:Static properties:Resources.AboutPageTitle}" />
+
+            <StackPanel                
+                x:Name="ContentArea"
+                Grid.Row="1"
+                Margin="{StaticResource MediumLeftRightMargin}">
+
+                <TextBlock
+                    Margin="{StaticResource SmallTopMargin}"
+                    Style="{StaticResource SubtitleTextStyle}"
+                    Text="{x:Static properties:Resources.SettingsPageAboutTitle}" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120px" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Product:" Margin="{StaticResource SmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Title}" Margin="{StaticResource SmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Version:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Contributors:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"/>
+                    <ItemsControl Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Authors}" Margin="{StaticResource XSmallTopMargin}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock  Style="{StaticResource BodyTextStyle}">
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenGitHubCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding Profile}">
+                                        <TextBlock Text="{Binding Name}" />
+                                    </Hyperlink>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Project Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
+                        <Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="{Binding ProjectUrl}">
+                            <TextBlock Text="{Binding ProjectUrl}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="License Url:" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}" >
+                        <Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="{Binding LicenseUrl}">
+                            <TextBlock Text="{Binding LicenseUrl}" />
+                        </Hyperlink>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock Text="External Packages" 
+                       Margin="{StaticResource MediumTopMargin}"
+                       Style="{StaticResource SubtitleTextStyle}"/>
+
+                <ItemsControl Margin="{StaticResource SmallTopMargin}" ItemsSource="{Binding ExternalComponents}" 
+                           Grid.IsSharedSizeScope="True">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnOne" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnTwo" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Style="{StaticResource BodyTextStyle}" Margin="0,0,10,0"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Project Url:" Style="{StaticResource BodyTextStyle}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding ProjectUrl}">
+                                        <TextBlock Text="{Binding ProjectUrl}" />
+                                    </Hyperlink>
+                                </TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="License Url:" Style="{StaticResource BodyTextStyle}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Margin="{StaticResource SmallLeftMargin}" Style="{StaticResource BodyTextStyle}" >
+                                    <Hyperlink Command="{Binding Path=DataContext.OpenLinkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Page}}"
+                                               CommandParameter="{Binding LicenseUrl}">
+                                        <TextBlock Text="{Binding LicenseUrl}" />
+                                    </Hyperlink>
+                                 </TextBlock>
+
+                                <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="{StaticResource XSmallTopMargin}" />
+                            </Grid>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+
+</Page>

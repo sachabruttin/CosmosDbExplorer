@@ -5,15 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CosmosDbExplorer.Views"
              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:controls="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
-             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
+             xmlns:avalon="clr-namespace:CosmosDbExplorer.AvalonEdit" 
+             xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
+             d:DataContext="{d:DesignInstance Type=viewmodels:QueryEditorViewModel}"
              mc:Ignorable="d" 
-             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
-             d:DesignHeight="600" d:DesignWidth="900" Loaded="UserControl_Loaded"
-             d:DataContext="{x:Type vm:QueryEditorViewModel}">
-
+             Style="{DynamicResource CosmosUserControl}"
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Resources>
             <FrameworkElement x:Key="ProxyElement" DataContext="{Binding}" />
@@ -22,28 +22,29 @@
 
         <ContentControl Visibility="Collapsed" Content="{StaticResource ProxyElement}" />
 
-        <xcad:DockingManager AllowMixedOrientation="True" 
+        <DockingManager AllowMixedOrientation="True" 
                          DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}">
 
-            <xcad:LayoutRoot x:Name="_layoutRoot">
-                <xcad:LayoutPanel Orientation="Vertical">
-                    <xcad:LayoutPanel>
-                        <xcad:LayoutDocumentPaneGroup Orientation="Vertical">
-                            <xcad:LayoutDocumentPane ShowHeader="True">
-                                <xcad:LayoutDocument CanClose="False" Title="{Binding DataContext.FileName, TargetNullValue=Query, Source={StaticResource ProxyElement}}" IconSource="{StaticResource SqlQueryIcon}">
+            <LayoutRoot x:Name="_layoutRoot">
+                <LayoutPanel Orientation="Vertical">
+                    <LayoutPanel>
+                        <LayoutDocumentPaneGroup Orientation="Vertical">
+                            <LayoutDocumentPane ShowHeader="True">
+                                <LayoutDocument CanClose="False" Title="{Binding DataContext.FileName, TargetNullValue=Query, Source={StaticResource ProxyElement}}" IconSource="{StaticResource SqlQueryIcon}">
                                     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="DocumentDbSql"  
-                                               ShowLineNumbers="True"
-                                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                                               IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                           Style="{StaticResource CosmosEditor}"
+                                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                         <avalonEdit:TextEditor.InputBindings>
-                                            <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
-                                            <KeyBinding Key="K" Modifiers="Ctrl" Command="controls:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" />
-                                            <KeyBinding Key="U" Modifiers="Ctrl" Command="controls:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" />
+                                            <KeyBinding Gesture="F5" x:Name="ExecuteKeyBinding"  Command="{Binding ExecuteCommand}" />
+                                            <KeyBinding Key="K" Modifiers="Ctrl" Command="avalon:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" />
+                                            <KeyBinding Key="U" Modifiers="Ctrl" Command="avalon:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" />
                                         </avalonEdit:TextEditor.InputBindings>
 
                                         <i:Interaction.Behaviors>
-                                            <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
-                                            <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                            <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}" x:Name="zoomBehavior"/>
+                                            <bhv:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                            <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                            <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </i:Interaction.Behaviors>
 
                                         <avalonEdit:TextEditor.ContextMenu>
@@ -71,14 +72,14 @@
                                                 </MenuItem>
                                                 <MenuItem Header="Advanced">
                                                     <MenuItem Header="Comment Selection" 
-                                                          Command="controls:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" 
+                                                          Command="avalon:AvalonCommands.CommentCommand" CommandParameter="{Binding ElementName=editor}" 
                                                           InputGestureText="Ctrl+K">
                                                         <MenuItem.Icon>
                                                             <Image Source="{StaticResource CommentCodeIcon}" Height="16" Width="16" />
                                                         </MenuItem.Icon>
                                                     </MenuItem>
                                                     <MenuItem Header="Uncomment Selection" 
-                                                          Command="controls:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" 
+                                                          Command="avalon:AvalonCommands.UnCommentCommand" CommandParameter="{Binding ElementName=editor}" 
                                                           InputGestureText="Ctrl+C">
                                                         <MenuItem.Icon>
                                                             <Image Source="{StaticResource UncommentCodeIcon}" Height="16" Width="16" />
@@ -90,73 +91,79 @@
                                             </ContextMenu>
                                         </avalonEdit:TextEditor.ContextMenu>
                                     </avalonEdit:TextEditor>
-                                </xcad:LayoutDocument>
-                            </xcad:LayoutDocumentPane>
-                        </xcad:LayoutDocumentPaneGroup>
-                    </xcad:LayoutPanel>
+                                </LayoutDocument>
+                            </LayoutDocumentPane>
+                        </LayoutDocumentPaneGroup>
+                    </LayoutPanel>
 
 
-                    <xcad:LayoutPanel DockHeight="500" Orientation="Horizontal">
-                        <xcad:LayoutAnchorablePaneGroup>
+                    <LayoutPanel DockHeight="500" Orientation="Horizontal">
+                        <LayoutAnchorablePaneGroup>
 
-                            <xcad:LayoutAnchorablePane>
-                                <xcad:LayoutAnchorable Title="Raw Data" CanClose="False" CanHide="False" CanAutoHide="False" 
+                            <LayoutAnchorablePane>
+                                <LayoutAnchorable Title="Raw Data" CanClose="False" CanHide="False" CanAutoHide="False" 
                                                    IconSource="{StaticResource ResultPaneIcon}">
                                     <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
-                                </xcad:LayoutAnchorable>
-                            </xcad:LayoutAnchorablePane>
-                        </xcad:LayoutAnchorablePaneGroup>
+                                                          UseFolding="True"
+                                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                </LayoutAnchorable>
+                            </LayoutAnchorablePane>
+                        </LayoutAnchorablePaneGroup>
 
-                        <xcad:LayoutAnchorablePaneGroup>
-                            <xcad:LayoutAnchorablePane>
+                        <LayoutAnchorablePaneGroup>
+                            <LayoutAnchorablePane>
 
-                                <xcad:LayoutAnchorable Title="Query Metrics" CanClose="False" CanHide="False" AutoHideMinHeight="400" IconSource="{StaticResource StatisticsIcon}">
-                                    <Grid Visibility="{Binding QueryMetrics, Converter={StaticResource nullToVisibilityConverter}}">
+                                <LayoutAnchorable Title="Query Metrics" CanClose="False" CanHide="False" AutoHideMinHeight="400" IconSource="{StaticResource StatisticsIcon}">
+                                    <!--<Grid Visibility="{Binding QueryMetrics, Converter={StaticResource nullToVisibilityConverter}}">-->
+                                    <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
 
-                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <!--<StackPanel Orientation="Horizontal" Margin="0,2">
                                             <Label Content="Partition:" VerticalAlignment="Center" />
                                             <ComboBox ItemsSource="{Binding QueryMetrics}" 
                                                   DisplayMemberPath="Key" SelectedValuePath="Value"
                                                   x:Name="metrics" IsSynchronizedWithCurrentItem="True"
                                                   Width="80" VerticalAlignment="Center" />
 
-                                        </StackPanel>
+                                        </StackPanel>-->
 
                                         <avalonEdit:TextEditor ContextMenu="{StaticResource JsonEditorContextMenu}"  
                                                            Grid.Row="1" IsReadOnly="True" 
                                                            ShowLineNumbers="True"
-                                                           Document="{Binding ElementName=metrics, Path=SelectedValue, Mode=OneWay, Converter={StaticResource queryMetricsToDocumentConverter}}" HorizontalScrollBarVisibility="Auto" >
+                                                           Style="{StaticResource CosmosEditor}"
+                                                           HorizontalScrollBarVisibility="Auto" >
 
                                             <i:Interaction.Behaviors>
-                                                <controls:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
-                                                <controls:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                                <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                                                <bhv:SelectedTextBehavior SelectedText="{Binding SelectedText}"/>
+                                                <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding QueryMetrics, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                                             </i:Interaction.Behaviors>
 
                                         </avalonEdit:TextEditor>
 
                                     </Grid>
-                                </xcad:LayoutAnchorable>
+                                </LayoutAnchorable>
 
-                                <xcad:LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">
+                                <LayoutAnchorable Title="Response Header" CanClose="False" CanHide="False" IconSource="{StaticResource HttpIcon}">
                                     <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
+                                                          UseFolding="False"
+                                                          ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
 
-                                </xcad:LayoutAnchorable>
+                                </LayoutAnchorable>
 
-                            </xcad:LayoutAnchorablePane>
-                        </xcad:LayoutAnchorablePaneGroup>
-                    </xcad:LayoutPanel>
+                            </LayoutAnchorablePane>
+                        </LayoutAnchorablePaneGroup>
+                    </LayoutPanel>
 
 
 
-                </xcad:LayoutPanel>
-            </xcad:LayoutRoot>
+                </LayoutPanel>
+            </LayoutRoot>
 
-        </xcad:DockingManager>
+        </DockingManager>
     </Grid>
 </UserControl>

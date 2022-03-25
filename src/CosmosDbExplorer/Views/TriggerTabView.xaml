@@ -3,45 +3,50 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel.Assets"
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+             xmlns:assets="clr-namespace:CosmosDbExplorer.ViewModels.Assets" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:markup="clr-namespace:CosmosDbExplorer.Infrastructure.MarkupExtensions"
-             xmlns:db="clr-namespace:Microsoft.Azure.Documents;assembly=Microsoft.Azure.Documents.Client"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:controls="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" Loaded="UserControl_Loaded"
-             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:TriggerTabViewModel}">
+             xmlns:core="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
+             d:DataContext="{d:DesignInstance Type=assets:TriggerTabViewModel}"
+             Style="{DynamicResource CosmosUserControl}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
             <Label Content="Trigger Id"/>
 
-            <xctk:WatermarkTextBox MinWidth="250" Margin="10,0" 
-                     Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Watermark="Enter the trigger id" KeepWatermarkOnGotFocus="True"/>
+            <TextBox MinWidth="250" Margin="10,0" 
+                     Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <mah:TextBoxHelper.Watermark>Enter the trigger id</mah:TextBoxHelper.Watermark>
+            </TextBox>
 
             <Label Content="Trigger Type"/>
             <ComboBox SelectedValue="{Binding TriggerType}" Margin="10,0" 
-                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type db:TriggerType}}}"/>
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type core:CosmosTriggerType}}}"/>
 
 
             <Label Content="Trigger Operation"/>
             <ComboBox SelectedValue="{Binding TriggerOperation}" Margin="10,0"
-                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type db:TriggerOperation}}}" />
+                      ItemsSource="{Binding Source={markup:EnumBindingSource {x:Type core:CosmosTriggerOperation}}}" />
 
             <Label Content="Trigger Body"/>
 
         </StackPanel>
 
-        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript"
-                               ShowLineNumbers="True"
-                               Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode"
+                               Style="{StaticResource CosmosEditor}"
                                IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                ContextMenu="{StaticResource JsonEditorContextMenu}">
+
             <i:Interaction.Behaviors>
-                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </i:Interaction.Behaviors>
         </avalonedit:TextEditor>
     </DockPanel>

@@ -1,0 +1,85 @@
+﻿<Page x:Class="CosmosDbExplorer.Views.DatabasePropertyPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CosmosDbExplorer.Views" 
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
+      xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
+      d:DataContext="{d:DesignInstance Type=viewmodels:DatabasePropertyViewModel}"
+      mc:Ignorable="d" 
+      Style="{DynamicResource MahApps.Styles.Page}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DatabasePropertyPage">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="New Database"
+                   Grid.Row="0"
+                   Style="{StaticResource PageTitleStyle}" />
+
+        <ScrollViewer Grid.Row="1" 
+                      HorizontalScrollBarVisibility="Disabled" 
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{StaticResource MediumLeftRightMargin}" >
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="Database Id" />
+                    <TextBox Margin="{StaticResource XSmallTopMargin}" 
+                             Text="{Binding DatabaseId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" >
+                    </TextBox>
+
+                </StackPanel>
+
+                <CheckBox Margin="{StaticResource XSmallTopMargin}"
+                          IsChecked="{Binding ProvisionThroughput}">
+                    <CheckBox.Content>
+                        <TextBlock Style="{StaticResource BodyTextStyle}" 
+                                   Text="Provision throughput" />
+                    </CheckBox.Content>
+                </CheckBox>
+
+                <StackPanel x:Name="ThroughputPanel"
+                            Visibility="{Binding ProvisionThroughput, Converter={StaticResource boolToVisibilityConverter}}">
+                    <StackPanel Margin="{StaticResource SmallTopMargin}">
+                        <TextBlock Text="Container throughput (autoscale)"
+                               Style="{StaticResource BodyTextStyle}"/>
+                        
+                        <mah:ToggleSwitch OnContent="Autoscale" 
+                                          OffContent="Manual"
+                                          IsOn="{Binding IsThroughputAutoscale, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                        <TextBlock Style="{StaticResource BodyTextStyle}"
+                                   Text="Database Max RU/s" />
+                        
+                        <mah:NumericUpDown Margin="{StaticResource XSmallTopMargin}"
+                                       Maximum="{Binding MaxThroughput}" Minimum="{Binding MinThroughput}"
+                                       Interval="100"
+                                       Value="{Binding Throughput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+                        
+                        <TextBlock Margin="{StaticResource XSmallTopMargin}"
+                               TextWrapping="Wrap"
+                               Text="TODO: Your container throughput will automatically scale from 400 RU/s (10% of max RU/s) - 4000 RU/s based on usage." />
+                    </StackPanel>
+
+                    <TextBlock Margin="{StaticResource XXSmallTopMargin}"
+                           Text="{Binding EstimatedPrice, StringFormat=Estimated spend (USD): {0}}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+            <Button Content="Save" IsDefault="True" Width="80" Command="{Binding SaveCommand}"  />
+            <!--<Button Content="Cancel" IsCancel="True" Width="80" Margin="20,0,0,0" />-->
+        </StackPanel>
+    </Grid>
+</Page>

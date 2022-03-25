@@ -1,14 +1,14 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
+﻿using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Messages
 {
     public class RemoveConnectionMessage
     {
-        public RemoveConnectionMessage(Connection connection)
+        public RemoveConnectionMessage(CosmosConnection connection)
         {
             Connection = connection;
         }
 
-        public Connection Connection { get; }
+        public CosmosConnection Connection { get; }
     }
 }

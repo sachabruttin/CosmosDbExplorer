@@ -1,4 +1,4 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
+﻿using CosmosDbExplorer.ViewModels;
 
 namespace CosmosDbExplorer.Messages
 {

@@ -3,64 +3,66 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:controls="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
-             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel.Assets"
-             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
-             xmlns:views="clr-namespace:CosmosDbExplorer.Views"
-             xmlns:markup="clr-namespace:CosmosDbExplorer.Infrastructure.MarkupExtensions"
-             xmlns:templateselectors="clr-namespace:CosmosDbExplorer.Infrastructure.TemplateSelectors"
-             mc:Ignorable="d" Loaded="UserControl_Loaded"
-             d:DesignHeight="600" d:DesignWidth="800"  d:DataContext="{x:Type vm:StoredProcedureTabViewModel}"
-             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}">
-    
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:bhv="clr-namespace:CosmosDbExplorer.Behaviors" 
+             xmlns:templateselectors="clr-namespace:CosmosDbExplorer.TemplateSelectors"
+             xmlns:assets="clr-namespace:CosmosDbExplorer.ViewModels.Assets" 
+             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
+             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModels.Assets"
+             d:DataContext="{d:DesignInstance Type=assets:StoredProcedureTabViewModel}"
+             mc:Ignorable="d" 
+             Style="{DynamicResource CosmosUserControl}"
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.InputBindings>
         <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
     </UserControl.InputBindings>
-    
+
     <DockPanel LastChildFill="True">
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" Margin="5,10">
             <Label Content="Stored Procedure Id"/>
 
-            <xctk:WatermarkTextBox MinWidth="250" Margin="10,0" 
-                     Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Watermark="Enter the stored procedure id" KeepWatermarkOnGotFocus="True"/>
+            <TextBox MinWidth="250" Margin="10,0" 
+                     Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <mah:TextBoxHelper.Watermark>Enter the stored procedure id</mah:TextBoxHelper.Watermark>
+            </TextBox>
 
         </StackPanel>
 
-        <xcad:DockingManager AllowMixedOrientation="True"
+        <DockingManager AllowMixedOrientation="True"
                              DocumentHeaderTemplate="{StaticResource AvalonDockHeaderTemplate}">
 
-            <xcad:LayoutRoot x:Name="_layoutRoot">
-                
-                <xcad:LayoutPanel Orientation="Vertical">
+            <LayoutRoot x:Name="_layoutRoot">
 
-                    <xcad:LayoutAnchorablePaneGroup Orientation="Horizontal">
+                <LayoutPanel Orientation="Vertical">
 
-                        <xcad:LayoutAnchorablePaneGroup>
-                            <xcad:LayoutAnchorablePane>
-                                <xcad:LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
-                                    <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
-                                           ShowLineNumbers="True"
-                                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
+                    <LayoutAnchorablePaneGroup Orientation="Horizontal">
+
+                        <LayoutAnchorablePaneGroup>
+                            <LayoutAnchorablePane>
+                                <LayoutAnchorable Title="Stored Procedure" CanClose="False" CanHide="False" CanAutoHide="True">
+                                    <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript-Mode" 
+                                                           Style="{StaticResource CosmosEditor}"
+                                                           IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                           ContextMenu="{StaticResource JsonEditorContextMenu}">
                                         <i:Interaction.Behaviors>
-                                            <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding Zoom, Converter={StaticResource logConverter}}"/>
+                                            <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/>
+                                            <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                            <bhv:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </i:Interaction.Behaviors>
-                                    </avalonedit:TextEditor>
-                                </xcad:LayoutAnchorable>
-                            </xcad:LayoutAnchorablePane>
-                        </xcad:LayoutAnchorablePaneGroup>
+                                    </avalonEdit:TextEditor>
+                                </LayoutAnchorable>
+                            </LayoutAnchorablePane>
+                        </LayoutAnchorablePaneGroup>
 
-                        <xcad:LayoutAnchorablePaneGroup>
+                        <LayoutAnchorablePaneGroup>
 
-                            <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
-                                <xcad:LayoutAnchorablePane>
-                                    <xcad:LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="True"
+                            <LayoutAnchorablePaneGroup Orientation="Vertical">
+                                <LayoutAnchorablePane>
+                                    <LayoutAnchorable Title="Parameters" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource ParameterIcon}">
 
                                         <Grid>
@@ -74,13 +76,14 @@
                                                         Visibility="{Binding IsCollectionPartitioned, Converter={StaticResource boolToVisibilityConverter}}">
                                                 <Label Content="Partition Key"/>
 
-                                                <xctk:WatermarkTextBox MinWidth="250" Margin="10,0" 
-                                                        Text="{Binding PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                        Watermark="Enter the partition key value" KeepWatermarkOnGotFocus="True"/>
+                                                <TextBox MinWidth="250" Margin="10,0" 
+                                                        Text="{Binding PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                    <mah:TextBoxHelper.Watermark>Enter the partition key value</mah:TextBoxHelper.Watermark>
+                                                </TextBox>
 
                                             </StackPanel>
 
-                                            
+
                                             <TextBlock Grid.Row="1" >
                                                 <Hyperlink Command="{Binding AddParameterCommand}">
                                                     <StackPanel Orientation="Horizontal" Margin="5,0">
@@ -113,15 +116,17 @@
                                                                             <templateselectors:StoredProcParameterTemplateSelector>
                                                                                 <templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
                                                                                     <DataTemplate>
-                                                                                        <avalonedit:TextEditor x:Name="editor" SyntaxHighlighting="JavaScript" 
+                                                                                        <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON" 
                                                                                                                BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
-                                                                                                               ShowLineNumbers="True" Padding="2"
-                                                                                                               Document="{Binding Path=DataContext.Document, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}"
+                                                                                                               Style="{StaticResource CosmosEditor}"
+                                                                                                               Padding="2"
                                                                                                                ContextMenu="{StaticResource JsonEditorContextMenu}">
                                                                                             <i:Interaction.Behaviors>
-                                                                                                <controls:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                                                                                <bhv:TextAreaZoomBehavior x:Name="zoomBehavior" ZoomLevel="{Binding DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+                                                                                                <bhv:AvalonTextEditorBehavior UseSearch="True" />
+                                                                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding Path=DataContext.Document, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=_item}" />
                                                                                             </i:Interaction.Behaviors>
-                                                                                        </avalonedit:TextEditor>
+                                                                                        </avalonEdit:TextEditor>
 
                                                                                     </DataTemplate>
                                                                                 </templateselectors:StoredProcParameterTemplateSelector.JsonDataTemplate>
@@ -172,7 +177,7 @@
                                                                                                 </Style>
                                                                                             </TextBox.Style>
                                                                                         </TextBox>
-                                                                                        
+
                                                                                         <!--<DockPanel LastChildFill="True">
                                                                                             <Button DockPanel.Dock="Right"
                                                                                                     Command="{Binding DataContext.BrowseParameterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" 
@@ -215,48 +220,57 @@
                                         </Grid>
 
 
-                                    </xcad:LayoutAnchorable>
-                                </xcad:LayoutAnchorablePane>
+                                    </LayoutAnchorable>
+                                </LayoutAnchorablePane>
 
-                                <xcad:LayoutAnchorablePane>
+                                <LayoutAnchorablePane>
 
-                                    <xcad:LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
+                                    <LayoutAnchorable Title="Results" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource ResultPaneIcon}">
-                                        <views:JsonEditorView DataContext="{Binding ResultViewModel}" 
-                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
-                                    </xcad:LayoutAnchorable>
+                                        <!--<local:JsonEditorView DataContext="{Binding ResultViewModel}" 
+                                                      ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />-->
 
-                                    <xcad:LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="True"
+                                        <avalonEdit:TextEditor x:Name="resultViewer" 
+                                                               IsReadOnly="True"
+                                                               Style="{StaticResource CosmosEditor}">
+                                            <avalonEdit:TextEditor.InputBindings>
+                                                <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
+                                            </avalonEdit:TextEditor.InputBindings>
+
+                                            <i:Interaction.Behaviors>
+                                                <bhv:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}" x:Name="zoomBehavior"/>
+                                                <bhv:AvalonTextEditorBindingBehavior Text="{Binding QueryResult, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </i:Interaction.Behaviors>
+                                        </avalonEdit:TextEditor>
+                                    </LayoutAnchorable>
+
+                                    <LayoutAnchorable Title="Headers" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource HttpIcon}">
-                                        <views:JsonEditorView DataContext="{Binding HeaderViewModel}" 
+                                        <local:JsonEditorView DataContext="{Binding HeaderViewModel}" 
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
 
-                                    </xcad:LayoutAnchorable>
+                                    </LayoutAnchorable>
 
-                                    <xcad:LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True"
+                                    <LayoutAnchorable Title="Log" CanClose="False" CanHide="False" CanAutoHide="True"
                                                            IconSource="{StaticResource EventLogIcon}">
                                         <TextBox IsReadOnly="True" AcceptsReturn="True" Text="{Binding Log, Mode=OneWay}" />
-                                    </xcad:LayoutAnchorable>
+                                    </LayoutAnchorable>
 
-                                </xcad:LayoutAnchorablePane>
-
-
-                            </xcad:LayoutAnchorablePaneGroup>
+                                </LayoutAnchorablePane>
 
 
-                        </xcad:LayoutAnchorablePaneGroup>
-
-                    </xcad:LayoutAnchorablePaneGroup>
-                    
-                </xcad:LayoutPanel>
-
-                
-            </xcad:LayoutRoot>
-            
-        </xcad:DockingManager>
+                            </LayoutAnchorablePaneGroup>
 
 
+                        </LayoutAnchorablePaneGroup>
+
+                    </LayoutAnchorablePaneGroup>
+
+                </LayoutPanel>
 
 
+            </LayoutRoot>
+
+        </DockingManager>
     </DockPanel>
 </UserControl>

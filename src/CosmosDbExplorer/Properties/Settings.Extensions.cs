@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CosmosDbExplorer.Properties
 {
     internal sealed partial class Settings
-    { 
+    {
         public string GetExportFolder()
         {
             if (string.IsNullOrEmpty(Default.ExportFolder) || string.IsNullOrWhiteSpace(Default.ExportFolder))

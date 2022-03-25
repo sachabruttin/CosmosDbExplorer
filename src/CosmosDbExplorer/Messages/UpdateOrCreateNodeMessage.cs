@@ -1,25 +1,23 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
-using Microsoft.Azure.Documents;
+﻿using CosmosDbExplorer.Core.Contracts;
 
 namespace CosmosDbExplorer.Messages
 {
-
-    public class UpdateOrCreateNodeMessage<T>
-        where T: Resource
+    public class UpdateOrCreateNodeMessage<TResource, TParent>
+        where TResource : ICosmosResource
     {
-        public UpdateOrCreateNodeMessage(T resource, DocumentCollection collection, string oldAltLink)
+        public UpdateOrCreateNodeMessage(TResource resource, TParent container, string? oldAltLink)
         {
             Resource = resource;
             OldAltLink = oldAltLink;
-            Collection = collection;
+            Parent = container;
         }
 
-        public T Resource { get; }
+        public TResource Resource { get; }
 
         public bool IsNewResource => string.IsNullOrEmpty(OldAltLink);
 
-        public string OldAltLink { get; }
+        public string? OldAltLink { get; }
 
-        public DocumentCollection Collection { get; }
+        public TParent Parent { get; }
     }
 }

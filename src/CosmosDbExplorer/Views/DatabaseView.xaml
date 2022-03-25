@@ -3,32 +3,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:local="clr-namespace:CosmosDbExplorer.Views"
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:behaviors="clr-namespace:CosmosDbExplorer.Infrastructure.Behaviors"
-             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel"
-             xmlns:gif="http://wpfanimatedgif.codeplex.com"
-             DataContext="{Binding Database, Source={StaticResource Locator}}"
+             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModels.DatabaseNodes"
+             xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:controls="clr-namespace:CosmosDbExplorer.Controls"
+             d:DataContext="{d:DesignInstance Type=viewmodel:DatabaseViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             Loaded="UserControl_Loaded">
+             d:DesignHeight="450" d:DesignWidth="800">
     
-    <TreeView ItemsSource="{Binding Nodes}"
+    <controls:TreeViewEx ItemsSource="{Binding Nodes}"
+                         Style="{StaticResource MahApps.Styles.TreeView}"
               dd:DragDrop.IsDragSource="True"
               dd:DragDrop.IsDropTarget="True"
               dd:DragDrop.DropHandler="{Binding}">
 
         <TreeView.ItemContainerStyle>
-            <Style TargetType="{x:Type TreeViewItem}">
+            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MahApps.Styles.TreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <!--<Setter Property="VerticalAlignment" Value="Bottom" />-->
                 <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Margin" Value="0,1" />
 
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -38,43 +39,54 @@
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:ConnectionNodeViewModel}"
                 ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Refresh Connection" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New Database" Command="{Binding AddNewCollectionCommand}" />
+                            <MenuItem Header="New Database" Command="{Binding AddNewDatabaseCommand}" />
                             <Separator />
                             <MenuItem Header="Edit Connection" Command="{Binding EditConnectionCommand}" Icon="{StaticResource EditIconText}"  />
                             <MenuItem Header="Remove Connection" Command="{Binding RemoveConnectionCommand}" />
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
+                    </Grid.ContextMenu>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    <Canvas Height="10" Width="10" Margin="0,0,3,0"
-                            Visibility="{Binding Connection.AccentColor, Converter={StaticResource nullToVisibilityConverter}}">
-                        <Ellipse Fill="{Binding Connection.AccentColor, Converter={StaticResource colorToBrushConverter}}" 
-                                 Width="10" Height="10"/>
-                    </Canvas>
+                        <StackPanel Grid.Column="0">
+                            <Ellipse Fill="{Binding Connection.AccentColor, Converter={StaticResource colorToBrushConverter}}"
+                                     Visibility="{Binding Connection.AccentColor, Converter={StaticResource nullToVisibilityConverter}}"
+                                     Width="14" Height="14" />
+                        </StackPanel>
 
-                    <Image Width="16" Height="16" 
-                           gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Source="{StaticResource ConnectionIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}"/>
+                        <Image Source="{StaticResource ConnectionIcon}" Grid.Column="1" Width="16" Margin="3,0" /> 
 
-                    <TextBlock Margin="3,0,0,0" Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
-                </StackPanel>
+                        <TextBlock Grid.Column="2" 
+                                   Text="{Binding Connection.Label}" ToolTip="{Binding Connection.DatabaseUri}" />
+
+                    </Grid>
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
+
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:DatabaseNodeViewModel}"
                 ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Refresh Collections" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <MenuItem Header="Refresh Containers" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                             <Separator />
-                            <MenuItem Header="New Collection" Command="{Binding AddNewCollectionCommand}" />
+                            <MenuItem Header="New Container" Command="{Binding AddNewContainerCommand}" />
                             <MenuItem Header="Delete Database" Command="{Binding DeleteDatabaseCommand}" Icon="{StaticResource DeleteIconText}" />
                             <Separator />
                             <MenuItem Header="Copy">
@@ -82,108 +94,46 @@
                                     <Image Source="{StaticResource CopyIcon}" />
                                 </MenuItem.Icon>
                                 <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
-                                <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
-                                <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
+                                <!--<MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />-->
+                                <!--<MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />-->
                             </MenuItem>
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource DatabaseIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    </Grid.ContextMenu>
+                    
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Margin="3,0" Width="16" Source="{StaticResource DatabaseIcon}"
+                               Grid.Column="0" />
+                        
+                        <TextBlock Grid.Column="1"  Text="{Binding Name}" />
+                    </Grid>
+                    
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
+
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:DatabaseScaleNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ScaleSettingsIcon}" />
 
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
-                DataType="{x:Type vm:UsersNodeViewModel}"
+                DataType="{x:Type vm:ContainerNodeViewModel}"
                 ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Refresh Users" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
-                            <Separator />
-                            <MenuItem Header="New User" Command="{Binding AddUserCommand}" />
-                        </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource UsersIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
-
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </HierarchicalDataTemplate>
-
-            <HierarchicalDataTemplate
-                DataType="{x:Type vm:UserNodeViewModel}"
-                ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Edit User" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
-                            <MenuItem Header="Add Permission" Command="{Binding AddPermissionCommand}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource PermissionIcon}" />
-                                </MenuItem.Icon>
-                            </MenuItem> 
-                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
-                            <!--<Separator />
-                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />-->
-                        </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
-
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource UserIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
-
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </HierarchicalDataTemplate>
-
-            <HierarchicalDataTemplate
-                DataType="{x:Type vm:PermissionNodeViewModel}"
-                ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Edit Permission" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
-                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
-                            <!--<Separator />
-                            <MenuItem Header="Delete User" Command="{Binding AddNewCollectionCommand}" />-->
-                        </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
-
-                    <Image  Width="16" Height="16" Margin="3,0" 
-                            gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                            Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource PermissionIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
-
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </HierarchicalDataTemplate>
-
-            <HierarchicalDataTemplate
-                DataType="{x:Type vm:CollectionNodeViewModel}"
-                ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+                
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="New SQL Query" Command="{Binding OpenSqlQueryCommand}">
                                 <MenuItem.Icon>
@@ -209,9 +159,9 @@
 
                             <Separator />
 
-                            <MenuItem Header="Delete Collection" Command="{Binding DeleteCollectionCommand}" Icon="{StaticResource DeleteIconText}" />
+                            <MenuItem Header="Delete Container" Command="{Binding DeleteContainerCommand}" Icon="{StaticResource DeleteIconText}" />
 
-                            <Separator />
+                            <!--<Separator />
                             <MenuItem Header="Remove All Documents (Delete)" Command="{Binding ClearAllDocumentsCommand}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource RemoveAllIcon}" />
@@ -221,9 +171,9 @@
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource RemoveAllIcon}" />
                                 </MenuItem.Icon>
-                            </MenuItem>
+                            </MenuItem>-->
 
-                            <Separator />
+                            <!--<Separator />
                             <MenuItem Header="Copy">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CopyIcon}" />
@@ -231,42 +181,131 @@
                                 <MenuItem Header="Self Link" Command="{Binding CopySelfLinkToClipboardCommand}" />
                                 <MenuItem Header="Alt Link" Command="{Binding CopyAltLinkToClipboardCommand}" />
                                 <MenuItem Header="Resource" Command="{Binding CopyResourceToClipboardCommand}" />
-                            </MenuItem>
+                            </MenuItem>-->
 
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image Width="16" Height="16" Margin="3,0" 
-                           gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource CollectionIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    </Grid.ContextMenu>
 
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </HierarchicalDataTemplate>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-            <HierarchicalDataTemplate
-                DataType="{x:Type vm:CollectionMetricsNodeViewModel}">
-                <StackPanel Orientation="Horizontal">
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
-                    <Image Source="{StaticResource ChartIcon}" Width="16" Height="16" Margin="3,0"  />
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-                
+                        <Image Width="16" Margin="3,0" Source="{StaticResource CollectionIcon}" Grid.Column="0"/>
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
             </HierarchicalDataTemplate>
             
             <HierarchicalDataTemplate
+                DataType="{x:Type vm:UsersNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <Grid>
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Refresh Users" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <Separator />
+                            <MenuItem Header="New User" Command="{Binding AddUserCommand}" />
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0"  Source="{StaticResource UsersIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+                    
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
+            </HierarchicalDataTemplate>
+ 
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:UserNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <Grid>
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit User" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Add Permission" Command="{Binding AddPermissionCommand}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource PermissionIcon}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <!--<Separator />
+                            <MenuItem Header="Delete User" Command="{Binding DeleteCommand}" />-->
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0" Source="{StaticResource UserIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+                    
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:PermissionNodeViewModel}"
+                ItemsSource="{Binding Children}">
+                <Grid>
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit Permission" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Refresh Permissions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
+                            <!--<Separator />
+                            <MenuItem Header="Delete Permission" Command="{Binding DeleteCommand}" />-->
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0" Source="{StaticResource PermissionIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
+                DataType="{x:Type vm:MetricsNodeViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{StaticResource ChartIcon}" Width="16" Height="16" Margin="3,0"  />
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate
                 DataType="{x:Type vm:ScaleSettingsNodeViewModel}" ItemsSource="{Binding Children}" >
                 <StackPanel Orientation="Horizontal">
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <Image Width="16" Height="16" Margin="3,0" Source="{StaticResource ScaleSettingsIcon}" />
 
                     <TextBlock Text="{Binding Name}" />
@@ -286,34 +325,35 @@
                             </MenuItem>
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding OpenDocumentCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <Image Source="{StaticResource DocumentIcon}" Width="16" Height="16" Margin="3,0"  />
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
-            
+
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:StoredProcedureRootNodeViewModel}" 
                 ItemsSource="{Binding Children}" >
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Refresh Stored Procedures" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image Width="16" Height="16" Margin="3,0" 
-                           gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0"
-                           Source="{StaticResource StoredProcedureIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    </Grid.ContextMenu>
 
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0" Source="{StaticResource StoredProcedureIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
@@ -321,15 +361,10 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open Stored Procedure" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open Stored Procedure" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete Stored Procedure" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -337,21 +372,27 @@
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:UserDefFuncRootNodeViewModel}" 
                 ItemsSource="{Binding Children}" >
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Refresh User Defined Functions" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image Width="16" Height="16" Margin="3,0" 
-                           gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0"
-                           Source="{StaticResource UdfIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    </Grid.ContextMenu>
 
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0" Source="{StaticResource UdfIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
@@ -359,15 +400,10 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open User Defined Function" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}" />
+                            <MenuItem Header="Open User Defined Function" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}" />
                             <MenuItem Header="Delete User Defined Function" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}" />
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
@@ -375,21 +411,27 @@
             <HierarchicalDataTemplate
                 DataType="{x:Type vm:TriggerRootNodeViewModel}" 
                 ItemsSource="{Binding Children}" >
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.ContextMenu>
+                <Grid>
+                    <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Refresh Triggers" Command="{Binding RefreshCommand}" Icon="{StaticResource RefreshIconText}" />
                         </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <Image Width="16" Height="16" Margin="3,0" 
-                           gif:ImageBehavior.AnimatedSource="/CosmosDbExplorer;component/Images/loading.gif"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
-                    <Image Width="16" Height="16" Margin="3,0"                             
-                           Source="{StaticResource TriggerIcon}"
-                           Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=True}" />
+                    </Grid.ContextMenu>
 
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Width="16" Margin="3,0" Grid.Column="0" Source="{StaticResource TriggerIcon}" />
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="1" />
+                    </Grid>
+
+                    <mah:MetroProgressBar Style="{StaticResource TreeViewProgress}"
+                                          Visibility="{Binding IsLoading, Converter={StaticResource boolToVisibilityConverter}}"/>
+                </Grid>
             </HierarchicalDataTemplate>
 
             <HierarchicalDataTemplate
@@ -397,19 +439,14 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Edit Trigger" Command="{Binding EditCommand}" Icon="{StaticResource EditIconText}"/>
+                            <MenuItem Header="Edit Trigger" Command="{Binding OpenCommand}" Icon="{StaticResource EditIconText}"/>
                             <MenuItem Header="Delete Trigger" Command="{Binding DeleteCommand}" Icon="{StaticResource DeleteIconText}"/>
                         </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <i:Interaction.Triggers>
-                        <behaviors:DoubleClickTrigger>
-                            <cmd:EventToCommand Command="{Binding EditCommand}" />
-                        </behaviors:DoubleClickTrigger>
-                    </i:Interaction.Triggers>
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </HierarchicalDataTemplate>
 
         </TreeView.Resources>
-    </TreeView>
+    </controls:TreeViewEx>
 </UserControl>

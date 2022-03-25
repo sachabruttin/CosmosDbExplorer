@@ -1,5 +1,7 @@
-﻿using CosmosDbExplorer.Messages;
-using GalaSoft.MvvmLight.Messaging;
+﻿
+using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Messages;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.Services
 {

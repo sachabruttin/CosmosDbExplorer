@@ -1,14 +1,14 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace CosmosDbExplorer.Messages
 {
     public class ActivePaneChangedMessage
     {
-        public ActivePaneChangedMessage(ViewModelBase paneViewModel)
+        public ActivePaneChangedMessage(ObservableRecipient paneViewModel)
         {
             PaneViewModel = paneViewModel;
         }
 
-        public ViewModelBase PaneViewModel { get; }
+        public ObservableRecipient PaneViewModel { get; }
     }
 }

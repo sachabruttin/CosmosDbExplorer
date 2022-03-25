@@ -3,22 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModel"
-             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:infra="clr-namespace:CosmosDbExplorer.Infrastructure.AvalonEdit"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             mc:Ignorable="d" Loaded="UserControl_Loaded"
-             Background="{StaticResource {x:Static SystemColors.WindowBrushKey}}"
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{x:Type vm:ImportDocumentViewModel}">
-
+             xmlns:local="clr-namespace:CosmosDbExplorer.Views"
+             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
-                           ShowLineNumbers="True"
-                           Document="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
+                           Style="{StaticResource CosmosEditor}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         <i:Interaction.Behaviors>
-            <infra:TextAreaZoomBehavior ZoomLevel="{Binding Zoom, Mode=OneWay, Converter={StaticResource logConverter}}"/> 
+            <behaviors:AvalonTextEditorBraceFoldingBehavior Interval="1000" UseFolding="True"  />
+            <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
+            <behaviors:AvalonTextEditorBehavior UseSearch="True" />
+            <behaviors:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </i:Interaction.Behaviors>
-        
+
         <avalonEdit:TextEditor.InputBindings>
             <KeyBinding Key="F5" Command="{Binding ExecuteCommand}" />
         </avalonEdit:TextEditor.InputBindings>
@@ -47,9 +48,7 @@
                 </MenuItem>
             </ContextMenu>
         </avalonEdit:TextEditor.ContextMenu>
-        
-        
+
+
     </avalonEdit:TextEditor>
-
-
 </UserControl>

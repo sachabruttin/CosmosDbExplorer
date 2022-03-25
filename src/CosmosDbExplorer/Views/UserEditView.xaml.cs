@@ -1,7 +1,17 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using CosmosDbExplorer.Infrastructure.Models;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace CosmosDbExplorer.Views
 {
@@ -13,12 +23,6 @@ namespace CosmosDbExplorer.Views
         public UserEditView()
         {
             InitializeComponent();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as PaneViewModelBase;
-            vm.IconSource = FindResource("UserIcon") as ImageSource;
         }
     }
 }

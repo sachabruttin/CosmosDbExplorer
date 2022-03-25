@@ -1,14 +1,14 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
+﻿using CosmosDbExplorer.Core.Models;
 
 namespace CosmosDbExplorer.Messages
 {
-    class ConnectionSettingSavedMessage
+    public class ConnectionSettingSavedMessage
     {
-        public ConnectionSettingSavedMessage(Connection connection)
+        public ConnectionSettingSavedMessage(CosmosConnection connection)
         {
             Connection = connection;
         }
 
-        public Connection Connection { get; }
+        public CosmosConnection Connection { get; }
     }
 }

@@ -1,65 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Services.DialogSettings;
-using GalaSoft.MvvmLight.Threading;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 
 namespace CosmosDbExplorer.Services
 {
-    public interface IDialogService : GalaSoft.MvvmLight.Views.IDialogService
+    public class FileDialogService : IFileDialogService
     {
-        Task<bool> ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback);
-        Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult> afterHideCallback);
-        Task<bool> ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback);
-    }
-
-    public class DialogService : IDialogService
-    {
-        public Task ShowError(string message, string title, string buttonText, Action afterHideCallback)
-        {
-            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error));
-            return Task.Run(() => afterHideCallback);
-        }
-
-        public Task ShowError(Exception error, string title, string buttonText, Action afterHideCallback)
-        {
-            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, error.GetBaseException().Message, title, MessageBoxButton.OK, MessageBoxImage.Error));
-            return Task.Run(() => afterHideCallback);
-        }
-
-        public Task ShowMessage(string message, string title)
-        {
-            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
-            return null;
-        }
-
-        public Task ShowMessage(string message, string title, string buttonText, Action afterHideCallback)
-        {
-            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
-            return Task.Run(() => afterHideCallback);
-        }
-
-        public async Task<bool> ShowMessage(string message, string title, string buttonConfirmText, string buttonCancelText, Action<bool> afterHideCallback)
-        {
-            var confirmed = false;
-            await DispatcherHelper.RunAsync(() =>
-            {
-                var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                confirmed = result == MessageBoxResult.Yes;
-            });
-
-            afterHideCallback(confirmed);
-            return confirmed;
-        }
-
-        public Task ShowMessageBox(string message, string title)
-        {
-            DispatcherHelper.RunAsync(() => MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information));
-            return Task.FromResult(0);
-        }
-
-        public Task<bool> ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult> afterHideCallback)
+        public void ShowFolderBrowserDialog(FolderBrowserDialogSettings settings, Action<bool, FolderDialogResult>? afterHideCallback)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog
             {
@@ -68,13 +23,13 @@ namespace CosmosDbExplorer.Services
                 Description = settings.Description
             };
 
-            var result = dialog.ShowDialog(/* TODO: Get Handle */);
+            var result = dialog.ShowDialog();/* TODO: Get Handle */
             var confirmed = result == System.Windows.Forms.DialogResult.OK;
 
-            return Task.Run(() => { afterHideCallback(confirmed, new FolderDialogResult(dialog.SelectedPath)); return confirmed; });
+            afterHideCallback?.Invoke(confirmed, new FolderDialogResult(dialog.SelectedPath));
         }
 
-        public Task<bool> ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback)
+        public void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)
         {
             var dialog = new OpenFileDialog
             {
@@ -93,10 +48,10 @@ namespace CosmosDbExplorer.Services
             var result = dialog.ShowDialog(Application.Current.MainWindow);
             var confirmed = result.GetValueOrDefault();
 
-            return Task.Run(() => { afterHideCallback(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames)); return confirmed; });
+            afterHideCallback?.Invoke(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames));
         }
 
-        public Task<bool> ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult> afterHideCallback)
+        public void ShowSaveFileDialog(SaveFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)
         {
             var dialog = new SaveFileDialog
             {
@@ -116,7 +71,72 @@ namespace CosmosDbExplorer.Services
             var result = dialog.ShowDialog(Application.Current.MainWindow);
             var confirmed = result.GetValueOrDefault();
 
-            return Task.Run(() => { afterHideCallback(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames)); return confirmed; });
+            afterHideCallback?.Invoke(confirmed, new FileDialogResult(dialog.FileName, dialog.FileNames));
+        }
+    }
+
+    public class MetroDialogService : FileDialogService, IDialogService
+    {
+        private static MetroWindow MainWindow => (MetroWindow)Application.Current.MainWindow;
+
+        public async Task ShowError(string message, string title, Action? afterHideCallback = null)
+        {
+            var settings = new MetroDialogSettings { ColorScheme = MetroDialogColorScheme.Theme };
+            var result = await MainWindow.ShowMessageAsync(title, message, MessageDialogStyle.Affirmative, settings);
+            afterHideCallback?.Invoke();
+        }
+
+        public Task ShowError(Exception error, string title, Action? afterHideCallback = null)
+        {
+            return ShowError(error.Message, title, afterHideCallback);
+        }
+
+        public Task ShowMessage(string message, string title, Action? afterHideCallback = null)
+        {
+            return ShowError(message, title, afterHideCallback);
+        }
+
+        public async Task ShowQuestion(string message, string title, Action<bool>? afterHideCallback = null)
+        {
+            var settings = new MetroDialogSettings
+            {
+                ColorScheme = MetroDialogColorScheme.Theme,
+                DefaultButtonFocus = MessageDialogResult.Negative,
+                NegativeButtonText = "NO",
+                AffirmativeButtonText = "YES"
+            };
+
+            var result = await MainWindow.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative, settings);
+            afterHideCallback?.Invoke(result == MessageDialogResult.Affirmative);
+        }
+    }
+
+    public class DialogService : FileDialogService, IDialogService
+    {
+        public Task ShowError(string message, string title, Action? afterHideCallback = null)
+        {
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            afterHideCallback?.Invoke();
+            return Task.CompletedTask;
+        }
+
+        public Task ShowError(Exception error, string title, Action? afterHideCallback = null)
+        {
+            return ShowError(error.Message, title, afterHideCallback);
+        }
+
+        public Task ShowMessage(string message, string title, Action? afterHideCallback = null)
+        {
+            MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            afterHideCallback?.Invoke();
+            return Task.CompletedTask;
+        }
+
+        public Task ShowQuestion(string message, string title, Action<bool>? afterHideCallback = null)
+        {
+            var result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            afterHideCallback?.Invoke(result == MessageBoxResult.Yes);
+            return Task.CompletedTask;
         }
     }
 }

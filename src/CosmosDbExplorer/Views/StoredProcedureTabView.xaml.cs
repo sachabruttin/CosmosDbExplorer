@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
-using CosmosDbExplorer.Infrastructure.AvalonEdit;
-using CosmosDbExplorer.Infrastructure.Models;
-using ICSharpCode.AvalonEdit.Folding;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace CosmosDbExplorer.Views
 {
@@ -14,52 +20,9 @@ namespace CosmosDbExplorer.Views
     /// </summary>
     public partial class StoredProcedureTabView : UserControl
     {
-        private readonly BraceFoldingStrategy _foldingStrategy = new BraceFoldingStrategy();
-        private FoldingManager _foldingManager;
-
         public StoredProcedureTabView()
         {
             InitializeComponent();
-
-            RoslynPad.Editor.SearchReplacePanel.Install(editor);
-
-            var foldingUpdateTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-
-            foldingUpdateTimer.Tick += FoldingUpdateTimer_Tick;
-            //foldingUpdateTimer.Start();
-        }
-
-        private void FoldingUpdateTimer_Tick(object sender, EventArgs e)
-        {
-            try
-            {
-
-                if (_foldingManager == null && editor.TextArea?.Document?.Text != null)
-                {
-                    _foldingManager = FoldingManager.Install(editor.TextArea);
-                }
-
-                if (_foldingStrategy != null && _foldingManager != null && editor.Document != null)
-                {
-                    _foldingStrategy.UpdateFoldings(_foldingManager, editor.Document);
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("FoldingUpdateTimer_Tick Exception: " + ex.Message);
-                // silently fails
-            }
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is PaneViewModelBase datacontext)
-            {
-                datacontext.IconSource = FindResource("StoredProcedureIcon") as ImageSource;
-            }
         }
     }
 }

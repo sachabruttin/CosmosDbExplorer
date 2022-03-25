@@ -1,7 +1,4 @@
-﻿using CosmosDbExplorer.Infrastructure.Models;
-using Microsoft.Azure.Documents;
-
-namespace CosmosDbExplorer.Messages
+﻿namespace CosmosDbExplorer.Messages
 {
 
     public class RemoveNodeMessage

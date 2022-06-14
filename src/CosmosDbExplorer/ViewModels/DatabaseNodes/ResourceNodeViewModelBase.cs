@@ -28,7 +28,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private async void RefreshCommandExecute()
         {
             Children.Clear();
-            await LoadChildren(new CancellationToken()).ConfigureAwait(false);
+            await LoadChildren(new CancellationToken());
         }
 
         public RelayCommand CopySelfLinkToClipboardCommand => _copySelfLinkToClipboardCommand ??= new(() => Clipboard.SetText(Resource.SelfLink));

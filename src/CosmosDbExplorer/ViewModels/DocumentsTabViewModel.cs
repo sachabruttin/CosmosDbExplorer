@@ -91,7 +91,7 @@ namespace CosmosDbExplorer.ViewModels
 
             _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
 
-            await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false);
+            await LoadDocuments(true, new CancellationToken());
         }
 
         public DocumentNodeViewModel Node { get; protected set; }
@@ -306,9 +306,9 @@ namespace CosmosDbExplorer.ViewModels
 
         protected CosmosContainer Container { get; set; }
 
-        public AsyncRelayCommand LoadMoreCommand => _loadMoreCommand ??= new(async () => await LoadDocuments(false, new CancellationToken()).ConfigureAwait(false));
+        public AsyncRelayCommand LoadMoreCommand => _loadMoreCommand ??= new(async () => await LoadDocuments(false, new CancellationToken()));
 
-        public AsyncRelayCommand RefreshLoadCommand => _refreshLoadCommand ??= new(async () => await LoadDocuments(true, new CancellationToken()).ConfigureAwait(false),
+        public AsyncRelayCommand RefreshLoadCommand => _refreshLoadCommand ??= new(async () => await LoadDocuments(true, new CancellationToken()),
                                                       () => !IsRunning && IsValid);
 
 
@@ -484,7 +484,7 @@ namespace CosmosDbExplorer.ViewModels
                             }));
                     }
 
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                    await Task.WhenAll(tasks);
                 }
                 catch (Exception ex)
                 {

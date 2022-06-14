@@ -144,7 +144,7 @@ namespace CosmosDbExplorer.ViewModels
                     {
                         //Content.FileName = result.FileName;
                         //Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
-                        Content = await reader.ReadToEndAsync().ConfigureAwait(true);
+                        Content = await reader.ReadToEndAsync();
                     }
                 }
                 catch (Exception ex)

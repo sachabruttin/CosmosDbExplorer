@@ -149,7 +149,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
                     Messenger.Send(new RemoveNodeMessage(AltLink));
                     Messenger.Send(new CloseDocumentMessage(this));
                 }
-            }).ConfigureAwait(false);
+            });
         }
 
         protected abstract Task<CosmosResult> DeleteAsyncImpl();

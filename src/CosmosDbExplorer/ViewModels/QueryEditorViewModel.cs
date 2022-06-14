@@ -105,15 +105,6 @@ namespace CosmosDbExplorer.ViewModels
             _requestChargeStatusBarItem.DataContext.IsVisible = !IsRunning;
             _queryInformationStatusBarItem.DataContext.IsVisible = !IsRunning;
 
-            if (IsRunning)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-            }
-            else
-            {
-                _cancellationTokenSource = null;
-            }
-
             NotifyCanExecuteChanged();
         }
 
@@ -148,7 +139,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public RelayCommand CancelCommand => _cancelCommand ??= new(() => _cancellationTokenSource?.Cancel(), () => IsRunning);
 
-        private async Task ExecuteQueryAsync(string? token)
+        private async Task ExecuteQueryAsync(string? continuationToken)
         {
             try
             {
@@ -160,7 +151,10 @@ namespace CosmosDbExplorer.ViewModels
 
                 _query.QueryText = string.IsNullOrEmpty(SelectedText) ? Content : SelectedText;
                 _query.PartitionKeyValue = GetPartitionKey();
-                _query.ContinuationToken = token;
+                _query.ContinuationToken = continuationToken;
+
+                // create CancellationTokenSource
+                _cancellationTokenSource = new CancellationTokenSource();
 
                 _queryResult = await _documentService.ExecuteQueryAsync(_query, _cancellationTokenSource.Token);
 
@@ -204,15 +198,10 @@ namespace CosmosDbExplorer.ViewModels
             {
                 Clean();
             }
-            //catch (DocumentClientException clientEx)
-            //{
-            //    Clean();
-            //    await _dialogService.ShowError(clientEx.Parse(), "Error", "ok", null).ConfigureAwait(false);
-            //}
             catch (Exception ex)
             {
                 Clean();
-                await _dialogService.ShowError(ex, "Error").ConfigureAwait(false);
+                await _dialogService.ShowError(ex, "Error");
             }
             finally
             {

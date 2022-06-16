@@ -65,7 +65,7 @@ namespace CosmosDbExplorer.ViewModels
         {
             var innerContent = JArray.FromObject(content);
 
-            foreach (var obj in innerContent.Values<JObject>())
+            foreach (var obj in innerContent.Children<JObject>())
             {
                 if (obj != null)
                 {

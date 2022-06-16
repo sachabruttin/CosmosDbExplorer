@@ -29,7 +29,7 @@ namespace CosmosDbExplorer.ViewModels
     public class QueryEditorViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
         , IHaveSystemProperties
     {
-        private CosmosQueryResult<IReadOnlyCollection<JObject>>? _queryResult;
+        private CosmosQueryResult<IReadOnlyCollection<JToken>>? _queryResult;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;

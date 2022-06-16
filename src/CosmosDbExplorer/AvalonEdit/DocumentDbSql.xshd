@@ -106,6 +106,7 @@
       <Word>TOP</Word>
       <Word>VALUE</Word>
       <Word>WHERE</Word>
+      <Word>GROUP BY</Word>
     </Keywords>
     <Keywords color="Function">
       <!--https://docs.microsoft.com/en-us/azure/cosmos-db/sql-api-sql-query-reference#bk_mathematical_functions-->
@@ -114,14 +115,18 @@
       <Word>ASIN</Word>
       <Word>ATAN</Word>
       <Word>ATN2</Word>
+      <Word>AVG</Word>
       <Word>CEILING</Word>
       <Word>COS</Word>
       <Word>COT</Word>
+      <Word>COUNT</Word>
       <Word>DEGREES</Word>
       <Word>EXP</Word>
       <Word>FLOOR</Word>
       <Word>LOG</Word>
-      <Word>LOG10</Word>   
+      <Word>LOG10</Word>
+      <Word>MAX</Word>
+      <Word>MIN</Word>
       <Word>PI</Word>
       <Word>POWER</Word>
       <Word>RADIANS</Word>
@@ -130,6 +135,7 @@
       <Word>SQRT</Word>
       <Word>SQUARE</Word>
       <Word>SIGN</Word>
+      <Word>SUM</Word>
       <Word>TAN</Word>
       <Word>TRUNC</Word>      
       <!--https://docs.microsoft.com/en-us/azure/cosmos-db/sql-api-sql-query-reference#bk_type_checking_functions-->

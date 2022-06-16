@@ -205,9 +205,9 @@ namespace CosmosDbExplorer.Core.Services
             return tasks.Where(t => t.IsCompletedSuccessfully).Count();
         }
 
-        public async Task<CosmosQueryResult<IReadOnlyCollection<JObject>>> ExecuteQueryAsync(ICosmosQuery query, CancellationToken cancellationToken)
+        public async Task<CosmosQueryResult<IReadOnlyCollection<JToken>>> ExecuteQueryAsync(ICosmosQuery query, CancellationToken cancellationToken)
         {
-            var result = new CosmosQueryResult<IReadOnlyCollection<JObject>>();
+            var result = new CosmosQueryResult<IReadOnlyCollection<JToken>>();
 
             var options = new QueryRequestOptions
             {
@@ -222,7 +222,7 @@ namespace CosmosDbExplorer.Core.Services
 
             try
             {
-                using (var resultSet = _container.GetItemQueryIterator<JObject>(
+                using (var resultSet = _container.GetItemQueryIterator<JToken>(
                     queryText: query.QueryText,
                     continuationToken: query.ContinuationToken,
                     requestOptions: options))

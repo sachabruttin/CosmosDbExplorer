@@ -2,7 +2,11 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using CosmosDbExplorer.Core.Models;
+
 using Microsoft.Azure.Cosmos;
+
+using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Core.Helpers
 {
@@ -12,6 +16,11 @@ namespace CosmosDbExplorer.Core.Helpers
         {
             try
             {
+                if (TryGetQuerySyntaxException(exception, out var querySyntaxException))
+                {
+                    return querySyntaxException ?? string.Empty;
+                }
+
                 if (TryGetErrors(exception, out var errors))
                 {
                     return errors ?? string.Empty;
@@ -59,6 +68,20 @@ namespace CosmosDbExplorer.Core.Helpers
                 message = null;
                 return false;
             }
+        }
+
+        private static bool TryGetQuerySyntaxException(CosmosException exception, out string? message)
+        {
+            var obj = JsonConvert.DeserializeObject<CosmosQuerySyntaxException>(exception.ResponseBody);
+
+            if (obj is not null && obj.Errors.Any())
+            {
+                message = string.Join(Environment.NewLine, obj.Errors.Select(error => $"{error.Message} ({error.Location?.Start}, {error.Location?.End})"));
+                return true;
+            }
+
+            message = null;
+            return false;
         }
 
         private static bool TryGetUpdatingOfferException(CosmosException exception, out string? message)

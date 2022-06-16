@@ -230,7 +230,7 @@ namespace CosmosDbExplorer.Core.Services
                     var response = await resultSet.ReadNextAsync(cancellationToken);
 
                     result.RequestCharge = response.RequestCharge;
-                    result.ContinuationToken = response.ContinuationToken;
+                    result.ContinuationToken = response.GetContinuationTokenSafely();
                     result.Items = response.Resource.ToArray();
                     result.Headers = response.Headers.ToDictionary();
                     //result.Diagnostics = response.Diagnostics.ToString;

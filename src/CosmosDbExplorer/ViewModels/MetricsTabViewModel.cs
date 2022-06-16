@@ -100,7 +100,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var tokenSource = new CancellationTokenSource();
 
-                Metrics = await _cosmosContainerService.GetContainerMetricsAsync(_container, tokenSource.Token).ConfigureAwait(false);
+                Metrics = await _cosmosContainerService.GetContainerMetricsAsync(_container, tokenSource.Token);
                 RequestCharge = $"Request Charge: {Metrics.RequestCharge:N2}";
 
                 OnPropertyChanged(nameof(Metrics));

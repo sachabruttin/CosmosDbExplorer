@@ -78,11 +78,11 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public TResource Resource { get; set; }
 
-        public RelayCommand OpenCommand => _openCommand ??= new(async () => await OpenCommandImp().ConfigureAwait(false));
+        public RelayCommand OpenCommand => _openCommand ??= new(async () => await OpenCommandImp());
 
         protected abstract Task OpenCommandImp();
 
-        public RelayCommand DeleteCommand => _deleteCommand ??= new(async () => await DeleteCommandImpl().ConfigureAwait(false));
+        public RelayCommand DeleteCommand => _deleteCommand ??= new(async () => await DeleteCommandImpl());
 
         protected abstract Task DeleteCommandImpl();
 

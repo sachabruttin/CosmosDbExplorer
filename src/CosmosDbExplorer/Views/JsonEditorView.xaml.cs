@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CosmosDbExplorer.Views
 {
@@ -41,8 +29,6 @@ namespace CosmosDbExplorer.Views
             target.zoomBehavior.ZoomLevel = value;
         }
 
-
-
         public bool UseFolding
         {
             get { return (bool)GetValue(UseFoldingProperty); }
@@ -58,25 +44,6 @@ namespace CosmosDbExplorer.Views
             var value = (bool)e.NewValue;
             var target = (JsonEditorView)d;
             target.foldingBehavior.UseFolding = value;
-        }
-
-
-
-        public int FoldingInterval
-        {
-            get { return (int)GetValue(FoldingIntervalProperty); }
-            set { SetValue(FoldingIntervalProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for FoldingInterval.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty FoldingIntervalProperty =
-            DependencyProperty.Register("FoldingInterval", typeof(int), typeof(JsonEditorView), new PropertyMetadata(1000, OnFoldingIntervalChanged));
-
-        private static void OnFoldingIntervalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var value = (int)e.NewValue;
-            var target = (JsonEditorView)d;
-            target.foldingBehavior.Interval = value;
         }
     }
 }

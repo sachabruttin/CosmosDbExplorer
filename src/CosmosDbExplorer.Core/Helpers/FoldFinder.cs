@@ -38,7 +38,7 @@ namespace CosmosDbExplorer.Core.Helpers
             Delimiter matchedDelimiter;
             var currentItem = default(FoldStackItem);
 
-            foreach (Match match in _scanner.Matches(code, start))
+            foreach (var match in _scanner.Matches(code, start).Cast<Match>())
             {
                 if (!FoldableRoot && match.Index == 0)
                 {

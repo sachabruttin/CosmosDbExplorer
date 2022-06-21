@@ -99,7 +99,7 @@ jobs:
     - name: Push Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY --out=./src/Chocolatey-Packages/cosmosdbexplorer/
+        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
 
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2

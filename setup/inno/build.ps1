@@ -15,8 +15,6 @@ New-Item -Path "." -Name "bin" -ItemType Directory -Force
     Expand-Archive -LiteralPath "./bin/$($_.name)" -DestinationPath "./bin/files" -Force
 }
 
-# # license
-# Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/v$Version/COPYING" -Out "./bin/COPYING.txt"
 $content = Get-Content './setup.iss' -Raw
 $content = $content.Replace('<VERSION>', $Version)
 $ISSName = "./cosmosdbexplorer-$Version.iss"

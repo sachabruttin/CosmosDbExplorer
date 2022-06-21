@@ -1,7 +1,7 @@
 name: Inno
-on:
-  release:
-    types: [published]
+# on:
+#   release:
+#     types: [published]
 
 jobs:
   publish:
@@ -12,7 +12,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
-        working-directory: ${{ github.workspace }}/packages/inno
+        working-directory: ${{ github.workspace }}/setup/inno
     steps:
     - name: Checkout code 👋
       uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
       id: build
       run: |
         $version = $env:GITHUB_REF.TrimStart("refs/tags/v")
-        ./build.ps1 -Architecture ${{ matrix.arch }}  -Version $version
+        ./build.ps1 -Version $version
     - name: Get release ⬇️
       id: get_release
       uses: bruceadams/get-release@v1.2.3
@@ -45,6 +45,6 @@ jobs:
               owner, repo,
               release_id: ${{ steps.get_release.outputs.id }},
               name: file,
-              data: await fs.readFile(`./packages/inno/Output/${file}`)
+              data: await fs.readFile(`./setup/inno/Output/${file}`)
             });
           }

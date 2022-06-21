@@ -464,7 +464,7 @@ namespace CosmosDbExplorer.ViewModels
                     Settings.Default.ExportFolder = result.Path;
                     Settings.Default.Save();
 
-                    var tasks = new List<Task<CosmosQueryResult<JObject>>>(selectedDocuments.Count());
+                    var tasks = new List<Task<CosmosQueryResult<JObject>>>(selectedDocuments.Count);
 
                     foreach (var document in selectedDocuments)
                     {

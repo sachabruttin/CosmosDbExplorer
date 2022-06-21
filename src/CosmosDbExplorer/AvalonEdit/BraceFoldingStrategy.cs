@@ -26,7 +26,7 @@ namespace CosmosDbExplorer.AvalonEdit
             }, foldRoot);
         }
 
-        protected bool FoldRootElement => _foldFinder.FoldableRoot;
+        public bool FoldRootElement { get => _foldFinder.FoldableRoot; set => _foldFinder.FoldableRoot = value; }
 
         public void UpdateFoldings(FoldingManager manager, TextDocument document)
         {

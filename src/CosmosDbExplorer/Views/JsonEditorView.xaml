@@ -20,7 +20,10 @@
                            ContextMenu="{StaticResource JsonEditorContextMenu}" HorizontalScrollBarVisibility="Auto" >
 
         <i:Interaction.Behaviors>
-            <behaviors:AvalonTextEditorBraceFoldingBehavior x:Name="foldingBehavior" UseFolding="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding}" />
+            <behaviors:AvalonTextEditorBraceFoldingBehavior x:Name="foldingBehavior" 
+                                                            UseFolding="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding, Mode=OneWay}"
+                                                            FoldRootElement="{Binding Source={x:Static properties:Settings.Default}, Path=FoldRootElement, Mode=OneWay}"
+                                                            />
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />
             <behaviors:AvalonTextEditorBindingBehavior Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

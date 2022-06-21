@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Threading;
 using CosmosDbExplorer.AvalonEdit;
 using CosmosDbExplorer.Core.Helpers;
+using CosmosDbExplorer.Properties;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Folding;
 using Microsoft.Xaml.Behaviors;
@@ -11,7 +13,7 @@ namespace CosmosDbExplorer.Behaviors
 {
     public class AvalonTextEditorBraceFoldingBehavior : Behavior<TextEditor>
     {
-        private readonly BraceFoldingStrategy _foldingStrategy = new();
+        private readonly BraceFoldingStrategy _foldingStrategy = new(Settings.Default.FoldingRootElement);
         private FoldingManager? _foldingManager;
         private readonly TimedDebounce _timer = new() { WaitingMilliSeconds = 500 };
 
@@ -21,6 +23,7 @@ namespace CosmosDbExplorer.Behaviors
             _timer.Idled += OnTextChangedIdle;
             AssociatedObject.TextChanged += OnTextChanged;
         }
+
         protected override void OnDetaching()
         {
             _timer.Idled -= OnTextChangedIdle;

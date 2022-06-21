@@ -156,6 +156,11 @@
                                           IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=ShowLineNumbers, Mode=TwoWay}" />
                         <mah:ToggleSwitch Content="Enable Word Wrap" 
                                           IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=EnableWordWrap, Mode=TwoWay}" />
+                        <mah:ToggleSwitch Content="Enable Folding"
+                                          IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding, Mode=TwoWay}" />
+                        <mah:ToggleSwitch Content="Fold root elements"
+                                          IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=FoldingRootElement, Mode=TwoWay}" />
+
                     </StackPanel>
                 </StackPanel>
 

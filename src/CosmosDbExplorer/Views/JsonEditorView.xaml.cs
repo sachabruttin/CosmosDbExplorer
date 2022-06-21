@@ -37,13 +37,6 @@ namespace CosmosDbExplorer.Views
 
         // Using a DependencyProperty as the backing store for UseFolding.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UseFoldingProperty =
-            DependencyProperty.Register("UseFolding", typeof(bool), typeof(JsonEditorView), new PropertyMetadata(false, OnUseFoldingChanged));
-
-        private static void OnUseFoldingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var value = (bool)e.NewValue;
-            var target = (JsonEditorView)d;
-            target.foldingBehavior.UseFolding = value;
-        }
+            DependencyProperty.Register("UseFolding", typeof(bool), typeof(JsonEditorView), new PropertyMetadata(false));
     }
 }

@@ -117,6 +117,7 @@ namespace CosmosDbExplorer.Behaviors
         private void OnFoldRootElementChanged()
         {
             _foldingStrategy.FoldRootElement = FoldRootElement;
+
             OnTextChangedIdle(null, new EventArgs());
         }
 

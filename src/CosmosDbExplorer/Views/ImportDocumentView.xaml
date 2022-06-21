@@ -17,7 +17,7 @@
         <i:Interaction.Behaviors>
             <behaviors:AvalonTextEditorBraceFoldingBehavior x:Name="foldingBehavior" 
                                                             UseFolding="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding, Mode=OneWay}"
-                                                            FoldRootElement="{Binding Source={x:Static properties:Settings.Default}, Path=FoldRootElement, Mode=OneWay}"
+                                                            FoldRootElement="{Binding Source={x:Static properties:Settings.Default}, Path=FoldingRootElement, Mode=OneWay}"
                                                             />
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />

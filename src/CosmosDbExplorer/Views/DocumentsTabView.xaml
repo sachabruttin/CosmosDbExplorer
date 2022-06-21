@@ -7,6 +7,7 @@
              xmlns:controls="clr-namespace:CosmosDbExplorer.Controls" 
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
              xmlns:template="clr-namespace:CosmosDbExplorer.TemplateSelectors" 
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
              d:DataContext="{d:DesignInstance Type=viewmodel:DocumentsTabViewModel}"
              mc:Ignorable="d" 
@@ -172,7 +173,7 @@
                             <LayoutDocument Title="Raw Data" CanClose="False" IconSource="{StaticResource ResultPaneIcon}">
                                 <local:JsonEditorView x:Name="documentEditor" 
                                                       DataContext="{Binding EditorViewModel}" 
-                                                      UseFolding="True"
+                                                      UseFolding="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding, Mode=OneWay}"
                                                       ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}"
                                                       Visibility="{Binding HasContent, Converter={StaticResource boolToVisibilityConverter}}"/>
                             </LayoutDocument>

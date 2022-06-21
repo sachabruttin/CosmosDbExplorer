@@ -12,18 +12,19 @@ namespace CosmosDbExplorer.Core.Helpers
     /// </summary>
     public class FoldFinder
     {
-        private readonly bool _foldableRoot;
         private readonly IList<Delimiter> _delimiters;
         private readonly Regex _scanner;
 
         public FoldFinder(IList<Delimiter> delimiters, bool foldableRoot = true)
         {
-            _foldableRoot = foldableRoot;
+            FoldableRoot = foldableRoot;
             _delimiters = delimiters;
             _scanner = RegexifyDelimiters(delimiters);
         }
 
         public int FirstErrorOffset { get; private set; } = -1;
+
+        public bool FoldableRoot { get; set; }
 
         public IList<FoldMatch> Scan(string code, int start = 0, int end = -1, bool throwOnError = true)
         {
@@ -39,7 +40,7 @@ namespace CosmosDbExplorer.Core.Helpers
 
             foreach (Match match in _scanner.Matches(code, start))
             {
-                if (!_foldableRoot && match.Index == 0)
+                if (!FoldableRoot && match.Index == 0)
                 {
                     continue;
                 }
@@ -152,14 +153,17 @@ namespace CosmosDbExplorer.Core.Helpers
                     string.Format("((\\{0})|(\\{1}))", d.Start, d.End))), RegexOptions.Compiled | RegexOptions.Multiline);
         }
 
-        private class FoldStackItem
+        private struct FoldStackItem
         {
             public FoldMatch Position;
             public Delimiter Delimter;
         }
+
+
+
     }
 
-    public class FoldMatch
+    public struct FoldMatch
     {
         public int Start;
         public int End;
@@ -167,7 +171,14 @@ namespace CosmosDbExplorer.Core.Helpers
 
     public class Delimiter
     {
-        public string Start;
-        public string End;
+        public Delimiter(string start, string end)
+        {
+            Start = start;
+            End = end;
+        }
+
+        public string Start { get; private set; }
+        public string End { get; private set; }
     }
+
 }

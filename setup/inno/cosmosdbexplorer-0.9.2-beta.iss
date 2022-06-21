@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Cosmos DB Explorer"
-#define MyAppVersion "<VERSION>"
+#define MyAppVersion "0.9.2-beta"
 #define MyAppPublisher "Sacha Bruttin"
 #define MyAppURL "https://www.bruttin.com/CosmosDbExplorer/"
 #define MyAppExeName "CosmosDbExplorer.exe"
@@ -52,4 +52,5 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
 

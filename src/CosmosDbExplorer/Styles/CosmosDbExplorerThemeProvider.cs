@@ -34,7 +34,7 @@ namespace CosmosDbExplorer.Styles
                 throw new ArgumentNullException(nameof(colorValues));
             }
 
-            var isDarkMode = colorValues.Options.BaseColorScheme.Name == ThemeManager.BaseColorDark;
+            //var isDarkMode = colorValues.Options.BaseColorScheme.Name == ThemeManager.BaseColorDark;
 
             //values.Add("CosmosDbExplorer.AvalonEdit.LinkTextForegroundBrush", isDarkMode ? Color.FromRgb(155, 109, 90).ToString() : Colors.CornflowerBlue.ToString());
 

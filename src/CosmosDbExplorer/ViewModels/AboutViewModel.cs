@@ -52,7 +52,12 @@ namespace CosmosDbExplorer.ViewModels
 
         public string Title { get; set; }
 
-        public static List<Author> Authors => new() { new Author("Sacha Bruttin", "sachabruttin"), new Author("savbace", "savbace") };
+        public static List<Author> Authors => new() 
+        { 
+            new Author("Sacha Bruttin", "sachabruttin"), 
+            new Author("savbace", "savbace"),
+            new Author("Curlack", "Curlack")
+        };
 
         public static string LicenseUrl => "https://github.com/sachabruttin/CosmosDbExplorer/blob/master/LICENSE";
 

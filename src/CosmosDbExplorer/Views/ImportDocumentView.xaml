@@ -9,12 +9,12 @@
              xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <avalonEdit:TextEditor x:Name="editor" SyntaxHighlighting="JSON"  
                            Style="{StaticResource CosmosEditor}"
                            IsModified="{Binding IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         <i:Interaction.Behaviors>
-            <behaviors:AvalonTextEditorBraceFoldingBehavior Interval="1000" UseFolding="True"  />
+            <behaviors:AvalonTextEditorBraceFoldingBehavior UseFolding="True"  />
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />
             <behaviors:AvalonTextEditorBindingBehavior Text="{Binding Content, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

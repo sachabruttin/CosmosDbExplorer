@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 using CosmosDbExplorer.AvalonEdit;
+using CosmosDbExplorer.Core.Helpers;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Folding;
 using Microsoft.Xaml.Behaviors;
@@ -12,53 +13,43 @@ namespace CosmosDbExplorer.Behaviors
     {
         private readonly BraceFoldingStrategy _foldingStrategy = new();
         private FoldingManager? _foldingManager;
-        private readonly DispatcherTimer _timer = new();
+        private readonly TimedDebounce _timer = new() { WaitingMilliSeconds = 500 };
 
         protected override void OnAttached()
         {
             base.OnAttached();
-
-            //_timer.Interval = System.TimeSpan.FromMilliseconds(Interval);
-            _timer.Tick += OnTimerTicked;
-
-            //if (UseFolding)
-            //{
-            //    _timer.Start();
-            //}
+            _timer.Idled += OnTextChangedIdle;
+            AssociatedObject.TextChanged += OnTextChanged;
         }
-
         protected override void OnDetaching()
         {
-            _timer.Stop();
-            _timer.Tick -= OnTimerTicked;
-
-            if (_foldingManager is not null)
-            {
-                FoldingManager.Uninstall(_foldingManager);
-            }
-
+            _timer.Idled -= OnTextChangedIdle;
+            AssociatedObject.TextChanged -= OnTextChanged;
+            ReleaseFoldingManager();
             base.OnDetaching();
         }
 
-        public int Interval
+        private void OnTextChanged(object? sender, EventArgs e)
         {
-            get { return (int)GetValue(IntervalProperty); }
-            set { SetValue(IntervalProperty, value); }
+            if (_foldingManager is null || AssociatedObject is null)
+            {
+                return;
+            }
+
+            _timer.DebounceEvent();
         }
 
-        public static readonly DependencyProperty IntervalProperty =
-            DependencyProperty.Register(
-                "Interval",
-                typeof(int),
-                typeof(AvalonTextEditorBraceFoldingBehavior),
-                new PropertyMetadata(1000, OnIntervalPropertyChanged));
-
-        private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void OnTextChangedIdle(object? sender, EventArgs e)
         {
-            if (d is AvalonTextEditorBraceFoldingBehavior behavior)
+            if (_foldingManager is null)
             {
-                behavior.OnIntervalChanged();
+                return;
             }
+
+            Dispatcher.Invoke(() =>
+            {
+                _foldingStrategy.UpdateFoldings(_foldingManager, AssociatedObject.Document);
+            });
         }
 
         public bool UseFolding
@@ -87,47 +78,29 @@ namespace CosmosDbExplorer.Behaviors
         {
             if (UseFolding)
             {
-                _timer.Start();
+                InitFoldingManager();
             }
             else
             {
-                if (_foldingManager != null)
-                {
-                    _foldingManager.Clear();
-                    FoldingManager.Uninstall(_foldingManager);
-                }
-
-                _timer.Stop();
+                ReleaseFoldingManager();
             }
         }
 
-        private void OnIntervalChanged()
+        private void InitFoldingManager()
         {
-            if (AssociatedObject is null)
-            {
-                return;
-            }
-
-            _timer.Stop();
-            _timer.Interval = System.TimeSpan.FromMilliseconds(Interval);
-            _timer.Start();
-        }
-
-        private void OnTimerTicked(object? sender, System.EventArgs e)
-        {
-            if (AssociatedObject is null)
-            {
-                return;
-            }
-
-            if (_foldingManager == null && AssociatedObject?.TextArea?.Document?.Text != null)
+            if (_foldingManager is null && AssociatedObject?.TextArea is not null)
             {
                 _foldingManager = FoldingManager.Install(AssociatedObject.TextArea);
             }
+        }
 
-            if (_foldingManager != null)
+        private void ReleaseFoldingManager()
+        {
+            if (_foldingManager is not null)
             {
-                _foldingStrategy.UpdateFoldings(_foldingManager, AssociatedObject.Document);
+                _foldingManager.Clear();
+                FoldingManager.Uninstall(_foldingManager);
+                _foldingManager = null;
             }
         }
     }

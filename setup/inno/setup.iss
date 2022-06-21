@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Cosmos DB Explorer"
-#define MyAppVersion "0.9.0.0"
+#define MyAppVersion "<VERSION>"
 #define MyAppPublisher "Sacha Bruttin"
 #define MyAppURL "https://www.bruttin.com/CosmosDbExplorer/"
 #define MyAppExeName "CosmosDbExplorer.exe"
@@ -28,7 +28,8 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=classic
 
-WizardImageFile="C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\astronaut-big.bmp"
+;WizardImageFile="C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\astronaut-big.bmp"
+WizardImageFile="./bin/astronaut.png"
 WizardSmallImageFile="C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\astronaut.bmp"
 ;SetupIconFile="C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\astronaut.ico"    
 
@@ -39,7 +40,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\bin\Debug\net6.0-windows\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "./bin/files/*"; DestDir: "{app}"; Flags: ignoreversion
+
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

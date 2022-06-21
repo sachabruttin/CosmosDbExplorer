@@ -54,7 +54,7 @@ namespace CosmosDbExplorer.ViewModels
         private AsyncRelayCommand _deleteDocumentCommand;
         private AsyncRelayCommand _saveDocumentCommand;
         private RelayCommand _discardCommand;
-        private IDocumentRequestOptions _documentRequestOptions = new DocumentRequestOptions();
+        private readonly IDocumentRequestOptions _documentRequestOptions = new DocumentRequestOptions();
 
         public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
             : base(uiServices)
@@ -464,7 +464,7 @@ namespace CosmosDbExplorer.ViewModels
                     Settings.Default.ExportFolder = result.Path;
                     Settings.Default.Save();
 
-                    var tasks = new List<Task<CosmosQueryResult<JObject>>>(selectedDocuments.Count());
+                    var tasks = new List<Task<CosmosQueryResult<JObject>>>(selectedDocuments.Count);
 
                     foreach (var document in selectedDocuments)
                     {

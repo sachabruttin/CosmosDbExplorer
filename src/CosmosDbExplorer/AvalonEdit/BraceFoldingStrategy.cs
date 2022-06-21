@@ -12,22 +12,25 @@ namespace CosmosDbExplorer.AvalonEdit
     public class BraceFoldingStrategy
     {
         private readonly FoldFinder _foldFinder;
+
         /// <summary>
         /// Creates a new BraceFoldingStrategy.
         /// </summary>
-        public BraceFoldingStrategy()
+        public BraceFoldingStrategy(bool foldRoot)
         {
             _foldFinder = new FoldFinder(new List<Delimiter> {
                 //Json Object Delimiters
-                new Delimiter { Start = "{", End = "}" },
+                new Delimiter( start: "{", end: "}" ),
                 //Json Array Delimiters
-                new Delimiter { Start = "[", End = "]" }
-            }, false);
+                new Delimiter( start: "[", end: "]" )
+            }, foldRoot);
         }
+
+        public bool FoldRootElement { get => _foldFinder.FoldableRoot; set => _foldFinder.FoldableRoot = value; }
 
         public void UpdateFoldings(FoldingManager manager, TextDocument document)
         {
-            var newFoldings = CreateNewFoldings(document, out int firstErrorOffset);
+            var newFoldings = CreateNewFoldings(document, out var firstErrorOffset);
             manager.UpdateFoldings(newFoldings, firstErrorOffset);
         }
 

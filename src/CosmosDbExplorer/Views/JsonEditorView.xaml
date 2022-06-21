@@ -8,6 +8,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:behaviors="clr-namespace:CosmosDbExplorer.Behaviors" 
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:properties="clr-namespace:CosmosDbExplorer.Properties"
              d:DataContext="{d:DesignInstance Type=viewmodel:JsonViewerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,7 +20,10 @@
                            ContextMenu="{StaticResource JsonEditorContextMenu}" HorizontalScrollBarVisibility="Auto" >
 
         <i:Interaction.Behaviors>
-            <behaviors:AvalonTextEditorBraceFoldingBehavior x:Name="foldingBehavior" />
+            <behaviors:AvalonTextEditorBraceFoldingBehavior x:Name="foldingBehavior" 
+                                                            UseFolding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=UseFolding}"
+                                                            FoldRootElement="{Binding Source={x:Static properties:Settings.Default}, Path=FoldingRootElement, Mode=OneWay}"
+                                                            />
             <behaviors:TextAreaZoomBehavior x:Name="zoomBehavior"/>
             <behaviors:AvalonTextEditorBehavior UseSearch="True" />
             <behaviors:AvalonTextEditorBindingBehavior Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

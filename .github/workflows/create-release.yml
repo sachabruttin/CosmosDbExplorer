@@ -94,7 +94,7 @@ jobs:
     - name: Pack Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: pack ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec
+        args: pack ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec --out ./src/Chocolatey-Packages/cosmosdbexplorer/
 
     - name: Push Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1

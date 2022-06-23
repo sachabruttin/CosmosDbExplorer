@@ -3,7 +3,8 @@ name: Build CosmosDbExplorer
 on: 
   push:
     branches:
-      - "**"
+      - master
+      #- "**"
     paths: 
       - 'src/**'
   pull_request:

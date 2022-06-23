@@ -14,6 +14,7 @@
     <None Remove="AvalonEdit\DocumentDbSql.xshd" />
     <None Remove="AvalonEdit\JavaScript-Mode.xshd" />
     <None Remove="AvalonEdit\JSON.xshd" />
+    <None Remove="SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="astronaut.ico" />
@@ -43,6 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CosmosDbExplorer.Core\CosmosDbExplorer.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="SplashScreen.png" />
   </ItemGroup>
 
   <ItemGroup>

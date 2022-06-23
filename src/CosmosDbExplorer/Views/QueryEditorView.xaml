@@ -104,7 +104,7 @@
                                 <LayoutAnchorable Title="Raw Data" CanClose="False" CanHide="False" CanAutoHide="False" 
                                                    IconSource="{StaticResource ResultPaneIcon}">
                                     <local:JsonEditorView DataContext="{Binding EditorViewModel}" 
-                                                          UseFolding="True"
+                                                          UseFolding="{Binding Source={x:Static properties:Settings.Default}, Path=EnableFolding, Mode=OneWay}"
                                                           ZoomLevel="{Binding Path=DataContext.Zoom, Converter={StaticResource logConverter}, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" />
                                 </LayoutAnchorable>
                             </LayoutAnchorablePane>

@@ -13,6 +13,10 @@ PackageUrl: https://www.bruttin.com/CosmosDbExplorer/
 License: MIT License
 ShortDescription: A nice client explorer for Microsoft Cosmos DB
 Moniker: cosmos-db-explorer
+Tags:
+  - "CosmosDB"
+  - "developer-tools"
+  - "Azure"
 ManifestType: defaultLocale
 ManifestVersion: 1.1.0
 ReleaseNotesUrl: https://github.com/sachabruttin/CosmosDbExplorer/releases/tag/v<VERSION>

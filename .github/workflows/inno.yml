@@ -1,7 +1,11 @@
 name: Inno
 on:
   workflow_dispatch:
-    
+    inputs:
+      tag:
+        description: 'Git Tag'  
+        required: true
+        
   # release:
   #   types: [published]
 
@@ -18,14 +22,16 @@ jobs:
 
     - name: Get release ⬇️
       id: get_release
-      uses: bruceadams/get-release@v1.2.3
+      uses: cardinalby/git-get-release-action@v1
       env:
-        GITHUB_TOKEN: ${{ github.token }}      
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag: ${{ github.event.inputs.tag }}
 
     - name: Build installer 📦
       id: build
       run: |
-        $version = ${{ steps.get_release.outputs.name }}
+        $version = '${{ steps.get_release.outputs.name }}'
         ./build.ps1 -Version $version
 
     - name: Upload artifacts 🆙

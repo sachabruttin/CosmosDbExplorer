@@ -18,7 +18,7 @@ $content = $content.Replace('<VERSION>', $Version)
 $ISSName = ".\cosmosdbexplorer-$Version.iss"
 $content | Out-File -Encoding 'UTF8' $ISSName
 # package content
-$installer = "install-test"
+$installer = "install"
 ISCC.exe /F$installer $ISSName
 # get hash
 $zipHash = Get-FileHash "Output\$installer.exe" -Algorithm SHA256

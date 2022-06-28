@@ -18,11 +18,9 @@ jobs:
 
     - name: Get release ⬇️
       id: get_release
-      uses: InsonusK/get-latest-release@v1.0.1
-      with:
-        myToken: ${{ github.token }}
-        exclude_types: "release"
-        view_top: 1
+      uses: jossef/action-latest-release-info@v1.1.0
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Build installer 📦
       id: build

@@ -72,6 +72,7 @@ jobs:
         shell: pwsh
         working-directory: ${{ github.workspace }}/setup/inno
 
+    steps:
     - name: Checkout code
       uses: actions/checkout@v2  
 
@@ -128,6 +129,7 @@ jobs:
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
 
+    steps:
     - name: Checkout code
       uses: actions/checkout@v2  
 

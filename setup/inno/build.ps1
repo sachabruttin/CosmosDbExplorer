@@ -7,7 +7,6 @@ Param
 )
 
 New-Item -Path "." -Name "bin" -ItemType Directory -Force
-$Version = $Version.Remove(0, 1) #remove the inital 'v'
 # download the files and pack them
 
 $download = "https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/CosmosDbExplorer.zip" 

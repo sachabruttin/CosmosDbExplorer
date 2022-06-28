@@ -63,6 +63,83 @@ jobs:
         files: |
           *.zip
 
+  # Inno Setup
+  innosetup:
+    runs-on: windows-latest
+    needs: build
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}/setup/inno
+
+    - name: Checkout code
+      uses: actions/checkout@v2  
+
+    - uses: olegtarasov/get-tag@v2.1
+      id: tag
+      with:
+        tagRegex: (\d.\d.\d.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        
+    - name: Get release ⬇️
+      id: get_release
+      uses: cardinalby/git-get-release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag: 'v${{ steps.tag.outputs.tag }}'
+
+    - name: Build installer 📦
+      id: build
+      run: |
+        $version = '${{ steps.get_release.outputs.name }}'
+        ./build.ps1 -Version $version
+
+    - name: Upload artifacts 🆙
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          console.log('environment', process.versions);
+
+          const fs = require('fs').promises;
+
+          const { repo: { owner, repo }, sha } = context;
+          console.log({ owner, repo, sha });
+
+          for (let file of await fs.readdir('./setup/inno/Output')) {
+            console.log('uploading', file);
+
+            await github.rest.repos.uploadReleaseAsset({
+              owner, repo,
+              release_id: ${{ steps.get_release.outputs.id }},
+              name: file,
+              data: await fs.readFile(`./setup/inno/Output/${file}`)
+            });
+          }
+
+  # Winget
+  winget:
+    runs-on: windows-latest
+    needs: innosetup
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}/setup/winget
+    env:
+      WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
+
+    - name: Checkout code
+      uses: actions/checkout@v2  
+
+    - uses: olegtarasov/get-tag@v2.1
+      id: tag
+      with:
+        tagRegex: (\d.\d.\d.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+    
+    - name: Create manifest and submit PR 📦
+      run: |
+        ./build.ps1 -Version "${{ steps.tag.outputs.tag }}" -Token $env:WINGETCREATE_TOKEN
+
   # Chocolatey
   chocolatey:
     runs-on: windows-latest

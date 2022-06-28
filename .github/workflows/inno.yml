@@ -18,9 +18,11 @@ jobs:
 
     - name: Get release ⬇️
       id: get_release
-      uses: pozetroninc/github-action-get-latest-release@master
+      uses: InsonusK/get-latest-release@v1.0.1
       with:
-        repository: ${{ github.repository }}     
+        myToken: ${{ github.token }}
+        exclude_types: "release"
+        view_top: 1
 
     - name: Build installer 📦
       id: build

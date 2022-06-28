@@ -33,7 +33,7 @@ function Write-MetaData {
     )
     $content = Get-Content $FileName -Raw
     $content = $content.Replace('<VERSION>', $Version)
-    $content = $content.Replace('<HASH', $HashAmd64)
+    $content = $content.Replace('<HASH>', $Hash)
     $date = Get-Date -Format "yyyy-MM-dd"
     $content = $content.Replace('<DATE>', $date)
     $content | Out-File -Encoding 'UTF8' "./$Version/$FileName"

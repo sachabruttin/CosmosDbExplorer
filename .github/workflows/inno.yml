@@ -1,7 +1,11 @@
 name: Inno
 on:
   workflow_dispatch:
-    
+    inputs:
+      tag:
+        description: 'Git Tag'  
+        required: true
+        
   # release:
   #   types: [published]
 
@@ -18,9 +22,11 @@ jobs:
 
     - name: Get release ⬇️
       id: get_release
-      uses: jossef/action-latest-release-info@v1.1.0
+      uses: cardinalby/git-get-release-action@v1
       env:
         GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag: ${{ github.event.inputs.tag }}
 
     - name: Build installer 📦
       id: build

@@ -8,9 +8,6 @@ on:
 jobs:
   publish:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        arch: [amd64, arm64, 386]
     defaults:
       run:
         shell: pwsh
@@ -18,16 +15,19 @@ jobs:
     steps:
     - name: Checkout code 👋
       uses: actions/checkout@v2
-    - name: Build installer 📦
-      id: build
-      run: |
-        $version = $env:GITHUB_REF.TrimStart("refs/tags/v")
-        ./build.ps1 -Version $version
+
     - name: Get release ⬇️
       id: get_release
       uses: bruceadams/get-release@v1.2.3
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ github.token }}      
+
+    - name: Build installer 📦
+      id: build
+      run: |
+        $version = ${{ steps.get_release.outputs.name }}
+        ./build.ps1 -Version $version
+
     - name: Upload artifacts 🆙
       uses: actions/github-script@v5
       with:

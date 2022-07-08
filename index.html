@@ -5,9 +5,10 @@ layout: default
 <div class="header-container jumbotron">
     <div class="container">
         <h1>Cosmos DB Explorer</h1>
-        <p>A nice client explorer for Microsoft Cosmos DB.<br/>            
-           It mimics the Data Explorer available on the Azure Portal on the desktop.</p>
-        <a class="btn btn-primary btn-lg" href="{{ "/docs/home/" | prepend: site.baseurl }}" role="button">Learn more</a></p>
+        <p>A nice client explorer for Microsoft Cosmos DB.<br />
+            It mimics the Data Explorer available on the Azure Portal on the desktop.</p>
+        <a class="btn btn-primary btn-lg" href="{{ " /docs/home/" | prepend: site.baseurl }}" role="button">Learn
+            more</a></p>
     </div>
 </div>
 
@@ -18,7 +19,8 @@ layout: default
         <div class="col-md-6">
             <h2 class="header-light regular-pad">What is Cosmos DB?</h2>
             <blockquote>
-              <p>A database for extremely low latency and massively scalable applications anywhere in the world, with native support for NoSQL</p>
+                <p>A database for extremely low latency and massively scalable applications anywhere in the world, with
+                    native support for NoSQL</p>
             </blockquote>
         </div>
         <div class="col-md-6 text-center">
@@ -29,26 +31,39 @@ layout: default
     <hr>
 
     <div class="row">
-        <div class="col-sm-4">
-            <h1 class="text-center"><i class="fa fa-cloud-download" aria-hidden="true"></i></h1>
-            <h3 class="text-center">Easy to install</h3>
-            <div class="nuget-badge-small">
-                <p>
-                    <code><span>C:\> </span>choco install cosmosdbexplorer</code>
-                </p>
-            </div>
-        </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <h1 class="text-center"><i class="fa fa-windows" aria-hidden="true"></i></h1>
             <h3 class="text-center">Windows Application</h3>
-            <p>Works on Windows 7, 8, 10. Take full of power of all your CPU cores to execute your SQL Queries against Cosmos DB</p>
+            <p>Works on Windows. Take full of power of all your CPU cores to execute your SQL Queries against
+                Cosmos DB</p>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <h1 class="text-center"><i class="fa fa-cogs" aria-hidden="true"></i></h1>
             <h3 class="text-center">Customizable UI</h3>
             <p>Organize your documents side-by-side or hide information that you don’t need.</p>
         </div>
     </div>
 
+
+    <div class="row">
+        <h1 class="text-center"><i class="fa fa-cloud-download" aria-hidden="true"></i></h1>
+        <h3 class="text-center">Easy to install</h3>
+
+        <div class="col-md-6">
+            <div class="nuget-badge-small">
+                <p>
+                    <code><span>C:\> </span>winget install SachaBruttin.CosmosDBExplorer</code>
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="nuget-badge-small">
+                <p>
+                    <code><span>C:\> </span>scoop install cosmosdbexplorer-beta</code>
+                </p>
+            </div>
+        </div>
+    </div>
 
 </div>

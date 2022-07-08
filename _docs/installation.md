@@ -9,14 +9,16 @@ Cosmos DB Explorer is a portable application running on Windows 7, 8, 10.
 
 To install it:
 
-- Download the lastest version from [releases]({{ site.github.repository_url }}/releases) and unzip it. 
-- Run `CosmosDbExplorer.exe`.
+- Download the lastest version from [releases]({{ site.github.repository_url }}/releases). 
 
-Or use [Chocolatey](https://chocolatey.org/):
-
+Or use [Winget](https://docs.microsoft.com/en-us/windows/package-manager/winget/):
 <div class="nuget-badge">
-    <p><code><span>C:\&gt; </span>choco install cosmosdbexplorer</code></p>
+    <p><code><span>C:\&gt; </span>winget install SachaBruttin.CosmosDBExplorer</code></p>
 </div>
 
-<span class="label label-info">Info</span>
-Update are managed directly by the application!
+Or use [Scoop](https://scoop.sh/):
+<div class="nuget-badge">
+    <p><code><span>C:\&gt; </span>scoop install cosmosdbexplorer-beta</code></p>
+</div>
+<!-- <span class="label label-info">Info</span>
+Update are managed directly by the application! -->

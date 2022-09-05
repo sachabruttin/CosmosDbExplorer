@@ -17,6 +17,6 @@ Define your query settings:
 - Max Buffer
 
 Get the query metrics, response headers and request charge (RU) automatically for each query.
-Pagged results is supported!
+Paged results is supported!
 
 ![Query Editor]({{ site.baseurl }}/img/query_editor.PNG){:class="img-responsive center-block" height="80%" width="80%"}

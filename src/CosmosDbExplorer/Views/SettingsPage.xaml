@@ -162,7 +162,8 @@
                         <mah:ToggleSwitch Content="Fold root elements"
                                           IsEnabled="{Binding ElementName=enableFoldingSwitch, Path=IsOn}"
                                           IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=FoldingRootElement, Mode=TwoWay}" />
-
+                        <mah:ToggleSwitch Content="Include Path into Tab Name"
+                                          IsOn="{Binding Source={x:Static properties:Settings.Default}, Path=PathOnTab, Mode=TwoWay}" />
                     </StackPanel>
                 </StackPanel>
 

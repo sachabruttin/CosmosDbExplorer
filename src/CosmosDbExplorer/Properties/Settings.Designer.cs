@@ -163,5 +163,17 @@ namespace CosmosDbExplorer.Properties {
                 this["FoldingRootElement"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PathOnTab {
+            get {
+                return ((bool)(this["PathOnTab"]));
+            }
+            set {
+                this["PathOnTab"] = value;
+            }
+        }
     }
 }

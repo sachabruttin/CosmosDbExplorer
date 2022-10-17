@@ -800,6 +800,18 @@
                                 </pane:PaneStyleSelector.ToolStyle>
                                 <pane:PaneStyleSelector.DocumentStyle>
                                     <Style TargetType="{x:Type LayoutItem}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Source={x:Static properties:Settings.Default}, Path=PathOnTab}" Value="True">
+                                                <Setter Property="Title">
+                                                    <Setter.Value>
+                                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                                            <Binding Path="Model.Header" />
+                                                            <Binding Path="Model.ToolTip" />
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
                                         <Setter Property="Title" Value="{Binding Model.Header}"/>
                                         <Setter Property="ToolTip" Value="{Binding Model.ToolTip}"/>
                                         <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
@@ -807,6 +819,7 @@
                                         <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                                         <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
                                         <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+                                        <Setter Property="Height" Value="64" />
                                     </Style>
                                 </pane:PaneStyleSelector.DocumentStyle>
                             </pane:PaneStyleSelector>

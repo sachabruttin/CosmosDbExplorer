@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using CosmosDbExplorer.AvalonEdit;
 using CosmosDbExplorer.Properties;
 
 namespace CosmosDbExplorer.Views
@@ -30,10 +31,7 @@ namespace CosmosDbExplorer.Views
             DefineGestures();
         }
 
-        private void Default_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            DefineGestures();
-        }
+        private void Default_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) => DefineGestures();
 
         private static KeyGesture? GetGesture(string gesture)
         {
@@ -45,5 +43,10 @@ namespace CosmosDbExplorer.Views
         {
             ExecuteKeyBinding.Gesture = GetGesture(Properties.Settings.Default.ExecuteGesture);
         }
+
+        private void MenuItemCommentClick(object sender, RoutedEventArgs e) => AvalonCommands.CommentCommand.Execute(editor);
+
+        private void MenuItemUnCommentClick(object sender, RoutedEventArgs e) => AvalonCommands.UnCommentCommand.Execute(editor);
+
     }
 }

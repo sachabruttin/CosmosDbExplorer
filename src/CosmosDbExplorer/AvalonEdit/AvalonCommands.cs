@@ -66,7 +66,7 @@ namespace CosmosDbExplorer.AvalonEdit
         {
             return textEditor?.SyntaxHighlighting.Name switch
             {
-                "DocumentDb" => "--",
+                "DocumentDbSql" => "--",
                 _ => "//",
             };
         }

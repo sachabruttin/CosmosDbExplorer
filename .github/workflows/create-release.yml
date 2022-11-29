@@ -175,15 +175,15 @@ jobs:
       with:
         args: pack ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec --out ./src/Chocolatey-Packages/cosmosdbexplorer/
 
-    - name: Push Chocolatey
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.0.nupkg --source https://chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
-
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
         path: ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
+
+    - name: Push Chocolatey
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.0.nupkg --source https://push.chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
 
   # Autoupdater
   autoupdater:
@@ -192,10 +192,9 @@ jobs:
     
     steps:
     - name: Checkout gh-pages
-      uses: actions/checkout@v2     
+      uses: actions/checkout@v3     
       with:
         ref: gh-pages
-        fetch-depth: 0
 
     - uses: olegtarasov/get-tag@v2.1
       id: tag
@@ -211,7 +210,6 @@ jobs:
       uses: jsdaniell/create-json@1.1.2
       with:
         name: autoupdate.json
-        dir: $GITHUB_WORKSPACE
         json: '{"version":"${{ steps.tag.outputs.version }}","url":"https://github.com/sachabruttin/CosmosDbExplorer/releases/download/${{ steps.get_version.outputs.VERSION }}/CosmosDbExplorer.zip","mandatory":false,"checksum":null,"changelog":null}'
 
     - run: |

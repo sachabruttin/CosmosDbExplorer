@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
@@ -75,7 +76,7 @@ namespace CosmosDbExplorer.ViewModels
 
             _documentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
 
-            Content = $"SELECT * FROM {Container.Id} AS {Container.Id.Substring(0, 1).ToLower()}";
+            Content = $"SELECT * FROM {Regex.Replace(Container.Id, @"[^0-9a-zA-Z]+", "_")} AS {Container.Id[..1].ToLower()}";
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
             ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";

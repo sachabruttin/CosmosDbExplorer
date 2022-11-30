@@ -7,6 +7,7 @@ using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using Microsoft.Toolkit.Mvvm.Input;
@@ -51,19 +52,19 @@ namespace CosmosDbExplorer.ViewModels.Assets
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string Content { get; set; }
 
-        public override void Load(string contentId, TNode? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override void Load(string contentId, NodeContext<TNode> nodeContext)
         {
             ContentId = contentId;
-            Node = node;
-            Connection = connection;
-            Container = container;
-            AccentColor = connection.AccentColor;
+            Node = nodeContext.Node;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
+            AccentColor = Connection.AccentColor;
 
-            if (node != null)
+            if (Node != null)
             {
-                var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)node.Parent.Parent.Parent);
-                ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
-                SetInformation(node.Resource);
+                var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)Node.Parent.Parent.Parent);
+                ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
+                SetInformation(Node.Resource);
             }
         }
 

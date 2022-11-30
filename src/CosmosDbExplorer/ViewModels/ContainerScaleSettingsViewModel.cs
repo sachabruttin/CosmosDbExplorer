@@ -9,6 +9,7 @@ using CosmosDbExplorer.Core;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using FluentValidation;
@@ -122,51 +123,51 @@ namespace CosmosDbExplorer.ViewModels
         private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
         private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
-        public override async void Load(string contentId, ScaleSettingsNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override async void Load(string contentId, NodeContext<ScaleSettingsNodeViewModel> nodeContext)
         {
-            if (node is null)
+            if (nodeContext.Node is null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new NullReferenceException(nameof(nodeContext.Node));
             }
 
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new NullReferenceException(nameof(nodeContext.Connection));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new NullReferenceException(nameof(nodeContext.Database));
             }
 
-            if (container is null)
+            if (nodeContext.Container is null)
             {
-                throw new ArgumentNullException(nameof(container));
+                throw new NullReferenceException(nameof(nodeContext.Container));
             }
 
             //IsLoading = true;
 
             ContentId = contentId;
-            Node = node;
-            Title = node.Name;
-            Header = node.Name;
-            Connection = connection;
-            Container = container;
+            Node = nodeContext.Node;
+            Title = Node.Name;
+            Header = Node.Name;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
             //ToolTip = $"{split[1]}>{split[3]}";
-            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
 
             AccentColor = Connection.AccentColor;
 
 
             SetSettings();
 
-            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
 
-            if (!database.IsServerless)
+            if (!nodeContext.Database.IsServerless)
             {
-                var response = await _containerService.GetThroughputAsync(container);
+                var response = await _containerService.GetThroughputAsync(Container);
                 SetThroughputInfo(response);
             }
 

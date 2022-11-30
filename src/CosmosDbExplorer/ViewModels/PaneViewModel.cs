@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
@@ -91,7 +93,7 @@ namespace CosmosDbExplorer.ViewModels
 
         }
 
-        public abstract void Load(string contentId, TNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container);
+        public abstract void Load(string contentId, NodeContext<TNodeViewModel> nodeContext);
     }
 
     public abstract class PaneWithZoomViewModel<TNodeViewModel> : PaneViewModel<TNodeViewModel>

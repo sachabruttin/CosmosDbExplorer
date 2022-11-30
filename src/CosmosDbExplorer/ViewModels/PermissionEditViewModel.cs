@@ -11,6 +11,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using FluentValidation;
@@ -111,34 +112,34 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, PermissionNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override void Load(string contentId, NodeContext<PermissionNodeViewModel> nodeContext)
         {
-            if (node is null)
+            if (nodeContext.Node is null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new NullReferenceException(nameof(nodeContext.Node));
             }
 
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new NullReferenceException(nameof(nodeContext.Connection));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new NullReferenceException(nameof(nodeContext.Database));
             }
 
             ContentId = contentId;
-            Node = node;
-            Permission = node?.Permission ?? new CosmosPermission();
-            Header = node.Name ?? "New Permission";
+            Node = nodeContext.Node;
+            Permission = Node.Permission ?? new CosmosPermission();
+            Header = Node.Name ?? "New Permission";
             Title = "Permission";
             AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
-            ToolTip = $"{connection.Label}/{database.Id}/{node.Name}";
+            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{Node.Name}";
 
             Containers = new ObservableCollection<string>(Node.Parent.Parent.Parent.Children.OfType<ContainerNodeViewModel>().Select(c => c.Name));
 
-            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, connection, database);
+            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
             SetInformation();
         }
 

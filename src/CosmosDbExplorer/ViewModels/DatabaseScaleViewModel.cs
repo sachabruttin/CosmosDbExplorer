@@ -8,6 +8,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 using Microsoft.Azure.Cosmos;
@@ -67,34 +68,34 @@ namespace CosmosDbExplorer.ViewModels
         public RelayCommand DiscardCommand => _discardCommand ??= new(DiscardCommandExecute, () => HasThroughputChanged);
         private bool HasThroughputChanged => (_originalThroughput?.AutoscaleMaxThroughput ?? _originalThroughput?.Throughput) != Throughput;
 
-        public override async void Load(string contentId, DatabaseScaleNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override async void Load(string contentId, NodeContext<DatabaseScaleNodeViewModel> nodeContext)
         {
-            if (node is null)
+            if (nodeContext.Node is null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new NullReferenceException(nameof(nodeContext.Node));
             }
 
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new NullReferenceException(nameof(nodeContext.Connection));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new NullReferenceException(nameof(nodeContext.Database));
             }
 
             ContentId = contentId;
-            Node = node;
-            Title = node.Name;
-            Header = node.Name;
-            Connection = connection;
-            Database = database;
+            Node = nodeContext.Node;
+            Title = Node.Name;
+            Header = Node.Name;
+            Connection = nodeContext.Connection;
+            Database = nodeContext.Database;
 
-            AccentColor = connection.AccentColor;
+            AccentColor = Connection.AccentColor;
             ToolTip = $"{Connection.Label}/{Database.Id}";
 
-            _cosmosDatabaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, connection);
+            _cosmosDatabaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
             var throughput = await _cosmosDatabaseService.GetThroughputAsync(Database);
 
             SetThroughputInfo(throughput);

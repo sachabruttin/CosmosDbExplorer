@@ -48,27 +48,27 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected override string GetDefaultTitle() => "Stored Procedure";
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
-        public override void Load(string contentId, StoredProcedureNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override void Load(string contentId, NodeContext<StoredProcedureNodeViewModel> nodeContext)
         {
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new ArgumentNullException(nameof(nodeContext.Connection));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new ArgumentNullException(nameof(nodeContext.Database));
             }
 
-            if (container is null)
+            if (nodeContext.Container is null)
             {
-                throw new ArgumentNullException(nameof(container));
+                throw new ArgumentNullException(nameof(nodeContext.Container));
             }
 
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, connection, database, container);
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
 
-            IsCollectionPartitioned = !string.IsNullOrEmpty(container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
-            base.Load(contentId, node, connection, database, container);
+            IsCollectionPartitioned = !string.IsNullOrEmpty(nodeContext.Container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
+            base.Load(contentId, nodeContext);
 
             UpdateCommandStatus();
         }

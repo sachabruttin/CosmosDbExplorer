@@ -66,20 +66,20 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_progessBarStatusBarItem);
         }
 
-        public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override void Load(string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
         {
             ContentId = Guid.NewGuid().ToString();
-            Node = node;
+            Node = nodeContext.Node;
             Header = "SQL Query";
-            Connection = connection;
-            Container = container;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
 
-            _documentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
+            _documentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, Connection, nodeContext.Database, Container);
 
-            Content = $"SELECT * FROM {Regex.Replace(Container.Id, @"[^0-9a-zA-Z]+", "_")} AS {Container.Id[..1].ToLower()}";
+            Content = GenericQuery.GetQuery((GenericQueryTypes)nodeContext.Data, Container);
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
             AccentColor = Node.Parent.Parent.Connection.AccentColor;
         }
 

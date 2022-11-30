@@ -51,30 +51,30 @@ namespace CosmosDbExplorer.ViewModels
             base.OnIsBusyChanged();
         }
 
-        public override async void Load(string contentId, MetricsNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override async void Load(string contentId, NodeContext<MetricsNodeViewModel> nodeContext)
         {
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new NullReferenceException(nameof(nodeContext.Connection));
             }
 
-            if (container is null)
+            if (nodeContext.Container is null)
             {
-                throw new ArgumentNullException(nameof(container));
+                throw new NullReferenceException(nameof(nodeContext.Container));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new NullReferenceException(nameof(nodeContext.Database));
             }
 
             ContentId = contentId;
-            _connection = connection;
-            _container = container;
+            _connection = nodeContext.Connection;
+            _container = nodeContext.Container;
 
-            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, connection, database);
+            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
 
-            ToolTip = $"{connection.Label}/{database.Id}/{container.Id}";
+            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{nodeContext.Container.Id}";
             AccentColor = _connection.AccentColor;
 
             await LoadMetrics();

@@ -40,7 +40,6 @@ namespace CosmosDbExplorer.ViewModels
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
 
-
             var (connection, database) = ((CosmosConnection, CosmosDatabase))parameter;
             Connection = connection;
             Database = database;

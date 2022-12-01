@@ -7,6 +7,8 @@ using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Models;
+
 using Microsoft.Azure.Documents;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -23,7 +25,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private RelayCommand _newStoredProcedureCommand;
         private RelayCommand _newUdfCommand;
         private RelayCommand _newTriggerCommand;
-        private RelayCommand _openSqlQueryCommand;
+        private RelayCommand<GenericQueryTypes> _openSqlQueryCommand;
         private AsyncRelayCommand _deleteContainerCommand;
 
         private readonly StoredProcedureRootNodeViewModel _storedProcedureNode;
@@ -58,7 +60,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosContainer Container { get; }
 
-        public RelayCommand OpenSqlQueryCommand => _openSqlQueryCommand ??= new(() => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Parent.Database, Container)));
+        public RelayCommand<GenericQueryTypes> OpenSqlQueryCommand => _openSqlQueryCommand ??= new(parameter => Messenger.Send(new OpenQueryViewMessage(this, Parent.Parent.Connection, Parent.Database, Container, parameter)));
 
         //public RelayCommand ClearAllDocumentsCommand
         //{

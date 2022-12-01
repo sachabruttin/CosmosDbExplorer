@@ -10,6 +10,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using FluentValidation;
@@ -64,32 +65,32 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, UserNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        public override void Load(string contentId, NodeContext<UserNodeViewModel> nodeContext)
         {
-            if (node is null)
+            if (nodeContext.Node is null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new NullReferenceException(nameof(nodeContext.Node));
             }
 
-            if (connection is null)
+            if (nodeContext.Connection is null)
             {
-                throw new ArgumentNullException(nameof(connection));
+                throw new NullReferenceException(nameof(nodeContext.Connection));
             }
 
-            if (database is null)
+            if (nodeContext.Database is null)
             {
-                throw new ArgumentNullException(nameof(database));
+                throw new NullReferenceException(nameof(nodeContext.Database));
             }
 
             ContentId = contentId;
-            Node = node;
-            Connection = connection;
-            Header = node.Name ?? "New User";
+            Node = nodeContext.Node;
+            Connection = nodeContext.Connection;
+            Header = Node.Name ?? "New User";
             Title = "User";
-            AccentColor = node.Parent.Parent.Parent.Connection.AccentColor;
-            ToolTip = $"{connection.Label}/{database.Id}";
+            AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}";
 
-            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, connection, database);
+            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, Connection, nodeContext.Database);
 
             SetInformation();
         }

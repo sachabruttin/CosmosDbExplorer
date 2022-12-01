@@ -8,6 +8,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
+using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.Assets;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Extensions.DependencyInjection;
@@ -226,7 +227,7 @@ namespace CosmosDbExplorer.ViewModels
                 throw new Exception("Node is null!");
             }
 
-            var contentId = message.Node?.ContentId ?? Guid.NewGuid().ToString();
+            var contentId = message.Context.Node?.ContentId ?? Guid.NewGuid().ToString();
 
             var tab = Tabs.FirstOrDefault(t => t.ContentId == contentId);
 
@@ -240,7 +241,8 @@ namespace CosmosDbExplorer.ViewModels
 
                 if (content != null)
                 {
-                    content.Load(contentId, message.Node, message.Connection, message.Database, message.Container);
+                    content.Load(contentId, message.Context);
+                    //content.Load(contentId, message.Node, message.Connection, message.Database, message.Container);
 
                     Tabs.Add(content);
                     SelectedTab = content;

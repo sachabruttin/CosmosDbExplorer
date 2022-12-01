@@ -55,19 +55,19 @@ namespace CosmosDbExplorer.ViewModels
             }
         }
 
-        public override void Load(string contentId, ContainerNodeViewModel node, CosmosConnection connection, CosmosDatabase database, CosmosContainer container)
+        public override void Load(string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
         {
             ContentId = Guid.NewGuid().ToString();
-            Node = node;
+            Node = nodeContext.Node;
             Header = "Import";
-            Connection = connection;
-            Container = container;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
 
             //var split = Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{Connection.Label}/{database.Id}/{Container.Id}";
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
             AccentColor = Connection.AccentColor;
 
-            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, connection, database, container);
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, Connection, nodeContext.Database, Container);
         }
 
         public ContainerNodeViewModel Node { get; protected set; }

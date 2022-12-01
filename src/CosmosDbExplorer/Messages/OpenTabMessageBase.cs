@@ -1,23 +1,17 @@
 ﻿using CosmosDbExplorer.Core.Models;
+using CosmosDbExplorer.Models;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CosmosDbExplorer.Messages
 {
     public abstract class OpenTabMessageBase<TNodeViewModel>
     {
-        protected OpenTabMessageBase(TNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
+        protected OpenTabMessageBase(TNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container, object? data = null)
         {
-            Node = node;
-            Connection = connection;
-            Database = database;
-            Container = container;
+            Context = new NodeContext<TNodeViewModel>(node, connection, database, container, data);
         }
 
-        public TNodeViewModel? Node { get; }
-
-        public CosmosConnection? Connection { get; }
-
-        public CosmosDatabase? Database { get; }
-
-        public CosmosContainer? Container { get; }
+        public NodeContext<TNodeViewModel> Context { get; }
     }
 }

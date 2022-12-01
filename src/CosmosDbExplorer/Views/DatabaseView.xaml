@@ -7,6 +7,7 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:vm="clr-namespace:CosmosDbExplorer.ViewModels.DatabaseNodes"
              xmlns:viewmodel="clr-namespace:CosmosDbExplorer.ViewModels" 
+             xmlns:models="clr-namespace:CosmosDbExplorer.Models"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:controls="clr-namespace:CosmosDbExplorer.Controls"
              d:DataContext="{d:DesignInstance Type=viewmodel:DatabaseViewModel}"
@@ -135,11 +136,19 @@
                 <Grid>
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="New SQL Query" Command="{Binding OpenSqlQueryCommand}">
+                            <MenuItem Header="New SQL Query">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource SqlQueryIcon}" />
                                 </MenuItem.Icon>
+                                <MenuItem Header="Select..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Default}"/>
+                                <MenuItem Header="Top 100..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Top100}" />
+                                <MenuItem Header="Count..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Count}" />
+                                <MenuItem Header="Where..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Where}" />
+                                <MenuItem Header="Order by..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.OrderBy }" />
+                                <MenuItem Header="Order by Descending..." Command="{Binding OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.OrderByDescending}" />
+
                             </MenuItem>
+                            
                             <MenuItem Header="New Stored Procedure" Command="{Binding NewStoredProcedureCommand}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource StoredProcedureIcon}" />

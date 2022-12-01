@@ -15,13 +15,18 @@ namespace CosmosDbExplorer.Helpers
             return typeof(IDictionary<string, string>).IsAssignableFrom(objectType);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
+            if (value is null)
+            {
+                return;
+            }
+
             var dict = (IDictionary<string, string>)value;
             var obj = new JObject();
 

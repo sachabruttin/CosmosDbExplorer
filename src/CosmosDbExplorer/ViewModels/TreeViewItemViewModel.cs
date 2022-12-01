@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
+
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -21,10 +19,9 @@ namespace CosmosDbExplorer.ViewModels
         private static readonly TreeViewItemViewModel DummyChild = new();
 
         protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+            : this()
         {
             Parent = parent;
-            Children = new ObservableCollection<TreeViewItemViewModel>();
-
             Messenger.Register<TreeViewItemViewModel, RemoveNodeMessage>(this, static (r, m) => r.OnRemoveNodeMessage(m));
 
             if (lazyLoadChildren)
@@ -47,6 +44,8 @@ namespace CosmosDbExplorer.ViewModels
         // This is used to create the DummyChild instance.
         private TreeViewItemViewModel()
         {
+            Children = new ObservableCollection<TreeViewItemViewModel>();
+            Parent = this;
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace CosmosDbExplorer.ViewModels
         public async void OnIsExpandedChanged()
         {
             // Expand all the way up to the root.
-            if (IsExpanded && Parent != null)
+            if (IsExpanded && Parent != this)
             {
                 Parent.IsExpanded = true;
             }
@@ -124,6 +123,6 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        public new TParent? Parent => base.Parent as TParent;
+        public new TParent Parent => (TParent)base.Parent;
     }
 }

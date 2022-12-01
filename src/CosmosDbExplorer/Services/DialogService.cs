@@ -26,7 +26,9 @@ namespace CosmosDbExplorer.Services
             var result = dialog.ShowDialog();/* TODO: Get Handle */
             var confirmed = result == System.Windows.Forms.DialogResult.OK;
 
+#pragma warning disable CS8604 // Possible null reference argument.
             afterHideCallback?.Invoke(confirmed, new FolderDialogResult(dialog.SelectedPath));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         public void ShowOpenFileDialog(OpenFileDialogSettings settings, Action<bool, FileDialogResult>? afterHideCallback = null)

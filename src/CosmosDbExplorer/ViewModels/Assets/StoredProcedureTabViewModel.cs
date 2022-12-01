@@ -82,13 +82,13 @@ namespace CosmosDbExplorer.ViewModels.Assets
             return _scriptService.DeleteStoredProcedureAsync(Node.Resource);
         }
 
-        public string Log { get; protected set; }
+        public string Log { get; protected set; } = string.Empty;
 
         public string? QueryResult { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
 
-        public string RequestCharge { get; set; }
+        public string RequestCharge { get; set; } = string.Empty;
 
         public void OnRequestChargeChanged()
         {
@@ -101,7 +101,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             base.OnIsBusyChanged();
         }
-        public string PartitionKey { get; set; }
+        public string? PartitionKey { get; set; }
 
         public bool IsCollectionPartitioned { get; protected set; }
 

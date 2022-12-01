@@ -11,6 +11,6 @@ namespace CosmosDbExplorer.Contracts.Services
 
         bool? OpenInDialog(Type pageKey, object? parameter = null);
 
-        Window GetWindow(Type pageKey);
+        Window? GetWindow(Type pageKey);
     }
 }

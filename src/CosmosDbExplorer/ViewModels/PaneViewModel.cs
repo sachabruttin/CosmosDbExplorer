@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.Services;
-using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Models;
+
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels
 {
     public abstract class PaneViewModelBase : UIViewModelBase
     {
-        private RelayCommand _closeCommand;
+        private RelayCommand? _closeCommand;
         private readonly StatusBarItem _pathStatusBarItem;
 
         protected PaneViewModelBase(IUIServices uiServices)
@@ -25,8 +24,7 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_pathStatusBarItem);
         }
 
-        [DoNotSetChanged]
-        public string? Title { get; set; }
+        [DoNotSetChanged] public string Title { get; set; } = string.Empty;
 
         [DoNotSetChanged]
         public string? ToolTip { get; set; }
@@ -36,11 +34,9 @@ namespace CosmosDbExplorer.ViewModels
             _pathStatusBarItem.DataContext.Value = ToolTip;
         }
 
-        [DoNotSetChanged]
-        public string Header { get; set; }
+        [DoNotSetChanged] public string Header { get; set; } = string.Empty;
 
-        [DoNotSetChanged]
-        public string ContentId { get; protected set; }
+        [DoNotSetChanged] public string ContentId { get; protected set; } = string.Empty;
 
         [DoNotSetChanged]
         public bool IsSelected { get; set; }

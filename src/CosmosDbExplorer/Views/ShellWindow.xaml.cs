@@ -88,14 +88,15 @@ namespace CosmosDbExplorer.Views
         private void AutoUpdateOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
             // Use JSON format for AutoUpdate release information file
-            dynamic json = JsonConvert.DeserializeObject(args.RemoteData);
+            dynamic? json = JsonConvert.DeserializeObject(args.RemoteData);
+
             args.UpdateInfo = new UpdateInfoEventArgs
             {
-                CurrentVersion = json.version,
-                ChangelogURL = json.changelog,
-                Mandatory = new Mandatory { Value = json.mandatory },
-                DownloadURL = json.url,
-                CheckSum = json.checksum != null ? new CheckSum { Value = json.checksum } : null
+                CurrentVersion = json?.version,
+                ChangelogURL = json?.changelog,
+                Mandatory = new Mandatory { Value = json?.mandatory },
+                DownloadURL = json?.url,
+                CheckSum = json?.checksum != null ? new CheckSum { Value = json?.checksum } : null
             };
         }
     }

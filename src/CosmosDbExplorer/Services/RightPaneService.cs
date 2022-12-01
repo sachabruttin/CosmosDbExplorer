@@ -12,13 +12,13 @@ namespace CosmosDbExplorer.Services
     public class RightPaneService : IRightPaneService
     {
         private readonly IPageService _pageService;
-        private Frame _frame;
-        private object _lastParameterUsed;
-        private SplitView _splitView;
+        private Frame? _frame;
+        private object? _lastParameterUsed;
+        private SplitView? _splitView;
 
-        public event EventHandler PaneOpened;
+        public event EventHandler? PaneOpened;
 
-        public event EventHandler PaneClosed;
+        public event EventHandler? PaneClosed;
 
         public RightPaneService(IPageService pageService)
         {
@@ -35,30 +35,39 @@ namespace CosmosDbExplorer.Services
 
         public void CleanUp()
         {
-            _frame.Navigated -= OnNavigated;
-            _splitView.PaneClosed -= OnPaneClosed;
+            if (_frame != null)
+            {
+                _frame.Navigated -= OnNavigated;
+            }
+            if (_splitView != null)
+            {
+                _splitView.PaneClosed -= OnPaneClosed;
+            }
         }
 
         public void OpenInRightPane(Type pageKey, object parameter)
         {
-            var pageType = _pageService.GetPageType(pageKey);
-            if (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed)))
+            if (_frame is not null && _splitView is not null)
             {
-                var page = _pageService.GetPage(pageKey, parameter);
-                var navigated = _frame.Navigate(page, parameter);
-                if (navigated)
+                var pageType = _pageService.GetPageType(pageKey);
+                if (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed)))
                 {
-                    _lastParameterUsed = parameter;
-                    var dataContext = _frame.GetDataContext();
-                    if (dataContext is INavigationAware navigationAware)
+                    var page = _pageService.GetPage(pageKey, parameter);
+                    var navigated = _frame.Navigate(page, parameter);
+                    if (navigated)
                     {
-                        navigationAware.OnNavigatedFrom();
+                        _lastParameterUsed = parameter;
+                        var dataContext = _frame.GetDataContext();
+                        if (dataContext is INavigationAware navigationAware)
+                        {
+                            navigationAware.OnNavigatedFrom();
+                        }
                     }
                 }
-            }
 
-            _splitView.IsPaneOpen = true;
-            PaneOpened?.Invoke(_splitView, EventArgs.Empty);
+                _splitView.IsPaneOpen = true;
+                PaneOpened?.Invoke(_splitView, EventArgs.Empty);
+            }
         }
 
         private void OnNavigated(object sender, NavigationEventArgs e)

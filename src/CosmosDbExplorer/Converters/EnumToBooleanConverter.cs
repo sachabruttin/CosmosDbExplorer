@@ -6,7 +6,7 @@ namespace CosmosDbExplorer.Converters
 {
     public class EnumToBooleanConverter : IValueConverter
     {
-        public Type? EnumType { get; set; }
+        public Type EnumType { get; set; } = typeof(object);
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

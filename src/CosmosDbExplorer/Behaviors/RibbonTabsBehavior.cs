@@ -67,10 +67,9 @@ namespace CosmosDbExplorer.Behaviors
             }
         }
 
-        private void OnNavigated(object sender, string e)
+        private void OnNavigated(object? sender, string e)
         {
-            var frame = sender as Frame;
-            if (frame != null && frame.Content is Page page)
+            if (sender is Frame frame && frame.Content is Page page)
             {
                 UpdateTabs(page);
             }
@@ -94,7 +93,7 @@ namespace CosmosDbExplorer.Behaviors
                 return;
             }
 
-            for (int i = homeTab.Groups.Count - 1; i >= 0; i--)
+            for (var i = homeTab.Groups.Count - 1; i >= 0; i--)
             {
                 if (GetIsGroupFromPage(homeTab.Groups[i]))
                 {
@@ -113,7 +112,7 @@ namespace CosmosDbExplorer.Behaviors
 
         private void SetupTabs(Collection<RibbonTabItem> tabs)
         {
-            for (int i = AssociatedObject.Tabs.Count - 1; i >= 0; i--)
+            for (var i = AssociatedObject.Tabs.Count - 1; i >= 0; i--)
             {
                 if (GetIsTabFromPage(AssociatedObject.Tabs[i]))
                 {

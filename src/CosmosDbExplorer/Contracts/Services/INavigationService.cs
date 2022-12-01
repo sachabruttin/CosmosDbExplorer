@@ -5,9 +5,9 @@ namespace CosmosDbExplorer.Contracts.Services
 {
     public interface INavigationService
     {
-        event EventHandler<string> Navigated;
+        event EventHandler<string>? Navigated;
 
-        bool CanGoBack { get; }
+        bool? CanGoBack { get; }
 
         void Initialize(Frame shellFrame);
 

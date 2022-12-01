@@ -23,7 +23,7 @@ namespace CosmosDbExplorer.ViewModels
     public class AccountSettingsViewModel : UIViewModelBase, INavigationAware
     {
         private CosmosConnection? _connection = default;
-        private RelayCommand _saveAccountCommand;
+        private RelayCommand? _saveAccountCommand;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
 
         public AccountSettingsViewModel(IPersistAndRestoreService persistAndRestoreService, IUIServices uiServices)
@@ -32,8 +32,8 @@ namespace CosmosDbExplorer.ViewModels
             _persistAndRestoreService = persistAndRestoreService;
         }
 
-        public string Title => "Account Settings";
-        public object Icon => App.Current.FindResource("AddConnectionIcon");
+        public static string Title => "Account Settings";
+        public static object Icon => App.Current.FindResource("AddConnectionIcon");
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string? AccountEndpoint { get; set; }

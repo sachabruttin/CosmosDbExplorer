@@ -9,6 +9,7 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.Views;
 using CosmosDbExplorer.ViewModels;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace CosmosDbExplorer.Services
@@ -22,7 +23,6 @@ namespace CosmosDbExplorer.Services
         private readonly IRightPaneService _rightPaneService;
 
         private readonly IEnumerable<IActivationHandler> _activationHandlers;
-        private IShellWindow _shellWindow;
         private bool _isInitialized;
 
         public ApplicationHostService(IServiceProvider serviceProvider, IEnumerable<IActivationHandler> activationHandlers, INavigationService navigationService, IRightPaneService rightPaneService, IThemeSelectorService themeSelectorService, IPersistAndRestoreService persistAndRestoreService)
@@ -82,10 +82,10 @@ namespace CosmosDbExplorer.Services
 
             await Task.CompletedTask;
 
-            if (App.Current.Windows.OfType<IShellWindow>().Count() == 0)
+            if (System.Windows.Application.Current.Windows.OfType<IShellWindow>().Count() == 0)
             {
                 // Default activation that navigates to the apps default page
-                _shellWindow = _serviceProvider.GetService(typeof(IShellWindow)) as IShellWindow;
+                var _shellWindow = _serviceProvider.GetRequiredService<IShellWindow>();
                 //_navigationService.Initialize(_shellWindow.GetNavigationFrame());
                 _rightPaneService.Initialize(_shellWindow.GetRightPaneFrame(), _shellWindow.GetSplitView());
                 _shellWindow.ShowWindow();

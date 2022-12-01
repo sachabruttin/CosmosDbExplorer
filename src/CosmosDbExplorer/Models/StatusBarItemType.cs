@@ -20,7 +20,7 @@ namespace CosmosDbExplorer.Models
 
         public StatusBarItemContext DataContext { get; set; }
         public StatusBarItemType Type { get; set; }
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public Dock Dock { get; set; }
     }
 

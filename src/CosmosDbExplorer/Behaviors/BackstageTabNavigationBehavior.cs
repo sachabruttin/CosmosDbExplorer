@@ -61,7 +61,7 @@ namespace CosmosDbExplorer.Behaviors
 
                 frame.Navigated += OnNavigated;
                 tabItem.Content = frame;
-                var page = _pageService.GetPage(tabItem.Tag as string);
+                var page = _pageService.GetPage((Type)tabItem.Tag);
                 frame.Navigate(page);
             }
         }

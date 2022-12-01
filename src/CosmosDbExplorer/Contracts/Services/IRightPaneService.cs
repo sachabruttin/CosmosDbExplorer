@@ -11,7 +11,7 @@ namespace CosmosDbExplorer.Contracts.Services
 
         event EventHandler PaneClosed;
 
-        void OpenInRightPane(string pageKey, object? parameter = null);
+        void OpenInRightPane(Type pageKey, object parameter);
 
         void Initialize(Frame rightPaneFrame, SplitView splitView);
 

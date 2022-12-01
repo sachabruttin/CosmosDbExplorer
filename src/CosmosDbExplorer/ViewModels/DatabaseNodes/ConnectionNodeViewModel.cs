@@ -91,12 +91,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         private void EditConnectionCommandExecute()
         {
-            var vmName = typeof(AccountSettingsViewModel)?.FullName;
-
-            if (!string.IsNullOrEmpty(vmName))
-            {
-                _windowManagerService.OpenInDialog(vmName, Connection);
-            }
+            var vmName = typeof(AccountSettingsViewModel);
+            _windowManagerService.OpenInDialog(vmName, Connection);
         }
 
         public AsyncRelayCommand RemoveConnectionCommand => _removeConnectionCommand ??= new(RemoveConnectionCommandExecute);
@@ -122,14 +118,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         private void AddNewDatabaseCommandExecute()
         {
-            var vmName = typeof(DatabasePropertyViewModel).FullName;
-
-            if (string.IsNullOrEmpty(vmName))
-            {
-                return;
-            }
-
-            _rightPaneService.OpenInRightPane(vmName, Connection);
+            var vmName = typeof(DatabasePropertyViewModel);
+            _rightPaneService.OpenInRightPane(vmName, new[] { Connection });
         }
 
         public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecuteAsync);

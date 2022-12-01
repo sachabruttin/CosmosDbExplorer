@@ -11,7 +11,7 @@ namespace CosmosDbExplorer.Contracts.Services
 
         void Initialize(Frame shellFrame);
 
-        bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false);
+        bool NavigateTo(Type pageKey, object? parameter = null, bool clearNavigation = false);
 
         void GoBack();
 

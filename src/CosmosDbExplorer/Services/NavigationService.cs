@@ -50,7 +50,7 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
+        public bool NavigateTo(Type pageKey, object? parameter = null, bool clearNavigation = false)
         {
             var pageType = _pageService.GetPageType(pageKey);
 

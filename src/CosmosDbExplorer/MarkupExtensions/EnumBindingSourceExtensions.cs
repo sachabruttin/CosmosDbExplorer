@@ -6,8 +6,8 @@ namespace CosmosDbExplorer.MarkupExtensions
 {
     public class EnumBindingSourceExtension : MarkupExtension
     {
-        private Type _enumType;
-        public Type EnumType
+        private Type? _enumType;
+        public Type? EnumType
         {
             get { return _enumType; }
             set
@@ -67,17 +67,22 @@ namespace CosmosDbExplorer.MarkupExtensions
         {
         }
 
-        public override object? ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object? value, Type destinationType)
         {
             if (destinationType == typeof(string))
             {
-                if (value != null)
+                if (value is not null)
                 {
-                    var fi = value.GetType().GetField(value.ToString());
-                    if (fi != null)
+                    var fieldName = value.ToString();
+
+                    if (fieldName is not null)
                     {
-                        var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!string.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
+                        var fi = value.GetType().GetField(fieldName);
+                        if (fi is not null)
+                        {
+                            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                            return ((attributes.Length > 0) && (!string.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
+                        }
                     }
                 }
 

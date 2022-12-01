@@ -27,7 +27,7 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IDialogService _dialogService;
 
         private CosmosContainerService _containerService;
-        private AsyncRelayCommand _saveCommand;
+        private AsyncRelayCommand? _saveCommand;
 
         public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
             : base(uiServices)

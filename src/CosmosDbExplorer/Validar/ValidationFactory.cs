@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Linq;
+
 using FluentValidation;
-using FluentValidation.Results;
 
 namespace CosmosDbExplorer.Validar
 {
+#pragma warning disable CS8600 // Possible null reference assignment.
+#pragma warning disable CS8601 // Possible null reference assignment.
+#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8604 // Possible null reference argument.
 
     public static class ValidationFactory
     {
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IValidator> Validators = new ConcurrentDictionary<RuntimeTypeHandle, IValidator>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IValidator> Validators = new();
 
         public static IValidator<T> GetValidator<T>()
             where T : INotifyPropertyChanged
@@ -28,4 +30,10 @@ namespace CosmosDbExplorer.Validar
             return (IValidator<T>)validator;
         }
     }
+
+#pragma warning restore CS8600 // Possible null reference assignment.
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8604 // Possible null reference argument.
+
 }

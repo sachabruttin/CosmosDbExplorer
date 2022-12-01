@@ -59,7 +59,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public string Title { get; set; } = string.Empty;
 
-        public long UsedMemory => GC.GetTotalMemory(true) / 1014;
+        public static long UsedMemory => GC.GetTotalMemory(true) / 1014;
 
         public bool IsBusy { get; set; }
 
@@ -147,7 +147,7 @@ namespace CosmosDbExplorer.ViewModels
         private void SpyUsedMemory()
         {
             var timer = new Timer(TimeSpan.FromSeconds(3).TotalMilliseconds);
-            timer.Elapsed += (s, e) => OnPropertyChanged(nameof(UsedMemory));
+            timer.Elapsed += (s, e) => OnPropertyChanged(nameof(ViewModels.ShellViewModel.UsedMemory));
             timer.Start();
         }
 

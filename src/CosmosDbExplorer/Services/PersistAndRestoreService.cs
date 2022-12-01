@@ -66,7 +66,7 @@ namespace CosmosDbExplorer.Services
         {
             if (File.Exists(_configurationFilePath))
             {
-                _connections = _fileService.Read<List<CosmosConnection>>(_localAppData, ConfigurationFileName);
+                _connections = _fileService.Read<List<CosmosConnection>>(_localAppData, ConfigurationFileName) ?? new();
             }
 
             return _connections;

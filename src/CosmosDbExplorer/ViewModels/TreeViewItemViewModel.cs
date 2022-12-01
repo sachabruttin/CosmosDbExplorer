@@ -70,7 +70,7 @@ namespace CosmosDbExplorer.ViewModels
         public async void OnIsExpandedChanged()
         {
             // Expand all the way up to the root.
-            if (IsExpanded && Parent != this)
+            if (IsExpanded && Parent != null)
             {
                 Parent.IsExpanded = true;
             }

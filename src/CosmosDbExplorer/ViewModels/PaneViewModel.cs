@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.Services;
@@ -87,20 +89,24 @@ namespace CosmosDbExplorer.ViewModels
     public abstract class PaneViewModel<TNodeViewModel> : PaneViewModelBase
         where TNodeViewModel : TreeViewItemViewModel
     {
-        protected PaneViewModel(IUIServices uiServices)
+        protected PaneViewModel(IUIServices uiServices, string contentId, NodeContext<TNodeViewModel> nodeContext)
             : base(uiServices)
         {
-
+            ContentId = contentId;
+            NodeContext = nodeContext;
         }
 
-        public abstract void Load(string contentId, NodeContext<TNodeViewModel> nodeContext);
+        [DoNotSetChanged]
+        public NodeContext<TNodeViewModel> NodeContext { get; }
+
+        public abstract Task InitializeAsync();
     }
 
     public abstract class PaneWithZoomViewModel<TNodeViewModel> : PaneViewModel<TNodeViewModel>
         where TNodeViewModel : TreeViewItemViewModel
     {
-        protected PaneWithZoomViewModel(IUIServices uiServices)
-            : base(uiServices)
+        protected PaneWithZoomViewModel(IUIServices uiServices, string contentId, NodeContext<TNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
             StatusBarItems.Add(new StatusBarItem(new StatusBarItemContext { Value = this, IsVisible = true }, StatusBarItemType.Zoom, "Zoom", System.Windows.Controls.Dock.Right));
         }

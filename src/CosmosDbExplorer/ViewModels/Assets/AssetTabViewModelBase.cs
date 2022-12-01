@@ -8,7 +8,6 @@ using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Models;
-using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -22,20 +21,33 @@ namespace CosmosDbExplorer.ViewModels.Assets
         where TResource : ICosmosScript
     {
         //private readonly IDialogService _dialogService;
-        private readonly IServiceProvider _serviceProvider;
+        //private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private RelayCommand _discardCommand;
-        private AsyncRelayCommand _saveCommand;
-        private AsyncRelayCommand _deleteCommand;
+        private RelayCommand? _discardCommand;
+        private AsyncRelayCommand? _saveCommand;
+        private AsyncRelayCommand? _deleteCommand;
 
-        protected AssetTabViewModelBase(IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices)
+        protected AssetTabViewModelBase(IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<TNode> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
             Content = GetDefaultContent();
             _dialogService = dialogService;
             Header = GetDefaultHeader();
             Title = GetDefaultTitle();
-            ContentId = Guid.NewGuid().ToString();
+
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+            
+            Node = nodeContext.Node;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
+            AccentColor = Connection.AccentColor;
+
+            //var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)Node.Parent.Parent.Parent);
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
+            SetInformation(Node.Resource);
         }
 
         protected abstract string GetDefaultHeader();
@@ -47,37 +59,21 @@ namespace CosmosDbExplorer.ViewModels.Assets
         }
 
         [OnChangedMethod(nameof(UpdateCommandStatus))]
-        protected string AltLink { get; set; }
+        protected string? AltLink { get; set; }
 
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string Content { get; set; }
 
-        public override void Load(string contentId, NodeContext<TNode> nodeContext)
-        {
-            ContentId = contentId;
-            Node = nodeContext.Node;
-            Connection = nodeContext.Connection;
-            Container = nodeContext.Container;
-            AccentColor = Connection.AccentColor;
-
-            if (Node != null)
-            {
-                var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)Node.Parent.Parent.Parent);
-                ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
-                SetInformation(Node.Resource);
-            }
-        }
-
         public TNode Node { get; protected set; }
-
+        
         protected void SetInformation(TResource? resource)
         {
             if (resource != null)
             {
                 Id = resource.Id;
                 AltLink = resource.SelfLink;
-                ContentId = AltLink;
-                Header = resource.Id;
+                ContentId = AltLink ?? string.Empty;
+                Header = resource.Id ?? string.Empty;
                 SetInformationImpl(resource);
             }
         }

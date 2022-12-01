@@ -37,29 +37,27 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private JObject _currentDocument;
-        private ICosmosDocument _currentCosmosDocument;
+        private JObject? _currentDocument;
+        private ICosmosDocument? _currentCosmosDocument;
 
-        private ICosmosDocumentService _cosmosDocumentService;
-        private AsyncRelayCommand _loadMoreCommand;
-        private AsyncRelayCommand _refreshLoadCommand;
-        private RelayCommand _newDocumentCommand;
-        private RelayCommand _resetRequestOptionsCommand;
-        private RelayCommand _saveLocalCommand;
-        private RelayCommand _closeFilterCommand;
-        private AsyncRelayCommand _applyFilterCommand;
-        private RelayCommand _editFilterCommand;
-        private AsyncRelayCommand _deleteDocumentCommand;
-        private AsyncRelayCommand _saveDocumentCommand;
-        private RelayCommand _discardCommand;
+        private readonly ICosmosDocumentService _cosmosDocumentService;
+        private AsyncRelayCommand? _loadMoreCommand;
+        private AsyncRelayCommand? _refreshLoadCommand;
+        private RelayCommand? _newDocumentCommand;
+        private RelayCommand? _resetRequestOptionsCommand;
+        private RelayCommand? _saveLocalCommand;
+        private RelayCommand? _closeFilterCommand;
+        private AsyncRelayCommand? _applyFilterCommand;
+        private RelayCommand? _editFilterCommand;
+        private AsyncRelayCommand? _deleteDocumentCommand;
+        private AsyncRelayCommand? _saveDocumentCommand;
+        private RelayCommand? _discardCommand;
         private readonly IDocumentRequestOptions _documentRequestOptions = new DocumentRequestOptions();
 
-        public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices)
+        public DocumentsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<DocumentNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
-            _serviceProvider = serviceProvider;
             _dialogService = dialogService;
             Title = "Documents";
             Header = Title;
@@ -74,11 +72,12 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_requestChargeStatusBarItem);
             _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = IsRunning, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
-        }
 
-        public override async void Load(string contentId, NodeContext<DocumentNodeViewModel> nodeContext)
-        {
-            ContentId = contentId;
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
             Node = nodeContext.Node;
             Connection = nodeContext.Connection;
             Container = nodeContext.Container;
@@ -89,9 +88,12 @@ namespace CosmosDbExplorer.ViewModels
 
             AccentColor = Connection.AccentColor;
 
-            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, Connection, nodeContext.Database, Container);
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(serviceProvider, Connection, nodeContext.Database, Container);
+        }
 
-            await LoadDocuments(true, new CancellationToken());
+        public override Task InitializeAsync()
+        {
+            return LoadDocuments(true, new CancellationToken());
         }
 
         public DocumentNodeViewModel Node { get; protected set; }
@@ -148,7 +150,7 @@ namespace CosmosDbExplorer.ViewModels
             SaveLocalCommand.NotifyCanExecuteChanged();
         }
 
-        public string Filter { get; set; }
+        public string? Filter { get; set; }
 
         public bool IsEditingFilter { get; set; }
 

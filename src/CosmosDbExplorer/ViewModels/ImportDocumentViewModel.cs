@@ -17,26 +17,46 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {
-    public class ImportDocumentViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>//, IHaveRequestOptions
+    public class ImportDocumentViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
     {
         private AsyncRelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
         private RelayCommand _openFileCommand;
         private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
-        private readonly IServiceProvider _serviceProvider;
         private CancellationTokenSource _cancellationToken;
         private RelayCommand _cancelCommand;
-        private CosmosDocumentService _cosmosDocumentService;
+        private readonly CosmosDocumentService _cosmosDocumentService;
 
-        public ImportDocumentViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
-            : base(uiServices)
+        public ImportDocumentViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
-            _serviceProvider = serviceProvider;
             _dialogService = dialogService;
 
             _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = false }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
+
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            ContentId = Guid.NewGuid().ToString();
+            Node = nodeContext.Node;
+            Header = "Import";
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
+
+            //var split = Container.SelfLink.Split(new char[] { '/' });
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
+            AccentColor = Connection.AccentColor;
+
+            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(serviceProvider, Connection, nodeContext.Database, Container);
+        }
+
+        public override Task InitializeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public bool IsRunning { get; set; }
@@ -53,21 +73,6 @@ namespace CosmosDbExplorer.ViewModels
             {
                 _cancellationToken = null;
             }
-        }
-
-        public override void Load(string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
-        {
-            ContentId = Guid.NewGuid().ToString();
-            Node = nodeContext.Node;
-            Header = "Import";
-            Connection = nodeContext.Connection;
-            Container = nodeContext.Container;
-
-            //var split = Container.SelfLink.Split(new char[] { '/' });
-            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
-            AccentColor = Connection.AccentColor;
-
-            _cosmosDocumentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, Connection, nodeContext.Database, Container);
         }
 
         public ContainerNodeViewModel Node { get; protected set; }
@@ -140,12 +145,10 @@ namespace CosmosDbExplorer.ViewModels
 
                 try
                 {
-                    using (var reader = File.OpenText(result.FileName))
-                    {
-                        //Content.FileName = result.FileName;
-                        //Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
-                        Content = await reader.ReadToEndAsync();
-                    }
+                    using var reader = File.OpenText(result.FileName);
+                    //Content.FileName = result.FileName;
+                    //Content.Text = await reader.ReadToEndAsync().ConfigureAwait(true);
+                    Content = await reader.ReadToEndAsync();
                 }
                 catch (Exception ex)
                 {

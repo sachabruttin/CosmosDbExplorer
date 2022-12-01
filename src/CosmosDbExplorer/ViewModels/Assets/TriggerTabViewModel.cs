@@ -15,21 +15,24 @@ namespace CosmosDbExplorer.ViewModels.Assets
 {
     public class TriggerTabViewModel : AssetTabViewModelBase<TriggerNodeViewModel, CosmosTrigger>
     {
-        private readonly IServiceProvider _serviceProvider;
-        private CosmosScriptService _scriptService;
+        private readonly CosmosScriptService _scriptService;
 
-        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices, dialogService)
+        public TriggerTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<TriggerNodeViewModel> nodeContext)
+            : base(uiServices, dialogService, contentId, nodeContext)
         {
             IconSource = App.Current.FindResource("TriggerIcon");
-            _serviceProvider = serviceProvider;
+
+            if (nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
         }
 
-        public override void Load(string contentId, NodeContext<TriggerNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
-
-            base.Load(contentId, nodeContext);
+            return Task.CompletedTask;
         }
 
         public CosmosTriggerType TriggerType { get; set; }
@@ -39,7 +42,6 @@ namespace CosmosDbExplorer.ViewModels.Assets
         protected override string GetDefaultHeader() => "New Trigger";
         protected override string GetDefaultTitle() => "Trigger";
         protected override string GetDefaultContent() => "function trigger(){}";
-
 
         protected override void SetInformationImpl(CosmosTrigger resource)
         {

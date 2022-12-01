@@ -14,21 +14,24 @@ namespace CosmosDbExplorer.ViewModels.Assets
 {
     public class UserDefFuncTabViewModel : AssetTabViewModelBase<UserDefFuncNodeViewModel, CosmosUserDefinedFunction>
     {
-        private ICosmosScriptService _scriptService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ICosmosScriptService _scriptService;
 
-        public UserDefFuncTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices, dialogService)
+        public UserDefFuncTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<UserDefFuncNodeViewModel> nodeContext)
+            : base(uiServices, dialogService, contentId, nodeContext)
         {
             IconSource = App.Current.FindResource("UdfIcon");
-            _serviceProvider = serviceProvider;
+
+            if (nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
         }
 
-        public override void Load(string contentId, NodeContext<UserDefFuncNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
-
-            base.Load(contentId, nodeContext);
+            return Task.CompletedTask;
         }
 
         protected override string GetDefaultHeader() => "New User Defined Function";

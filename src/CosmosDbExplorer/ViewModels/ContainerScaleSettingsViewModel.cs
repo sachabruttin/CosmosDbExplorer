@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
@@ -27,34 +28,52 @@ namespace CosmosDbExplorer.ViewModels
     [InjectValidation]
     public class ContainerScaleSettingsViewModel : PaneWithZoomViewModel<ScaleSettingsNodeViewModel>
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
         private readonly ISystemService _systemService;
-        private ICosmosContainerService? _containerService;
+        private readonly ICosmosContainerService _containerService;
         private AsyncRelayCommand? _saveCommand;
         private RelayCommand? _discardCommand;
         private RelayCommand<string>? _openUrlCommand;
         private CosmosThroughput? _originalThroughput;
 
-        public ContainerScaleSettingsViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, ISystemService systemService)
-            : base(uiServices)
+        public ContainerScaleSettingsViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, ISystemService systemService, string contentId, NodeContext<ScaleSettingsNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
-            _serviceProvider = serviceProvider;
             _dialogService = dialogService;
             _systemService = systemService;
             IconSource = App.Current.FindResource("ScaleSettingsIcon");
+
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            ContentId = contentId;
+            Node = nodeContext.Node;
+            Title = Node.Name;
+            Header = Node.Name;
+            Connection = nodeContext.Connection;
+            Container = nodeContext.Container;
+            Database = nodeContext.Database;
+
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
+
+            AccentColor = Connection.AccentColor;
+
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(serviceProvider, nodeContext.Connection, nodeContext.Database);
         }
 
         public ScaleSettingsNodeViewModel? Node { get; private set; }
-        public CosmosConnection? Connection { get; private set; }
-        public CosmosContainer? Container { get; private set; }
+        public CosmosConnection Connection { get; private set; }
+        public CosmosContainer Container { get; private set; }
+        public CosmosDatabase Database { get; private set; }
 
         public bool? IsTimeLiveInSecondVisible => TimeToLive == TimeToLiveType.On;
 
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public int? TimeToLiveInSecond { get; set; }
 
-        public TimeToLiveType? TimeToLive { get; set; }
+        public TimeToLiveType TimeToLive { get; set; }
 
         protected void OnTimeToLiveChanged()
         {
@@ -123,55 +142,15 @@ namespace CosmosDbExplorer.ViewModels
         private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
         private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
-        public override async void Load(string contentId, NodeContext<ScaleSettingsNodeViewModel> nodeContext)
+        public override async Task InitializeAsync()
         {
-            if (nodeContext.Node is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Node));
-            }
-
-            if (nodeContext.Connection is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Connection));
-            }
-
-            if (nodeContext.Database is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Database));
-            }
-
-            if (nodeContext.Container is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Container));
-            }
-
-            //IsLoading = true;
-
-            ContentId = contentId;
-            Node = nodeContext.Node;
-            Title = Node.Name;
-            Header = Node.Name;
-            Connection = nodeContext.Connection;
-            Container = nodeContext.Container;
-
-            //var split = Container.SelfLink.Split(new char[] { '/' });
-            //ToolTip = $"{split[1]}>{split[3]}";
-            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
-
-            AccentColor = Connection.AccentColor;
-
-
             SetSettings();
 
-            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
-
-            if (!nodeContext.Database.IsServerless)
+            if (!Database.IsServerless)
             {
                 var response = await _containerService.GetThroughputAsync(Container);
                 SetThroughputInfo(response);
             }
-
-            //IsLoading = false;
         }
 
         private void SetSettings()

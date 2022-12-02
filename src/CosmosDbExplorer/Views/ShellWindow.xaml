@@ -16,6 +16,7 @@
     xmlns:markup="clr-namespace:CosmosDbExplorer.MarkupExtensions" 
     xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels" 
     xmlns:coremodels="clr-namespace:CosmosDbExplorer.Core.Models;assembly=CosmosDbExplorer.Core"
+    xmlns:models="clr-namespace:CosmosDbExplorer.Models"
     d:DataContext="{d:DesignInstance Type=viewmodels:ShellViewModel}"
     ShowSystemMenuOnRightClick="False"
     Loaded="OnLoaded"
@@ -618,12 +619,28 @@
                             <Fluent:MenuItem Header="Trigger" Icon="{StaticResource TriggerIcon}" Command="{Binding Container.NewTriggerCommand}" IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"/>
                         </Fluent:SplitButton>
 
-                        <Fluent:Button Header="SQL Query" 
+                        <Fluent:SplitButton Header="SQL Query" 
+                                   IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
+                                   Icon="{StaticResource SqlQueryIcon}" 
+                                   SizeDefinition="Middle,Small"
+                                   Command="{Binding Container.OpenSqlQueryCommand}"
+                                   CommandParameter="{x:Static models:GenericQueryTypes.Default}"
+                                   KeyTip="Q">
+                            <Fluent:MenuItem Header="Top 100..." Command="{Binding Container.OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Top100}" />
+                            <Fluent:MenuItem Header="Count..." Command="{Binding Container.OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Count}" />
+                            <Fluent:MenuItem Header="Where..." Command="{Binding Container.OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.Where}" />
+                            <Fluent:MenuItem Header="Order by..." Command="{Binding Container.OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.OrderBy }" />
+                            <Fluent:MenuItem Header="Order by Descending..." Command="{Binding Container.OpenSqlQueryCommand}" CommandParameter="{x:Static models:GenericQueryTypes.OrderByDescending}" />
+
+                        </Fluent:SplitButton>
+
+                        <!--<Fluent:Button Header="SQL Query" 
                                        IsEnabled="{Binding Container, Converter={StaticResource isNotNullToBooleanConverter}}"
                                    Icon="{StaticResource SqlQueryIcon}" 
                                    SizeDefinition="Middle,Small"
                                    Command="{Binding Container.OpenSqlQueryCommand}"
-                                   KeyTip="Q"/>
+                                   CommandParameter="{x:Static models:GenericQueryTypes.Default}"
+                                   KeyTip="Q"/>-->
 
                         <Fluent:Button Header="Import" x:Name="ImportDocuments"
                                    Command="{Binding Container.OpenImportDocumentCommand}"

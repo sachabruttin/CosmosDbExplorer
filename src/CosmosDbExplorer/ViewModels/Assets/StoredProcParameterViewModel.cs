@@ -4,7 +4,7 @@ using System.Linq;
 //using System.Reactive.Linq;
 using FluentValidation;
 using ICSharpCode.AvalonEdit.Document;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using Validar;
 

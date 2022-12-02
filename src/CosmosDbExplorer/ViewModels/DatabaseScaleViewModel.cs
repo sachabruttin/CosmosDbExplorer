@@ -13,7 +13,7 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using PropertyChanged;
 using Validar;
 

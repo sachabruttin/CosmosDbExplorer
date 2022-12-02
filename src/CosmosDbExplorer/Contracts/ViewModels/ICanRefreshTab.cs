@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.Contracts.ViewModels
 {

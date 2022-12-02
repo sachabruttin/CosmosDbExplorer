@@ -11,9 +11,9 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Properties;
 using FluentValidation;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Validar;
 

@@ -7,7 +7,7 @@ using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {

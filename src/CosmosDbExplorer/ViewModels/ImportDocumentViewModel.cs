@@ -13,7 +13,7 @@ using CosmosDbExplorer.Models;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
 
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels
 {

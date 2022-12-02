@@ -8,7 +8,7 @@ using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.Views;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CosmosDbExplorer.Services
 {

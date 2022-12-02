@@ -13,9 +13,9 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes

@@ -7,8 +7,8 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 using CosmosDbExplorer.Models;
 
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {

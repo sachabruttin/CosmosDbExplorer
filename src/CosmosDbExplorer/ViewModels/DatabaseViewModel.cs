@@ -8,7 +8,7 @@ using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels
 {

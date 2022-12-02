@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {

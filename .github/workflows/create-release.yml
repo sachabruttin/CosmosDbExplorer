@@ -149,7 +149,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -178,7 +178,7 @@ jobs:
     - name: Upload chocolatey artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.nupkg
+        path: ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.0.nupkg
 
     - name: Push Chocolatey
       uses: crazy-max/ghaction-chocolatey@v1
@@ -210,6 +210,7 @@ jobs:
       uses: jsdaniell/create-json@1.1.2
       with:
         name: autoupdate.json
+        dir: $GITHUB_WORKSPACE
         json: '{"version":"${{ steps.tag.outputs.version }}","url":"https://github.com/sachabruttin/CosmosDbExplorer/releases/download/${{ steps.get_version.outputs.VERSION }}/CosmosDbExplorer.zip","mandatory":false,"checksum":null,"changelog":null}'
 
     - run: |

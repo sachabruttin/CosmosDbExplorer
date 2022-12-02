@@ -170,6 +170,7 @@ namespace CosmosDbExplorer.ViewModels
             Messenger.Register<ShellViewModel, IsBusyMessage>(this, static (r, msg) => r.IsBusy = msg.IsBusy);
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
         {
             if (message.PaneViewModel is DatabaseViewModel)

@@ -317,11 +317,11 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService?.ShowSaveFileDialog(settings, saveFileAsyc);
         }
 
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
 
         public RelayCommand<string> SaveQueryCommand => _saveQueryCommand ??= new(SaveQueryCommandExecute, param => !IsRunning && !string.IsNullOrEmpty(Content));
 
-        private async void SaveQueryCommandExecute(string param)
+        private async void SaveQueryCommandExecute(string? param)
         {
             if (FileName == null || param == "SaveAs")
             {

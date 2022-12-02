@@ -27,13 +27,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private readonly IRightPaneService _rightPaneService;
         private readonly IDialogService _dialogService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private RelayCommand _addNewDatabaseCommand;
-        private RelayCommand _editConnectionCommand;
-        private RelayCommand _refreshCommand;
-        private AsyncRelayCommand _removeConnectionCommand;
+        private RelayCommand? _addNewDatabaseCommand;
+        private RelayCommand? _editConnectionCommand;
+        private RelayCommand? _refreshCommand;
+        private AsyncRelayCommand? _removeConnectionCommand;
 
         public ConnectionNodeViewModel(IServiceProvider serviceProvider, CosmosConnection connection)
-            : base(null, true)
+            : base(lazyLoadChildren: true)
         {
             _serviceProvider = serviceProvider;
             _dialogService = serviceProvider.GetRequiredService<IDialogService>();
@@ -55,9 +55,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosConnection Connection { get; set; }
 
-        public IList<CosmosDatabase> Databases { get; protected set; }
+        public IList<CosmosDatabase> Databases { get; protected set; } = Array.Empty<CosmosDatabase>();
 
-        public string Name => Connection.DatabaseUri.ToString();
+        public string Name => Connection.DatabaseUri?.ToString() ?? string.Empty;
 
         protected override async Task LoadChildren(CancellationToken token)
         {

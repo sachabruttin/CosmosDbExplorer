@@ -18,32 +18,31 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class ContainerNodeViewModel : ResourceNodeViewModelBase<DatabaseNodeViewModel>, IHaveContainerNodeViewModel, IContent
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly CosmosContainerService _containerService;
         private readonly IDialogService _dialogService;
-        private RelayCommand _openImportDocumentCommand;
-        private RelayCommand _newStoredProcedureCommand;
-        private RelayCommand _newUdfCommand;
-        private RelayCommand _newTriggerCommand;
-        private RelayCommand<GenericQueryTypes> _openSqlQueryCommand;
-        private AsyncRelayCommand _deleteContainerCommand;
-
         private readonly StoredProcedureRootNodeViewModel _storedProcedureNode;
         private readonly UserDefFuncRootNodeViewModel _userDefFuncNode;
         private readonly TriggerRootNodeViewModel _triggerNode;
 
+        private RelayCommand? _openImportDocumentCommand;
+        private RelayCommand? _newStoredProcedureCommand;
+        private RelayCommand? _newUdfCommand;
+        private RelayCommand? _newTriggerCommand;
+        private RelayCommand<GenericQueryTypes>? _openSqlQueryCommand;
+        private AsyncRelayCommand? _deleteContainerCommand;
+
+
         public ContainerNodeViewModel(IServiceProvider serviceProvider, CosmosContainer container, DatabaseNodeViewModel parent)
             : base(container, parent, true)
         {
-            _serviceProvider = serviceProvider;
             Container = container;
 
-            _dialogService = _serviceProvider.GetRequiredService<IDialogService>();
-            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Parent.Connection, Parent.Database);
+            _dialogService = serviceProvider.GetRequiredService<IDialogService>();
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(serviceProvider, Parent.Parent.Connection, Parent.Database);
 
-            _storedProcedureNode = new StoredProcedureRootNodeViewModel(this, _serviceProvider);
-            _userDefFuncNode = new UserDefFuncRootNodeViewModel(this, _serviceProvider);
-            _triggerNode = new TriggerRootNodeViewModel(this, _serviceProvider);
+            _storedProcedureNode = new StoredProcedureRootNodeViewModel(this, serviceProvider);
+            _userDefFuncNode = new UserDefFuncRootNodeViewModel(this, serviceProvider);
+            _triggerNode = new TriggerRootNodeViewModel(this, serviceProvider);
         }
 
         protected override Task LoadChildren(CancellationToken token)

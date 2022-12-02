@@ -79,7 +79,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         protected override Task<CosmosResult> DeleteAsyncImpl()
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             return _scriptService.DeleteStoredProcedureAsync(Node.Resource);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
         public string Log { get; protected set; } = string.Empty;
@@ -122,7 +124,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             item.Dispose();
         }
 
-        private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
+        //private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
 
         public RelayCommand<object> BrowseParameterCommand => _browseParameterCommand ??= new(BrowseParameterCommandExecute/*, BrowseParameterCommandCanExecute*/);
 
@@ -146,16 +148,16 @@ namespace CosmosDbExplorer.ViewModels.Assets
             //}).ConfigureAwait(false);
         }
 
-        private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
+        //private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
 
 
-        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute/*, ExecuteCommandCanExecute*/);
+        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute, ExecuteCommandCanExecute);
 
         private async Task ExecuteCommandExecute()
         {
             if (Id is null)
             {
-                throw new NullReferenceException(nameof(Id));
+                return;
             }
 
             QueryResult = null;
@@ -166,7 +168,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
             {
                 IsBusy = true;
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 var result = await _scriptService.ExecuteStoredProcedureAsync(Id, PartitionKey, Parameters.Select(p => p.GetValue()).ToArray());
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
 
                 Log = result.ScriptLog;
@@ -233,7 +237,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             });
         }
 
-        private bool SaveLocalCommandCanExecute() => !IsBusy && QueryResult is not null;
+        //private bool SaveLocalCommandCanExecute() => !IsBusy && QueryResult is not null;
 
         public RelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(() => throw new NotImplementedException(), () => false);
 

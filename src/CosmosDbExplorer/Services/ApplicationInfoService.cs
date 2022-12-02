@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Reflection;
 
+using AvalonDock.Properties;
+
 using CosmosDbExplorer.Contracts.Services;
 
 namespace CosmosDbExplorer.Services
@@ -21,6 +23,9 @@ namespace CosmosDbExplorer.Services
             return new Version(version);
         }
 
-
+        public string GetTitle()
+        {
+            return Properties.Resources.AppDisplayName;
+        }
     }
 }

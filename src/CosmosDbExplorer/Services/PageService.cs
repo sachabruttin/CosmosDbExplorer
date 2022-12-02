@@ -29,7 +29,7 @@ namespace CosmosDbExplorer.Services
 
         public Type GetPageType(Type key)
         {
-            Type pageType;
+            Type? pageType;
             lock (_pages)
             {
                 if (!_pages.TryGetValue(key, out pageType))

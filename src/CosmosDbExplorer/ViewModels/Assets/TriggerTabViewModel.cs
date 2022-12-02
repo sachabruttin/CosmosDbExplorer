@@ -9,8 +9,6 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using PropertyChanged;
-
 namespace CosmosDbExplorer.ViewModels.Assets
 {
     public class TriggerTabViewModel : AssetTabViewModelBase<TriggerNodeViewModel, CosmosTrigger>
@@ -68,7 +66,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         protected override Task<CosmosResult> DeleteAsyncImpl()
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             return _scriptService.DeleteTriggerAsync(Node.Resource);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }

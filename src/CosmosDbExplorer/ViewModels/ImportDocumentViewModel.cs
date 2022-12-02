@@ -19,14 +19,16 @@ namespace CosmosDbExplorer.ViewModels
 {
     public class ImportDocumentViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
     {
-        private AsyncRelayCommand _executeCommand;
         private readonly IDialogService _dialogService;
-        private RelayCommand _openFileCommand;
-        private RelayCommand _resetRequestOptionsCommand;
         private readonly StatusBarItem _progessBarStatusBarItem;
-        private CancellationTokenSource _cancellationToken;
-        private RelayCommand _cancelCommand;
         private readonly CosmosDocumentService _cosmosDocumentService;
+
+        private AsyncRelayCommand? _executeCommand;
+        private RelayCommand? _openFileCommand;
+        private RelayCommand? _resetRequestOptionsCommand;
+        private RelayCommand? _cancelCommand;
+
+        private CancellationTokenSource? _cancellationToken;
 
         public ImportDocumentViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
             : base(uiServices, contentId, nodeContext)
@@ -102,7 +104,7 @@ namespace CosmosDbExplorer.ViewModels
             try
             {
                 IsRunning = true;
-                var count = await _cosmosDocumentService.ImportDocumentsAsync(Content, _cancellationToken.Token);
+                var count = await _cosmosDocumentService.ImportDocumentsAsync(Content, _cancellationToken?.Token ?? new CancellationToken());
                 await _dialogService.ShowMessage($"{count} document(s) imported!", "Import");
             }
             catch (OperationCanceledException)
@@ -120,7 +122,7 @@ namespace CosmosDbExplorer.ViewModels
         }
 
 
-        public RelayCommand CancelCommand => _cancelCommand ??= new(() => _cancellationToken.Cancel(), () => IsRunning);
+        public RelayCommand CancelCommand => _cancelCommand ??= new(() => _cancellationToken?.Cancel(), () => IsRunning);
 
         public RelayCommand OpenFileCommand => _openFileCommand ??= new(OpenFileCommandExecuteAsync);
 

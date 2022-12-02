@@ -106,7 +106,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var result = await _userService.SaveUserAsync(user, new System.Threading.CancellationToken());
 
-                Header = result.Items.Id ?? string.Empty;
+                Header = result.Items?.Id ?? string.Empty;
                 Node.User = user;
                 ContentId = Node.ContentId;
 

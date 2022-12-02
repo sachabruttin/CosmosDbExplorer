@@ -133,7 +133,7 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        protected override string? GetDocumentContent(object content, bool removeSystemProperties)
+        protected override string? GetDocumentContent(object? content, bool removeSystemProperties)
         {
             if (content == null)
             {

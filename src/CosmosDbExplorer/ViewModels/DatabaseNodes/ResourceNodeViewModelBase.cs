@@ -11,8 +11,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode, IContent
         where TParent : TreeViewItemViewModel
     {
-        private RelayCommand _refreshCommand;
-        private RelayCommand _copySelfLinkToClipboardCommand;
+        private RelayCommand? _refreshCommand;
+        private RelayCommand? _copySelfLinkToClipboardCommand;
 
         protected ResourceNodeViewModelBase(ICosmosResource resource, TParent parent, bool lazyLoadChildren)
             : base(parent, lazyLoadChildren)

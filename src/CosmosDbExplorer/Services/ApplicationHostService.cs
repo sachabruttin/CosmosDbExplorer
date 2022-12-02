@@ -17,7 +17,6 @@ namespace CosmosDbExplorer.Services
     public class ApplicationHostService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly INavigationService _navigationService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
         private readonly IThemeSelectorService _themeSelectorService;
         private readonly IRightPaneService _rightPaneService;
@@ -25,11 +24,14 @@ namespace CosmosDbExplorer.Services
         private readonly IEnumerable<IActivationHandler> _activationHandlers;
         private bool _isInitialized;
 
-        public ApplicationHostService(IServiceProvider serviceProvider, IEnumerable<IActivationHandler> activationHandlers, INavigationService navigationService, IRightPaneService rightPaneService, IThemeSelectorService themeSelectorService, IPersistAndRestoreService persistAndRestoreService)
+        public ApplicationHostService(IServiceProvider serviceProvider, 
+            IEnumerable<IActivationHandler> activationHandlers,
+            IRightPaneService rightPaneService, 
+            IThemeSelectorService themeSelectorService, 
+            IPersistAndRestoreService persistAndRestoreService)
         {
             _serviceProvider = serviceProvider;
             _activationHandlers = activationHandlers;
-            _navigationService = navigationService;
             _rightPaneService = rightPaneService;
             _themeSelectorService = themeSelectorService;
             _persistAndRestoreService = persistAndRestoreService;
@@ -82,7 +84,7 @@ namespace CosmosDbExplorer.Services
 
             await Task.CompletedTask;
 
-            if (System.Windows.Application.Current.Windows.OfType<IShellWindow>().Count() == 0)
+            if (!System.Windows.Application.Current.Windows.OfType<IShellWindow>().Any())
             {
                 // Default activation that navigates to the apps default page
                 var _shellWindow = _serviceProvider.GetRequiredService<IShellWindow>();

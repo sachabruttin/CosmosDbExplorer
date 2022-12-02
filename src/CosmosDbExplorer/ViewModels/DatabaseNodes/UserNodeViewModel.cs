@@ -29,9 +29,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _cosmosUserService = cosmosUserService;
         }
 
-        public string Name => User.Id;
+        public string Name => User.Id ?? "n/a";
 
-        public string ContentId => User.SelfLink ?? "NewUser";
+        public string ContentId => User.SelfLink ?? "n/a";
 
         protected override async Task LoadChildren(CancellationToken token)
         {

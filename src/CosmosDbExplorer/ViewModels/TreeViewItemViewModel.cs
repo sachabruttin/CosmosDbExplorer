@@ -17,17 +17,30 @@ namespace CosmosDbExplorer.ViewModels
     public class TreeViewItemViewModel : ObservableRecipient
     {
         private static readonly TreeViewItemViewModel DummyChild = new();
+        
+        // This is used to create the DummyChild instance.
+        private TreeViewItemViewModel()
+        {
+            Children = new ObservableCollection<TreeViewItemViewModel>();
+            Parent = this;
+        }
 
-        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+        protected TreeViewItemViewModel(bool lazyLoadChildren)
             : this()
         {
-            Parent = parent;
             Messenger.Register<TreeViewItemViewModel, RemoveNodeMessage>(this, static (r, m) => r.OnRemoveNodeMessage(m));
 
             if (lazyLoadChildren)
             {
                 Children.Add(DummyChild);
             }
+        }
+
+
+        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+            : this(lazyLoadChildren)
+        {
+            Parent = parent;
         }
 
         private void OnRemoveNodeMessage(RemoveNodeMessage msg)
@@ -39,13 +52,6 @@ namespace CosmosDbExplorer.ViewModels
                     Parent.Children.Remove(this);
                 }
             }
-        }
-
-        // This is used to create the DummyChild instance.
-        private TreeViewItemViewModel()
-        {
-            Children = new ObservableCollection<TreeViewItemViewModel>();
-            Parent = this;
         }
 
         /// <summary>

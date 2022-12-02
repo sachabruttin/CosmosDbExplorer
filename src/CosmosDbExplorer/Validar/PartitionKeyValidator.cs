@@ -27,7 +27,9 @@ namespace CosmosDbExplorer.Validar
             {
                 var pk = value as string;
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 var token = JToken.Parse(pk);
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 if (!AcceptedTypes.Contains(token.Type))
                 {

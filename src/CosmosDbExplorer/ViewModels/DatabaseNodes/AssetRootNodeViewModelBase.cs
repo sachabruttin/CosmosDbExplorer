@@ -15,8 +15,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
     public abstract class AssetRootNodeViewModelBase<TResource> : TreeViewItemViewModel<ContainerNodeViewModel>, ICanRefreshNode, IHaveContainerNodeViewModel
         where TResource : ICosmosResource
     {
-        private AsyncRelayCommand _refreshCommand;
-        private RelayCommand _openNewCommand;
+        private AsyncRelayCommand? _refreshCommand;
+        private RelayCommand? _openNewCommand;
 
         protected AssetRootNodeViewModelBase(ContainerNodeViewModel parent)
             : base(parent, true)
@@ -24,7 +24,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             Messenger.Register<AssetRootNodeViewModelBase<TResource>, UpdateOrCreateNodeMessage<TResource, CosmosContainer>>(this, static (r, m) => r.InnerOnUpdateOrCreateNodeMessage(m));
         }
 
-        public string Name { get; protected set; }
+        public string Name { get; protected set; } = string.Empty;
 
         public new ContainerNodeViewModel Parent
         {
@@ -61,8 +61,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         where TResource : ICosmosResource
         where TParent : AssetRootNodeViewModelBase<TResource>
     {
-        private RelayCommand _openCommand;
-        private RelayCommand _deleteCommand;
+        private RelayCommand? _openCommand;
+        private RelayCommand? _deleteCommand;
 
         protected AssetNodeViewModelBase(TParent parent, TResource resource)
             : base(parent, false)

@@ -75,7 +75,7 @@ namespace CosmosDbExplorer.ViewModels
         public bool CanEditName { get; protected set; }
         public string? PermissionId { get; set; }
         public CosmosPermissionMode PermissionMode { get; set; }
-        public string Container { get; set; }
+        public string Container { get; set; } = string.Empty;
         public string? ResourcePartitionKey { get; set; }
 
         public CosmosPermission Permission { get; protected set; }
@@ -166,13 +166,18 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var result = await _userService.SavePermissionAsync(Node.Parent.User, permission, Container, new System.Threading.CancellationToken());
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8601 // Possible null reference assignment.
                 Header = result.Items.Id;
+
                 Node.Permission = result.Items;
                 ContentId = Node.ContentId;
 
                 OnPropertyChanged(nameof(IsNewDocument));
                 Node.Parent.RefreshCommand.Execute(null);
                 IsDirty = false;
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
             catch (Exception ex)
             {

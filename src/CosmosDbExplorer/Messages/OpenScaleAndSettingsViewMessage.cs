@@ -13,7 +13,7 @@ namespace CosmosDbExplorer.Messages
 
     public class OpenDatabaseScaleViewMessage : OpenTabMessageBase<DatabaseScaleNodeViewModel>
     {
-        public OpenDatabaseScaleViewMessage(DatabaseScaleNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer container)
+        public OpenDatabaseScaleViewMessage(DatabaseScaleNodeViewModel? node, CosmosConnection? connection, CosmosDatabase? database, CosmosContainer? container)
             : base(node, connection, database, container)
         {
         }

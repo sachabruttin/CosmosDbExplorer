@@ -216,10 +216,10 @@
                                            Icon="{StaticResource AddConnectionIcon}" 
                                            KeyTip="A"/>
                             <Fluent:BackstageTabItem
-                                Tag="CosmosDbExplorer.ViewModels.SettingsViewModel"
+                                Tag="{x:Type viewmodels:SettingsViewModel}"
                                 Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabSettingsHeader}" />
                             <Fluent:BackstageTabItem
-                                Tag="CosmosDbExplorer.ViewModels.AboutViewModel"
+                                Tag="{x:Type viewmodels:AboutViewModel}"
                                 Header="{x:Static properties:Resources.ShellPageRibbonBackstageTabAboutHeader}" />
                         </Fluent:BackstageTabControl>
                     </Fluent:Backstage>

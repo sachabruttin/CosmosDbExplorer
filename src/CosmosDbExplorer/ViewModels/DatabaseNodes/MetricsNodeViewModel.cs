@@ -7,7 +7,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class MetricsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
-        private RelayCommand _openCommand;
+        private RelayCommand? _openCommand;
 
         public MetricsNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)

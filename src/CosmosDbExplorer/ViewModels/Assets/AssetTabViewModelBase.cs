@@ -35,7 +35,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             Header = GetDefaultHeader();
             Title = GetDefaultTitle();
 
-            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            if (nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
             {
                 throw new NullReferenceException("Node context is not correctly initialized!");
             }
@@ -44,10 +44,12 @@ namespace CosmosDbExplorer.ViewModels.Assets
             Connection = nodeContext.Connection;
             Container = nodeContext.Container;
             AccentColor = Connection.AccentColor;
-
-            //var databaseNode = ((DatabaseNodes.DatabaseNodeViewModel)Node.Parent.Parent.Parent);
             ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
-            SetInformation(Node.Resource);
+
+            if (Node is not null)
+            {
+                SetInformation(Node.Resource);
+            }
         }
 
         protected abstract string GetDefaultHeader();
@@ -64,7 +66,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         [OnChangedMethod(nameof(UpdateCommandStatus))]
         public string Content { get; set; }
 
-        public TNode Node { get; protected set; }
+        public TNode? Node { get; protected set; }
         
         protected void SetInformation(TResource? resource)
         {
@@ -105,7 +107,10 @@ namespace CosmosDbExplorer.ViewModels.Assets
             }
             else
             {
-                SetInformation(Node.Resource);
+                if (Node is not null)
+                {
+                    SetInformation(Node.Resource);
+                }
             }
         }
 
@@ -143,7 +148,10 @@ namespace CosmosDbExplorer.ViewModels.Assets
                 if (confirm)
                 {
                     await DeleteAsyncImpl();
-                    Messenger.Send(new RemoveNodeMessage(AltLink));
+                    if (AltLink is not null)
+                    {
+                        Messenger.Send(new RemoveNodeMessage(AltLink));
+                    }
                     Messenger.Send(new CloseDocumentMessage(this));
                 }
             });

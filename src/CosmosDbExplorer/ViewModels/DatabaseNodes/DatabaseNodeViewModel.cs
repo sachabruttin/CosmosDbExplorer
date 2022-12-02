@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
-using CosmosDbExplorer.Views;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -15,11 +16,10 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class DatabaseNodeViewModel : ResourceNodeViewModelBase<ConnectionNodeViewModel>
     {
-        private RelayCommand _addNewCollectionCommand;
-        private AsyncRelayCommand _deleteDatabaseCommand;
+        private RelayCommand? _addNewCollectionCommand;
+        private AsyncRelayCommand? _deleteDatabaseCommand;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRightPaneService _rightPaneService;
-        private readonly IWindowManagerService _windowManagerService;
         private readonly IDialogService _dialogService;
         private readonly CosmosContainerService _containerService;
         private readonly CosmosDatabaseService _databaseService;
@@ -29,7 +29,6 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             _serviceProvider = serviceProvider;
             _rightPaneService = _serviceProvider.GetRequiredService<IRightPaneService>();
-            _windowManagerService = _serviceProvider.GetRequiredService<IWindowManagerService>();
             _dialogService = _serviceProvider.GetRequiredService<IDialogService>();
             _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Parent.Connection, database);
             _databaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Parent.Connection);

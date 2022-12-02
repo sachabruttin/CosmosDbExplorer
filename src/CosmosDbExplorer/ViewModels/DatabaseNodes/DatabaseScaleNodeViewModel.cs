@@ -7,7 +7,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class DatabaseScaleNodeViewModel : TreeViewItemViewModel<DatabaseNodeViewModel>, IContent, IHaveOpenCommand
     {
-        private RelayCommand _openCommand;
+        private RelayCommand? _openCommand;
 
         public DatabaseScaleNodeViewModel(DatabaseNodeViewModel parent)
             : base(parent, false)

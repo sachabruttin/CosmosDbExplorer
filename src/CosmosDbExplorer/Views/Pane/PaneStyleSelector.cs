@@ -11,17 +11,12 @@ namespace CosmosDbExplorer.Views.Pane
 
         public override Style SelectStyle(object item, DependencyObject container)
         {
-            if (item is ToolViewModel)
+            return item switch
             {
-                return ToolStyle;
-            }
-
-            if (item is PaneViewModelBase)
-            {
-                return DocumentStyle;
-            }
-
-            return base.SelectStyle(item, container);
+                ToolViewModel => ToolStyle ?? base.SelectStyle(item, container),
+                PaneViewModelBase => DocumentStyle ?? base.SelectStyle(item, container),
+                _ => base.SelectStyle(item, container)
+            };
         }
     }
 }

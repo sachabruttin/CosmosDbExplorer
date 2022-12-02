@@ -114,7 +114,9 @@ namespace CosmosDbExplorer.ViewModels
                 {
                     var response = await _cosmosDocumentService.GetDocumentAsync(SelectedDocument, _documentRequestOptions, new CancellationToken());
                     _currentDocument = response.Items;
+#pragma warning disable CS8604 // Possible null reference argument.
                     _currentCosmosDocument = CosmosDocument.CreateFrom(response.Items, Container.PartitionKeyJsonPath);
+#pragma warning restore CS8604 // Possible null reference argument.
                     SetStatusBar(new StatusBarInfo(response));
 
                     EditorViewModel.SetText(_currentDocument, HideSystemProperties);
@@ -281,9 +283,12 @@ namespace CosmosDbExplorer.ViewModels
                 ContinuationToken = result.ContinuationToken;
                 RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
 
-                foreach (var document in result.Items)
+                if (result.Items is not null)
                 {
-                    Documents.Add(new CheckedItem<ICosmosDocument>(document));
+                    foreach (var document in result.Items)
+                    {
+                        Documents.Add(new CheckedItem<ICosmosDocument>(document));
+                    }
                 }
             }
             catch (Exception ex)
@@ -348,7 +353,9 @@ namespace CosmosDbExplorer.ViewModels
 
                 SetStatusBar(new StatusBarInfo(response));
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 _currentCosmosDocument = CosmosDocument.CreateFrom(response.Items, Container?.PartitionKeyJsonPath);
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 if (SelectedDocument == null)
                 {

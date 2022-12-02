@@ -2,6 +2,6 @@
 {
     public interface ISystemService
     {
-        void OpenInWebBrowser(string url);
+        void OpenInWebBrowser(string? url);
     }
 }

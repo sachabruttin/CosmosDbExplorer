@@ -51,7 +51,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         protected override Task<CosmosResult> DeleteAsyncImpl()
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             return _scriptService.DeleteUserDefinedFunctionAsync(Node.Resource);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
     }
 }

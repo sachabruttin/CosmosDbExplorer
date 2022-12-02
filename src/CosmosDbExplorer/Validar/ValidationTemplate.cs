@@ -25,11 +25,15 @@ namespace CosmosDbExplorer.Validar
 
         private void Validate(object? sender, PropertyChangedEventArgs e)
         {
-            _validationResult = _validator.Validate(new ValidationContext<T>((T)sender));
-            //foreach (var error in _validationResult.Errors)
-            //{
-            //    RaiseErrorsChanged(error.PropertyName);
-            //}
+            if (_validationResult != null && sender is not null)
+            {
+                _validationResult = _validator.Validate(new ValidationContext<T>((T)sender));
+                //foreach (var error in _validationResult.Errors)
+                //{
+                //    RaiseErrorsChanged(error.PropertyName);
+                //}
+            }
+
         }
 
         //public IEnumerable GetErrors(string propertyName)

@@ -20,8 +20,6 @@ namespace CosmosDbExplorer.ViewModels.Assets
         where TNode : TreeViewItemViewModel, IAssetNode<TResource>
         where TResource : ICosmosScript
     {
-        //private readonly IDialogService _dialogService;
-        //private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
         private RelayCommand? _discardCommand;
         private AsyncRelayCommand? _saveCommand;

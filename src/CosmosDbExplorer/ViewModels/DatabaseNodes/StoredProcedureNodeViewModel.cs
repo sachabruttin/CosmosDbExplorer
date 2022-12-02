@@ -8,32 +8,34 @@ using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
+using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Core.Contracts.Services;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class StoredProcedureRootNodeViewModel : AssetRootNodeViewModelBase<CosmosStoredProcedure>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly CosmosScriptService _scriptService;
 
         public StoredProcedureRootNodeViewModel(ContainerNodeViewModel parent, IServiceProvider serviceProvider)
             : base(parent)
         {
             Name = "Stored Procedures";
             _serviceProvider = serviceProvider;
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
         }
 
         protected override async Task LoadChildren(CancellationToken token)
         {
             IsLoading = true;
 
-            var service = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
-
-            var function = await service.GetStoredProceduresAsync(token);
+            var function = await _scriptService.GetStoredProceduresAsync(token);
 
             foreach (var func in function)
             {
-                //await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
-                Children.Add(new StoredProcedureNodeViewModel(this, func));
+                var vm = ActivatorUtilities.CreateInstance<StoredProcedureNodeViewModel>(_serviceProvider, this, func, _scriptService);
+                Children.Add(vm);
             }
 
             IsLoading = false;
@@ -48,7 +50,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             if (message.IsNewResource)
             {
-                var item = new StoredProcedureNodeViewModel(this, message.Resource);
+                var item = ActivatorUtilities.CreateInstance<StoredProcedureNodeViewModel>(_serviceProvider, this, message.Resource, _scriptService);
                 Children.AddSorted(item, i => ((StoredProcedureNodeViewModel)i).Name);
             }
             else
@@ -65,24 +67,14 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
     public class StoredProcedureNodeViewModel : AssetNodeViewModelBase<CosmosStoredProcedure, StoredProcedureRootNodeViewModel>
     {
-        public StoredProcedureNodeViewModel(StoredProcedureRootNodeViewModel parent, CosmosStoredProcedure resource)
-            : base(parent, resource)
+        public StoredProcedureNodeViewModel(StoredProcedureRootNodeViewModel parent, CosmosStoredProcedure resource, ICosmosScriptService cosmosScriptService, IDialogService dialogService)
+            : base(parent, resource, cosmosScriptService, dialogService)
         {
         }
 
         protected override Task DeleteCommandImpl()
         {
-            throw new System.NotImplementedException();
-            //return DialogService.ShowMessage("Are sure you want to delete this Stored Procedure?", "Delete", null, null,
-            //    async confirm =>
-            //    {
-            //        if (confirm)
-            //        {
-            //            await DbService.DeleteStoredProcedureAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
-            //            await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-            //            MessengerInstance.Send(new CloseDocumentMessage(ContentId));
-            //        }
-            //    });
+            return ScriptService.DeleteStoredProcedureAsync(Resource);
         }
 
         protected override Task OpenCommandImp()

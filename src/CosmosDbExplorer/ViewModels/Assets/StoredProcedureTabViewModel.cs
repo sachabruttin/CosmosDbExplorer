@@ -151,7 +151,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         //private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
 
 
-        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute, ExecuteCommandCanExecute);
+        public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute/*, ExecuteCommandCanExecute*/);
 
         private async Task ExecuteCommandExecute()
         {

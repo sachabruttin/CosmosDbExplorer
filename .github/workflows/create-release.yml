@@ -216,6 +216,7 @@ jobs:
     - run: |
         git config user.name github-actions
         git config user.email github-action@github.com
+        git add .
         git commit -m "updated autoupdate.json to version $GIT_TAG_NAME"
         git push
       

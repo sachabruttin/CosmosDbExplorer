@@ -4,15 +4,15 @@ using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Contracts;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public abstract class ResourceNodeViewModelBase<TParent> : TreeViewItemViewModel<TParent>, ICanRefreshNode, IContent
         where TParent : TreeViewItemViewModel
     {
-        private RelayCommand _refreshCommand;
-        private RelayCommand _copySelfLinkToClipboardCommand;
+        private RelayCommand? _refreshCommand;
+        private RelayCommand? _copySelfLinkToClipboardCommand;
 
         protected ResourceNodeViewModelBase(ICosmosResource resource, TParent parent, bool lazyLoadChildren)
             : base(parent, lazyLoadChildren)

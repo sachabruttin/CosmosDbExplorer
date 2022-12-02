@@ -4,7 +4,7 @@ using System.Linq;
 //using System.Reactive.Linq;
 using FluentValidation;
 using ICSharpCode.AvalonEdit.Document;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using Validar;
 
@@ -13,7 +13,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
     [InjectValidation]
     public class StoredProcParameterViewModel : ObservableObject, IDisposable
     {
-        private readonly IDisposable _textChangedObservable;
+        //private readonly IDisposable _textChangedObservable;
 
         public StoredProcParameterViewModel()
         {
@@ -35,11 +35,11 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public StoredProcParameterKind Kind { get; set; }
 
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
-        public string Document { get; set; }
+        public string Document { get; set; } = string.Empty;
 
-        public object GetValue()
+        public object? GetValue()
         {
             return Kind switch
             {
@@ -57,11 +57,11 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             if (!_disposedValue)
             {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                    _textChangedObservable.Dispose();
-                }
+                //if (disposing)
+                //{
+                //    // TODO: dispose managed state (managed objects).
+                //    _textChangedObservable.Dispose();
+                //}
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
@@ -74,6 +74,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

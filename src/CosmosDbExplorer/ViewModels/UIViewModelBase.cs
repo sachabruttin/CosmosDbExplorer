@@ -1,6 +1,6 @@
 ﻿using CosmosDbExplorer.Contracts.Services;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels

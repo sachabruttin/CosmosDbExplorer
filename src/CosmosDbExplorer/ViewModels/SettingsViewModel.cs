@@ -7,8 +7,8 @@ using CosmosDbExplorer.Models;
 using CosmosDbExplorer.Properties;
 
 using Microsoft.Extensions.Options;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {

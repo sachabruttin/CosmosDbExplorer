@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,23 +11,27 @@ using CosmosDbExplorer.Contracts.Views;
 
 using MahApps.Metro.Controls;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace CosmosDbExplorer.Services
 {
     public class WindowManagerService : IWindowManagerService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IPageService _pageService;
+        private readonly IApplicationInfoService _applicationInfoService;
 
         public Window MainWindow
             => Application.Current.MainWindow;
 
-        public WindowManagerService(IServiceProvider serviceProvider, IPageService pageService)
+        public WindowManagerService(IServiceProvider serviceProvider, IPageService pageService, IApplicationInfoService applicationInfoService)
         {
             _serviceProvider = serviceProvider;
             _pageService = pageService;
+            _applicationInfoService = applicationInfoService;
         }
 
-        public void OpenInNewWindow(string key, object? parameter = null)
+        public void OpenInNewWindow(Type key, object? parameter = null)
         {
             var window = GetWindow(key);
             if (window != null)
@@ -37,7 +42,7 @@ namespace CosmosDbExplorer.Services
             {
                 window = new MetroWindow()
                 {
-                    Title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetEntryAssembly(), typeof(AssemblyTitleAttribute), false))?.Title ?? "error retrieving assembly title",
+                    Title = _applicationInfoService.GetTitle(),
                     Style = Application.Current.FindResource("CustomMetroWindow") as Style
                 };
                 var frame = new Frame()
@@ -55,9 +60,9 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        public bool? OpenInDialog(string key, object? parameter = null)
+        public bool? OpenInDialog(Type key, object? parameter = null)
         {
-            var shellWindow = _serviceProvider.GetService(typeof(IShellDialogWindow)) as Window;
+            var shellWindow = (Window)_serviceProvider.GetRequiredService<IShellDialogWindow>();
             var frame = ((IShellDialogWindow)shellWindow).GetDialogFrame();
             frame.Navigated += OnNavigated;
             shellWindow.Closed += OnWindowClosed;
@@ -66,12 +71,12 @@ namespace CosmosDbExplorer.Services
             return shellWindow.ShowDialog();
         }
 
-        public Window? GetWindow(string key)
+        public Window? GetWindow(Type key)
         {
             foreach (Window window in Application.Current.Windows)
             {
                 var dataContext = window.GetDataContext();
-                if (dataContext?.GetType().FullName == key)
+                if (dataContext?.GetType() == key)
                 {
                     return window;
                 }
@@ -92,7 +97,7 @@ namespace CosmosDbExplorer.Services
             }
         }
 
-        private void OnWindowClosed(object sender, EventArgs e)
+        private void OnWindowClosed(object? sender, EventArgs e)
         {
             if (sender is Window window)
             {

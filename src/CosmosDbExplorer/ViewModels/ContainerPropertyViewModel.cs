@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using CosmosDbExplorer.Contracts.Services;
@@ -11,9 +12,9 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Validar;
 
@@ -26,10 +27,10 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
 
-        private CosmosContainerService _containerService;
-        private AsyncRelayCommand _saveCommand;
+        private readonly CosmosContainerService _containerService;
+        private AsyncRelayCommand? _saveCommand;
 
-        public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
+        public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, object parameter)
             : base(uiServices)
         {
             IsFixedStorage = true;
@@ -38,6 +39,14 @@ namespace CosmosDbExplorer.ViewModels
             //_dbService = dbService;
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
+
+            var (connection, database) = ((CosmosConnection, CosmosDatabase))parameter;
+            Connection = connection;
+            Database = database;
+
+            IsServerless = database.IsServerless;
+
+            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Connection, Database);
         }
 
         public Action<bool?>? SetResult { get; set; }
@@ -47,7 +56,7 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosConnection Connection { get; protected set; }
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
-        public string ContainerId { get; set; }
+        public string ContainerId { get; set; } = string.Empty;
 
         public bool IsFixedStorage { get; set; }
 
@@ -72,7 +81,7 @@ namespace CosmosDbExplorer.ViewModels
         public bool ProvisionThroughput { get; set; } = false;
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
-        public string PartitionKey { get; set; }
+        public string PartitionKey { get; set; } = string.Empty;
 
         public bool IsThroughputAutoscale { get; set; } = true;
 
@@ -138,18 +147,10 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnNavigatedFrom()
         {
-
         }
 
         public void OnNavigatedTo(object parameter)
         {
-            var (connection, database) = ((CosmosConnection, CosmosDatabase))parameter;
-            Connection = connection;
-            Database = database;
-
-            IsServerless = database.IsServerless;
-
-            _containerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, Connection, Database);
         }
 
         private void OnClose()

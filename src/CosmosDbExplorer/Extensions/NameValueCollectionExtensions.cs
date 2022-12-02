@@ -6,9 +6,9 @@ namespace CosmosDbExplorer.Extensions
 {
     public static class NameValueCollectionExtensions
     {
-        public static Dictionary<string, string> ToDictionary(this NameValueCollection source)
-        {
-            return source.AllKeys.ToDictionary(k => k, k => source[k]);
-        }
+        //public static Dictionary<string, string> ToDictionary(this NameValueCollection source)
+        //{
+        //    return source.AllKeys.ToDictionary(k => k, k => source[k]);
+        //}
     }
 }

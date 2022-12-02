@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CosmosDbExplorer.Models
 {
@@ -20,7 +20,7 @@ namespace CosmosDbExplorer.Models
 
         public StatusBarItemContext DataContext { get; set; }
         public StatusBarItemType Type { get; set; }
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public Dock Dock { get; set; }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace CosmosDbExplorer.Contracts.Services
 {
@@ -6,10 +7,10 @@ namespace CosmosDbExplorer.Contracts.Services
     {
         Window MainWindow { get; }
 
-        void OpenInNewWindow(string pageKey, object? parameter = null);
+        void OpenInNewWindow(Type pageKey, object? parameter = null);
 
-        bool? OpenInDialog(string pageKey, object? parameter = null);
+        bool? OpenInDialog(Type pageKey, object? parameter = null);
 
-        Window GetWindow(string pageKey);
+        Window? GetWindow(Type pageKey);
     }
 }

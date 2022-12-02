@@ -3,11 +3,11 @@
 
     public class RemoveNodeMessage
     {
-        public RemoveNodeMessage(string altLink)
+        public RemoveNodeMessage(string? altLink)
         {
             AltLink = altLink;
         }
 
-        public string AltLink { get; }
+        public string? AltLink { get; init; }
     }
 }

@@ -36,7 +36,7 @@ namespace CosmosDbExplorer.Behaviors
             }
         }
 
-        private void SelectionChanged(object sender, EventArgs e)
+        private void SelectionChanged(object? sender, EventArgs e)
         {
             if (sender is TextArea textarea)
             {

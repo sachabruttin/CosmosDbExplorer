@@ -5,8 +5,10 @@ namespace CosmosDbExplorer.Contracts.Services
 {
     public interface IPageService
     {
-        Type GetPageType(string key);
+        Type GetPageType(Type key);
 
-        Page GetPage(string key);
+        Page GetPage(Type key);
+
+        Page GetPage(Type key, object parameters);
     }
 }

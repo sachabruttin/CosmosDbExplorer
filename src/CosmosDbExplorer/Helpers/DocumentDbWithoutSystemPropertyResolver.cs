@@ -16,7 +16,7 @@ namespace CosmosDbExplorer.Helpers
             {
                 prop.NullValueHandling = NullValueHandling.Ignore;
             }
-            else if (systemResourceNames.Contains(prop.PropertyName))
+            else if (prop.PropertyName is not null && systemResourceNames.Contains(prop.PropertyName))
             {
                 prop.Readable = false;
             }

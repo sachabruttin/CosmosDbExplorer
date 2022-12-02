@@ -1,13 +1,13 @@
 ﻿using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class MetricsNodeViewModel : TreeViewItemViewModel<ContainerNodeViewModel>, IHaveContainerNodeViewModel, IContent, IHaveOpenCommand
     {
-        private RelayCommand _openCommand;
+        private RelayCommand? _openCommand;
 
         public MetricsNodeViewModel(ContainerNodeViewModel parent)
             : base(parent, false)

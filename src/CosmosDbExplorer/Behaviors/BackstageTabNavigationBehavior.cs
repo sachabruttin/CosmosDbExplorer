@@ -14,7 +14,7 @@ namespace CosmosDbExplorer.Behaviors
 {
     public class BackstageTabNavigationBehavior : Behavior<BackstageTabControl>
     {
-        private IPageService _pageService;
+        private IPageService? _pageService;
 
         public BackstageTabNavigationBehavior()
         {
@@ -39,6 +39,11 @@ namespace CosmosDbExplorer.Behaviors
 
         private void OnSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (_pageService is null)
+            {
+                throw new NullReferenceException("Please call method Initialize() on the BackstageTabNavigationBehavior instance!");
+            }
+
             if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is BackstageTabItem oldItem)
             {
                 var content = oldItem.Content as Frame;
@@ -61,7 +66,7 @@ namespace CosmosDbExplorer.Behaviors
 
                 frame.Navigated += OnNavigated;
                 tabItem.Content = frame;
-                var page = _pageService.GetPage(tabItem.Tag as string);
+                var page = _pageService.GetPage((Type)tabItem.Tag);
                 frame.Navigate(page);
             }
         }

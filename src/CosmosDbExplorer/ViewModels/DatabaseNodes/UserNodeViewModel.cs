@@ -7,8 +7,8 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
 
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -29,9 +29,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
             _cosmosUserService = cosmosUserService;
         }
 
-        public string Name => User.Id;
+        public string Name => User.Id ?? "n/a";
 
-        public string ContentId => User.SelfLink ?? "NewUser";
+        public string ContentId => User.SelfLink ?? "n/a";
 
         protected override async Task LoadChildren(CancellationToken token)
         {

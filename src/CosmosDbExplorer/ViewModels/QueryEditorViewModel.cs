@@ -19,7 +19,7 @@ using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json.Linq;
 using PropertyChanged;
 using Validar;
@@ -30,25 +30,24 @@ namespace CosmosDbExplorer.ViewModels
     public class QueryEditorViewModel : PaneWithZoomViewModel<ContainerNodeViewModel>
         , IHaveSystemProperties
     {
-        private CosmosQueryResult<IReadOnlyCollection<JToken>>? _queryResult;
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly StatusBarItem _queryInformationStatusBarItem;
         private readonly StatusBarItem _progessBarStatusBarItem;
-        private CancellationTokenSource? _cancellationTokenSource;
-
-        private RelayCommand _saveLocalCommand;
-        private RelayCommand<string> _saveQueryCommand;
-        private RelayCommand _openQueryCommand;
-
-        private ICosmosDocumentService _documentService;
-
+        private readonly ICosmosDocumentService _documentService;
         private readonly ICosmosQuery _query;
-        private AsyncRelayCommand _goToNextPageCommand;
-        private AsyncRelayCommand _executeCommand;
-        private RelayCommand _cancelCommand;
 
-        public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices)
+        private CancellationTokenSource? _cancellationTokenSource;
+        private CosmosQueryResult<IReadOnlyCollection<JToken>>? _queryResult;
+
+        private RelayCommand? _saveLocalCommand;
+        private RelayCommand<string>? _saveQueryCommand;
+        private AsyncRelayCommand? _goToNextPageCommand;
+        private AsyncRelayCommand? _executeCommand;
+        private RelayCommand? _openQueryCommand;
+        private RelayCommand? _cancelCommand;
+
+        public QueryEditorViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
@@ -64,23 +63,29 @@ namespace CosmosDbExplorer.ViewModels
             StatusBarItems.Add(_queryInformationStatusBarItem);
             _progessBarStatusBarItem = new StatusBarItem(new StatusBarItemContextCancellableCommand { Value = CancelCommand, IsVisible = IsRunning, IsCancellable = true }, StatusBarItemType.ProgessBar, "Progress", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_progessBarStatusBarItem);
-        }
 
-        public override void Load(string contentId, NodeContext<ContainerNodeViewModel> nodeContext)
-        {
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null || nodeContext.Data is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
             ContentId = Guid.NewGuid().ToString();
             Node = nodeContext.Node;
             Header = "SQL Query";
             Connection = nodeContext.Connection;
             Container = nodeContext.Container;
 
-            _documentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(_serviceProvider, Connection, nodeContext.Database, Container);
+            _documentService = ActivatorUtilities.CreateInstance<CosmosDocumentService>(serviceProvider, Connection, nodeContext.Database, Container);
 
             Content = GenericQuery.GetQuery((GenericQueryTypes)nodeContext.Data, Container);
 
-            //var split = Container.SelfLink.Split(new char[] { '/' });
             ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}/{Container.Id}";
             AccentColor = Node.Parent.Parent.Connection.AccentColor;
+        }
+
+        public override Task InitializeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public ContainerNodeViewModel Node { get; protected set; }
@@ -93,7 +98,7 @@ namespace CosmosDbExplorer.ViewModels
         public string Content { get; set; }
 
         [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
-        public string SelectedText { get; set; }
+        public string? SelectedText { get; set; }
 
         [OnChangedMethod(nameof(NotifyCanExecuteChanged))]
         public bool IsDirty { get; set; }
@@ -312,11 +317,11 @@ namespace CosmosDbExplorer.ViewModels
             _dialogService?.ShowSaveFileDialog(settings, saveFileAsyc);
         }
 
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
 
         public RelayCommand<string> SaveQueryCommand => _saveQueryCommand ??= new(SaveQueryCommandExecute, param => !IsRunning && !string.IsNullOrEmpty(Content));
 
-        private async void SaveQueryCommandExecute(string param)
+        private async void SaveQueryCommandExecute(string? param)
         {
             if (FileName == null || param == "SaveAs")
             {

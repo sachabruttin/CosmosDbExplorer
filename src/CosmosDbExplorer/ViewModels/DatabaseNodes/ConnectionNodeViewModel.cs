@@ -13,9 +13,9 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
@@ -27,13 +27,13 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         private readonly IRightPaneService _rightPaneService;
         private readonly IDialogService _dialogService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private RelayCommand _addNewDatabaseCommand;
-        private RelayCommand _editConnectionCommand;
-        private RelayCommand _refreshCommand;
-        private AsyncRelayCommand _removeConnectionCommand;
+        private RelayCommand? _addNewDatabaseCommand;
+        private RelayCommand? _editConnectionCommand;
+        private RelayCommand? _refreshCommand;
+        private AsyncRelayCommand? _removeConnectionCommand;
 
         public ConnectionNodeViewModel(IServiceProvider serviceProvider, CosmosConnection connection)
-            : base(null, true)
+            : base(lazyLoadChildren: true)
         {
             _serviceProvider = serviceProvider;
             _dialogService = serviceProvider.GetRequiredService<IDialogService>();
@@ -55,9 +55,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosConnection Connection { get; set; }
 
-        public IList<CosmosDatabase> Databases { get; protected set; }
+        public IList<CosmosDatabase> Databases { get; protected set; } = Array.Empty<CosmosDatabase>();
 
-        public string Name => Connection.DatabaseUri.ToString();
+        public string Name => Connection.DatabaseUri?.ToString() ?? string.Empty;
 
         protected override async Task LoadChildren(CancellationToken token)
         {
@@ -91,12 +91,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         private void EditConnectionCommandExecute()
         {
-            var vmName = typeof(AccountSettingsViewModel)?.FullName;
-
-            if (!string.IsNullOrEmpty(vmName))
-            {
-                _windowManagerService.OpenInDialog(vmName, Connection);
-            }
+            var vmName = typeof(AccountSettingsViewModel);
+            _windowManagerService.OpenInDialog(vmName, Connection);
         }
 
         public AsyncRelayCommand RemoveConnectionCommand => _removeConnectionCommand ??= new(RemoveConnectionCommandExecute);
@@ -122,14 +118,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         private void AddNewDatabaseCommandExecute()
         {
-            var vmName = typeof(DatabasePropertyViewModel).FullName;
-
-            if (string.IsNullOrEmpty(vmName))
-            {
-                return;
-            }
-
-            _rightPaneService.OpenInRightPane(vmName, Connection);
+            var vmName = typeof(DatabasePropertyViewModel);
+            _rightPaneService.OpenInRightPane(vmName, new[] { Connection });
         }
 
         public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecuteAsync);

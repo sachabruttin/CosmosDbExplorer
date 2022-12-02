@@ -17,7 +17,7 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 using PropertyChanged;
 
@@ -28,18 +28,16 @@ namespace CosmosDbExplorer.ViewModels
     [InjectValidation]
     public class PermissionEditViewModel : PaneViewModel<PermissionNodeViewModel>, IAssetTabCommand
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private AsyncRelayCommand _saveCommand;
-        private AsyncRelayCommand _deleteCommand;
-        private RelayCommand _discardCommand;
-        private RelayCommand _copyToClipboardCommand;
-        private CosmosUserService _userService;
+        private readonly CosmosUserService _userService;
+        private AsyncRelayCommand? _saveCommand;
+        private AsyncRelayCommand? _deleteCommand;
+        private RelayCommand? _discardCommand;
+        private RelayCommand? _copyToClipboardCommand;
 
-        public PermissionEditViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
-            : base(uiServices)
+        public PermissionEditViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, string contentId, NodeContext<PermissionNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
-            _serviceProvider = serviceProvider;
             _dialogService = dialogService;
             Header = "New Permission";
             Title = "Permission";
@@ -55,12 +53,29 @@ namespace CosmosDbExplorer.ViewModels
 
                 OnIsDirtyChanged();
             };
+
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            ContentId = contentId;
+            Node = nodeContext.Node;
+            Permission = Node.Permission;
+            Header = Node.Name;
+            Title = "Permission";
+            AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
+            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{Node.Name}";
+
+            Containers = new ObservableCollection<string>(Node.Parent.Parent.Parent.Children.OfType<ContainerNodeViewModel>().Select(c => c.Name));
+
+            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(serviceProvider, nodeContext.Connection, nodeContext.Database);
         }
 
         public bool CanEditName { get; protected set; }
         public string? PermissionId { get; set; }
         public CosmosPermissionMode PermissionMode { get; set; }
-        public string Container { get; set; }
+        public string? Container { get; set; }
         public string? ResourcePartitionKey { get; set; }
 
         public CosmosPermission Permission { get; protected set; }
@@ -112,40 +127,15 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, NodeContext<PermissionNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            if (nodeContext.Node is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Node));
-            }
-
-            if (nodeContext.Connection is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Connection));
-            }
-
-            if (nodeContext.Database is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Database));
-            }
-
-            ContentId = contentId;
-            Node = nodeContext.Node;
-            Permission = Node.Permission ?? new CosmosPermission();
-            Header = Node.Name ?? "New Permission";
-            Title = "Permission";
-            AccentColor = Node.Parent.Parent.Parent.Parent.Connection.AccentColor;
-            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{Node.Name}";
-
-            Containers = new ObservableCollection<string>(Node.Parent.Parent.Parent.Children.OfType<ContainerNodeViewModel>().Select(c => c.Name));
-
-            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
             SetInformation();
+            return Task.CompletedTask;
         }
 
         public PermissionNodeViewModel Node { get; protected set; }
 
-        public ObservableCollection<string>? Containers { get; protected set; }
+        public ObservableCollection<string> Containers { get; protected set; }
 
         public RelayCommand CopyToClipboardCommand => _copyToClipboardCommand ??= new(() => System.Windows.Clipboard.SetText(Permission?.Token), () => !string.IsNullOrEmpty(Permission?.Token));
 
@@ -155,6 +145,11 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecute()
         {
+            if (Container is null)
+            {
+                return;
+            }
+
             CosmosPermission permission;
             if (IsNewDocument)
             {
@@ -176,13 +171,18 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var result = await _userService.SavePermissionAsync(Node.Parent.User, permission, Container, new System.Threading.CancellationToken());
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8601 // Possible null reference assignment.
                 Header = result.Items.Id;
+
                 Node.Permission = result.Items;
                 ContentId = Node.ContentId;
 
                 OnPropertyChanged(nameof(IsNewDocument));
                 Node.Parent.RefreshCommand.Execute(null);
                 IsDirty = false;
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
             catch (Exception ex)
             {

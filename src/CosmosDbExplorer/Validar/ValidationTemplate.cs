@@ -11,10 +11,10 @@ namespace CosmosDbExplorer.Validar
     public class ValidationTemplate<T> : IDataErrorInfo//, INotifyDataErrorInfo
         where T : class, INotifyPropertyChanged
     {
-        private readonly INotifyPropertyChanged _target;
+        //private readonly INotifyPropertyChanged _target;
         private readonly IValidator _validator;
         private ValidationResult _validationResult;
-        private readonly ValidationContext<T> _validationContext;
+        //private readonly ValidationContext<T> _validationContext;
 
         public ValidationTemplate(T target)
         {
@@ -25,11 +25,15 @@ namespace CosmosDbExplorer.Validar
 
         private void Validate(object? sender, PropertyChangedEventArgs e)
         {
-            _validationResult = _validator.Validate(new ValidationContext<T>(sender as T));
-            //foreach (var error in _validationResult.Errors)
-            //{
-            //    RaiseErrorsChanged(error.PropertyName);
-            //}
+            if (_validationResult != null && sender is not null)
+            {
+                _validationResult = _validator.Validate(new ValidationContext<T>((T)sender));
+                //foreach (var error in _validationResult.Errors)
+                //{
+                //    RaiseErrorsChanged(error.PropertyName);
+                //}
+            }
+
         }
 
         //public IEnumerable GetErrors(string propertyName)

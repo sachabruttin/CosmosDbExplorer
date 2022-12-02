@@ -327,7 +327,7 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Open Documents" Command="{Binding OpenDocumentCommand}">
+                            <MenuItem Header="Open Documents" Command="{Binding OpenCommand}">
                                 <MenuItem.Icon>
                                     <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="16">&#xE7C3;</TextBlock>
                                 </MenuItem.Icon>

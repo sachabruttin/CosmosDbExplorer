@@ -9,8 +9,8 @@ using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Messages;
 
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
@@ -19,8 +19,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         , IContent
         , IHaveOpenCommand
     {
-        private AsyncRelayCommand _refreshCommand;
-        private RelayCommand _openCommand;
+        private AsyncRelayCommand? _refreshCommand;
+        private RelayCommand? _openCommand;
 
         public PermissionNodeViewModel(CosmosPermission permission, UserNodeViewModel parent)
             : base(parent, false)
@@ -30,9 +30,9 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
         public CosmosPermission Permission { get; set; }
 
-        public string Name => Permission?.Id;
+        public string Name => Permission.Id ?? "n/a";
 
-        public string ContentId => Permission?.SelfLink ?? "NewPermission";
+        public string ContentId => Permission.SelfLink ?? "n/a";
 
         public ICommand RefreshCommand => _refreshCommand ??= new(RefreshCommandExecute);
 

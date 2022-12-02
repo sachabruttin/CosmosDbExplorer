@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
@@ -11,10 +10,12 @@ using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Models;
 using CosmosDbExplorer.Services.DialogSettings;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
+
 using FluentValidation;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
+
 using Validar;
 
 namespace CosmosDbExplorer.ViewModels.Assets
@@ -31,9 +32,10 @@ namespace CosmosDbExplorer.ViewModels.Assets
         private readonly StatusBarItem _requestChargeStatusBarItem;
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
+        private readonly CosmosScriptService _scriptService;
 
-        public StoredProcedureTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService)
-            : base(uiServices, dialogService)
+        public StoredProcedureTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IDialogService dialogService, string contentId, NodeContext<StoredProcedureNodeViewModel> nodeContext)
+            : base(uiServices, dialogService, contentId, nodeContext)
         {
             HeaderViewModel = new HeaderEditorViewModel { IsReadOnly = true };
             IconSource = App.Current.FindResource("StoredProcedureIcon");
@@ -42,35 +44,26 @@ namespace CosmosDbExplorer.ViewModels.Assets
             StatusBarItems.Add(_requestChargeStatusBarItem);
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
+
+            if (nodeContext.Connection is null || nodeContext.Database is null || nodeContext.Container is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
         }
 
         protected override string GetDefaultHeader() => "New Stored Procedure";
         protected override string GetDefaultTitle() => "Stored Procedure";
         protected override string GetDefaultContent() => "function storedProcedure(){}";
 
-        public override void Load(string contentId, NodeContext<StoredProcedureNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            if (nodeContext.Connection is null)
-            {
-                throw new ArgumentNullException(nameof(nodeContext.Connection));
-            }
-
-            if (nodeContext.Database is null)
-            {
-                throw new ArgumentNullException(nameof(nodeContext.Database));
-            }
-
-            if (nodeContext.Container is null)
-            {
-                throw new ArgumentNullException(nameof(nodeContext.Container));
-            }
-
-            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, nodeContext.Connection, nodeContext.Database, nodeContext.Container);
-
-            IsCollectionPartitioned = !string.IsNullOrEmpty(nodeContext.Container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
-            base.Load(contentId, nodeContext);
+            IsCollectionPartitioned = !string.IsNullOrEmpty(Container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
 
             UpdateCommandStatus();
+
+            return Task.CompletedTask;
         }
 
         protected override Task<CosmosStoredProcedure> SaveAsyncImpl()
@@ -86,16 +79,18 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         protected override Task<CosmosResult> DeleteAsyncImpl()
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             return _scriptService.DeleteStoredProcedureAsync(Node.Resource);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
-        public string Log { get; protected set; }
+        public string Log { get; protected set; } = string.Empty;
 
         public string? QueryResult { get; set; }
 
         public HeaderEditorViewModel HeaderViewModel { get; set; }
 
-        public string RequestCharge { get; set; }
+        public string RequestCharge { get; set; } = string.Empty;
 
         public void OnRequestChargeChanged()
         {
@@ -108,9 +103,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
             base.OnIsBusyChanged();
         }
-        public string PartitionKey { get; set; }
-
-        private CosmosScriptService _scriptService;
+        public string? PartitionKey { get; set; }
 
         public bool IsCollectionPartitioned { get; protected set; }
 
@@ -131,7 +124,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             item.Dispose();
         }
 
-        private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
+        //private bool RemoveParameterCommandCanExecute(StoredProcParameterViewModel? item) => !IsBusy & !IsDirty;
 
         public RelayCommand<object> BrowseParameterCommand => _browseParameterCommand ??= new(BrowseParameterCommandExecute/*, BrowseParameterCommandCanExecute*/);
 
@@ -155,7 +148,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             //}).ConfigureAwait(false);
         }
 
-        private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
+        //private bool BrowseParameterCommandCanExecute(object? item) => !IsBusy & !IsDirty;
 
 
         public AsyncRelayCommand ExecuteCommand => _executeCommand ??= new AsyncRelayCommand(ExecuteCommandExecute/*, ExecuteCommandCanExecute*/);
@@ -164,7 +157,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
         {
             if (Id is null)
             {
-                throw new NullReferenceException(nameof(Id));
+                return;
             }
 
             QueryResult = null;
@@ -175,7 +168,9 @@ namespace CosmosDbExplorer.ViewModels.Assets
             {
                 IsBusy = true;
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 var result = await _scriptService.ExecuteStoredProcedureAsync(Id, PartitionKey, Parameters.Select(p => p.GetValue()).ToArray());
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 RequestCharge = $"Request Charge: {result.RequestCharge:N2}";
 
                 Log = result.ScriptLog;
@@ -242,7 +237,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
             });
         }
 
-        private bool SaveLocalCommandCanExecute() => !IsBusy && QueryResult is not null;
+        //private bool SaveLocalCommandCanExecute() => !IsBusy && QueryResult is not null;
 
         public RelayCommand GoToNextPageCommand => _goToNextPageCommand ??= new(() => throw new NotImplementedException(), () => false);
 

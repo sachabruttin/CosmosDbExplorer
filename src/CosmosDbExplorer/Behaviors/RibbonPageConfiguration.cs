@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 using Fluent;
 
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CosmosDbExplorer.Behaviors
 {

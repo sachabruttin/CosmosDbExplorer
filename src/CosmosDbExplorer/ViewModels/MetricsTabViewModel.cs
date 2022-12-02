@@ -11,28 +11,39 @@ using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {
     public class MetricsTabViewModel : PaneViewModel<MetricsNodeViewModel>, ICanRefreshTab
     {
         private readonly StatusBarItem _requestChargeStatusBarItem;
-        private readonly IServiceProvider _serviceProvider;
-        private CosmosConnection? _connection;
-        private CosmosContainer? _container;
-        private CosmosContainerService? _cosmosContainerService;
+        private readonly CosmosConnection _connection;
+        private readonly CosmosContainer _container;
+        private readonly CosmosContainerService _cosmosContainerService;
         private AsyncRelayCommand? _refreshCommand;
 
-        public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices)
-            : base(uiServices)
+        public MetricsTabViewModel(IServiceProvider serviceProvider, IUIServices uiServices, string contentId, NodeContext<MetricsNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
             Title = "Collection Metrics";
             Header = Title;
 
             _requestChargeStatusBarItem = new StatusBarItem(new StatusBarItemContext { Value = RequestCharge, IsVisible = IsBusy }, StatusBarItemType.SimpleText, "Request Charge", System.Windows.Controls.Dock.Left);
             StatusBarItems.Add(_requestChargeStatusBarItem);
-            _serviceProvider = serviceProvider;
+
+            if (nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null)
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            _connection = nodeContext.Connection;
+            _container = nodeContext.Container;
+
+            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(serviceProvider, nodeContext.Connection, nodeContext.Database);
+
+            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{nodeContext.Container.Id}";
+            AccentColor = _connection.AccentColor;
         }
 
         public CosmosContainerMetric? Metrics { get; private set; }
@@ -51,33 +62,9 @@ namespace CosmosDbExplorer.ViewModels
             base.OnIsBusyChanged();
         }
 
-        public override async void Load(string contentId, NodeContext<MetricsNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            if (nodeContext.Connection is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Connection));
-            }
-
-            if (nodeContext.Container is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Container));
-            }
-
-            if (nodeContext.Database is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Database));
-            }
-
-            ContentId = contentId;
-            _connection = nodeContext.Connection;
-            _container = nodeContext.Container;
-
-            _cosmosContainerService = ActivatorUtilities.CreateInstance<CosmosContainerService>(_serviceProvider, nodeContext.Connection, nodeContext.Database);
-
-            ToolTip = $"{nodeContext.Connection.Label}/{nodeContext.Database.Id}/{nodeContext.Container.Id}";
-            AccentColor = _connection.AccentColor;
-
-            await LoadMetrics();
+            return LoadMetrics();
         }
 
         public ICommand RefreshCommand => _refreshCommand ??= new AsyncRelayCommand(LoadMetrics, () => !IsBusy);

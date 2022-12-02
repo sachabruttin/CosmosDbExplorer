@@ -20,7 +20,7 @@ using CosmosDbExplorer.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer
 {
@@ -151,8 +151,11 @@ namespace CosmosDbExplorer
             services.AddTransient<PermissionEditViewModel>();
 
             services.AddTransient<ViewModels.Assets.TriggerTabViewModel>();
+            services.AddTransient<ViewModels.DatabaseNodes.TriggerNodeViewModel>();
             services.AddTransient<ViewModels.Assets.StoredProcedureTabViewModel>();
+            services.AddTransient<ViewModels.DatabaseNodes.StoredProcedureNodeViewModel>();
             services.AddTransient<ViewModels.Assets.UserDefFuncTabViewModel>();
+            services.AddTransient<ViewModels.DatabaseNodes.UserDefFuncNodeViewModel>();
 
             // Configuration
             services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

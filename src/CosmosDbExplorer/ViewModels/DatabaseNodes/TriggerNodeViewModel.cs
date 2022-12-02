@@ -6,21 +6,24 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
-using Microsoft.Azure.Documents;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
+using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Core.Contracts.Services;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class TriggerRootNodeViewModel : AssetRootNodeViewModelBase<CosmosTrigger>
     {
         private readonly IServiceProvider _serviceProvider;
+        private CosmosScriptService _scriptService;
 
         public TriggerRootNodeViewModel(ContainerNodeViewModel parent, IServiceProvider serviceProvider)
             : base(parent)
         {
             Name = "Triggers";
             _serviceProvider = serviceProvider;
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
         }
 
         protected override async Task LoadChildren(CancellationToken token)
@@ -33,8 +36,8 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
             foreach (var func in function)
             {
-                //await DispatcherHelper.RunAsync(() => Children.Add(new UserDefFuncNodeViewModel(this, func)));
-                Children.Add(new TriggerNodeViewModel(this, func));
+                var vm = ActivatorUtilities.CreateInstance<TriggerNodeViewModel>(_serviceProvider, this, func, _scriptService);
+                Children.Add(vm);
             }
 
             IsLoading = false;
@@ -49,7 +52,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             if (message.IsNewResource)
             {
-                var item = new TriggerNodeViewModel(this, message.Resource);
+                var item = ActivatorUtilities.CreateInstance<TriggerNodeViewModel>(_serviceProvider, this, message.Resource, _scriptService);
                 Children.AddSorted(item, i => ((TriggerNodeViewModel)i).Name);
             }
             else
@@ -66,24 +69,14 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
     public class TriggerNodeViewModel : AssetNodeViewModelBase<CosmosTrigger, TriggerRootNodeViewModel>
     {
-        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, CosmosTrigger resource)
-            : base(parent, resource)
+        public TriggerNodeViewModel(TriggerRootNodeViewModel parent, CosmosTrigger resource, ICosmosScriptService cosmosScriptService, IDialogService dialogService)
+            : base(parent, resource, cosmosScriptService, dialogService)
         {
         }
 
         protected override Task DeleteCommandImpl()
         {
-            throw new System.NotImplementedException();
-            //return DialogService.ShowMessage("Are sure you want to delete this Trigger?", "Delete", null, null,
-            //    async confirm =>
-            //    {
-            //        if (confirm)
-            //        {
-            //            await DbService.DeleteTriggerAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
-            //            await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-            //            MessengerInstance.Send(new CloseDocumentMessage(ContentId));
-            //        }
-            //    });
+            return ScriptService.DeleteTriggerAsync(Resource);
         }
 
         protected override Task OpenCommandImp()

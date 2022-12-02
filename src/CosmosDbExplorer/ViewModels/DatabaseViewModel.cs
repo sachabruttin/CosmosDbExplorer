@@ -8,17 +8,16 @@ using CosmosDbExplorer.ViewModels;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels
 {
     public class DatabaseViewModel : ToolViewModel, IDropTarget
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ICosmosClientService _cosmosClientService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
 
-        public DatabaseViewModel(IServiceProvider serviceProvider, IUIServices uiServices, ICosmosClientService cosmosClientService, IPersistAndRestoreService persistAndRestoreService)
+        public DatabaseViewModel(IServiceProvider serviceProvider, IUIServices uiServices, IPersistAndRestoreService persistAndRestoreService)
             : base(uiServices)
         {
             Header = "Connections";
@@ -26,9 +25,8 @@ namespace CosmosDbExplorer.ViewModels
             IconSource = App.Current.FindResource("ConnectionIcon");
             IsVisible = true;
             _serviceProvider = serviceProvider;
-            _cosmosClientService = cosmosClientService;
             _persistAndRestoreService = persistAndRestoreService;
-            LoadNodes();
+            Nodes = LoadNodes();
             RegisterMessages();
         }
 
@@ -41,12 +39,12 @@ namespace CosmosDbExplorer.ViewModels
 
         public ObservableCollection<ConnectionNodeViewModel> Nodes { get; private set; }
 
-        private void LoadNodes()
+        private ObservableCollection<ConnectionNodeViewModel> LoadNodes()
         {
             var connections = _persistAndRestoreService.GetConnections();
             var nodes = connections.Select(c => new ConnectionNodeViewModel(_serviceProvider, c));
 
-            Nodes = new ObservableCollection<ConnectionNodeViewModel>(nodes);
+            return new ObservableCollection<ConnectionNodeViewModel>(nodes);
         }
 
         private void OnRemoveConnection(RemoveConnectionMessage msg)
@@ -85,8 +83,8 @@ namespace CosmosDbExplorer.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            var sourceItem = dropInfo.Data as ConnectionNodeViewModel;
-            var targetItem = dropInfo.TargetItem as ConnectionNodeViewModel;
+            var sourceItem = (ConnectionNodeViewModel)dropInfo.Data;
+            var targetItem = (ConnectionNodeViewModel)dropInfo.TargetItem;
 
             if (sourceItem == targetItem)
             {

@@ -20,8 +20,8 @@ namespace CosmosDbExplorer.Core.Models
         }
 
         public string Id { get; }
-        public string ETag { get; }
-        public string SelfLink { get; }
+        public string? ETag { get; }
+        public string? SelfLink { get; }
         public int? Throughput { get; } // Null value indicates a container with no throughput provisioned.
         public bool IsServerless { get; }
     }

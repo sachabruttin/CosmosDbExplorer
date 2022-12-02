@@ -1,6 +1,6 @@
 ﻿using System;
 using CosmosDbExplorer.Helpers;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -133,7 +133,7 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        protected override string? GetDocumentContent(object content, bool removeSystemProperties)
+        protected override string? GetDocumentContent(object? content, bool removeSystemProperties)
         {
             if (content == null)
             {

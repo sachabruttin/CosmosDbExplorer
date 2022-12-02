@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -16,7 +13,7 @@ using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using FluentValidation;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 using Validar;
 
@@ -25,21 +22,34 @@ namespace CosmosDbExplorer.ViewModels
     [InjectValidation]
     public class UserEditViewModel : PaneViewModel<UserNodeViewModel>, IAssetTabCommand
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private AsyncRelayCommand _saveCommand;
-        private AsyncRelayCommand _deleteCommand;
-        private RelayCommand _discardCommand;
-        private CosmosUserService _userService;
+        private readonly CosmosUserService _userService;
 
-        public UserEditViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
-            : base(uiServices)
+        private AsyncRelayCommand? _saveCommand;
+        private AsyncRelayCommand? _deleteCommand;
+        private RelayCommand? _discardCommand;
+
+        public UserEditViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, string contentId, NodeContext<UserNodeViewModel> nodeContext)
+            : base(uiServices, contentId, nodeContext)
         {
-            _serviceProvider = serviceProvider;
             _dialogService = dialogService;
             Header = "New User";
             Title = "User";
-            IconSource = App.Current.FindResource("UserIcon");
+            IconSource = System.Windows.Application.Current.FindResource("UserIcon");
+
+            if (nodeContext.Node is null || nodeContext.Connection is null || nodeContext.Container is null || nodeContext.Database is null )
+            {
+                throw new NullReferenceException("Node context is not correctly initialized!");
+            }
+
+            Node = nodeContext.Node;
+            Connection = nodeContext.Connection;
+            Header = Node.Name ?? "New User";
+            Title = "User";
+            AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
+            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}";
+
+            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(serviceProvider, Connection, nodeContext.Database);
         }
 
         public string? UserId { get; set; }
@@ -65,34 +75,10 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool IsValid => string.IsNullOrEmpty(((IDataErrorInfo)this).Error);
 
-        public override void Load(string contentId, NodeContext<UserNodeViewModel> nodeContext)
+        public override Task InitializeAsync()
         {
-            if (nodeContext.Node is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Node));
-            }
-
-            if (nodeContext.Connection is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Connection));
-            }
-
-            if (nodeContext.Database is null)
-            {
-                throw new NullReferenceException(nameof(nodeContext.Database));
-            }
-
-            ContentId = contentId;
-            Node = nodeContext.Node;
-            Connection = nodeContext.Connection;
-            Header = Node.Name ?? "New User";
-            Title = "User";
-            AccentColor = Node.Parent.Parent.Parent.Connection.AccentColor;
-            ToolTip = $"{Connection.Label}/{nodeContext.Database.Id}";
-
-            _userService = ActivatorUtilities.CreateInstance<CosmosUserService>(_serviceProvider, Connection, nodeContext.Database);
-
             SetInformation();
+            return Task.CompletedTask;
         }
 
         protected CosmosConnection Connection { get; set; }
@@ -120,7 +106,7 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var result = await _userService.SaveUserAsync(user, new System.Threading.CancellationToken());
 
-                Header = result.Items.Id ?? string.Empty;
+                Header = result.Items?.Id ?? string.Empty;
                 Node.User = user;
                 ContentId = Node.ContentId;
 

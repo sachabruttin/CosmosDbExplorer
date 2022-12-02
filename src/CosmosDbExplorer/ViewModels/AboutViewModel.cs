@@ -8,8 +8,8 @@ using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Core.Models;
 
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -19,7 +19,7 @@ namespace CosmosDbExplorer.ViewModels
         private RelayCommand<string>? _openLinkCommand;
         private RelayCommand<string>? _openGitHubCommand;
 
-        public AboutViewModel(ISystemService systemService)
+        public AboutViewModel(ISystemService systemService, IApplicationInfoService applicationInfoService)
         {
             var assembly = Assembly.GetEntryAssembly();
 
@@ -28,8 +28,8 @@ namespace CosmosDbExplorer.ViewModels
                 throw new NullReferenceException("Can not load entry assembly");
             }
 
-            Version = FileVersionInfo.GetVersionInfo(assembly.Location)?.FileVersion ?? "version not found";
-            Title = (Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute), false) as AssemblyTitleAttribute)?.Title ?? "error retrieving assembly title";
+            Version = applicationInfoService.GetVersion().ToString();
+            Title = applicationInfoService.GetTitle();
 
             ExternalComponents = new List<ExternalComponent>
             {
@@ -48,9 +48,9 @@ namespace CosmosDbExplorer.ViewModels
             _systemService = systemService;
         }
 
-        public string Version { get; set; }
+        public string Version { get; init; }
 
-        public string Title { get; set; }
+        public string Title { get; init; }
 
         public static List<Author> Authors => new() 
         { 

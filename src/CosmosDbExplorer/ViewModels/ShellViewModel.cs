@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Input;
 using CosmosDbExplorer.Contracts.Services;
@@ -12,9 +13,9 @@ using CosmosDbExplorer.Models;
 using CosmosDbExplorer.ViewModels.Assets;
 using CosmosDbExplorer.ViewModels.DatabaseNodes;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 
 namespace CosmosDbExplorer.ViewModels
@@ -26,11 +27,11 @@ namespace CosmosDbExplorer.ViewModels
         private readonly IApplicationInfoService _applicationInfoService;
         private readonly DatabaseViewModel _databaseViewModel;
         private readonly IServiceProvider _serviceProvider;
-        private ICommand _loadedCommand;
-        private ICommand _unloadedCommand;
-        private ICommand _exitCommand;
-        private RelayCommand _refreshCommand;
-        private RelayCommand _showAccountSettingsCommand;
+        private ICommand? _loadedCommand;
+        private ICommand? _unloadedCommand;
+        private ICommand? _exitCommand;
+        private RelayCommand? _refreshCommand;
+        private RelayCommand? _showAccountSettingsCommand;
 
         public ICommand LoadedCommand => _loadedCommand ??= new RelayCommand(OnLoaded);
 
@@ -56,9 +57,9 @@ namespace CosmosDbExplorer.ViewModels
             _rightPaneService.CleanUp();
         }
 
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
-        public long UsedMemory => GC.GetTotalMemory(true) / 1014;
+        public static long UsedMemory => GC.GetTotalMemory(true) / 1014;
 
         public bool IsBusy { get; set; }
 
@@ -111,12 +112,8 @@ namespace CosmosDbExplorer.ViewModels
 
         private void ShowAccountSettingsCommandExecute()
         {
-            var vmName = typeof(AccountSettingsViewModel).FullName;
-
-            if (!string.IsNullOrEmpty(vmName))
-            {
-                _windowManagerService.OpenInDialog(vmName, new CosmosConnection(Guid.NewGuid()));
-            }
+            var vmName = typeof(AccountSettingsViewModel);
+            _windowManagerService.OpenInDialog(vmName, new CosmosConnection(Guid.NewGuid()));
         }
 
         public ICommand RefreshCommand => _refreshCommand ??= new RelayCommand(() => CanRefreshNodeViewModel?.RefreshCommand.Execute(null), () =>
@@ -146,7 +143,7 @@ namespace CosmosDbExplorer.ViewModels
         private void SpyUsedMemory()
         {
             var timer = new Timer(TimeSpan.FromSeconds(3).TotalMilliseconds);
-            timer.Elapsed += (s, e) => OnPropertyChanged(nameof(UsedMemory));
+            timer.Elapsed += (s, e) => OnPropertyChanged(nameof(ViewModels.ShellViewModel.UsedMemory));
             timer.Start();
         }
 
@@ -154,25 +151,26 @@ namespace CosmosDbExplorer.ViewModels
         {
             Messenger.Register<ShellViewModel, ActivePaneChangedMessage>(this, static (r, msg) => r.OnActivePaneChanged(msg));
 
-            Messenger.Register<ShellViewModel, OpenDocumentsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, OpenQueryViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<QueryEditorViewModel, ContainerNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, OpenImportDocumentViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ImportDocumentViewModel, ContainerNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<ContainerScaleSettingsViewModel, ScaleSettingsNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, OpenDatabaseScaleViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<DatabaseScaleViewModel, DatabaseScaleNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenDocumentsViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<DocumentsTabViewModel, DocumentNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenQueryViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<QueryEditorViewModel, ContainerNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenImportDocumentViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<ImportDocumentViewModel, ContainerNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenScaleAndSettingsViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<ContainerScaleSettingsViewModel, ScaleSettingsNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenDatabaseScaleViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<DatabaseScaleViewModel, DatabaseScaleNodeViewModel>(msg));
 
-            Messenger.Register<ShellViewModel, EditUserMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserEditViewModel, UserNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static (r, msg) => r.OpenOrSelectTab<PermissionEditViewModel, PermissionNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, OpenMetricsViewMessage>(this, static (r, msg) => r.OpenOrSelectTab<MetricsTabViewModel, MetricsNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditUserMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<UserEditViewModel, UserNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditPermissionMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<PermissionEditViewModel, PermissionNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, OpenMetricsViewMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<MetricsTabViewModel, MetricsNodeViewModel>(msg));
 
-            Messenger.Register<ShellViewModel, EditStoredProcedureMessage>(this, static (r, msg) => r.OpenOrSelectTab<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, EditUserDefFuncMessage>(this, static (r, msg) => r.OpenOrSelectTab<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
-            Messenger.Register<ShellViewModel, EditTriggerMessage>(this, static (r, msg) => r.OpenOrSelectTab<TriggerTabViewModel, TriggerNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditStoredProcedureMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<StoredProcedureTabViewModel, StoredProcedureNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditUserDefFuncMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<UserDefFuncTabViewModel, UserDefFuncNodeViewModel>(msg));
+            Messenger.Register<ShellViewModel, EditTriggerMessage>(this, static async (r, msg) => await r.OpenOrSelectTabAsync<TriggerTabViewModel, TriggerNodeViewModel>(msg));
 
             Messenger.Register<ShellViewModel, TreeNodeSelectedMessage>(this, static (r, msg) => r.OnTreeNodeSelected(msg));
             Messenger.Register<ShellViewModel, CloseDocumentMessage>(this, static (r, msg) => r.CloseDocument(msg));
             Messenger.Register<ShellViewModel, IsBusyMessage>(this, static (r, msg) => r.IsBusy = msg.IsBusy);
         }
 
+        [SuppressPropertyChangedWarnings]
         private void OnActivePaneChanged(ActivePaneChangedMessage message)
         {
             if (message.PaneViewModel is DatabaseViewModel)
@@ -218,7 +216,7 @@ namespace CosmosDbExplorer.ViewModels
                                     || UserNode != null;
         }
 
-        private void OpenOrSelectTab<TTabViewModel, TNodeViewModel>(OpenTabMessageBase<TNodeViewModel> message)
+        private async Task OpenOrSelectTabAsync<TTabViewModel, TNodeViewModel>(OpenTabMessageBase<TNodeViewModel> message)
             where TTabViewModel : PaneViewModel<TNodeViewModel>
             where TNodeViewModel : TreeViewItemViewModel, IContent
         {
@@ -237,12 +235,12 @@ namespace CosmosDbExplorer.ViewModels
             }
             else
             {
-                var content = _serviceProvider.GetService<TTabViewModel>();
+                //var content = _serviceProvider.GetService<TTabViewModel>();
+                var content = ActivatorUtilities.CreateInstance<TTabViewModel>(_serviceProvider, contentId, message.Context);
 
                 if (content != null)
                 {
-                    content.Load(contentId, message.Context);
-                    //content.Load(contentId, message.Node, message.Connection, message.Database, message.Container);
+                    await content.InitializeAsync();
 
                     Tabs.Add(content);
                     SelectedTab = content;

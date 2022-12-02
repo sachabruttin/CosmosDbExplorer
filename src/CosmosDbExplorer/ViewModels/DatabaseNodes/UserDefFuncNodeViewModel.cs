@@ -7,32 +7,35 @@ using CosmosDbExplorer.Core.Services;
 using CosmosDbExplorer.Extensions;
 using CosmosDbExplorer.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
+using CosmosDbExplorer.Contracts.Services;
+using CosmosDbExplorer.Core.Contracts.Services;
 
 namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 {
     public class UserDefFuncRootNodeViewModel : AssetRootNodeViewModelBase<CosmosUserDefinedFunction>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly CosmosScriptService _scriptService;
 
         public UserDefFuncRootNodeViewModel(ContainerNodeViewModel parent, IServiceProvider serviceProvider)
             : base(parent)
         {
             Name = "User Defined Functions";
             _serviceProvider = serviceProvider;
+            _scriptService = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
         }
 
         protected override async Task LoadChildren(CancellationToken token)
         {
             IsLoading = true;
 
-            var service = ActivatorUtilities.CreateInstance<CosmosScriptService>(_serviceProvider, Parent.Parent.Parent.Connection, Parent.Parent.Database, Parent.Container);
-
-            var function = await service.GetUserDefinedFunctionsAsync(token);
+            var function = await _scriptService.GetUserDefinedFunctionsAsync(token);
 
             foreach (var func in function)
             {
-                Children.Add(new UserDefFuncNodeViewModel(this, func));
+                var vm = ActivatorUtilities.CreateInstance<UserDefFuncNodeViewModel>(_serviceProvider, this, func, _scriptService);
+                Children.Add(vm);
             }
 
             IsLoading = false;
@@ -47,7 +50,7 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
         {
             if (message.IsNewResource)
             {
-                var item = new UserDefFuncNodeViewModel(this, message.Resource);
+                var item = ActivatorUtilities.CreateInstance<UserDefFuncNodeViewModel>(_serviceProvider, this, message.Resource, _scriptService);
                 Children.AddSorted(item, i => ((UserDefFuncNodeViewModel)i).Name);
             }
             else
@@ -64,24 +67,14 @@ namespace CosmosDbExplorer.ViewModels.DatabaseNodes
 
     public class UserDefFuncNodeViewModel : AssetNodeViewModelBase<CosmosUserDefinedFunction, UserDefFuncRootNodeViewModel>
     {
-        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, CosmosUserDefinedFunction resource)
-            : base(parent, resource)
+        public UserDefFuncNodeViewModel(UserDefFuncRootNodeViewModel parent, CosmosUserDefinedFunction resource, ICosmosScriptService cosmosScriptService, IDialogService dialogService)
+            : base(parent, resource, cosmosScriptService, dialogService)
         {
         }
 
         protected override Task DeleteCommandImpl()
         {
-            throw new System.NotImplementedException();
-            //return DialogService.ShowMessage("Are sure you want to delete this User Defined Function?", "Delete", null, null,
-            //    async confirm =>
-            //    {
-            //        if (confirm)
-            //        {
-            //            await DbService.DeleteUdfAsync(Parent.Parent.Parent.Parent.Connection, Resource.AltLink).ConfigureAwait(false);
-            //            await DispatcherHelper.RunAsync(() => Parent.Children.Remove(this));
-            //            MessengerInstance.Send(new CloseDocumentMessage(ContentId));
-            //        }
-            //    });
+            return ScriptService.DeleteUserDefinedFunctionAsync(Resource);
         }
 
         protected override Task OpenCommandImp()

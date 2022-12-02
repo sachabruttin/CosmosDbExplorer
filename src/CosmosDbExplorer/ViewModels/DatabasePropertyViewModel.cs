@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -12,9 +13,9 @@ using CosmosDbExplorer.Core.Models;
 using CosmosDbExplorer.Core.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Validar;
 
@@ -25,10 +26,10 @@ namespace CosmosDbExplorer.ViewModels
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDialogService _dialogService;
-        private CosmosDatabaseService _databaseService;
-        private AsyncRelayCommand _saveCommand;
+        private readonly CosmosDatabaseService _databaseService;
+        private AsyncRelayCommand? _saveCommand;
 
-        public DatabasePropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices)
+        public DatabasePropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, object parameter)
             : base(uiServices)
         {
             //IsFixedStorage = true;
@@ -36,6 +37,10 @@ namespace CosmosDbExplorer.ViewModels
             Title = "Add Container";
             _serviceProvider = serviceProvider;
             _dialogService = dialogService;
+
+            Connection = (CosmosConnection)parameter;
+
+            _databaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
         }
 
         public Action<bool?>? SetResult { get; set; }
@@ -45,7 +50,7 @@ namespace CosmosDbExplorer.ViewModels
         public CosmosConnection Connection { get; private set; }
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
-        public string DatabaseId { get; set; }
+        public string DatabaseId { get; set; } = string.Empty;
 
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public bool ProvisionThroughput { get; set; } = true;
@@ -91,9 +96,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public void OnNavigatedTo(object parameter)
         {
-            Connection = (CosmosConnection)parameter;
 
-            _databaseService = ActivatorUtilities.CreateInstance<CosmosDatabaseService>(_serviceProvider, Connection);
         }
 
         private void OnClose()

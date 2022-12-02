@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CosmosDbExplorer.Contracts.ViewModels;
 using CosmosDbExplorer.Messages;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Messaging;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -19,18 +17,30 @@ namespace CosmosDbExplorer.ViewModels
     public class TreeViewItemViewModel : ObservableRecipient
     {
         private static readonly TreeViewItemViewModel DummyChild = new();
-
-        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+        
+        // This is used to create the DummyChild instance.
+        private TreeViewItemViewModel()
         {
-            Parent = parent;
             Children = new ObservableCollection<TreeViewItemViewModel>();
+            Parent = this;
+        }
 
+        protected TreeViewItemViewModel(bool lazyLoadChildren)
+            : this()
+        {
             Messenger.Register<TreeViewItemViewModel, RemoveNodeMessage>(this, static (r, m) => r.OnRemoveNodeMessage(m));
 
             if (lazyLoadChildren)
             {
                 Children.Add(DummyChild);
             }
+        }
+
+
+        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+            : this(lazyLoadChildren)
+        {
+            Parent = parent;
         }
 
         private void OnRemoveNodeMessage(RemoveNodeMessage msg)
@@ -42,11 +52,6 @@ namespace CosmosDbExplorer.ViewModels
                     Parent.Children.Remove(this);
                 }
             }
-        }
-
-        // This is used to create the DummyChild instance.
-        private TreeViewItemViewModel()
-        {
         }
 
         /// <summary>
@@ -124,6 +129,6 @@ namespace CosmosDbExplorer.ViewModels
         {
         }
 
-        public new TParent? Parent => base.Parent as TParent;
+        public new TParent Parent => (TParent)base.Parent;
     }
 }

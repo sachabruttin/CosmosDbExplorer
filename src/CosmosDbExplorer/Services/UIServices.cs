@@ -1,7 +1,7 @@
 ﻿
 using CosmosDbExplorer.Contracts.Services;
 using CosmosDbExplorer.Messages;
-using Microsoft.Toolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace CosmosDbExplorer.Services
 {

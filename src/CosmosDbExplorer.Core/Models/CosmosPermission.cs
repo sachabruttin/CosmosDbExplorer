@@ -32,8 +32,8 @@ namespace CosmosDbExplorer.Core.Models
         public string? SelfLink { get; }
         public CosmosPermissionMode PermissionMode { get; set; }
         public string? PartitionKey;
-        public string ResourceUri { get; set; }
-        public string Token { get; }
+        public string? ResourceUri { get; set; }
+        public string? Token { get; }
         public DateTime? LastModifed { get; }
     }
 

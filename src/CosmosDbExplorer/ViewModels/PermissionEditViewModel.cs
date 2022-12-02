@@ -75,7 +75,7 @@ namespace CosmosDbExplorer.ViewModels
         public bool CanEditName { get; protected set; }
         public string? PermissionId { get; set; }
         public CosmosPermissionMode PermissionMode { get; set; }
-        public string Container { get; set; } = string.Empty;
+        public string? Container { get; set; }
         public string? ResourcePartitionKey { get; set; }
 
         public CosmosPermission Permission { get; protected set; }
@@ -145,6 +145,11 @@ namespace CosmosDbExplorer.ViewModels
 
         private async Task SaveCommandExecute()
         {
+            if (Container is null)
+            {
+                return;
+            }
+
             CosmosPermission permission;
             if (IsNewDocument)
             {

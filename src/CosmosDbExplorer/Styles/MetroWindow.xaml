@@ -5,8 +5,8 @@
 
     <Style
         x:Key="CustomMetroWindow"
-        TargetType="{x:Type controls:MetroWindow}"
-        BasedOn="{StaticResource {x:Type controls:MetroWindow}}">
+        BasedOn="{StaticResource {x:Type controls:MetroWindow}}"
+        TargetType="{x:Type controls:MetroWindow}">
         <Setter Property="ShowTitleBar" Value="True" />
         <Setter Property="Height" Value="450" />
         <Setter Property="Width" Value="800" />

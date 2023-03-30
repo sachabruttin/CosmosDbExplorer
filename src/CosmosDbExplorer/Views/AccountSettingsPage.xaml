@@ -79,12 +79,6 @@
                     Grid.Row="2"
                     Grid.Column="0"
                     Text="Account Secret" />
-                <!--<TextBox
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"
-                    IsReadOnly="{Binding UseLocalEmulator}"
-                    Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />-->
 
                 <PasswordBox
                     Grid.Row="2"

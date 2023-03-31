@@ -63,8 +63,8 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Account Secret" />
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                     IsReadOnly="{Binding UseLocalEmulator}" IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"/>
+                <PasswordBox Grid.Row="2" Grid.Column="1" viewmodels:PasswordBoxAssistant.BindPassword="true"  viewmodels:PasswordBoxAssistant.BoundPassword="{Binding AccountSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                    IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"  />
             </Grid>
 
             <Grid Margin="{StaticResource XSmallTopMargin}">

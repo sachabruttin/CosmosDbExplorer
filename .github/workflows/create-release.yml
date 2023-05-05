@@ -210,8 +210,8 @@ jobs:
       uses: jsdaniell/create-json@1.1.2
       with:
         name: autoupdate.json
-        dir: $GITHUB_WORKSPACE
         json: '{"version":"${{ steps.tag.outputs.version }}","url":"https://github.com/sachabruttin/CosmosDbExplorer/releases/download/${{ steps.get_version.outputs.VERSION }}/CosmosDbExplorer.zip","mandatory":false,"checksum":null,"changelog":null}'
+        # dir: $GITHUB_WORKSPACE
 
     - run: |
         git config user.name github-actions

@@ -143,6 +143,11 @@ namespace CosmosDbExplorer.ViewModels
         public AccountSettingsViewModelValidator()
         {
             RuleFor(x => x.AccountEndpoint).NotEmpty().When(x => !x.UseLocalEmulator);
+            RuleFor(x => x.AccountEndpoint)
+                .Must(uri => Uri.TryCreate(uri, UriKind.Absolute, out _))
+                .When(x => !string.IsNullOrWhiteSpace(x.AccountEndpoint))
+                .WithMessage("'{PropertyName}' must be a valid URI.");
+
             RuleFor(x => x.AccountSecret).NotEmpty().When(x => !x.UseLocalEmulator);
             RuleFor(x => x.Label).NotEmpty();
         }

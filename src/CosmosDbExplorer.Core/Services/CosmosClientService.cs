@@ -32,7 +32,8 @@ namespace CosmosDbExplorer.Core.Services
             var options = new CosmosClientOptions
             {
                 ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
-                EnableTcpConnectionEndpointRediscovery = connection.EnableEndpointDiscovery
+                EnableTcpConnectionEndpointRediscovery = connection.EnableEndpointDiscovery,
+                LimitToEndpoint = connection.LimitToEndpoint
             };
 
             return new CosmosClient(accountEndpoint: connection.DatabaseUri?.ToString(), authKeyOrResourceToken: connection.AuthenticationKey, options);

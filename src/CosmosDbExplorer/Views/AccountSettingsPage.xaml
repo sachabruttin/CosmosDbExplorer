@@ -12,9 +12,9 @@
     xmlns:viewmodels="clr-namespace:CosmosDbExplorer.ViewModels"
     Title="{Binding Title}"
     Width="850"
-    Height="350"
+    Height="400"
     d:DataContext="{d:DesignInstance Type=viewmodels:AccountSettingsViewModel}"
-    d:DesignHeight="350"
+    d:DesignHeight="400"
     d:DesignWidth="850"
     Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d">
@@ -140,6 +140,16 @@
                     Grid.Row="5"
                     Grid.Column="1"
                     IsChecked="{Binding EnableEndpointDiscovery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <Grid Margin="{StaticResource XSmallTopMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200px" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Style="{StaticResource BodyTextStyle}" Grid.Row="6" Grid.Column="0" Text="Limit to Endpoint" />
+                <CheckBox Grid.Row="6" Grid.Column="1" 
+                              IsChecked="{Binding LimitToEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </StackPanel>
 

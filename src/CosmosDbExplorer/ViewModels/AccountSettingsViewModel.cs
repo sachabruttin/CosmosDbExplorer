@@ -48,6 +48,8 @@ namespace CosmosDbExplorer.ViewModels
 
         public bool EnableEndpointDiscovery { get; set; }
 
+        public bool LimitToEndpoint { get; set; }
+
         public Color? AccentColor { get; set; }
 
         public Action<bool?>? SetResult { get; set; }
@@ -93,7 +95,7 @@ namespace CosmosDbExplorer.ViewModels
                 ? System.Drawing.Color.Transparent
                 : System.Drawing.Color.FromArgb(AccentColor.Value.A, AccentColor.Value.R, AccentColor.Value.G, AccentColor.Value.B);
 
-            var connection = new CosmosConnection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, EnableEndpointDiscovery, accentColor);
+            var connection = new CosmosConnection(_connection.Id, Label, new Uri(AccountEndpoint), AccountSecret, ConnectionType, EnableEndpointDiscovery, LimitToEndpoint, accentColor);
 
             _persistAndRestoreService.PersistConnection(connection);
             Messenger.Send(new ConnectionSettingSavedMessage(connection));
@@ -130,6 +132,7 @@ namespace CosmosDbExplorer.ViewModels
             }
 
             EnableEndpointDiscovery = _connection.EnableEndpointDiscovery;
+            LimitToEndpoint = _connection.LimitToEndpoint;
         }
 
         private void OnClose()

@@ -11,10 +11,11 @@ namespace CosmosDbExplorer.Core.Models
         {
             Id = id;
             EnableEndpointDiscovery = true;
+            LimitToEndpoint = false;
         }
 
         [JsonConstructor]
-        public CosmosConnection(Guid? id, string? label, Uri? endpoint, string? secret, ConnectionType connectionType, bool enableEndpointDiscovery, Color? accentColor)
+        public CosmosConnection(Guid? id, string? label, Uri? endpoint, string? secret, ConnectionType connectionType, bool enableEndpointDiscovery, bool limitToEndpoint, Color? accentColor)
         {
             Id = id ?? Guid.NewGuid();
             Label = label;
@@ -22,6 +23,7 @@ namespace CosmosDbExplorer.Core.Models
             AuthenticationKey = secret;
             ConnectionType = connectionType;
             EnableEndpointDiscovery = enableEndpointDiscovery;
+            LimitToEndpoint = limitToEndpoint;
             AccentColor = accentColor;
         }
 
@@ -43,6 +45,9 @@ namespace CosmosDbExplorer.Core.Models
         [JsonProperty]
         public bool EnableEndpointDiscovery { get; protected set; }
 
+        [JsonProperty]
+        public bool LimitToEndpoint { get; protected set; }
+               
         [JsonProperty]
         public Color? AccentColor { get; protected set; }
 

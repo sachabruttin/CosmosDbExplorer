@@ -146,6 +146,12 @@ jobs:
   chocolatey:
     runs-on: windows-latest
     needs: build
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: working-directory: ${{ github.workspace }}/setup/choco
+      env:
+        CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
 
     steps:
     - name: Checkout
@@ -158,32 +164,9 @@ jobs:
       with:
         tagRegex: (?<version>\d.\d.\d)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
 
-    - name: 'Replace tokens Chocolatey files #1' 
-      uses: datamonsters/replace-action@v2
-      with:
-        files: './src/Chocolatey-Packages/cosmosdbexplorer/tools/chocolateyinstall.ps1'
-        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'
-
-    - name: 'Replace tokens Chocolatey files #2' 
-      uses: datamonsters/replace-action@v2
-      with:
-        files: './src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec'
-        replacements: '$version=${{ steps.tag.outputs.version }},$tag-name=$GIT_TAG_NAME'    
-
-    - name: Pack Chocolatey
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: pack ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.nuspec --out ./src/Chocolatey-Packages/cosmosdbexplorer/
-
-    - name: Upload chocolatey artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.0.nupkg
-
-    - name: Push Chocolatey
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: push ./src/Chocolatey-Packages/cosmosdbexplorer/cosmosdbexplorer.${{ steps.tag.outputs.version }}.0.nupkg --source https://push.chocolatey.org/ --api-key=$CHOCOLATEY_API_KEY 
+    - name: Create 📦 and submit to chocolatey 
+      run: |
+        ./build.ps1 -Version "${{ steps.tag.outputs.tag }}" -Token $env:CHOCOLATEY_API_KEY
 
   # Autoupdater
   autoupdater:

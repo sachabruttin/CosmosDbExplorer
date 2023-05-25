@@ -43,7 +43,7 @@ function Write-MetaData {
 
     $content = Get-Content $filePath -Raw
     $content = $content.Replace('$version', $Matches.version)
-    $content = $content.Replace('$tag-name', $tagName)
+    $content = $content.Replace('<tag-name>', $tagName)
     $content = $content.Replace('<HASH>', $Hash)
     $date = Get-Date -Format "yyyy-MM-dd"
     $content = $content.Replace('<DATE>', $date)

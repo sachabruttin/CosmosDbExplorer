@@ -9,7 +9,7 @@ Param
     $Token
 )
 
-function Get-HashForArchitecture {
+function Get-HashForArchitecture_old {
     param (
         [parameter(Mandatory = $true)]
         [string]
@@ -21,6 +21,17 @@ function Get-HashForArchitecture {
     $hash = Get-FileHash $output -Algorithm SHA256
     return $hash.Hash
 }
+
+function Get-HashForArchitecture {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]
+        $Version
+    )
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/CosmosDbExplorer.zip.sha256")
+    return $hash.Trim()
+}
+
 
 function Write-MetaData {
     param (

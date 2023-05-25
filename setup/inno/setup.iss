@@ -13,7 +13,7 @@
 AppId={{AA5E661B-69E3-4A6C-9D34-A34785F4703C}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -26,6 +26,8 @@ PrivilegesRequired=lowest
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
+UninstallDisplayName={#MyAppName}
+UninstallDisplayIcon={app}\{#MyAppExeName}
 WizardStyle=classic
 
 ;WizardImageFile="C:\Sources\Personal\CosmosDbExplorer\work\src\CosmosDbExplorer\astronaut-big.bmp"

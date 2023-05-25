@@ -15,8 +15,11 @@ function Get-HashForArchitecture {
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/install.exe.sha256")
-    return $hash.Trim()
+    $output = "./output/CosmosDbExplorer.zip"
+    $url = "https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/CosmosDbExplorer.zip"
+    Invoke-WebRequest $url -Out $output
+    $hash = Get-FileHash $output -Algorithm SHA256
+    return $hash.Hash
 }
 
 function Write-MetaData {
@@ -58,12 +61,13 @@ Get-ChildItem './templates/*' -Recurse -File | ForEach-Object -Process {
     Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash -Path $_.Directory.BaseName
 }
 
+# package
+choco pack "./output/cosmosdbexplorer.nuspec" --out "./output" --allow-unofficial
+
+
 if (-not $Token) {
     return
 }
-
-# package
-choco pack "./output/cosmosdbexplorer.nuspec" --out "./output" --allow-unofficial
 
 # push
 $nupkg = (Get-ChildItem '*.nupkg' -Recurse -File).FullName

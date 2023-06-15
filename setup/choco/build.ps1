@@ -9,15 +9,29 @@ Param
     $Token
 )
 
+function Get-HashForArchitecture_old {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]
+        $Version
+    )
+    $output = "./output/CosmosDbExplorer.zip"
+    $url = "https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/CosmosDbExplorer.zip"
+    Invoke-WebRequest $url -Out $output
+    $hash = Get-FileHash $output -Algorithm SHA256
+    return $hash.Hash
+}
+
 function Get-HashForArchitecture {
     param (
         [parameter(Mandatory = $true)]
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/install.exe.sha256")
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version-beta/CosmosDbExplorer.zip.sha256")
     return $hash.Trim()
 }
+
 
 function Write-MetaData {
     param (
@@ -43,7 +57,7 @@ function Write-MetaData {
 
     $content = Get-Content $filePath -Raw
     $content = $content.Replace('$version', $Matches.version)
-    $content = $content.Replace('$tag-name', $tagName)
+    $content = $content.Replace('<tag-name>', $tagName)
     $content = $content.Replace('<HASH>', $Hash)
     $date = Get-Date -Format "yyyy-MM-dd"
     $content = $content.Replace('<DATE>', $date)
@@ -58,12 +72,13 @@ Get-ChildItem './templates/*' -Recurse -File | ForEach-Object -Process {
     Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash -Path $_.Directory.BaseName
 }
 
+# package
+choco pack "./output/cosmosdbexplorer.nuspec" --out "./output" --allow-unofficial
+
+
 if (-not $Token) {
     return
 }
-
-# package
-choco pack "./output/cosmosdbexplorer.nuspec" --out "./output" --allow-unofficial
 
 # push
 $nupkg = (Get-ChildItem '*.nupkg' -Recurse -File).FullName

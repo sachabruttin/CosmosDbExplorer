@@ -55,6 +55,12 @@ jobs:
         files: src\CosmosDbExplorer\bin\Release\net6.0-windows
         dest: CosmosDbExplorer.zip
 
+    - name: Get ZIP checksum
+      id: checksum
+      run: |
+        $zipHash = Get-FileHash CosmosDbExplorer.zip -Algorithm SHA256
+        $zipHash.Hash | Out-File -Encoding 'UTF8' "CosmosDbExplorer.zip.sha256"
+
     - name: Automatic Release
       uses: marvinpinto/action-automatic-releases@latest
       with:
@@ -62,6 +68,7 @@ jobs:
         prerelease: true
         files: |
           *.zip
+          *.sha256
 
   # Inno Setup
   innosetup:
@@ -147,7 +154,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     env:
-        CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}    
+      CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
     defaults:
       run:
         shell: pwsh

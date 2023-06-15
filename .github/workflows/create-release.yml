@@ -146,12 +146,12 @@ jobs:
   chocolatey:
     runs-on: windows-latest
     needs: build
+    env:
+        CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}    
     defaults:
       run:
         shell: pwsh
         working-directory: ${{ github.workspace }}/setup/choco
-      env:
-        CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
 
     steps:
     - name: Checkout

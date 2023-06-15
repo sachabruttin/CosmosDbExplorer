@@ -149,7 +149,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
-        working-directory: working-directory: ${{ github.workspace }}/setup/choco
+        working-directory: ${{ github.workspace }}/setup/choco
       env:
         CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
 

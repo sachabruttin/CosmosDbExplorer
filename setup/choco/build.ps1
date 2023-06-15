@@ -28,7 +28,7 @@ function Get-HashForArchitecture {
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version/CosmosDbExplorer.zip.sha256")
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/sachabruttin/CosmosDbExplorer/releases/download/v$Version-beta/CosmosDbExplorer.zip.sha256")
     return $hash.Trim()
 }
 

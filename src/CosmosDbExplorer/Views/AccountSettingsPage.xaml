@@ -87,7 +87,7 @@
                     mah:PasswordBoxHelper.CapsLockIcon="{StaticResource MahApps.Controls.CapsLockIcon}"
                     IsEnabled="{Binding UseLocalEmulator, Converter={StaticResource InvertBoolConverter}}"
                     PasswordChar="*"
-                    Style="{StaticResource MahApps.Styles.PasswordBox.Button.Revealed}" />
+                    Style="{StaticResource MahApps.Styles.PasswordBox}" />
             </Grid>
 
             <Grid Margin="{StaticResource XSmallTopMargin}">

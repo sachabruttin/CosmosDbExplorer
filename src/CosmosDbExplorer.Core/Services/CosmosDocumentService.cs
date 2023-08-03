@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,23 +77,44 @@ namespace CosmosDbExplorer.Core.Services
                 PostTriggers = options.PostTriggers
             };
 
-            try
-            {
-                var response = await _container.ReadItemAsync<JObject>(document.Id,
-                    partitionKey: PartitionKeyHelper.Get(document.PartitionKey),
-                    requestOptions: requestOptions,
-                    cancellationToken);
+            var partitionKey = PartitionKeyHelper.Get(document.PartitionKey);
+            var (response, exception) = await ReadItemAsync(document, requestOptions, partitionKey, cancellationToken);
 
+            if (response == null)
+            {
+                (response, exception) = await ReadItemAsync(document, requestOptions, PartitionKey.None, cancellationToken);
+
+                if (response == null && exception != null)
+                {
+                    throw exception;
+                }
+            }
+
+            if (response != null)
+            {
                 result.RequestCharge = response.RequestCharge;
                 result.Items = response.Resource;
                 result.Headers = response.Headers.ToDictionary();
                 //result.Diagnostics = JObject.Parse(result.Diagnostics?.ToString());
+            }
 
-                return result;
+            return result;
+        }
+
+        private async Task<(ItemResponse<JObject>? response, Exception? exception)> ReadItemAsync(ICosmosDocument document, ItemRequestOptions requestOptions, PartitionKey partitionKey, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _container.ReadItemAsync<JObject>(document.Id,
+                    partitionKey: partitionKey,
+                    requestOptions: requestOptions,
+                    cancellationToken);
+
+                return (response, null);
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                return result;
+                return (null, ex);
             }
         }
 

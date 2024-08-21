@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-
+using Azure.Identity;
 using CosmosDbExplorer.Core.Contracts.Services;
 using CosmosDbExplorer.Core.Models;
 
@@ -29,6 +29,7 @@ namespace CosmosDbExplorer.Core.Services
 
         private CosmosClient CreateClient(CosmosConnection connection)
         {
+            var accountEndpoint = connection.DatabaseUri?.ToString();
             var options = new CosmosClientOptions
             {
                 ConnectionMode = connection.ConnectionType == ConnectionType.Gateway ? ConnectionMode.Gateway : ConnectionMode.Direct,
@@ -36,7 +37,9 @@ namespace CosmosDbExplorer.Core.Services
                 LimitToEndpoint = connection.LimitToEndpoint
             };
 
-            return new CosmosClient(accountEndpoint: connection.DatabaseUri?.ToString(), authKeyOrResourceToken: connection.AuthenticationKey, options);
+            return string.IsNullOrWhiteSpace(connection.AuthenticationKey)
+                ? new(accountEndpoint, new DefaultAzureCredential(), options)
+                : new(accountEndpoint, connection.AuthenticationKey, options);
         }
     }
 }

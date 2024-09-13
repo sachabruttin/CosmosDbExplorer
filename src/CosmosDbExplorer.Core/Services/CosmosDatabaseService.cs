@@ -45,6 +45,10 @@ namespace CosmosDbExplorer.Core.Services
                     {
                         result.Add(new CosmosDatabase(item, null, true));
                     }
+                    catch
+                    {
+                        result.Add(new CosmosDatabase(item, null, false));
+                    }
                 }
             }
 

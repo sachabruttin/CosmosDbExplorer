@@ -59,7 +59,7 @@ namespace CosmosDbExplorer.ViewModels.Assets
 
         public override Task InitializeAsync()
         {
-            IsCollectionPartitioned = !string.IsNullOrEmpty(Container.PartitionKeyPath);  // collection.PartitionKey.Paths.Count > 0;
+            IsCollectionPartitioned = !Container.PartitionKeyPath.Any();  // collection.PartitionKey.Paths.Count > 0;
 
             UpdateCommandStatus();
 

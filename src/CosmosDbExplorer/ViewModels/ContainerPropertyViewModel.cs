@@ -111,7 +111,8 @@ namespace CosmosDbExplorer.ViewModels
             {
                 var container = new CosmosContainer(ContainerId, IsLargePartition)
                 {
-                    PartitionKeyPath = PartitionKey,
+                    // TODO: PartitionKeyPath = PartitionKey,
+                    PartitionKeyPath = new List<string> { "TODO" }
                 };
 
                 var createdContainer = await _containerService.CreateContainerAsync(container, Throughput, IsThroughputAutoscale, new System.Threading.CancellationToken());

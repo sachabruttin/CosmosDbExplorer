@@ -14,16 +14,10 @@ using Newtonsoft.Json;
 
 namespace CosmosDbExplorer.Core.Services
 {
-    public class CosmosContainerService : ICosmosContainerService
+    public class CosmosContainerService(ICosmosClientService clientService, CosmosConnection connection, CosmosDatabase cosmosDatabase) : ICosmosContainerService
     {
-        private readonly CosmosClient _client;
-        private readonly CosmosDatabase _cosmosDatabase;
-
-        public CosmosContainerService(ICosmosClientService clientService, CosmosConnection connection, CosmosDatabase cosmosDatabase)
-        {
-            _client = clientService.GetClient(connection);
-            _cosmosDatabase = cosmosDatabase;
-        }
+        private readonly CosmosClient _client = clientService.GetClient(connection);
+        private readonly CosmosDatabase _cosmosDatabase = cosmosDatabase;
 
         public async Task<IList<CosmosContainer>> GetContainersAsync(CancellationToken cancellationToken)
         {
@@ -47,7 +41,7 @@ namespace CosmosDbExplorer.Core.Services
             var containerProperties = new ContainerProperties()
             {
                 Id = container.Id,
-                PartitionKeyPath = container.PartitionKeyPath,
+                // TODO: PartitionKeyPath = container.PartitionKeyPath,
                 DefaultTimeToLive = container.DefaultTimeToLive,
                 PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion
             };
@@ -81,7 +75,7 @@ namespace CosmosDbExplorer.Core.Services
             var containerProperties = new ContainerProperties
             {
                 Id = container.Id,
-                PartitionKeyPath = container.PartitionKeyPath,
+                // TODO: PartitionKeyPath = container.PartitionKeyPath,
                 DefaultTimeToLive = container.DefaultTimeToLive,
                 PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion,
                 IndexingPolicy = JsonConvert.DeserializeObject<IndexingPolicy>(container.IndexingPolicy),

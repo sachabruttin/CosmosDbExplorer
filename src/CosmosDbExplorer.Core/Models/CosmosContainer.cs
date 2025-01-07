@@ -1,4 +1,7 @@
-﻿using CosmosDbExplorer.Core.Contracts;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using CosmosDbExplorer.Core.Contracts;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 
@@ -12,7 +15,7 @@ namespace CosmosDbExplorer.Core.Models
             ETag = properties.ETag;
             SelfLink = properties.SelfLink;
             DefaultTimeToLive = properties.DefaultTimeToLive;
-            PartitionKeyPath = properties.PartitionKeyPath;
+            PartitionKeyPath = [.. properties.PartitionKeyPaths];
             PartitionKeyDefVersion = properties.PartitionKeyDefinitionVersion;
             IndexingPolicy = JsonConvert.SerializeObject(properties.IndexingPolicy, Formatting.Indented);
             GeospatialType = properties.GeospatialConfig.GeospatialType.ToLocalType();
@@ -31,8 +34,8 @@ namespace CosmosDbExplorer.Core.Models
         public string Id { get; }
         public string ETag { get; }
         public string SelfLink { get; }
-        public string PartitionKeyPath { get; set; }
-        public string? PartitionKeyJsonPath => string.IsNullOrEmpty(PartitionKeyPath) ? null : PartitionKeyPath.Replace('/', '.');
+        public IList<string> PartitionKeyPath { get; set; }
+        public IList<string> PartitionKeyJsonPath => !PartitionKeyPath.Any() ? [] : PartitionKeyPath.Select(x => x.Replace('/', '.')).ToList();
         public bool? IsLargePartitionKey => PartitionKeyDefVersion > PartitionKeyDefinitionVersion.V1;
         public int? DefaultTimeToLive { get; set; } // null = off, -1 = Default
         public PartitionKeyDefinitionVersion? PartitionKeyDefVersion { get; }

@@ -32,10 +32,11 @@ namespace CosmosDbExplorer.Core.Services
         {
             var result = new CosmosQueryResult<IReadOnlyCollection<ICosmosDocument>>();
 
-            var token = _cosmosContainer.PartitionKeyJsonPath;
-            if (token != null)
+            var token = string.Empty;
+            if (_cosmosContainer.PartitionKeyJsonPath.Any())
             {
-                token = $", c{token} as _partitionKey, true as _hasPartitionKey";
+                token = string.Join(string.Empty, _cosmosContainer.PartitionKeyJsonPath.Select((x, index) => $", c{x} as _pk{index}"));
+                token += ", true as _hasPartitionKey";
             }
 
             var sql = $"SELECT c.id, c._self, c._etag, c._ts, c._attachments {token} FROM c {filter}";
@@ -77,7 +78,8 @@ namespace CosmosDbExplorer.Core.Services
                 PostTriggers = options.PostTriggers
             };
 
-            var partitionKey = PartitionKeyHelper.Get(document.PartitionKey);
+            var partitionKey = PartitionKeyHelper.Build(_cosmosContainer.PartitionKeyJsonPath, document.PartitionKey0, document.PartitionKey1, document.PartitionKey2);
+
             var (response, exception) = await ReadItemAsync(document, requestOptions, partitionKey, cancellationToken);
 
             if (response == null)
@@ -135,8 +137,9 @@ namespace CosmosDbExplorer.Core.Services
             try
             {
                 var document = GetDocuments(content, _cosmosContainer.PartitionKeyJsonPath).First();
+                var partitionKey = PartitionKeyHelper.Build(_cosmosContainer.PartitionKeyJsonPath, document.PartitionKey0, document.PartitionKey1, document.PartitionKey2);
 
-                var response = await _container.UpsertItemAsync<JToken>(document.Resource, PartitionKeyHelper.Get(document.PK), requestOptions, cancellationToken);
+                var response = await _container.UpsertItemAsync<JToken>(document.Resource, partitionKey, requestOptions, cancellationToken);
 
                 result.RequestCharge = response.RequestCharge;
                 result.Items = (JObject)response.Resource;
@@ -161,7 +164,9 @@ namespace CosmosDbExplorer.Core.Services
 
             foreach (var item in documents)
             {
-                tasks.Add(_container.DeleteItemAsync<ICosmosDocument>(item.Id, PartitionKeyHelper.Get(item.PartitionKey), cancellationToken: cancellationToken)
+                var partitionKey = PartitionKeyHelper.Build(_cosmosContainer.PartitionKeyJsonPath, item.PartitionKey0, item.PartitionKey1, item.PartitionKey2);
+
+                tasks.Add(_container.DeleteItemAsync<ICosmosDocument>(item.Id, partitionKey, cancellationToken: cancellationToken)
                     .ContinueWith<ItemResponse<ICosmosDocument>>(itemResponse =>
                     {
                         if (!itemResponse.IsCompletedSuccessfully)
@@ -201,7 +206,9 @@ namespace CosmosDbExplorer.Core.Services
 
             foreach (var item in itemsToInsert)
             {
-                tasks.Add(_container.CreateItemAsync(item.Resource, PartitionKeyHelper.Get(item.PK), cancellationToken: cancellationToken)
+                var partitionKey = PartitionKeyHelper.Build(_cosmosContainer.PartitionKeyJsonPath, item.PartitionKey0, item.PartitionKey1, item.PartitionKey2);
+
+                tasks.Add(_container.CreateItemAsync(item.Resource, partitionKey, cancellationToken: cancellationToken)
                     .ContinueWith(itemResponse =>
                     {
                         if (!itemResponse.IsCompletedSuccessfully)
@@ -267,40 +274,57 @@ namespace CosmosDbExplorer.Core.Services
 
 
 
-        private Document[] GetDocuments(string content, string? pkPath)
+        private Document[] GetDocuments(string content, IList<string> partitionKeyPath)
         {
-            if (pkPath is null)
+            if (partitionKeyPath is null)
             {
-                throw new ArgumentNullException(nameof(pkPath));
+                throw new ArgumentNullException(nameof(partitionKeyPath));
             }
 
             var token = JToken.Parse(content);
 
             if (token == null)
             {
-                return Array.Empty<Document>();
+                return [];
             }
 
             if (token is JArray)
             {
-                return token.Children().Select(child => new Document((JObject)child, pkPath)).ToArray();
+                return token.Children().Select(child => new Document((JObject)child, partitionKeyPath)).ToArray();
             }
             else
             {
-                return new[] { new Document((JObject)token, pkPath) };
+                return [new Document((JObject)token, partitionKeyPath)];
             }
         }
     }
 
     internal class Document
     {
-        public Document(JObject resource, string pkPath)
+        public Document(JObject resource, IList<string> partitionKeyPath)
         {
-            PK = resource.SelectToken(pkPath)?.ToObject<object?>();
+            switch (partitionKeyPath.Count)
+            {
+                case 1:
+                    PartitionKey0 = resource.SelectToken(partitionKeyPath[0])?.ToObject<object?>();
+                    break;
+                case 2:
+                    PartitionKey0 = resource.SelectToken(partitionKeyPath[0])?.ToObject<object?>();
+                    PartitionKey1 = resource.SelectToken(partitionKeyPath[1])?.ToObject<object?>();
+                    break;
+                case 3:
+                    PartitionKey0 = resource.SelectToken(partitionKeyPath[0])?.ToObject<object?>();
+                    PartitionKey1 = resource.SelectToken(partitionKeyPath[1])?.ToObject<object?>();
+                    PartitionKey2 = resource.SelectToken(partitionKeyPath[2])?.ToObject<object?>();
+                    break;
+            }
+
             Resource = resource;
         }
 
-        public object? PK { get; set; }
+        public object? PartitionKey0 { get; set; }
+        public object? PartitionKey1 { get; set; }
+        public object? PartitionKey2 { get; set; }
         public JToken Resource { get; set; }
     }
 }

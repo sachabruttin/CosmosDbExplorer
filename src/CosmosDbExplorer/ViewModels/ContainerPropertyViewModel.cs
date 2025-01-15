@@ -17,6 +17,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Validar;
+using Microsoft.Azure.Cosmos.Linq;
 
 namespace CosmosDbExplorer.ViewModels
 {
@@ -29,6 +30,8 @@ namespace CosmosDbExplorer.ViewModels
 
         private readonly CosmosContainerService _containerService;
         private AsyncRelayCommand? _saveCommand;
+        private RelayCommand? _addPartitionKeyCommand;
+        private RelayCommand? _removePartitionKeyCommand;
 
         public ContainerPropertyViewModel(IServiceProvider serviceProvider, IDialogService dialogService, IUIServices uiServices, object parameter)
             : base(uiServices)
@@ -83,6 +86,63 @@ namespace CosmosDbExplorer.ViewModels
         [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
         public string PartitionKey { get; set; } = string.Empty;
 
+        public RelayCommand AddPartitionCommand => _addPartitionKeyCommand ??= new(AddPartitionKeyExecute, AddPartitionKeyCanExecute);
+        private void AddPartitionKeyExecute()
+        {
+            if (!HasSecondPartitionKey)
+            {
+                HasSecondPartitionKey = true;
+            }
+            else
+            {
+                HasThirdPartitionKey = true;
+            }
+
+            RemovePartitionCommand.NotifyCanExecuteChanged();
+            AddPartitionCommand.NotifyCanExecuteChanged();
+            SaveCommand.NotifyCanExecuteChanged();
+        }
+
+        private bool AddPartitionKeyCanExecute()
+        {
+            return !HasSecondPartitionKey || !HasThirdPartitionKey;
+        }
+
+        public RelayCommand RemovePartitionCommand => _removePartitionKeyCommand ??= new(RemovePartitionKeyExecute, RemovePartitionKeyCanExecute);
+
+        public void RemovePartitionKeyExecute()
+        {
+            if (HasThirdPartitionKey)
+            {
+                HasThirdPartitionKey = false;
+            }
+            else
+            {
+                HasSecondPartitionKey = false;
+            }
+            
+            RemovePartitionCommand.NotifyCanExecuteChanged();
+            AddPartitionCommand.NotifyCanExecuteChanged();
+            SaveCommand.NotifyCanExecuteChanged();
+        }
+
+        public bool RemovePartitionKeyCanExecute()
+        {
+            return HasSecondPartitionKey || HasThirdPartitionKey;
+        }
+
+        public bool HasSecondPartitionKey { get; set; }
+
+        [DependsOn(nameof(HasSecondPartitionKey))]
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
+        public string SecondPartitionKey { get; set; }
+
+        [DependsOn(nameof(HasThirdPartitionKey))]
+        [OnChangedMethod(nameof(UpdateSaveCommandStatus))]
+        public string ThirdPartitionKey { get; set; }
+
+        public bool HasThirdPartitionKey { get; set; }
+
         public bool IsThroughputAutoscale { get; set; } = true;
 
         public bool IsLargePartition { get; set; }
@@ -109,9 +169,23 @@ namespace CosmosDbExplorer.ViewModels
 
             try
             {
+                var pkp = new List<string> { PartitionKey };
+
+                if (HasSecondPartitionKey)
+                {
+                    pkp.Add(SecondPartitionKey);
+                }
+
+                if (HasThirdPartitionKey)
+                {
+                    pkp.Add(ThirdPartitionKey);
+                }
+
+
                 var container = new CosmosContainer(ContainerId, IsLargePartition)
                 {
-                    PartitionKeyPath = PartitionKey,
+                    PartitionKeyPath = pkp
+
                 };
 
                 var createdContainer = await _containerService.CreateContainerAsync(container, Throughput, IsThroughputAutoscale, new System.Threading.CancellationToken());
@@ -164,7 +238,20 @@ namespace CosmosDbExplorer.ViewModels
         public ContainerPropertyViewModelValidator()
         {
             RuleFor(x => x.ContainerId).NotEmpty();
-            RuleFor(x => x.PartitionKey).NotEmpty();
+            RuleFor(x => x.PartitionKey)
+                .NotEmpty()
+                .Matches("^/(.)").WithMessage("'{PropertyName}' must start with a '/'.");
+            
+            RuleFor(x => x.SecondPartitionKey)
+                .NotEmpty()
+                .Matches("^/(.)").WithMessage("'{PropertyName}' must start with a '/'.")
+                .When(x => x.HasSecondPartitionKey);
+
+            RuleFor(x => x.ThirdPartitionKey)
+                .Matches("^/(.)").WithMessage("'{PropertyName}' must start with a '/'.")
+                .NotEmpty()
+                .When(x => x.HasThirdPartitionKey);
+
             RuleFor(x => x.Throughput).NotEmpty().When(x => x.ProvisionThroughput);
         }
     }

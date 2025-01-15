@@ -142,6 +142,8 @@ namespace CosmosDbExplorer.ViewModels
         private bool HasSettingsChanged => (Container?.DefaultTimeToLive != TimeToLiveInSecond) || (Container?.GeospatialType != GeoType);
         private bool? HasIndexingPolicyChanged => !Container?.IndexingPolicy?.Equals(IndexingPolicy);
 
+        public string? PartitionKeyPath { get; private set; }
+
         public override async Task InitializeAsync()
         {
             SetSettings();
@@ -159,6 +161,7 @@ namespace CosmosDbExplorer.ViewModels
             TimeToLive = TimeToLiveTypeExtensions.Get(Container?.DefaultTimeToLive);
             GeoType = Container?.GeospatialType ?? CosmosGeospatialType.Geography;
             IndexingPolicy = Container?.IndexingPolicy;
+            PartitionKeyPath = Container != null && Container.PartitionKeyPath.Any() ? string.Join(", ", Container.PartitionKeyPath) : null;
         }
 
         private void SetThroughputInfo(CosmosThroughput? throughput)

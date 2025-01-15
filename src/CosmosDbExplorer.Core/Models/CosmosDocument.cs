@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using CosmosDbExplorer.Core.Contracts;
 using CosmosDbExplorer.Core.Services;
 
@@ -10,23 +13,31 @@ namespace CosmosDbExplorer.Core.Models
     public class CosmosDocument : ICosmosDocument
     {
 
-        public static CosmosDocument CreateFrom(JObject resource, string? partitionPath)
+        public static CosmosDocument CreateFrom(JObject resource, IList<string> partitionPath)
         {
-            var instance = resource.ToObject<CosmosDocument>();
-
-            if (instance is null)
-            {
-                throw new Exception("Cannot create CosmosDocument");
-            }
+            var instance = resource.ToObject<CosmosDocument>() ?? throw new Exception("Cannot create CosmosDocument");
 
             if (partitionPath is not null)
             {
                 var doc = new Document(resource, partitionPath);
 
-                if (doc.PK is not null)
+                switch (partitionPath.Count)
                 {
-                    instance.HasPartitionKey = true;
-                    instance.PartitionKey = doc.PK;
+                    case 1:
+                        instance.PartitionKey0 = doc.PartitionKey0;
+                        instance.HasPartitionKey = true;
+                        break;
+                    case 2:
+                        instance.PartitionKey0 = doc.PartitionKey0;
+                        instance.PartitionKey1 = doc.PartitionKey1;
+                        instance.HasPartitionKey = true;
+                        break;
+                    case 3:
+                        instance.PartitionKey0 = doc.PartitionKey0;
+                        instance.PartitionKey1 = doc.PartitionKey1;
+                        instance.PartitionKey2 = doc.PartitionKey2;
+                        instance.HasPartitionKey = true;
+                        break;
                 }
             }
 
@@ -48,8 +59,14 @@ namespace CosmosDbExplorer.Core.Models
         [JsonProperty("_ts")]
         public long TimeStamp { get; set; }
 
-        [JsonProperty("_partitionKey")]
-        public object? PartitionKey { get; set; }
+        [JsonProperty("_pk0")]
+        public object? PartitionKey0 { get; set; }
+
+        [JsonProperty("_pk1")]
+        public object? PartitionKey1 { get; set; }
+
+        [JsonProperty("_pk2")]
+        public object? PartitionKey2 { get; set; }
 
         [JsonProperty("_hasPartitionKey")]
         public bool HasPartitionKey { get; set; }
@@ -63,12 +80,14 @@ namespace CosmosDbExplorer.Core.Models
         {
             return other != null
                     && Id == other.Id
-                    && PartitionKey == other.PartitionKey;
+                    && PartitionKey0 == other.PartitionKey0
+                    && PartitionKey1 == other.PartitionKey1
+                    && PartitionKey2 == other.PartitionKey2;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, SelfLink, PartitionKey);
+            return HashCode.Combine(Id, SelfLink, PartitionKey0, PartitionKey1, PartitionKey2);
         }
     }
 }

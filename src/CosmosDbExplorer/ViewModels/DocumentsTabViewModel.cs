@@ -98,7 +98,7 @@ namespace CosmosDbExplorer.ViewModels
 
         public DocumentNodeViewModel Node { get; protected set; }
 
-        public string PartitionKey { get; set; }
+        public IList<string> PartitionKey { get; set; }
 
         public ObservableCollection<CheckedItem<ICosmosDocument>> Documents { get; } = new();
 
@@ -326,7 +326,34 @@ namespace CosmosDbExplorer.ViewModels
             SelectedDocument = null;
             SetStatusBar(null);
 
-            EditorViewModel.SetText(JObject.Parse("{\"id\": \"replace_with_the_new_document_id\"}"), HideSystemProperties);
+            var json = new JObject(new JProperty("id", "replace_with_new_document_id"));
+
+            foreach (var item in Container.PartitionKeyPath)
+            {
+                var parts = item.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length > 0)
+                {
+                    var current = json;
+                    for (var i = 0; i < parts.Length; i++)
+                    {
+                        if (i == parts.Length - 1)
+                        {
+                            current[parts[i]] = "replace_with_new_partition_key_value";
+                        }
+                        else
+                        {
+                            if (current[parts[i]] is null)
+                            {
+                                current[parts[i]] = new JObject();
+                            }
+                            current = (JObject)current[parts[i]];
+                        }
+                    }
+                }
+            }
+
+            EditorViewModel.SetText(json, HideSystemProperties);
         }
 
         private bool NewDocumentCommandCanExecute()
@@ -482,11 +509,13 @@ namespace CosmosDbExplorer.ViewModels
                             {
                                 if (requestResult.IsCompletedSuccessfully)
                                 {
-                                    var path = document.HasPartitionKey
-                                        ? Path.Combine(result.Path, $"{document.PartitionKey}-{document.Id}.json".SafeForFilename())
-                                        : Path.Combine(result.Path, $"{document.Id}.json".SafeForFilename());
+                                    // TODO: Implement this
+                                    throw new NotImplementedException();
+                                    //var path = document.HasPartitionKey
+                                    //    ? Path.Combine(result.Path, $"{document.PartitionKey}-{document.Id}.json".SafeForFilename())
+                                    //    : Path.Combine(result.Path, $"{document.Id}.json".SafeForFilename());
 
-                                    File.WriteAllTextAsync(path, requestResult.Result.Items.ToString());
+                                    //File.WriteAllTextAsync(path, requestResult.Result.Items.ToString());
                                 }
 
                                 return requestResult.Result;

@@ -62,13 +62,17 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0.5*" />
                                         <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="0.5*" />
+                                        <ColumnDefinition Width="0.5*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock FontWeight="Bold" Grid.Column="0" Text="id" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey}" ToolTip="{Binding PartitionKey}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+                                    <TextBlock FontWeight="Bold" Grid.Column="1" Text="{Binding PartitionKey[0]}" ToolTip="{Binding PartitionKey[0]}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+                                    <TextBlock FontWeight="Bold" Grid.Column="2" Text="{Binding PartitionKey[1]}" ToolTip="{Binding PartitionKey[1]}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
+                                    <TextBlock FontWeight="Bold" Grid.Column="3" Text="{Binding PartitionKey[2]}" ToolTip="{Binding PartitionKey[2]}" TextTrimming="CharacterEllipsis" Margin="12,0,0,0" />
 
-                                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="2" ToolTip="Refresh">
+                                    <Button Command="{Binding RefreshLoadCommand}" Grid.Column="4" ToolTip="Refresh">
                                         <Button.Template>
                                             <ControlTemplate>
                                                 <Border x:Name="theBorder" BorderBrush="Transparent" BorderThickness="1">
@@ -105,10 +109,14 @@
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="0.5*" />
                                                             <ColumnDefinition Width="0.5*" />
+                                                            <ColumnDefinition Width="0.5*" />
+                                                            <ColumnDefinition Width="0.5*" />
                                                         </Grid.ColumnDefinitions>
 
                                                         <TextBlock Grid.Column="0" Text="{Binding Item.Id}" ToolTip="{Binding Item.Id}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Item.PartitionKey}" ToolTip="{Binding Item.PartitionKey}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding Item.PartitionKey0}" ToolTip="{Binding Item.PartitionKey0}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                        <TextBlock Grid.Column="2" Text="{Binding Item.PartitionKey1}" ToolTip="{Binding Item.PartitionKey1}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding Item.PartitionKey2}" ToolTip="{Binding Item.PartitionKey2}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="5,0,0,2" />
                                                     </Grid>
                                                 </DataTemplate>
 

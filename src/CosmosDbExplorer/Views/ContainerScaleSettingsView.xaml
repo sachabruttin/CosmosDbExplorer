@@ -73,12 +73,12 @@
                     </StackPanel>
 
                     <StackPanel Margin="{StaticResource SmallTopBottomMargin}"
-                                Visibility="{Binding Container.PartitionKeyPath, Converter={StaticResource nullToVisibilityConverter}}">
+                                Visibility="{Binding PartitionKeyPath, Converter={StaticResource nullToVisibilityConverter}}">
                         <TextBlock Text="Partition Key" Style="{StaticResource BodyTextStyle}" />
                         <TextBox VerticalContentAlignment="Center" 
                                  IsReadOnly="True" 
                                  IsEnabled="False"
-                                 Text="{Binding Container.PartitionKeyPath}" />
+                                 Text="{Binding PartitionKeyPath, Mode=OneWay}" />
                     </StackPanel>
 
                 </StackPanel>

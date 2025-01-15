@@ -53,7 +53,7 @@ function Write-MetaData {
     $filePath = $Path -like 'templates' ? "./templates/$FileName" : "./templates/$Path/$FileName"
 
     $tagName = "v$Version"
-    $Version -match  '(?<version>\d.\d.\d)(?:-)(?<beta>.*)'
+    $Version -match  '(?<version>\d+.\d+.\d+)(?:-)(?<beta>.*)'
 
     $content = Get-Content $filePath -Raw
     $content = $content.Replace('$version', $Matches.version)

@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: olegtarasov/get-tag@v2.1
+    - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
         tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
@@ -52,7 +52,7 @@ jobs:
     - name: Zip Release folder
       uses: papeloto/action-zip@v1
       with:
-        files: src\CosmosDbExplorer\bin\Release\net6.0-windows
+        files: src\CosmosDbExplorer\bin\Release\net9.0-windows7.0
         dest: CosmosDbExplorer.zip
 
     - name: Get ZIP checksum
@@ -83,7 +83,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2  
 
-    - uses: olegtarasov/get-tag@v2.1
+    - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
         tagRegex: (\d*.\d*.\d*.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
@@ -140,7 +140,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2  
 
-    - uses: olegtarasov/get-tag@v2.1
+    - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
         tagRegex: (\d*.\d*.\d*.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
@@ -166,7 +166,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: olegtarasov/get-tag@v2.1
+    - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
         tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
@@ -186,7 +186,7 @@ jobs:
       with:
         ref: gh-pages
 
-    - uses: olegtarasov/get-tag@v2.1
+    - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
         tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.        

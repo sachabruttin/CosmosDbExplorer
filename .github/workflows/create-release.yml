@@ -26,7 +26,7 @@ jobs:
     - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
-        tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        tagRegex: (?<version>\d+.\d+.\d+)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
 
     - name: Set version on AssemblyInfo.cs
       uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
@@ -86,7 +86,7 @@ jobs:
     - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
-        tagRegex: (\d*.\d*.\d*.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        tagRegex: (\d+.\d+.\d+.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
         
     - name: Get release ⬇️
       id: get_release
@@ -143,7 +143,7 @@ jobs:
     - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
-        tagRegex: (\d*.\d*.\d*.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        tagRegex: (\d+.\d+.\d+.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
     
     - name: Create manifest and submit PR 📦
       run: |
@@ -169,7 +169,7 @@ jobs:
     - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
-        tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        tagRegex: (?<version>\d+.\d+.\d+)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
 
     - name: Create 📦 and submit to chocolatey 
       run: |
@@ -189,7 +189,7 @@ jobs:
     - uses: olegtarasov/get-tag@v2.1.4
       id: tag
       with:
-        tagRegex: (?<version>\d*.\d*.\d*)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.        
+        tagRegex: (?<version>\d+.\d+.\d+)(?:-)(?<beta>.*)  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.        
 
     - name: Get the version
       id: get_version

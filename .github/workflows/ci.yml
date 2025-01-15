@@ -28,7 +28,7 @@ jobs:
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     # Install the .NET Core workload
     - name: Install .NET Core
@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: CosmosDbExplorer
-        path: src\CosmosDbExplorer\bin\Release\net6.0-windows   
+        path: src\CosmosDbExplorer\bin\Release\net9.0-windows7.0 
 
     # - name: Setup NuGet
     #   uses: nuget/setup-nuget@v1

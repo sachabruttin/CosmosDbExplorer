@@ -38,13 +38,25 @@ namespace CosmosDbExplorer.Core.Services
         {
             var db = _client.GetDatabase(_cosmosDatabase.Id);
 
+
             var containerProperties = new ContainerProperties()
             {
                 Id = container.Id,
-                // TODO: PartitionKeyPath = container.PartitionKeyPath,
                 DefaultTimeToLive = container.DefaultTimeToLive,
                 PartitionKeyDefinitionVersion = container.PartitionKeyDefVersion
             };
+
+            switch (container.PartitionKeyPath.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    containerProperties.PartitionKeyPath = container.PartitionKeyPath[0];
+                    break;
+                default:
+                    containerProperties.PartitionKeyPaths = (IReadOnlyList<string>)container.PartitionKeyPath;
+                    break;
+            }
 
             try
             {

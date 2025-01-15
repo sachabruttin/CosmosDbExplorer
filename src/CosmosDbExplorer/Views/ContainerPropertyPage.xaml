@@ -59,9 +59,57 @@
                         Text="Partition key" />
                     <TextBox Margin="{StaticResource XSmallTopMargin}"
                              Text="{Binding PartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
-                        <mah:TextBoxHelper.Watermark>e.g. /address/zipCode</mah:TextBoxHelper.Watermark>
+                        <mah:TextBoxHelper.Watermark>Required - 1st partition key e.g. /tenantId</mah:TextBoxHelper.Watermark>
                         <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
                     </TextBox>
+
+                    <Grid Visibility="{Binding HasSecondPartitionKey, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBox Margin="{StaticResource XSmallTopMargin}"
+                             Text="{Binding SecondPartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                            <mah:TextBoxHelper.Watermark>2nd partition key e.g. /userId</mah:TextBoxHelper.Watermark>
+                            <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
+                        </TextBox>
+
+                        <Button Grid.Column="1" Margin="{StaticResource XSmallTopLeftMargin}"  Style="{StaticResource MahApps.Styles.Button.Calendar.Header}"
+                                Command="{Binding RemovePartitionCommand}">
+                            <Button.Content>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="18" />
+                            </Button.Content>
+                        </Button>
+
+                    </Grid>
+
+                    <Grid Visibility="{Binding HasThirdPartitionKey, Converter={StaticResource boolToVisibilityConverter}}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+
+                        <TextBox Margin="{StaticResource XSmallTopMargin}" HorizontalContentAlignment="Stretch"
+                                 Text="{Binding ThirdPartitionKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                            <mah:TextBoxHelper.Watermark>3rd partition key e.g. /sessionId</mah:TextBoxHelper.Watermark>
+                            <mah:TextBoxHelper.ClearTextButton>True</mah:TextBoxHelper.ClearTextButton>
+                        </TextBox>
+
+                        <Button Grid.Column="1" Margin="{StaticResource XSmallTopLeftMargin}" Style="{StaticResource MahApps.Styles.Button.Calendar.Header}"
+                                Command="{Binding RemovePartitionCommand}">
+                            <Button.Content>
+                                <TextBlock Style="{StaticResource DeleteIcon}" FontSize="18" />
+                            </Button.Content>
+                        </Button>
+
+                    </Grid>
+
+                    <Button Content="Add hierarchical partition key" Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource MahApps.Styles.Button}"
+                            Command="{Binding AddPartitionCommand}"/>
 
                 </StackPanel>
 
